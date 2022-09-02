@@ -7,6 +7,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -23,8 +24,9 @@ var (
 // TestKeepers holds all keepers used during keeper tests for all modules
 type TestKeepers struct {
 	T                  testing.TB
-	TokenfactoryKeeper *tokenfactorykeeper.Keeper
+	AccountKeeper      authkeeper.AccountKeeper
 	BankKeeper         bankkeeper.Keeper
+	TokenfactoryKeeper *tokenfactorykeeper.Keeper
 }
 
 // TestMsgServers holds all message servers used during keeper tests for all modules
@@ -35,22 +37,26 @@ type TestMsgServers struct {
 
 func NewTestSetup(t testing.TB) (sdk.Context, TestKeepers, TestMsgServers) {
 	initializer := newInitializer()
+
 	paramKeeper := initializer.Param()
 	authKeeper := initializer.Auth(paramKeeper)
 	bankKeeper := initializer.Bank(paramKeeper, authKeeper)
 	tokenfactoryKeeper := initializer.Tokenfactory(bankKeeper, paramKeeper)
+
 	ctx := sdk.NewContext(initializer.StateStore, tmproto.Header{
 		Time:   ExampleTimestamp,
 		Height: ExampleHeight,
 	}, false, log.NewNopLogger())
 
+	tokenfactoryKeeper.SetParams(ctx, tokenfactorytypes.DefaultParams())
+
 	tokenfactorySrv := tokenfactorykeeper.NewMsgServerImpl(*tokenfactoryKeeper)
 
 	return ctx, TestKeepers{
-			T: t,
-
-			BankKeeper:         bankKeeper,
+			T:                  t,
 			TokenfactoryKeeper: tokenfactoryKeeper,
+			BankKeeper:         bankKeeper,
+			AccountKeeper:      authKeeper,
 		}, TestMsgServers{
 			T:               t,
 			TokenfactorySrv: tokenfactorySrv,

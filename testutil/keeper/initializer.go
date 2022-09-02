@@ -14,30 +14,14 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	tmdb "github.com/tendermint/tm-db"
 )
 
 var moduleAccountPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-}
-
-// ModuleAccountAddrs returns all the app's module account addresses.
-func ModuleAccountAddrs(maccPerms map[string][]string) map[string]bool {
-	modAccAddrs := make(map[string]bool)
-	for acc := range maccPerms {
-		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
-	}
-
-	return modAccAddrs
+	authtypes.FeeCollectorName:   nil,
+	tokenfactorytypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 }
 
 // initializer allows to initialize each module keeper
@@ -59,26 +43,14 @@ func newInitializer() initializer {
 	}
 }
 
-func (i initializer) Tokenfactory(
-	bankKeeper bankkeeper.Keeper,
-	paramKeeper paramskeeper.Keeper,
-) *tokenfactorykeeper.Keeper {
-	storeKey := sdk.NewKVStoreKey(tokenfactorytypes.StoreKey)
-	memStoreKey := storetypes.NewMemoryStoreKey(tokenfactorytypes.MemStoreKey)
+// ModuleAccountAddrs returns all the app's module account addresses.
+func ModuleAccountAddrs(maccPerms map[string][]string) map[string]bool {
+	modAccAddrs := make(map[string]bool)
+	for acc := range maccPerms {
+		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
+	}
 
-	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
-	i.StateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
-
-	paramKeeper.Subspace(tokenfactorytypes.ModuleName)
-	subspace, _ := paramKeeper.GetSubspace(tokenfactorytypes.ModuleName)
-
-	return tokenfactorykeeper.NewKeeper(
-		i.Codec,
-		storeKey,
-		memStoreKey,
-		subspace,
-		bankKeeper,
-	)
+	return modAccAddrs
 }
 
 func (i initializer) Param() paramskeeper.Keeper {
@@ -129,5 +101,27 @@ func (i initializer) Bank(paramKeeper paramskeeper.Keeper, authKeeper authkeeper
 		authKeeper,
 		bankSubspace,
 		modAccAddrs,
+	)
+}
+
+func (i initializer) Tokenfactory(
+	bankKeeper bankkeeper.Keeper,
+	paramKeeper paramskeeper.Keeper,
+) *tokenfactorykeeper.Keeper {
+	storeKey := sdk.NewKVStoreKey(tokenfactorytypes.StoreKey)
+	memStoreKey := storetypes.NewMemoryStoreKey(tokenfactorytypes.MemStoreKey)
+
+	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
+	i.StateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
+
+	paramKeeper.Subspace(tokenfactorytypes.ModuleName)
+	subspace, _ := paramKeeper.GetSubspace(tokenfactorytypes.ModuleName)
+
+	return tokenfactorykeeper.NewKeeper(
+		i.Codec,
+		storeKey,
+		memStoreKey,
+		subspace,
+		bankKeeper,
 	)
 }

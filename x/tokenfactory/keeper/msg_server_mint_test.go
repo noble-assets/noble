@@ -5,8 +5,6 @@ import (
 
 	"noble/testutil/sample"
 
-	_ "github.com/stretchr/testify/require"
-
 	"noble/x/tokenfactory/types"
 
 	testkeeper "noble/testutil/keeper"

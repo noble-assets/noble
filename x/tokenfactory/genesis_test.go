@@ -3,11 +3,12 @@ package tokenfactory_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-	keepertest "noble/testutil/keeper"
+	testkeeper "noble/testutil/keeper"
 	"noble/testutil/nullify"
 	"noble/x/tokenfactory"
 	"noble/x/tokenfactory/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
@@ -17,9 +18,9 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx := keepertest.TokenfactoryKeeper(t)
-	tokenfactory.InitGenesis(ctx, *k, genesisState)
-	got := tokenfactory.ExportGenesis(ctx, *k)
+	ctx, tk, _ := testkeeper.NewTestSetup(t)
+	tokenfactory.InitGenesis(ctx, *tk.TokenfactoryKeeper, genesisState)
+	got := tokenfactory.ExportGenesis(ctx, *tk.TokenfactoryKeeper)
 	require.NotNil(t, got)
 
 	nullify.Fill(&genesisState)

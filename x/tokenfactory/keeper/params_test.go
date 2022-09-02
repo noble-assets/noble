@@ -3,16 +3,17 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	testkeeper "noble/testutil/keeper"
 	"noble/x/tokenfactory/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.TokenfactoryKeeper(t)
+	ctx, tk, _ := testkeeper.NewTestSetup(t)
 	params := types.DefaultParams()
 
-	k.SetParams(ctx, params)
+	tk.TokenfactoryKeeper.SetParams(ctx, params)
 
-	require.EqualValues(t, params, k.GetParams(ctx))
+	require.EqualValues(t, params, tk.TokenfactoryKeeper.GetParams(ctx))
 }
