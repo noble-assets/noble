@@ -2,7 +2,7 @@ package types
 
 const (
 	// AccountAddressPrefix is the prefix used for account bech32 addresses
-	AccountAddressPrefix = "spn"
+	AccountAddressPrefix = "noble"
 
 	// Name is the name of the application
 	Name = "noble"
