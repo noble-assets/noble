@@ -26,7 +26,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrap(types.ErrMint, err.Error())
 	}
 
-	reciever, err := sdk.AccAddressFromBech32(msg.From)
+	reciever, err := sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrParseAddress, err.Error())
 	}
