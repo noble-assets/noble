@@ -1,29 +1,32 @@
-package types
+package types_test
 
 import (
 	"testing"
 
+	"noble/testutil/sample"
+
+	"noble/x/tokenfactory/types"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	"noble/testutil/sample"
 )
 
 func TestMsgMint_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgMint
+		msg  types.MsgMint
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgMint{
+			msg: types.MsgMint{
 				From: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgMint{
-				From: sample.AccAddress(),
+			msg: types.MsgMint{
+				From: sample.Address(r),
 			},
 		},
 	}

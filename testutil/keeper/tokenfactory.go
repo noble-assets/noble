@@ -3,6 +3,9 @@ package keeper
 import (
 	"testing"
 
+	"noble/x/tokenfactory/keeper"
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -13,8 +16,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-	"noble/x/tokenfactory/keeper"
-	"noble/x/tokenfactory/types"
 )
 
 func TokenfactoryKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
