@@ -20,6 +20,7 @@ service Msg {
   rpc Burn(MsgBurn) returns (MsgBurnResponse);
   rpc Blacklist(MsgBlacklist) returns (MsgBlacklistResponse);
   rpc Unblacklist(MsgUnblacklist) returns (MsgUnblacklistResponse);
+  rpc Pause(MsgPause) returns (MsgPauseResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -111,6 +112,13 @@ message MsgUnblacklist {
 }
 
 message MsgUnblacklistResponse {
+}
+
+message MsgPause {
+  string from = 1;
+}
+
+message MsgPauseResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
