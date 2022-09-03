@@ -25,3 +25,7 @@ const (
 const (
 	MasterMinterKey = "MasterMinter-value-"
 )
+
+const (
+	PauserKey = "Pauser-value-"
+)

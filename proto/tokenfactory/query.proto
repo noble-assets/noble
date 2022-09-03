@@ -8,6 +8,7 @@ import "tokenfactory/blacklisted.proto";
 import "tokenfactory/paused.proto";
 import "tokenfactory/master_minter.proto";
 import "tokenfactory/minters.proto";
+import "tokenfactory/pauser.proto";
 // this line is used by starport scaffolding # 1
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -48,6 +49,10 @@ service Query {
 		option (google.api.http).get = "/noble/tokenfactory/minters";
 	}
 
+// Queries a Pauser by index.
+	rpc Pauser(QueryGetPauserRequest) returns (QueryGetPauserResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/pauser";
+	}
 // this line is used by starport scaffolding # 2
 }
 
@@ -106,4 +111,9 @@ message QueryAllMintersResponse {
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetPauserRequest {}
+
+message QueryGetPauserResponse {
+	Pauser Pauser = 1 [(gogoproto.nullable) = false];
+}
 // this line is used by starport scaffolding # 3
