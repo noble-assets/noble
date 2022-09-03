@@ -41,8 +41,8 @@ func NewTestSetup(t testing.TB) (sdk.Context, TestKeepers, TestMsgServers) {
 	paramKeeper := initializer.Param()
 	authKeeper := initializer.Auth(paramKeeper)
 	bankKeeper := initializer.Bank(paramKeeper, authKeeper)
-	tokenfactoryKeeper := initializer.Tokenfactory(bankKeeper, paramKeeper)
-
+	tokenfactoryKeeper := initializer.Tokenfactory(bankKeeper, paramKeeper, authKeeper)
+	initializer.StateStore.LoadLatestVersion()
 	ctx := sdk.NewContext(initializer.StateStore, tmproto.Header{
 		Time:   ExampleTimestamp,
 		Height: ExampleHeight,

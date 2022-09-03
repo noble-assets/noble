@@ -491,6 +491,7 @@ func New(
 		app.GetSubspace(tokenfactorymoduletypes.ModuleName),
 
 		app.BankKeeper,
+		app.AccountKeeper,
 	)
 	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenfactoryKeeper, app.AccountKeeper, app.BankKeeper)
 

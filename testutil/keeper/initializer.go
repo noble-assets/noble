@@ -70,7 +70,6 @@ func (i initializer) Param() paramskeeper.Keeper {
 
 func (i initializer) Auth(paramKeeper paramskeeper.Keeper) authkeeper.AccountKeeper {
 	storeKey := sdk.NewKVStoreKey(authtypes.StoreKey)
-
 	i.StateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, i.DB)
 
 	paramKeeper.Subspace(authtypes.ModuleName)
@@ -107,6 +106,7 @@ func (i initializer) Bank(paramKeeper paramskeeper.Keeper, authKeeper authkeeper
 func (i initializer) Tokenfactory(
 	bankKeeper bankkeeper.Keeper,
 	paramKeeper paramskeeper.Keeper,
+	authKeeper authkeeper.AccountKeeper,
 ) *tokenfactorykeeper.Keeper {
 	storeKey := sdk.NewKVStoreKey(tokenfactorytypes.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(tokenfactorytypes.MemStoreKey)
@@ -123,5 +123,6 @@ func (i initializer) Tokenfactory(
 		memStoreKey,
 		subspace,
 		bankKeeper,
+		authKeeper,
 	)
 }
