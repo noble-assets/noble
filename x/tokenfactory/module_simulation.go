@@ -32,6 +32,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateMasterMinter int = 100
 
+	opWeightMsgUpdatePauser = "op_weight_msg_update_pauser"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdatePauser int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -86,6 +90,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUpdateMasterMinter,
 		tokenfactorysimulation.SimulateMsgUpdateMasterMinter(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdatePauser int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdatePauser, &weightMsgUpdatePauser, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdatePauser = defaultWeightMsgUpdatePauser
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdatePauser,
+		tokenfactorysimulation.SimulateMsgUpdatePauser(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
