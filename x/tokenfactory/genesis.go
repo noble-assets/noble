@@ -37,9 +37,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Owner != nil {
 		k.SetOwner(ctx, *genState.Owner)
 	}
-	k.SetAdmin(ctx, types.Admin{
-		Address: "cosmos14en4ua2wr3upw4rtfprjwzgdyfts57sh77vgcj",
-	})
+	// k.SetAdmin(ctx, types.Admin{
+	// 	Address: "cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k",
+	// })
 	// Set if defined
 	// if genState.Admin != nil {
 	// 	k.SetAdmin(ctx, *genState.Admin)

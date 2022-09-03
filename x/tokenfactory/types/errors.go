@@ -8,5 +8,6 @@ import (
 
 // x/tokenfactory module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrUnauthorized = sdkerrors.Register(ModuleName, 2, "unauthorized")
+	ErrUserNotFound = sdkerrors.Register(ModuleName, 3, "user not found")
 )

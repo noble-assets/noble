@@ -5,7 +5,7 @@ accounts:
     coins: ['10000token', '100000000stake']
   - name: admin
     coins: ['10000token', '100000000stake']
-    address: cosmos14en4ua2wr3upw4rtfprjwzgdyfts57sh77vgcj
+    mnemonic: nation aim predict ticket friend fetch under undo dirt rapid explain text cloud empower slot year blanket vacant job load lock account devote core
 validator:
   name: alice
   staked: '100000000stake'
