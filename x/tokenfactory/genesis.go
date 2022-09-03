@@ -1,9 +1,10 @@
 package tokenfactory
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"noble/x/tokenfactory/keeper"
 	"noble/x/tokenfactory/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.
@@ -36,10 +37,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Owner != nil {
 		k.SetOwner(ctx, *genState.Owner)
 	}
+	k.SetAdmin(ctx, types.Admin{
+		Address: "cosmos14en4ua2wr3upw4rtfprjwzgdyfts57sh77vgcj",
+	})
 	// Set if defined
-	if genState.Admin != nil {
-		k.SetAdmin(ctx, *genState.Admin)
-	}
+	// if genState.Admin != nil {
+	// 	k.SetAdmin(ctx, *genState.Admin)
+	// }
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }

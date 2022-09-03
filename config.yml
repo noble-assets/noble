@@ -3,6 +3,9 @@ accounts:
     coins: ['20000token', '200000000stake']
   - name: bob
     coins: ['10000token', '100000000stake']
+  - name: admin
+    coins: ['10000token', '100000000stake']
+    address: cosmos14en4ua2wr3upw4rtfprjwzgdyfts57sh77vgcj
 validator:
   name: alice
   staked: '100000000stake'
