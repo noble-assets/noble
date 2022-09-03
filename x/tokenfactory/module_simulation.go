@@ -64,6 +64,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgBlacklist int = 100
 
+	opWeightMsgUnblacklist = "op_weight_msg_unblacklist"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUnblacklist int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -206,6 +210,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgBlacklist,
 		tokenfactorysimulation.SimulateMsgBlacklist(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUnblacklist int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUnblacklist, &weightMsgUnblacklist, nil,
+		func(_ *rand.Rand) {
+			weightMsgUnblacklist = defaultWeightMsgUnblacklist
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUnblacklist,
+		tokenfactorysimulation.SimulateMsgUnblacklist(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

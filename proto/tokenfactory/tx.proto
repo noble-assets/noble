@@ -19,6 +19,7 @@ service Msg {
   rpc Mint(MsgMint) returns (MsgMintResponse);
   rpc Burn(MsgBurn) returns (MsgBurnResponse);
   rpc Blacklist(MsgBlacklist) returns (MsgBlacklistResponse);
+  rpc Unblacklist(MsgUnblacklist) returns (MsgUnblacklistResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -102,6 +103,14 @@ message MsgBlacklist {
 }
 
 message MsgBlacklistResponse {
+}
+
+message MsgUnblacklist {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUnblacklistResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
