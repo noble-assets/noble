@@ -21,5 +21,9 @@ func (k msgServer) ChangeAdmin(goCtx context.Context, msg *types.MsgChangeAdmin)
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the admin")
 	}
 
+	admin.Address = msg.Address
+
+	k.SetAdmin(ctx, admin)
+
 	return &types.MsgChangeAdminResponse{}, nil
 }
