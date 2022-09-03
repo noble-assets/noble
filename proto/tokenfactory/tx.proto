@@ -10,6 +10,7 @@ service Msg {
       rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
   rpc UpdateMasterMinter(MsgUpdateMasterMinter) returns (MsgUpdateMasterMinterResponse);
   rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
+  rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -35,6 +36,14 @@ message MsgUpdatePauser {
 }
 
 message MsgUpdatePauserResponse {
+}
+
+message MsgUpdateBlacklister {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdateBlacklisterResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
