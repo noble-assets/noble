@@ -72,6 +72,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgPause int = 100
 
+	opWeightMsgUnpause = "op_weight_msg_unpause"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUnpause int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -236,6 +240,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPause,
 		tokenfactorysimulation.SimulateMsgPause(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUnpause int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUnpause, &weightMsgUnpause, nil,
+		func(_ *rand.Rand) {
+			weightMsgUnpause = defaultWeightMsgUnpause
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUnpause,
+		tokenfactorysimulation.SimulateMsgUnpause(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

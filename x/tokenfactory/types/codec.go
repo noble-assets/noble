@@ -20,6 +20,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgBlacklist{}, "tokenfactory/Blacklist", nil)
 	cdc.RegisterConcrete(&MsgUnblacklist{}, "tokenfactory/Unblacklist", nil)
 	cdc.RegisterConcrete(&MsgPause{}, "tokenfactory/Pause", nil)
+	cdc.RegisterConcrete(&MsgUnpause{}, "tokenfactory/Unpause", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -59,6 +60,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgPause{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUnpause{},
 	)
 	// this line is used by starport scaffolding # 3
 
