@@ -28,6 +28,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgChangeAdmin int = 100
 
+	opWeightMsgUpdateMasterMinter = "op_weight_msg_update_master_minter"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateMasterMinter int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -71,6 +75,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgChangeAdmin,
 		tokenfactorysimulation.SimulateMsgChangeAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateMasterMinter int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateMasterMinter, &weightMsgUpdateMasterMinter, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateMasterMinter = defaultWeightMsgUpdateMasterMinter
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateMasterMinter,
+		tokenfactorysimulation.SimulateMsgUpdateMasterMinter(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

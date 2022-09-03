@@ -8,6 +8,7 @@ option go_package = "noble/x/tokenfactory/types";
 // Msg defines the Msg service.
 service Msg {
       rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
+  rpc UpdateMasterMinter(MsgUpdateMasterMinter) returns (MsgUpdateMasterMinterResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -17,6 +18,14 @@ message MsgChangeAdmin {
 }
 
 message MsgChangeAdminResponse {
+}
+
+message MsgUpdateMasterMinter {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdateMasterMinterResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
