@@ -6,7 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-sdk/types/query"
+	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -113,33 +113,234 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryGetBlacklistedRequest struct {
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+}
+
+func (m *QueryGetBlacklistedRequest) Reset()         { *m = QueryGetBlacklistedRequest{} }
+func (m *QueryGetBlacklistedRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetBlacklistedRequest) ProtoMessage()    {}
+func (*QueryGetBlacklistedRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78516c77a1ba9513, []int{2}
+}
+func (m *QueryGetBlacklistedRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetBlacklistedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetBlacklistedRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetBlacklistedRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetBlacklistedRequest.Merge(m, src)
+}
+func (m *QueryGetBlacklistedRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetBlacklistedRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetBlacklistedRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetBlacklistedRequest proto.InternalMessageInfo
+
+func (m *QueryGetBlacklistedRequest) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+type QueryGetBlacklistedResponse struct {
+	Blacklisted Blacklisted `protobuf:"bytes,1,opt,name=blacklisted,proto3" json:"blacklisted"`
+}
+
+func (m *QueryGetBlacklistedResponse) Reset()         { *m = QueryGetBlacklistedResponse{} }
+func (m *QueryGetBlacklistedResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetBlacklistedResponse) ProtoMessage()    {}
+func (*QueryGetBlacklistedResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78516c77a1ba9513, []int{3}
+}
+func (m *QueryGetBlacklistedResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetBlacklistedResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetBlacklistedResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetBlacklistedResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetBlacklistedResponse.Merge(m, src)
+}
+func (m *QueryGetBlacklistedResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetBlacklistedResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetBlacklistedResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetBlacklistedResponse proto.InternalMessageInfo
+
+func (m *QueryGetBlacklistedResponse) GetBlacklisted() Blacklisted {
+	if m != nil {
+		return m.Blacklisted
+	}
+	return Blacklisted{}
+}
+
+type QueryAllBlacklistedRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllBlacklistedRequest) Reset()         { *m = QueryAllBlacklistedRequest{} }
+func (m *QueryAllBlacklistedRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllBlacklistedRequest) ProtoMessage()    {}
+func (*QueryAllBlacklistedRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78516c77a1ba9513, []int{4}
+}
+func (m *QueryAllBlacklistedRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllBlacklistedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllBlacklistedRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllBlacklistedRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllBlacklistedRequest.Merge(m, src)
+}
+func (m *QueryAllBlacklistedRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllBlacklistedRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllBlacklistedRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllBlacklistedRequest proto.InternalMessageInfo
+
+func (m *QueryAllBlacklistedRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryAllBlacklistedResponse struct {
+	Blacklisted []Blacklisted       `protobuf:"bytes,1,rep,name=blacklisted,proto3" json:"blacklisted"`
+	Pagination  *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllBlacklistedResponse) Reset()         { *m = QueryAllBlacklistedResponse{} }
+func (m *QueryAllBlacklistedResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllBlacklistedResponse) ProtoMessage()    {}
+func (*QueryAllBlacklistedResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78516c77a1ba9513, []int{5}
+}
+func (m *QueryAllBlacklistedResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllBlacklistedResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllBlacklistedResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllBlacklistedResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllBlacklistedResponse.Merge(m, src)
+}
+func (m *QueryAllBlacklistedResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllBlacklistedResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllBlacklistedResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllBlacklistedResponse proto.InternalMessageInfo
+
+func (m *QueryAllBlacklistedResponse) GetBlacklisted() []Blacklisted {
+	if m != nil {
+		return m.Blacklisted
+	}
+	return nil
+}
+
+func (m *QueryAllBlacklistedResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "noble.tokenfactory.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "noble.tokenfactory.QueryParamsResponse")
+	proto.RegisterType((*QueryGetBlacklistedRequest)(nil), "noble.tokenfactory.QueryGetBlacklistedRequest")
+	proto.RegisterType((*QueryGetBlacklistedResponse)(nil), "noble.tokenfactory.QueryGetBlacklistedResponse")
+	proto.RegisterType((*QueryAllBlacklistedRequest)(nil), "noble.tokenfactory.QueryAllBlacklistedRequest")
+	proto.RegisterType((*QueryAllBlacklistedResponse)(nil), "noble.tokenfactory.QueryAllBlacklistedResponse")
 }
 
 func init() { proto.RegisterFile("tokenfactory/query.proto", fileDescriptor_78516c77a1ba9513) }
 
 var fileDescriptor_78516c77a1ba9513 = []byte{
-	// 286 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x90, 0xb1, 0x4e, 0xc3, 0x30,
-	0x10, 0x86, 0x63, 0x04, 0x1d, 0xcc, 0x66, 0x3a, 0x14, 0xab, 0x32, 0x28, 0x03, 0x20, 0x86, 0x58,
-	0x2d, 0x0c, 0xcc, 0x7d, 0x01, 0xa0, 0x23, 0x9b, 0x53, 0x1d, 0x51, 0x44, 0xeb, 0x73, 0x63, 0x17,
-	0x91, 0x81, 0x85, 0x81, 0x19, 0x89, 0x97, 0xea, 0x58, 0x89, 0x85, 0x09, 0xa1, 0x84, 0x07, 0x41,
-	0xb5, 0x33, 0x10, 0xb5, 0x12, 0x5b, 0x74, 0xff, 0xf7, 0x5d, 0xfe, 0x33, 0xed, 0x39, 0x7c, 0x00,
-	0x7d, 0xaf, 0x26, 0x0e, 0x8b, 0x52, 0xce, 0x17, 0x50, 0x94, 0x89, 0x29, 0xd0, 0x21, 0x63, 0x1a,
-	0xd3, 0x29, 0x24, 0x7f, 0x73, 0xde, 0xcd, 0x30, 0x43, 0x1f, 0xcb, 0xf5, 0x57, 0x20, 0x79, 0x3f,
-	0x43, 0xcc, 0xa6, 0x20, 0x95, 0xc9, 0xa5, 0xd2, 0x1a, 0x9d, 0x72, 0x39, 0x6a, 0xdb, 0xa4, 0xe7,
-	0x13, 0xb4, 0x33, 0xb4, 0x32, 0x55, 0x16, 0xc2, 0x0f, 0xe4, 0xe3, 0x20, 0x05, 0xa7, 0x06, 0xd2,
-	0xa8, 0x2c, 0xd7, 0x1e, 0x6e, 0xd8, 0xc3, 0x56, 0x1b, 0xa3, 0x0a, 0x35, 0x6b, 0xd6, 0xc4, 0x5d,
-	0xca, 0x6e, 0xd7, 0xf2, 0x8d, 0x1f, 0x8e, 0x61, 0xbe, 0x00, 0xeb, 0xe2, 0x6b, 0x7a, 0xd0, 0x9a,
-	0x5a, 0x83, 0xda, 0x02, 0xbb, 0xa2, 0x9d, 0x20, 0xf7, 0xc8, 0x31, 0x39, 0xdb, 0x1f, 0xf2, 0x64,
-	0xf3, 0x98, 0x24, 0x38, 0xa3, 0xdd, 0xe5, 0xd7, 0x51, 0x34, 0x6e, 0xf8, 0xe1, 0x2b, 0xa1, 0x7b,
-	0x7e, 0x23, 0x7b, 0xa6, 0x9d, 0x40, 0xb0, 0x93, 0x6d, 0xf6, 0x66, 0x19, 0x7e, 0xfa, 0x2f, 0x17,
-	0xea, 0xc5, 0xf1, 0xcb, 0xc7, 0xcf, 0xfb, 0x4e, 0x9f, 0x71, 0xe9, 0x05, 0xb9, 0xe5, 0xea, 0xd1,
-	0xe5, 0xb2, 0x12, 0x64, 0x55, 0x09, 0xf2, 0x5d, 0x09, 0xf2, 0x56, 0x8b, 0x68, 0x55, 0x8b, 0xe8,
-	0xb3, 0x16, 0xd1, 0x1d, 0x0f, 0xd2, 0x53, 0x5b, 0x73, 0xa5, 0x01, 0x9b, 0x76, 0xfc, 0x63, 0x5d,
-	0xfc, 0x06, 0x00, 0x00, 0xff, 0xff, 0xd5, 0xf7, 0x2d, 0xcc, 0xd7, 0x01, 0x00, 0x00,
+	// 484 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0x3f, 0x6f, 0x13, 0x31,
+	0x18, 0xc6, 0xe3, 0x16, 0x82, 0x70, 0x24, 0x06, 0xd3, 0x21, 0x98, 0xea, 0x02, 0x1e, 0x1a, 0xfe,
+	0x48, 0xb6, 0x52, 0x10, 0x62, 0x6d, 0x06, 0x32, 0x52, 0x6e, 0x64, 0xf3, 0xe5, 0xdc, 0xd3, 0xa9,
+	0xee, 0xf9, 0x7a, 0x76, 0x11, 0x11, 0xea, 0xc2, 0x27, 0x40, 0x62, 0x63, 0xe3, 0x13, 0xf0, 0x31,
+	0xe8, 0x58, 0x89, 0x85, 0x09, 0xa1, 0x84, 0x0f, 0x82, 0x62, 0xbb, 0xaa, 0x8f, 0xba, 0x0d, 0xea,
+	0x96, 0xe4, 0x7d, 0x9f, 0xe7, 0xfd, 0xbd, 0x7e, 0x1f, 0x05, 0xf6, 0x8d, 0xda, 0x17, 0xd5, 0x1e,
+	0x9f, 0x1a, 0xd5, 0xcc, 0xd8, 0xe1, 0x91, 0x68, 0x66, 0xb4, 0x6e, 0x94, 0x51, 0x08, 0x55, 0x2a,
+	0x93, 0x82, 0x86, 0x75, 0xbc, 0x51, 0xa8, 0x42, 0xd9, 0x32, 0x5b, 0x7e, 0x72, 0x9d, 0x78, 0xb3,
+	0x50, 0xaa, 0x90, 0x82, 0xf1, 0xba, 0x64, 0xbc, 0xaa, 0x94, 0xe1, 0xa6, 0x54, 0x95, 0xf6, 0xd5,
+	0x27, 0x53, 0xa5, 0x0f, 0x94, 0x66, 0x19, 0xd7, 0xc2, 0x0d, 0x60, 0xef, 0x46, 0x99, 0x30, 0x7c,
+	0xc4, 0x6a, 0x5e, 0x94, 0x95, 0x6d, 0xf6, 0xbd, 0xf7, 0x5a, 0x34, 0x35, 0x6f, 0xf8, 0xc1, 0x99,
+	0x4d, 0xd2, 0x2a, 0x65, 0x92, 0x4f, 0xf7, 0x65, 0xa9, 0x8d, 0xc8, 0x5d, 0x9d, 0x6c, 0x40, 0xf4,
+	0x66, 0x69, 0xbe, 0x6b, 0x45, 0xa9, 0x38, 0x3c, 0x12, 0xda, 0x90, 0xd7, 0xf0, 0x6e, 0xeb, 0x57,
+	0x5d, 0xab, 0x4a, 0x0b, 0xf4, 0x12, 0x76, 0x9d, 0x79, 0x1f, 0x3c, 0x00, 0x8f, 0x7a, 0xdb, 0x98,
+	0x5e, 0x5c, 0x96, 0x3a, 0xcd, 0xf8, 0xc6, 0xc9, 0xaf, 0x41, 0x27, 0xf5, 0xfd, 0xe4, 0x05, 0xc4,
+	0xd6, 0x70, 0x22, 0xcc, 0xf8, 0x9c, 0xc1, 0x8f, 0x43, 0x7d, 0x78, 0x8b, 0xe7, 0x79, 0x23, 0xb4,
+	0x33, 0xbe, 0x9d, 0x9e, 0x7d, 0x25, 0x7b, 0xf0, 0x7e, 0x54, 0xe7, 0x81, 0x26, 0xb0, 0x17, 0xac,
+	0xe4, 0xa9, 0x06, 0x31, 0xaa, 0x40, 0xed, 0xd1, 0x42, 0x25, 0xc9, 0x3d, 0xdf, 0x8e, 0x94, 0x11,
+	0xbe, 0x57, 0x10, 0x9e, 0xbf, 0xb9, 0x9f, 0xb2, 0x45, 0xdd, 0x81, 0xe8, 0xf2, 0x40, 0xd4, 0x25,
+	0xc0, 0x1f, 0x88, 0xee, 0xf2, 0x42, 0x78, 0x6d, 0x1a, 0x28, 0xc9, 0x37, 0xe0, 0xd7, 0xf9, 0x77,
+	0xcc, 0x65, 0xeb, 0xac, 0x5f, 0x6f, 0x1d, 0x34, 0x69, 0x01, 0xaf, 0x59, 0xe0, 0xe1, 0x4a, 0x60,
+	0x47, 0x11, 0x12, 0x6f, 0x7f, 0x5f, 0x87, 0x37, 0x2d, 0x31, 0x3a, 0x86, 0x5d, 0x77, 0x59, 0xb4,
+	0x15, 0x03, 0xba, 0x18, 0x22, 0x3c, 0x5c, 0xd9, 0xe7, 0x06, 0x12, 0xf2, 0xf1, 0xc7, 0x9f, 0xcf,
+	0x6b, 0x9b, 0x08, 0x33, 0x2b, 0x60, 0x91, 0x34, 0xa3, 0xaf, 0x00, 0xf6, 0x82, 0xa5, 0x11, 0xbd,
+	0xd4, 0x3c, 0x1a, 0x31, 0xcc, 0xfe, 0xbb, 0xdf, 0x43, 0x8d, 0x2c, 0xd4, 0x53, 0xf4, 0x38, 0x06,
+	0x15, 0xbc, 0x35, 0xfb, 0xe0, 0xb3, 0x7a, 0x8c, 0xbe, 0x00, 0x78, 0x27, 0xb0, 0xda, 0x91, 0xf2,
+	0x0a, 0xcc, 0x68, 0xd2, 0xae, 0xc0, 0x8c, 0x47, 0x86, 0x0c, 0x2d, 0xe6, 0x43, 0x34, 0x58, 0x81,
+	0x39, 0x7e, 0x7e, 0x32, 0x4f, 0xc0, 0xe9, 0x3c, 0x01, 0xbf, 0xe7, 0x09, 0xf8, 0xb4, 0x48, 0x3a,
+	0xa7, 0x8b, 0xa4, 0xf3, 0x73, 0x91, 0x74, 0xde, 0x62, 0xa7, 0x7c, 0xdf, 0xd6, 0x9a, 0x59, 0x2d,
+	0x74, 0xd6, 0xb5, 0xff, 0x12, 0xcf, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0x3d, 0xff, 0x91, 0x4d,
+	0xf0, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -156,6 +357,10 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Queries a Blacklisted by index.
+	Blacklisted(ctx context.Context, in *QueryGetBlacklistedRequest, opts ...grpc.CallOption) (*QueryGetBlacklistedResponse, error)
+	// Queries a list of Blacklisted items.
+	BlacklistedAll(ctx context.Context, in *QueryAllBlacklistedRequest, opts ...grpc.CallOption) (*QueryAllBlacklistedResponse, error)
 }
 
 type queryClient struct {
@@ -175,10 +380,32 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) Blacklisted(ctx context.Context, in *QueryGetBlacklistedRequest, opts ...grpc.CallOption) (*QueryGetBlacklistedResponse, error) {
+	out := new(QueryGetBlacklistedResponse)
+	err := c.cc.Invoke(ctx, "/noble.tokenfactory.Query/Blacklisted", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) BlacklistedAll(ctx context.Context, in *QueryAllBlacklistedRequest, opts ...grpc.CallOption) (*QueryAllBlacklistedResponse, error) {
+	out := new(QueryAllBlacklistedResponse)
+	err := c.cc.Invoke(ctx, "/noble.tokenfactory.Query/BlacklistedAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Queries a Blacklisted by index.
+	Blacklisted(context.Context, *QueryGetBlacklistedRequest) (*QueryGetBlacklistedResponse, error)
+	// Queries a list of Blacklisted items.
+	BlacklistedAll(context.Context, *QueryAllBlacklistedRequest) (*QueryAllBlacklistedResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -187,6 +414,12 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) Blacklisted(ctx context.Context, req *QueryGetBlacklistedRequest) (*QueryGetBlacklistedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Blacklisted not implemented")
+}
+func (*UnimplementedQueryServer) BlacklistedAll(ctx context.Context, req *QueryAllBlacklistedRequest) (*QueryAllBlacklistedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlacklistedAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -211,6 +444,42 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Blacklisted_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetBlacklistedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Blacklisted(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/noble.tokenfactory.Query/Blacklisted",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Blacklisted(ctx, req.(*QueryGetBlacklistedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_BlacklistedAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllBlacklistedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BlacklistedAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/noble.tokenfactory.Query/BlacklistedAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BlacklistedAll(ctx, req.(*QueryAllBlacklistedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "noble.tokenfactory.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -218,6 +487,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Blacklisted",
+			Handler:    _Query_Blacklisted_Handler,
+		},
+		{
+			MethodName: "BlacklistedAll",
+			Handler:    _Query_BlacklistedAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -280,6 +557,153 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetBlacklistedRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetBlacklistedRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetBlacklistedRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetBlacklistedResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetBlacklistedResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetBlacklistedResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Blacklisted.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllBlacklistedRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllBlacklistedRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllBlacklistedRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllBlacklistedResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllBlacklistedResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllBlacklistedResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Blacklisted) > 0 {
+		for iNdEx := len(m.Blacklisted) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Blacklisted[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -308,6 +732,62 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryGetBlacklistedRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetBlacklistedResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Blacklisted.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryAllBlacklistedRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllBlacklistedResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Blacklisted) > 0 {
+		for _, e := range m.Blacklisted {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -426,6 +906,377 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetBlacklistedRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetBlacklistedRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetBlacklistedRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetBlacklistedResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetBlacklistedResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetBlacklistedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Blacklisted", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Blacklisted.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllBlacklistedRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllBlacklistedRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllBlacklistedRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllBlacklistedResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllBlacklistedResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllBlacklistedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Blacklisted", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Blacklisted = append(m.Blacklisted, Blacklisted{})
+			if err := m.Blacklisted[len(m.Blacklisted)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
