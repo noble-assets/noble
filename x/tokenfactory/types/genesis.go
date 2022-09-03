@@ -13,6 +13,7 @@ func DefaultGenesis() *GenesisState {
 		BlacklistedList: []Blacklisted{},
 		Paused:          nil,
 		MasterMinter:    nil,
+		MintersList:     []Minters{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -30,6 +31,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for blacklisted")
 		}
 		blacklistedIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in minters
+	mintersIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.MintersList {
+		index := string(MintersKey(elem.Address))
+		if _, ok := mintersIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for minters")
+		}
+		mintersIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

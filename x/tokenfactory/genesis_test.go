@@ -28,6 +28,14 @@ func TestGenesis(t *testing.T) {
 		MasterMinter: &types.MasterMinter{
 			Address: "79",
 		},
+		MintersList: []types.Minters{
+			{
+				Address: "0",
+			},
+			{
+				Address: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -42,5 +50,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.BlacklistedList, got.BlacklistedList)
 	require.Equal(t, genesisState.Paused, got.Paused)
 	require.Equal(t, genesisState.MasterMinter, got.MasterMinter)
+	require.ElementsMatch(t, genesisState.MintersList, got.MintersList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

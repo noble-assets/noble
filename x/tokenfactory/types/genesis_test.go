@@ -36,6 +36,14 @@ func TestGenesisState_Validate(t *testing.T) {
 				MasterMinter: &types.MasterMinter{
 					Address: "82",
 				},
+				MintersList: []types.Minters{
+					{
+						Address: "0",
+					},
+					{
+						Address: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -44,6 +52,20 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "duplicated blacklisted",
 			genState: &types.GenesisState{
 				BlacklistedList: []types.Blacklisted{
+					{
+						Address: "0",
+					},
+					{
+						Address: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated minters",
+			genState: &types.GenesisState{
+				MintersList: []types.Minters{
 					{
 						Address: "0",
 					},
