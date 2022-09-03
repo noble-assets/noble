@@ -2,6 +2,8 @@ syntax = "proto3";
 package noble.tokenfactory;
 
 // this line is used by starport scaffolding # proto/tx/import
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "noble/x/tokenfactory/types";
 
@@ -12,6 +14,7 @@ service Msg {
   rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
   rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
   rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
+  rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -53,6 +56,15 @@ message MsgUpdateOwner {
 }
 
 message MsgUpdateOwnerResponse {
+}
+
+message MsgConfigureMinter {
+  string from = 1;
+  string address = 2;
+  cosmos.base.v1beta1.Coin allowance = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgConfigureMinterResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
