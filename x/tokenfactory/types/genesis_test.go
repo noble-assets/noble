@@ -47,6 +47,9 @@ func TestGenesisState_Validate(t *testing.T) {
 				Pauser: &types.Pauser{
 					Address: "32",
 				},
+				Blacklister: &types.Blacklister{
+					Address: "78",
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,

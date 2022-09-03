@@ -8,6 +8,7 @@ import "tokenfactory/paused.proto";
 import "tokenfactory/master_minter.proto";
 import "tokenfactory/minters.proto";
 import "tokenfactory/pauser.proto";
+import "tokenfactory/blacklister.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "noble/x/tokenfactory/types";
@@ -20,5 +21,6 @@ message GenesisState {
   MasterMinter masterMinter = 4;
   repeated Minters mintersList = 5 [(gogoproto.nullable) = false];
   Pauser pauser = 6;
+  Blacklister blacklister = 7;
   // this line is used by starport scaffolding # genesis/proto/state
 }

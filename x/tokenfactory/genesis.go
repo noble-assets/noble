@@ -28,6 +28,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Pauser != nil {
 		k.SetPauser(ctx, *genState.Pauser)
 	}
+	// Set if defined
+	if genState.Blacklister != nil {
+		k.SetBlacklister(ctx, *genState.Blacklister)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -53,6 +57,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	pauser, found := k.GetPauser(ctx)
 	if found {
 		genesis.Pauser = &pauser
+	}
+	// Get all blacklister
+	blacklister, found := k.GetBlacklister(ctx)
+	if found {
+		genesis.Blacklister = &blacklister
 	}
 	// this line is used by starport scaffolding # genesis/module/export
 

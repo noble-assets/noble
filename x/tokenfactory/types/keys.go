@@ -29,3 +29,7 @@ const (
 const (
 	PauserKey = "Pauser-value-"
 )
+
+const (
+	BlacklisterKey = "Blacklister-value-"
+)
