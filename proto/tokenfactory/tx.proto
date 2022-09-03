@@ -11,6 +11,7 @@ service Msg {
   rpc UpdateMasterMinter(MsgUpdateMasterMinter) returns (MsgUpdateMasterMinterResponse);
   rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
   rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
+  rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -44,6 +45,14 @@ message MsgUpdateBlacklister {
 }
 
 message MsgUpdateBlacklisterResponse {
+}
+
+message MsgUpdateOwner {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdateOwnerResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

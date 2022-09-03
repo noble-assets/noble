@@ -379,6 +379,94 @@ func (m *MsgUpdateBlacklisterResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateBlacklisterResponse proto.InternalMessageInfo
 
+type MsgUpdateOwner struct {
+	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+}
+
+func (m *MsgUpdateOwner) Reset()         { *m = MsgUpdateOwner{} }
+func (m *MsgUpdateOwner) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateOwner) ProtoMessage()    {}
+func (*MsgUpdateOwner) Descriptor() ([]byte, []int) {
+	return fileDescriptor_51ab120c97d57038, []int{8}
+}
+func (m *MsgUpdateOwner) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateOwner) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateOwner.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateOwner) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateOwner.Merge(m, src)
+}
+func (m *MsgUpdateOwner) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateOwner) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateOwner.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateOwner proto.InternalMessageInfo
+
+func (m *MsgUpdateOwner) GetFrom() string {
+	if m != nil {
+		return m.From
+	}
+	return ""
+}
+
+func (m *MsgUpdateOwner) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+type MsgUpdateOwnerResponse struct {
+}
+
+func (m *MsgUpdateOwnerResponse) Reset()         { *m = MsgUpdateOwnerResponse{} }
+func (m *MsgUpdateOwnerResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateOwnerResponse) ProtoMessage()    {}
+func (*MsgUpdateOwnerResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_51ab120c97d57038, []int{9}
+}
+func (m *MsgUpdateOwnerResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateOwnerResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateOwnerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateOwnerResponse.Merge(m, src)
+}
+func (m *MsgUpdateOwnerResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateOwnerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateOwnerResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateOwnerResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgChangeAdmin)(nil), "noble.tokenfactory.MsgChangeAdmin")
 	proto.RegisterType((*MsgChangeAdminResponse)(nil), "noble.tokenfactory.MsgChangeAdminResponse")
@@ -388,33 +476,37 @@ func init() {
 	proto.RegisterType((*MsgUpdatePauserResponse)(nil), "noble.tokenfactory.MsgUpdatePauserResponse")
 	proto.RegisterType((*MsgUpdateBlacklister)(nil), "noble.tokenfactory.MsgUpdateBlacklister")
 	proto.RegisterType((*MsgUpdateBlacklisterResponse)(nil), "noble.tokenfactory.MsgUpdateBlacklisterResponse")
+	proto.RegisterType((*MsgUpdateOwner)(nil), "noble.tokenfactory.MsgUpdateOwner")
+	proto.RegisterType((*MsgUpdateOwnerResponse)(nil), "noble.tokenfactory.MsgUpdateOwnerResponse")
 }
 
 func init() { proto.RegisterFile("tokenfactory/tx.proto", fileDescriptor_51ab120c97d57038) }
 
 var fileDescriptor_51ab120c97d57038 = []byte{
-	// 329 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2d, 0xc9, 0xcf, 0x4e,
-	0xcd, 0x4b, 0x4b, 0x4c, 0x2e, 0xc9, 0x2f, 0xaa, 0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f,
-	0xc9, 0x17, 0x12, 0xca, 0xcb, 0x4f, 0xca, 0x49, 0xd5, 0x43, 0x96, 0x54, 0xb2, 0xe3, 0xe2, 0xf3,
-	0x2d, 0x4e, 0x77, 0xce, 0x48, 0xcc, 0x4b, 0x4f, 0x75, 0x4c, 0xc9, 0xcd, 0xcc, 0x13, 0x12, 0xe2,
-	0x62, 0x49, 0x2b, 0xca, 0xcf, 0x95, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x02, 0xb3, 0x85, 0x24,
-	0xb8, 0xd8, 0x13, 0x53, 0x52, 0x8a, 0x52, 0x8b, 0x8b, 0x25, 0x98, 0xc0, 0xc2, 0x30, 0xae, 0x92,
-	0x04, 0x97, 0x18, 0xaa, 0xfe, 0xa0, 0xd4, 0xe2, 0x82, 0xfc, 0xbc, 0xe2, 0x54, 0x25, 0x57, 0x2e,
-	0x51, 0xdf, 0xe2, 0xf4, 0xd0, 0x82, 0x94, 0xc4, 0x92, 0x54, 0xdf, 0xc4, 0xe2, 0x92, 0xd4, 0x22,
-	0xdf, 0xcc, 0xbc, 0x92, 0xd4, 0x22, 0x12, 0x2d, 0x90, 0xe7, 0x92, 0xc5, 0x6a, 0x0c, 0xdc, 0x1e,
-	0x7b, 0x2e, 0x7e, 0xb8, 0x82, 0x80, 0xc4, 0xd2, 0x62, 0x92, 0x6d, 0x90, 0xe4, 0x12, 0x47, 0x33,
-	0x00, 0x6e, 0xb6, 0x0b, 0x97, 0x08, 0x5c, 0xca, 0x29, 0x27, 0x31, 0x39, 0x3b, 0x27, 0xb3, 0x98,
-	0x74, 0x2f, 0xc8, 0x71, 0xc9, 0x60, 0x33, 0x05, 0x66, 0x8b, 0xd1, 0x6a, 0x66, 0x2e, 0x66, 0xdf,
-	0xe2, 0x74, 0xa1, 0x58, 0x2e, 0x6e, 0xe4, 0x88, 0x50, 0xd2, 0xc3, 0x8c, 0x2f, 0x3d, 0xd4, 0xc0,
-	0x96, 0xd2, 0x22, 0xac, 0x06, 0x66, 0x8d, 0x50, 0x11, 0x97, 0x10, 0x96, 0xd8, 0xd0, 0xc4, 0x61,
-	0x02, 0xa6, 0x52, 0x29, 0x43, 0xa2, 0x95, 0xc2, 0xed, 0x4c, 0xe0, 0xe2, 0x41, 0x89, 0x19, 0x65,
-	0xbc, 0x46, 0x40, 0x14, 0x49, 0x69, 0x13, 0xa1, 0x08, 0x6e, 0x43, 0x3e, 0x97, 0x20, 0x66, 0xfc,
-	0x68, 0xe0, 0x35, 0x01, 0x49, 0xa5, 0x94, 0x01, 0xb1, 0x2a, 0x61, 0x16, 0x3a, 0x99, 0x9c, 0x78,
-	0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c,
-	0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x14, 0xd8, 0x28, 0xfd, 0x0a, 0x7d, 0xd4,
-	0xec, 0x57, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0xce, 0x82, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xa3, 0xa9, 0x5c, 0x52, 0x9b, 0x03, 0x00, 0x00,
+	// 359 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0x4f, 0x4b, 0xc3, 0x30,
+	0x18, 0xc6, 0x57, 0x1d, 0x8a, 0xef, 0x44, 0x31, 0x38, 0xad, 0x45, 0xa3, 0xd4, 0xcb, 0x54, 0xe8,
+	0xfc, 0x77, 0x56, 0x9c, 0x7a, 0x2c, 0xca, 0xc0, 0x8b, 0x30, 0x30, 0x5b, 0xb3, 0x3a, 0xb6, 0x25,
+	0x25, 0x89, 0xb8, 0x7d, 0x05, 0x4f, 0x7e, 0x2c, 0x8f, 0x3b, 0x7a, 0x94, 0xed, 0x8b, 0x08, 0x2d,
+	0x0b, 0xad, 0xeb, 0xe6, 0x7a, 0x6b, 0xfb, 0xfe, 0xf2, 0x7b, 0x28, 0xcf, 0x4b, 0xa0, 0xa8, 0x78,
+	0x9b, 0xb2, 0x26, 0x69, 0x28, 0x2e, 0xfa, 0x65, 0xd5, 0x73, 0x02, 0xc1, 0x15, 0x47, 0x88, 0xf1,
+	0x7a, 0x87, 0x3a, 0xf1, 0xa1, 0x7d, 0x05, 0x6b, 0xae, 0xf4, 0x6f, 0x5f, 0x09, 0xf3, 0xe9, 0x8d,
+	0xd7, 0x6d, 0x31, 0x84, 0x20, 0xdf, 0x14, 0xbc, 0x6b, 0x1a, 0x07, 0x46, 0x69, 0xa5, 0x1a, 0x3e,
+	0x23, 0x13, 0x96, 0x89, 0xe7, 0x09, 0x2a, 0xa5, 0xb9, 0x10, 0x7e, 0x1e, 0xbf, 0xda, 0x26, 0x6c,
+	0x25, 0xcf, 0x57, 0xa9, 0x0c, 0x38, 0x93, 0xd4, 0xbe, 0x87, 0xa2, 0x2b, 0xfd, 0xa7, 0xc0, 0x23,
+	0x8a, 0xba, 0x44, 0x2a, 0x2a, 0xdc, 0x16, 0x53, 0x54, 0x64, 0x0c, 0xd8, 0x87, 0xbd, 0x54, 0x8d,
+	0xce, 0xb9, 0x86, 0x75, 0x0d, 0x3c, 0x92, 0x37, 0x99, 0x39, 0x61, 0x07, 0xb6, 0xff, 0x08, 0xb4,
+	0xfb, 0x0e, 0x36, 0xf5, 0xa8, 0xd2, 0x21, 0x8d, 0x76, 0xa7, 0x25, 0xb3, 0xff, 0x02, 0x86, 0xdd,
+	0x34, 0x8b, 0x4e, 0x89, 0x3a, 0x88, 0xe6, 0x0f, 0xef, 0x2c, 0xb3, 0x3f, 0xea, 0x20, 0x76, 0x7e,
+	0x6c, 0x3e, 0xff, 0xc8, 0xc3, 0xa2, 0x2b, 0x7d, 0x54, 0x83, 0x42, 0xbc, 0x62, 0xdb, 0x99, 0xdc,
+	0x04, 0x27, 0x59, 0xa3, 0x75, 0xfc, 0x3f, 0x33, 0x8e, 0x41, 0x02, 0x50, 0x4a, 0xcf, 0x47, 0x53,
+	0x0c, 0x93, 0xa8, 0x75, 0x36, 0x37, 0xaa, 0x33, 0x5f, 0x60, 0x35, 0xd1, 0xf9, 0xe1, 0x4c, 0x45,
+	0x04, 0x59, 0x27, 0x73, 0x40, 0x3a, 0x81, 0xc3, 0xc6, 0x64, 0xf3, 0xa5, 0x99, 0x86, 0x18, 0x69,
+	0x9d, 0xce, 0x4b, 0xea, 0xc0, 0x1a, 0x14, 0xe2, 0x4b, 0x60, 0xcf, 0x14, 0x84, 0xcc, 0xd4, 0x96,
+	0x52, 0x96, 0xa1, 0x72, 0xf9, 0x35, 0xc4, 0xc6, 0x60, 0x88, 0x8d, 0x9f, 0x21, 0x36, 0x3e, 0x47,
+	0x38, 0x37, 0x18, 0xe1, 0xdc, 0xf7, 0x08, 0xe7, 0x9e, 0xad, 0x50, 0x52, 0xee, 0x95, 0x93, 0xf7,
+	0x46, 0x3f, 0xa0, 0xb2, 0xbe, 0x14, 0xde, 0x1d, 0x17, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xfc,
+	0x90, 0x4a, 0x65, 0x54, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -433,6 +525,7 @@ type MsgClient interface {
 	UpdateMasterMinter(ctx context.Context, in *MsgUpdateMasterMinter, opts ...grpc.CallOption) (*MsgUpdateMasterMinterResponse, error)
 	UpdatePauser(ctx context.Context, in *MsgUpdatePauser, opts ...grpc.CallOption) (*MsgUpdatePauserResponse, error)
 	UpdateBlacklister(ctx context.Context, in *MsgUpdateBlacklister, opts ...grpc.CallOption) (*MsgUpdateBlacklisterResponse, error)
+	UpdateOwner(ctx context.Context, in *MsgUpdateOwner, opts ...grpc.CallOption) (*MsgUpdateOwnerResponse, error)
 }
 
 type msgClient struct {
@@ -479,12 +572,22 @@ func (c *msgClient) UpdateBlacklister(ctx context.Context, in *MsgUpdateBlacklis
 	return out, nil
 }
 
+func (c *msgClient) UpdateOwner(ctx context.Context, in *MsgUpdateOwner, opts ...grpc.CallOption) (*MsgUpdateOwnerResponse, error) {
+	out := new(MsgUpdateOwnerResponse)
+	err := c.cc.Invoke(ctx, "/noble.tokenfactory.Msg/UpdateOwner", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	ChangeAdmin(context.Context, *MsgChangeAdmin) (*MsgChangeAdminResponse, error)
 	UpdateMasterMinter(context.Context, *MsgUpdateMasterMinter) (*MsgUpdateMasterMinterResponse, error)
 	UpdatePauser(context.Context, *MsgUpdatePauser) (*MsgUpdatePauserResponse, error)
 	UpdateBlacklister(context.Context, *MsgUpdateBlacklister) (*MsgUpdateBlacklisterResponse, error)
+	UpdateOwner(context.Context, *MsgUpdateOwner) (*MsgUpdateOwnerResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -502,6 +605,9 @@ func (*UnimplementedMsgServer) UpdatePauser(ctx context.Context, req *MsgUpdateP
 }
 func (*UnimplementedMsgServer) UpdateBlacklister(ctx context.Context, req *MsgUpdateBlacklister) (*MsgUpdateBlacklisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBlacklister not implemented")
+}
+func (*UnimplementedMsgServer) UpdateOwner(ctx context.Context, req *MsgUpdateOwner) (*MsgUpdateOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateOwner not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -580,6 +686,24 @@ func _Msg_UpdateBlacklister_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateOwner)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateOwner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/noble.tokenfactory.Msg/UpdateOwner",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateOwner(ctx, req.(*MsgUpdateOwner))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "noble.tokenfactory.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -599,6 +723,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateBlacklister",
 			Handler:    _Msg_UpdateBlacklister_Handler,
+		},
+		{
+			MethodName: "UpdateOwner",
+			Handler:    _Msg_UpdateOwner_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -845,6 +973,66 @@ func (m *MsgUpdateBlacklisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpdateOwner) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateOwner) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateOwner) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateOwnerResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -952,6 +1140,32 @@ func (m *MsgUpdateBlacklister) Size() (n int) {
 }
 
 func (m *MsgUpdateBlacklisterResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateOwner) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateOwnerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1599,6 +1813,170 @@ func (m *MsgUpdateBlacklisterResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgUpdateBlacklisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateOwner) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateOwner: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateOwner: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateOwnerResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateOwnerResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
