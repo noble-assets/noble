@@ -16,6 +16,7 @@ func DefaultGenesis() *GenesisState {
 		MintersList:     []Minters{},
 		Pauser:          nil,
 		Blacklister:     nil,
+		Owner:           nil,
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}

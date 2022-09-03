@@ -32,6 +32,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Blacklister != nil {
 		k.SetBlacklister(ctx, *genState.Blacklister)
 	}
+	// Set if defined
+	if genState.Owner != nil {
+		k.SetOwner(ctx, *genState.Owner)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -62,6 +66,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	blacklister, found := k.GetBlacklister(ctx)
 	if found {
 		genesis.Blacklister = &blacklister
+	}
+	// Get all owner
+	owner, found := k.GetOwner(ctx)
+	if found {
+		genesis.Owner = &owner
 	}
 	// this line is used by starport scaffolding # genesis/module/export
 

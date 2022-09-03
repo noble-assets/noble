@@ -33,3 +33,7 @@ const (
 const (
 	BlacklisterKey = "Blacklister-value-"
 )
+
+const (
+	OwnerKey = "Owner-value-"
+)

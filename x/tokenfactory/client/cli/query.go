@@ -33,6 +33,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdShowMinters())
 	cmd.AddCommand(CmdShowPauser())
 	cmd.AddCommand(CmdShowBlacklister())
+	cmd.AddCommand(CmdShowOwner())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

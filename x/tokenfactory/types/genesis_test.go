@@ -50,6 +50,9 @@ func TestGenesisState_Validate(t *testing.T) {
 				Blacklister: &types.Blacklister{
 					Address: "78",
 				},
+				Owner: &types.Owner{
+					Address: "73",
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
