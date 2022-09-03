@@ -17,6 +17,7 @@ service Msg {
   rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
   rpc RemoveMinter(MsgRemoveMinter) returns (MsgRemoveMinterResponse);
   rpc Mint(MsgMint) returns (MsgMintResponse);
+  rpc Burn(MsgBurn) returns (MsgBurnResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -84,6 +85,14 @@ message MsgMint {
 }
 
 message MsgMintResponse {
+}
+
+message MsgBurn {
+  string from = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgBurnResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

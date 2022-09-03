@@ -16,6 +16,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgConfigureMinter{}, "tokenfactory/ConfigureMinter", nil)
 	cdc.RegisterConcrete(&MsgRemoveMinter{}, "tokenfactory/RemoveMinter", nil)
 	cdc.RegisterConcrete(&MsgMint{}, "tokenfactory/Mint", nil)
+	cdc.RegisterConcrete(&MsgBurn{}, "tokenfactory/Burn", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -43,6 +44,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMint{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgBurn{},
 	)
 	// this line is used by starport scaffolding # 3
 
