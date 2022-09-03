@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "tokenfactory/params.proto";
 import "tokenfactory/blacklisted.proto";
+import "tokenfactory/paused.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "noble/x/tokenfactory/types";
@@ -26,6 +27,10 @@ service Query {
 		option (google.api.http).get = "/noble/tokenfactory/blacklisted";
 	}
 
+// Queries a Paused by index.
+	rpc Paused(QueryGetPausedRequest) returns (QueryGetPausedResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/paused";
+	}
 // this line is used by starport scaffolding # 2
 }
 
@@ -56,4 +61,9 @@ message QueryAllBlacklistedResponse {
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetPausedRequest {}
+
+message QueryGetPausedResponse {
+	Paused Paused = 1 [(gogoproto.nullable) = false];
+}
 // this line is used by starport scaffolding # 3

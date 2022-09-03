@@ -22,6 +22,9 @@ func TestGenesis(t *testing.T) {
 				Address: "1",
 			},
 		},
+		Paused: &types.Paused{
+			Paused: true,
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -34,5 +37,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.BlacklistedList, got.BlacklistedList)
+	require.Equal(t, genesisState.Paused, got.Paused)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

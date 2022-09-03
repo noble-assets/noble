@@ -12,6 +12,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.BlacklistedList {
 		k.SetBlacklisted(ctx, elem)
 	}
+	// Set if defined
+	if genState.Paused != nil {
+		k.SetPaused(ctx, *genState.Paused)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -22,6 +26,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.BlacklistedList = k.GetAllBlacklisted(ctx)
+	// Get all paused
+	paused, found := k.GetPaused(ctx)
+	if found {
+		genesis.Paused = &paused
+	}
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
