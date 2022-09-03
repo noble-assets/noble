@@ -15,6 +15,7 @@ service Msg {
   rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
   rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
   rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
+  rpc RemoveMinter(MsgRemoveMinter) returns (MsgRemoveMinterResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -65,6 +66,14 @@ message MsgConfigureMinter {
 }
 
 message MsgConfigureMinterResponse {
+}
+
+message MsgRemoveMinter {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgRemoveMinterResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
