@@ -16,6 +16,7 @@ service Msg {
   rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
   rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
   rpc RemoveMinter(MsgRemoveMinter) returns (MsgRemoveMinterResponse);
+  rpc Mint(MsgMint) returns (MsgMintResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -74,6 +75,15 @@ message MsgRemoveMinter {
 }
 
 message MsgRemoveMinterResponse {
+}
+
+message MsgMint {
+  string from = 1;
+  string address = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgMintResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
