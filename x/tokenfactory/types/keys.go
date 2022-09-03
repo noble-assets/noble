@@ -37,3 +37,7 @@ const (
 const (
 	OwnerKey = "Owner-value-"
 )
+
+const (
+	AdminKey = "Admin-value-"
+)

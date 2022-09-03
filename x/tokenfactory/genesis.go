@@ -36,6 +36,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Owner != nil {
 		k.SetOwner(ctx, *genState.Owner)
 	}
+	// Set if defined
+	if genState.Admin != nil {
+		k.SetAdmin(ctx, *genState.Admin)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -71,6 +75,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	owner, found := k.GetOwner(ctx)
 	if found {
 		genesis.Owner = &owner
+	}
+	// Get all admin
+	admin, found := k.GetAdmin(ctx)
+	if found {
+		genesis.Admin = &admin
 	}
 	// this line is used by starport scaffolding # genesis/module/export
 
