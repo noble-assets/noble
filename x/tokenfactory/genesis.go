@@ -16,6 +16,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Paused != nil {
 		k.SetPaused(ctx, *genState.Paused)
 	}
+	// Set if defined
+	if genState.MasterMinter != nil {
+		k.SetMasterMinter(ctx, *genState.MasterMinter)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -30,6 +34,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	paused, found := k.GetPaused(ctx)
 	if found {
 		genesis.Paused = &paused
+	}
+	// Get all masterMinter
+	masterMinter, found := k.GetMasterMinter(ctx)
+	if found {
+		genesis.MasterMinter = &masterMinter
 	}
 	// this line is used by starport scaffolding # genesis/module/export
 

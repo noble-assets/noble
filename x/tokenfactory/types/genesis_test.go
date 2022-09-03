@@ -33,6 +33,9 @@ func TestGenesisState_Validate(t *testing.T) {
 				Paused: &types.Paused{
 					Paused: true,
 				},
+				MasterMinter: &types.MasterMinter{
+					Address: "82",
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,

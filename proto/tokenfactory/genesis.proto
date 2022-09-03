@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "tokenfactory/params.proto";
 import "tokenfactory/blacklisted.proto";
 import "tokenfactory/paused.proto";
+import "tokenfactory/master_minter.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "noble/x/tokenfactory/types";
@@ -14,5 +15,6 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated Blacklisted blacklistedList = 2 [(gogoproto.nullable) = false];
   Paused paused = 3;
+  MasterMinter masterMinter = 4;
   // this line is used by starport scaffolding # genesis/proto/state
 }

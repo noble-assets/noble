@@ -21,3 +21,7 @@ func KeyPrefix(p string) []byte {
 const (
 	PausedKey = "Paused-value-"
 )
+
+const (
+	MasterMinterKey = "MasterMinter-value-"
+)
