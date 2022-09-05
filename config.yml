@@ -18,6 +18,9 @@ accounts:
   - name: minter
     coins: ['10000token', '100000000stake']
     mnemonic: wife salt elbow stand result virtual exotic enroll dash jewel shuffle cushion grass arrest unknown swap radar pulse ahead front husband approve dad concert
+  - name: pauser
+    coins: ['10000token', '100000000stake']
+    mnemonic: dune capital pass bounce march dance pretty essence desk wait bulb cattle tone forward drastic vocal when require cat chapter ten ozone material quality
   - name: user
     coins: ['10000token', '100000000stake']
     mnemonic: ridge electric nurse badge farm space notable tip loud humor lizard solar south cable clump cactus crack skin liar advance scorpion junk imitate addict

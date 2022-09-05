@@ -1,3 +1,5 @@
+# run ignite c serve -r
+
 sleep 2
 nobled tx tokenfactory update-master-minter $(nobled keys show masterminter -a) --from owner -y
 sleep 2
@@ -30,3 +32,15 @@ sleep 2
 nobled tx tokenfactory unblacklist $(nobled keys show user -a) --from blacklister -y
 sleep 2
 nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled tx tokenfactory update-pauser $(nobled keys show pauser -a) --from owner -y
+sleep 2
+nobled tx tokenfactory pause --from pauser -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled tx tokenfactory unpause --from pauser -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled q bank balances $(nobled keys show user -a)
