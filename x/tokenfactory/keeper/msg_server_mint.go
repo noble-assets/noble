@@ -14,7 +14,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	minter, found := k.GetMinters(ctx, msg.From)
-	if found {
+	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a minter")
 	}
 
@@ -35,6 +35,8 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 	// TODO: add checking for paused
 
 	minter.Allowance = minter.Allowance.Sub(msg.Amount)
+
+	k.SetMinters(ctx, minter)
 
 	amount := sdk.NewCoins(msg.Amount)
 
