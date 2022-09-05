@@ -14,7 +14,7 @@ func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigur
 
 	owner, found := k.GetMasterMinter(ctx)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "master minter isn't set")
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "master minter is not set")
 	}
 
 	if owner.Address != msg.From {

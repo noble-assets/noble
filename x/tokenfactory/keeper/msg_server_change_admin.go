@@ -14,7 +14,7 @@ func (k msgServer) ChangeAdmin(goCtx context.Context, msg *types.MsgChangeAdmin)
 
 	admin, found := k.GetAdmin(ctx)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "admin isn't set")
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "admin is not set")
 	}
 
 	if admin.Address != msg.From {

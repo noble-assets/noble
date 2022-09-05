@@ -14,12 +14,14 @@ func (k msgServer) Blacklist(goCtx context.Context, msg *types.MsgBlacklist) (*t
 
 	blacklister, found := k.GetBlacklister(ctx)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "blacklister isn't set")
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "blacklister is not set")
 	}
 
 	if blacklister.Address != msg.From {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the blacklister")
 	}
+
+	// TODO: fail if address is already blacklisted?
 
 	blacklisted := types.Blacklisted{
 		Address: msg.Address,

@@ -14,7 +14,7 @@ func (k msgServer) Unblacklist(goCtx context.Context, msg *types.MsgUnblacklist)
 
 	blacklister, found := k.GetBlacklister(ctx)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "blacklister isn't set")
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "blacklister is not set")
 	}
 
 	if blacklister.Address != msg.From {

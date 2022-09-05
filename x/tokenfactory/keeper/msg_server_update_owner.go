@@ -14,7 +14,7 @@ func (k msgServer) UpdateOwner(goCtx context.Context, msg *types.MsgUpdateOwner)
 
 	owner, found := k.GetOwner(ctx)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "owner isn't set")
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "owner is not set")
 	}
 
 	if owner.Address != msg.From {
