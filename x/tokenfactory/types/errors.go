@@ -13,4 +13,5 @@ var (
 	ErrMint               = sdkerrors.Register(ModuleName, 4, "tokens can not be minted")
 	ErrParseAddress       = sdkerrors.Register(ModuleName, 5, "can't parse address")
 	ErrSendCoinsToAccount = sdkerrors.Register(ModuleName, 6, "can't send tokens to account")
+	ErrBurn               = sdkerrors.Register(ModuleName, 7, "tokens can not be burned")
 )
