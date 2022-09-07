@@ -12,32 +12,15 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_tokenfactory"
+
+	PausedKey       = "Paused/value/"
+	MasterMinterKey = "MasterMinter/value/"
+	PauserKey       = "Pauser/value/"
+	BlacklisterKey  = "Blacklister/value/"
+	OwnerKey        = "Owner/value/"
+	AdminKey        = "Admin/value/"
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
-
-const (
-	PausedKey = "Paused-value-"
-)
-
-const (
-	MasterMinterKey = "MasterMinter-value-"
-)
-
-const (
-	PauserKey = "Pauser-value-"
-)
-
-const (
-	BlacklisterKey = "Blacklister-value-"
-)
-
-const (
-	OwnerKey = "Owner-value-"
-)
-
-const (
-	AdminKey = "Admin-value-"
-)
