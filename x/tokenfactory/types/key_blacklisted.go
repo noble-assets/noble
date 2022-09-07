@@ -10,14 +10,6 @@ const (
 )
 
 // BlacklistedKey returns the store key to retrieve a Blacklisted from the index fields
-func BlacklistedKey(
-	address string,
-) []byte {
-	var key []byte
-
-	addressBytes := []byte(address)
-	key = append(key, addressBytes...)
-	key = append(key, []byte("/")...)
-
-	return key
+func BlacklistedKey(address string) []byte {
+	return append([]byte(address), []byte("/")...)
 }

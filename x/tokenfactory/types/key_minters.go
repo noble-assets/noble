@@ -10,14 +10,6 @@ const (
 )
 
 // MintersKey returns the store key to retrieve a Minters from the index fields
-func MintersKey(
-	address string,
-) []byte {
-	var key []byte
-
-	addressBytes := []byte(address)
-	key = append(key, addressBytes...)
-	key = append(key, []byte("/")...)
-
-	return key
+func MintersKey(address string) []byte {
+	return append([]byte(address), []byte("/")...)
 }
