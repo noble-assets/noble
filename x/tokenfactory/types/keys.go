@@ -13,14 +13,26 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_tokenfactory"
 
-	PausedKey       = "Paused/value/"
-	MasterMinterKey = "MasterMinter/value/"
-	PauserKey       = "Pauser/value/"
-	BlacklisterKey  = "Blacklister/value/"
-	OwnerKey        = "Owner/value/"
-	AdminKey        = "Admin/value/"
+	PausedKey            = "Paused/value/"
+	MasterMinterKey      = "MasterMinter/value/"
+	PauserKey            = "Pauser/value/"
+	BlacklisterKey       = "Blacklister/value/"
+	OwnerKey             = "Owner/value/"
+	AdminKey             = "Admin/value/"
+	BlacklistedKeyPrefix = "Blacklisted/value/"
+	MintersKeyPrefix     = "Minters/value/"
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+// BlacklistedKey returns the store key to retrieve a Blacklisted from the index fields
+func BlacklistedKey(address string) []byte {
+	return append([]byte(address), []byte("/")...)
+}
+
+// MintersKey returns the store key to retrieve a Minters from the index fields
+func MintersKey(address string) []byte {
+	return append([]byte(address), []byte("/")...)
 }
