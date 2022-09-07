@@ -48,3 +48,5 @@ sleep 2
 nobled tx tokenfactory mint $(nobled keys show minter -a) 100usdc --from minter -y
 sleep 2
 nobled tx tokenfactory burn 100usdc --from minter -y
+sleep 2
+nobled q bank balances $(nobled keys show user -a)

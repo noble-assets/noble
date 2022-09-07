@@ -11,13 +11,13 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		BlacklistedList: []Blacklisted{},
-		Paused:          nil,
+		Paused:          &Paused{Paused: false},
 		MasterMinter:    nil,
 		MintersList:     []Minters{},
 		Pauser:          nil,
 		Blacklister:     nil,
-		Owner:           nil,
-		Admin:           nil,
+		Owner:           &Owner{Address: "cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh"},
+		Admin:           &Admin{Address: "cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k"},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}

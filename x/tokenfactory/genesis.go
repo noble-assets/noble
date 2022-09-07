@@ -37,19 +37,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Owner != nil {
 		k.SetOwner(ctx, *genState.Owner)
 	}
-	k.SetAdmin(ctx, types.Admin{
-		Address: "cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k",
-	})
-	k.SetOwner(ctx, types.Owner{
-		Address: "cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh",
-	})
-	k.SetPaused(ctx, types.Paused{
-		Paused: false,
-	})
-	// Set if defined
-	// if genState.Admin != nil {
-	// 	k.SetAdmin(ctx, *genState.Admin)
-	// }
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
