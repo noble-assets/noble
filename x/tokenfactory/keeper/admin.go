@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"noble/x/tokenfactory/types"
 )
 
 // SetAdmin set admin in the store
@@ -24,10 +25,4 @@ func (k Keeper) GetAdmin(ctx sdk.Context) (val types.Admin, found bool) {
 
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
-}
-
-// RemoveAdmin removes admin from the store
-func (k Keeper) RemoveAdmin(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AdminKey))
-	store.Delete([]byte{0})
 }

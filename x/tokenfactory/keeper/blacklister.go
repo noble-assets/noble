@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"noble/x/tokenfactory/types"
 )
 
 // SetBlacklister set blacklister in the store

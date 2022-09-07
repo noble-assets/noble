@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"noble/x/tokenfactory/types"
 )
 
 // SetMasterMinter set masterMinter in the store
@@ -24,10 +25,4 @@ func (k Keeper) GetMasterMinter(ctx sdk.Context) (val types.MasterMinter, found 
 
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
-}
-
-// RemoveMasterMinter removes masterMinter from the store
-func (k Keeper) RemoveMasterMinter(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MasterMinterKey))
-	store.Delete([]byte{0})
 }

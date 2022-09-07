@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"noble/x/tokenfactory/types"
 )
 
 // SetPaused set paused in the store
@@ -24,10 +25,4 @@ func (k Keeper) GetPaused(ctx sdk.Context) (val types.Paused, found bool) {
 
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
-}
-
-// RemovePaused removes paused from the store
-func (k Keeper) RemovePaused(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PausedKey))
-	store.Delete([]byte{0})
 }

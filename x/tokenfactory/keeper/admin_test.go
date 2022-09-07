@@ -28,11 +28,3 @@ func TestAdminGet(t *testing.T) {
 		nullify.Fill(&rst),
 	)
 }
-
-func TestAdminRemove(t *testing.T) {
-	keeper, ctx := keepertest.TokenfactoryKeeper(t)
-	createTestAdmin(keeper, ctx)
-	keeper.RemoveAdmin(ctx)
-	_, found := keeper.GetAdmin(ctx)
-	require.False(t, found)
-}

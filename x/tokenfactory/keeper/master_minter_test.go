@@ -28,11 +28,3 @@ func TestMasterMinterGet(t *testing.T) {
 		nullify.Fill(&rst),
 	)
 }
-
-func TestMasterMinterRemove(t *testing.T) {
-	keeper, ctx := keepertest.TokenfactoryKeeper(t)
-	createTestMasterMinter(keeper, ctx)
-	keeper.RemoveMasterMinter(ctx)
-	_, found := keeper.GetMasterMinter(ctx)
-	require.False(t, found)
-}
