@@ -28,11 +28,3 @@ func TestBlacklisterGet(t *testing.T) {
 		nullify.Fill(&rst),
 	)
 }
-
-func TestBlacklisterRemove(t *testing.T) {
-	keeper, ctx := keepertest.TokenfactoryKeeper(t)
-	createTestBlacklister(keeper, ctx)
-	keeper.RemoveBlacklister(ctx)
-	_, found := keeper.GetBlacklister(ctx)
-	require.False(t, found)
-}

@@ -3,22 +3,21 @@ package keeper
 import (
 	"noble/x/tokenfactory/types"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // SetBlacklister set blacklister in the store
 func (k Keeper) SetBlacklister(ctx sdk.Context, blacklister types.Blacklister) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlacklisterKey))
+	store := ctx.KVStore(k.storeKey)
 	b := k.cdc.MustMarshal(&blacklister)
-	store.Set([]byte{0}, b)
+	store.Set(types.KeyPrefix(types.BlacklisterKey), b)
 }
 
 // GetBlacklister returns blacklister
 func (k Keeper) GetBlacklister(ctx sdk.Context) (val types.Blacklister, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlacklisterKey))
+	store := ctx.KVStore(k.storeKey)
 
-	b := store.Get([]byte{0})
+	b := store.Get(types.KeyPrefix(types.BlacklisterKey))
 	if b == nil {
 		return val, false
 	}
@@ -29,6 +28,6 @@ func (k Keeper) GetBlacklister(ctx sdk.Context) (val types.Blacklister, found bo
 
 // RemoveBlacklister removes blacklister from the store
 func (k Keeper) RemoveBlacklister(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlacklisterKey))
-	store.Delete([]byte{0})
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyPrefix(types.BlacklisterKey))
 }
