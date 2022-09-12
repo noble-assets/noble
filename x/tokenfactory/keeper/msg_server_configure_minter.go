@@ -12,12 +12,12 @@ import (
 func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigureMinter) (*types.MsgConfigureMinterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	owner, found := k.GetMasterMinter(ctx)
+	masterMinter, found := k.GetMasterMinter(ctx)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "master minter is not set")
 	}
 
-	if owner.Address != msg.From {
+	if masterMinter.Address != msg.From {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the master minter")
 	}
 
