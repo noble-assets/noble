@@ -51,9 +51,9 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrap(types.ErrMint, err.Error())
 	}
 
-	reciever, _ := sdk.AccAddressFromBech32(msg.Address)
+	receiver, _ := sdk.AccAddressFromBech32(msg.Address)
 
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, reciever, amount); err != nil {
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiver, amount); err != nil {
 		return nil, sdkerrors.Wrap(types.ErrSendCoinsToAccount, err.Error())
 	}
 
