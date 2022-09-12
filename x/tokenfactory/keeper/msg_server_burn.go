@@ -31,10 +31,7 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "burning is paused")
 	}
 
-	minterAddress, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrParseAddress, err.Error())
-	}
+	minterAddress, _ := sdk.AccAddressFromBech32(msg.From)
 
 	amount := sdk.NewCoins(msg.Amount)
 
