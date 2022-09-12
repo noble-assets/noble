@@ -32,10 +32,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrapf(types.ErrMint, "minting amount is greater than the allowance")
 	}
 
-	paused, found := k.GetPaused(ctx)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrMint, "paused value is not found")
-	}
+	paused, _ := k.GetPaused(ctx)
 
 	if paused.Paused {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "minting is paused")
