@@ -1,0 +1,10 @@
+syntax = "proto3";
+package noble.tokenfactory;
+
+option go_package = "noble/x/tokenfactory/types";
+
+message Blacklisted {
+  string address = 1; 
+  
+}
+

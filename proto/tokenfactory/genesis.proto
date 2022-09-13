@@ -3,6 +3,14 @@ package noble.tokenfactory;
 
 import "gogoproto/gogo.proto";
 import "tokenfactory/params.proto";
+import "tokenfactory/blacklisted.proto";
+import "tokenfactory/paused.proto";
+import "tokenfactory/master_minter.proto";
+import "tokenfactory/minters.proto";
+import "tokenfactory/pauser.proto";
+import "tokenfactory/blacklister.proto";
+import "tokenfactory/owner.proto";
+import "tokenfactory/admin.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "noble/x/tokenfactory/types";
@@ -10,5 +18,13 @@ option go_package = "noble/x/tokenfactory/types";
 // GenesisState defines the tokenfactory module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  repeated Blacklisted blacklistedList = 2 [(gogoproto.nullable) = false];
+  Paused paused = 3;
+  MasterMinter masterMinter = 4;
+  repeated Minters mintersList = 5 [(gogoproto.nullable) = false];
+  Pauser pauser = 6;
+  Blacklister blacklister = 7;
+  Owner owner = 8;
+  Admin admin = 9;
   // this line is used by starport scaffolding # genesis/proto/state
 }

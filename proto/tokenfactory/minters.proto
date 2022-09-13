@@ -1,0 +1,13 @@
+syntax = "proto3";
+package noble.tokenfactory;
+
+option go_package = "noble/x/tokenfactory/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message Minters {
+  string address = 1; 
+  cosmos.base.v1beta1.Coin allowance = 2 [(gogoproto.nullable) = false]; 
+  
+}
+

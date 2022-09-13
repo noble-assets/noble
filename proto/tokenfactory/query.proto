@@ -1,11 +1,20 @@
 syntax = "proto3";
 package noble.tokenfactory;
 
-import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "tokenfactory/params.proto";
+import "tokenfactory/blacklisted.proto";
+import "tokenfactory/paused.proto";
+import "tokenfactory/master_minter.proto";
+import "tokenfactory/minters.proto";
+import "tokenfactory/pauser.proto";
+import "tokenfactory/blacklister.proto";
+import "tokenfactory/owner.proto";
+import "tokenfactory/admin.proto";
 // this line is used by starport scaffolding # 1
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "noble/x/tokenfactory/types";
 
@@ -15,7 +24,51 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/noble/tokenfactory/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a Blacklisted by index.
+	rpc Blacklisted(QueryGetBlacklistedRequest) returns (QueryGetBlacklistedResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/blacklisted/{address}";
+	}
+
+	// Queries a list of Blacklisted items.
+	rpc BlacklistedAll(QueryAllBlacklistedRequest) returns (QueryAllBlacklistedResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/blacklisted";
+	}
+
+// Queries a Paused by index.
+	rpc Paused(QueryGetPausedRequest) returns (QueryGetPausedResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/paused";
+	}
+// Queries a MasterMinter by index.
+	rpc MasterMinter(QueryGetMasterMinterRequest) returns (QueryGetMasterMinterResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/master_minter";
+	}
+// Queries a Minters by index.
+	rpc Minters(QueryGetMintersRequest) returns (QueryGetMintersResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/minters/{address}";
+	}
+
+	// Queries a list of Minters items.
+	rpc MintersAll(QueryAllMintersRequest) returns (QueryAllMintersResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/minters";
+	}
+
+// Queries a Pauser by index.
+	rpc Pauser(QueryGetPauserRequest) returns (QueryGetPauserResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/pauser";
+	}
+// Queries a Blacklister by index.
+	rpc Blacklister(QueryGetBlacklisterRequest) returns (QueryGetBlacklisterResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/blacklister";
+	}
+// Queries a Owner by index.
+	rpc Owner(QueryGetOwnerRequest) returns (QueryGetOwnerResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/owner";
+	}
+// Queries a Admin by index.
+	rpc Admin(QueryGetAdminRequest) returns (QueryGetAdminResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/admin";
+	}
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -27,4 +80,70 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+message QueryGetBlacklistedRequest {
+	  string address = 1;
+
+}
+
+message QueryGetBlacklistedResponse {
+	Blacklisted blacklisted = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllBlacklistedRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllBlacklistedResponse {
+	repeated Blacklisted blacklisted = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetPausedRequest {}
+
+message QueryGetPausedResponse {
+	Paused Paused = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetMasterMinterRequest {}
+
+message QueryGetMasterMinterResponse {
+	MasterMinter MasterMinter = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetMintersRequest {
+	  string address = 1;
+
+}
+
+message QueryGetMintersResponse {
+	Minters minters = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMintersRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllMintersResponse {
+	repeated Minters minters = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetPauserRequest {}
+
+message QueryGetPauserResponse {
+	Pauser Pauser = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetBlacklisterRequest {}
+
+message QueryGetBlacklisterResponse {
+	Blacklister Blacklister = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetOwnerRequest {}
+
+message QueryGetOwnerResponse {
+	Owner Owner = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetAdminRequest {}
+
+message QueryGetAdminResponse {
+	Admin Admin = 1 [(gogoproto.nullable) = false];
+}
 // this line is used by starport scaffolding # 3
