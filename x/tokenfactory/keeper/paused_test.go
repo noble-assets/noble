@@ -28,11 +28,3 @@ func TestPausedGet(t *testing.T) {
 		nullify.Fill(&rst),
 	)
 }
-
-func TestPausedRemove(t *testing.T) {
-	keeper, ctx := keepertest.TokenfactoryKeeper(t)
-	createTestPaused(keeper, ctx)
-	keeper.RemovePaused(ctx)
-	_, found := keeper.GetPaused(ctx)
-	require.False(t, found)
-}

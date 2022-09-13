@@ -1,9 +1,10 @@
 package tokenfactory
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"noble/x/tokenfactory/keeper"
 	"noble/x/tokenfactory/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.

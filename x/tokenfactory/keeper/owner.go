@@ -1,23 +1,24 @@
 package keeper
 
 import (
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"noble/x/tokenfactory/types"
 )
 
 // SetOwner set owner in the store
 func (k Keeper) SetOwner(ctx sdk.Context, owner types.Owner) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
+	store := ctx.KVStore(k.storeKey)
 	b := k.cdc.MustMarshal(&owner)
-	store.Set([]byte{0}, b)
+	store.Set(types.KeyPrefix(types.OwnerKey), b)
 }
 
 // GetOwner returns owner
 func (k Keeper) GetOwner(ctx sdk.Context) (val types.Owner, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
+	store := ctx.KVStore(k.storeKey)
 
-	b := store.Get([]byte{0})
+	b := store.Get(types.KeyPrefix(types.OwnerKey))
 	if b == nil {
 		return val, false
 	}
@@ -29,5 +30,5 @@ func (k Keeper) GetOwner(ctx sdk.Context) (val types.Owner, found bool) {
 // RemoveOwner removes owner from the store
 func (k Keeper) RemoveOwner(ctx sdk.Context) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
-	store.Delete([]byte{0})
+	store.Delete(types.KeyPrefix(types.OwnerKey))
 }
