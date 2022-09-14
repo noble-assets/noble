@@ -39,14 +39,18 @@ nobled tx tokenfactory pause --from pauser -y
 sleep 2
 nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
 sleep 2
+nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from minter -y
+sleep 2
 nobled tx tokenfactory unpause --from pauser -y
 sleep 2
-nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
-sleep 2
-nobled q bank balances $(nobled keys show user -a)
-sleep 2
-nobled tx tokenfactory mint $(nobled keys show minter -a) 100usdc --from minter -y
-sleep 2
-nobled tx tokenfactory burn 100usdc --from minter -y
-sleep 2
-nobled q bank balances $(nobled keys show user -a)
+nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from minter -y
+
+# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+# sleep 2
+# nobled q bank balances $(nobled keys show user -a)
+# sleep 2
+# nobled tx tokenfactory mint $(nobled keys show minter -a) 100usdc --from minter -y
+# sleep 2
+# nobled tx tokenfactory burn 100usdc --from minter -y
+# sleep 2
+# nobled q bank balances $(nobled keys show user -a)
