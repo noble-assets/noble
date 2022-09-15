@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	transfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 )
 
 type IsPausedDecorator struct {
@@ -27,7 +28,7 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
 		switch m.(type) {
-		case *banktypes.MsgSend:
+		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
 			paused, _ := ad.tokenfactory.GetPaused(ctx)
 			if paused.Paused {
 				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
