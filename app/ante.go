@@ -27,11 +27,23 @@ func NewIsPausedDecorator(tk tokenfactory.Keeper) IsPausedDecorator {
 func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
-		switch m.(type) {
-		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
-			paused, _ := ad.tokenfactory.GetPaused(ctx)
+		paused, _ := ad.tokenfactory.GetPaused(ctx)
+		switch m := m.(type) {
+		case *banktypes.MsgSend:
 			if paused.Paused {
 				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
+			}
+			_, found := ad.tokenfactory.GetBlacklisted(ctx, m.FromAddress)
+			if found {
+				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an account is blacklisted and can not transfer tokens")
+			}
+		case *transfertypes.MsgTransfer:
+			if paused.Paused {
+				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform IBC token transfers")
+			}
+			_, found := ad.tokenfactory.GetBlacklisted(ctx, m.Sender)
+			if found {
+				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an account is blacklisted and can not transfer tokens over IBC")
 			}
 		default:
 			continue
