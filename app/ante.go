@@ -14,15 +14,11 @@ import (
 )
 
 type IsPausedDecorator struct {
-	ak           authkeeper.AccountKeeper
-	bankKeeper   types.BankKeeper
 	tokenfactory tokenfactory.Keeper
 }
 
-func NewIsPausedDecorator(ak authkeeper.AccountKeeper, bk types.BankKeeper, tk tokenfactory.Keeper) IsPausedDecorator {
+func NewIsPausedDecorator(tk tokenfactory.Keeper) IsPausedDecorator {
 	return IsPausedDecorator{
-		ak:           ak,
-		bankKeeper:   bk,
 		tokenfactory: tk,
 	}
 }
@@ -54,7 +50,7 @@ func NewAnteHandler(
 	tokenfactoryKeeper tokenfactory.Keeper,
 ) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
-		NewIsPausedDecorator(ak, bankKeeper, tokenfactoryKeeper),
+		NewIsPausedDecorator(tokenfactoryKeeper),
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewValidateBasicDecorator(),
 		ante.TxTimeoutHeightDecorator{},
