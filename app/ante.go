@@ -26,13 +26,14 @@ func NewIsPausedDecorator(tk tokenfactory.Keeper) IsPausedDecorator {
 func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
-		_, ok := m.(*banktypes.MsgSend)
-		if !ok {
+		switch m.(type) {
+		case *banktypes.MsgSend:
+			paused, _ := ad.tokenfactory.GetPaused(ctx)
+			if paused.Paused {
+				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
+			}
+		default:
 			continue
-		}
-		paused, _ := ad.tokenfactory.GetPaused(ctx)
-		if paused.Paused {
-			return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
 		}
 	}
 	return next(ctx, tx, simulate)
