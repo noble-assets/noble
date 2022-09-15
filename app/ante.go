@@ -32,7 +32,7 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 		}
 		paused, _ := ad.tokenfactory.GetPaused(ctx)
 		if paused.Paused {
-			return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrBurn, "minter address is blacklisted")
+			return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
 		}
 	}
 	return next(ctx, tx, simulate)
