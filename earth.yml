@@ -30,7 +30,5 @@ validator:
 faucet:
   name: bob
   coins: ['5token', '100000stake']
-genesis:
-  chain_id: 'earth'
 init:
   home: '$HOME/.earth'

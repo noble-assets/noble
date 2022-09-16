@@ -16,34 +16,34 @@ sleep 2
 nobled tx tokenfactory update-blacklister $(nobled keys show blacklister -a) --from owner -y
 sleep 2
 nobled tx tokenfactory blacklist $(nobled keys show minter -a) --from blacklister -y
-# sleep 2
-# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
-# sleep 2
-# nobled tx tokenfactory unblacklist $(nobled keys show minter -a) --from blacklister -y
-# sleep 2
-# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
-# sleep 2
-# nobled q bank balances $(nobled keys show user -a)
-# sleep 2
-# nobled tx tokenfactory blacklist $(nobled keys show user -a) --from blacklister -y
-# sleep 2
-# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
-# sleep 2
-# nobled tx tokenfactory unblacklist $(nobled keys show user -a) --from blacklister -y
-# sleep 2
-# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
-# sleep 2
-# nobled tx tokenfactory update-pauser $(nobled keys show pauser -a) --from owner -y
-# sleep 2
-# nobled tx tokenfactory pause --from pauser -y
-# sleep 2
-# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
-# sleep 2
-# nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from user -y
-# sleep 2
-# nobled tx tokenfactory unpause --from pauser -y
-# sleep 2
-# nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from user -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled tx tokenfactory unblacklist $(nobled keys show minter -a) --from blacklister -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled q bank balances $(nobled keys show user -a)
+sleep 2
+nobled tx tokenfactory blacklist $(nobled keys show user -a) --from blacklister -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled tx tokenfactory unblacklist $(nobled keys show user -a) --from blacklister -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled tx tokenfactory update-pauser $(nobled keys show pauser -a) --from owner -y
+sleep 2
+nobled tx tokenfactory pause --from pauser -y
+sleep 2
+nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+sleep 2
+nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from user -y
+sleep 2
+nobled tx tokenfactory unpause --from pauser -y
+sleep 2
+nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from user -y
 
 # nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
 # sleep 2
