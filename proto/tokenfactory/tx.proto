@@ -22,6 +22,7 @@ service Msg {
   rpc Unblacklist(MsgUnblacklist) returns (MsgUnblacklistResponse);
   rpc Pause(MsgPause) returns (MsgPauseResponse);
   rpc Unpause(MsgUnpause) returns (MsgUnpauseResponse);
+  rpc ConfigureMinterController(MsgConfigureMinterController) returns (MsgConfigureMinterControllerResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -127,6 +128,15 @@ message MsgUnpause {
 }
 
 message MsgUnpauseResponse {
+}
+
+message MsgConfigureMinterController {
+  string from = 1;
+  string controller = 2;
+  string minter = 3;
+}
+
+message MsgConfigureMinterControllerResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
