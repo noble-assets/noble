@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"noble/x/tokenfactory/types"
 )
 
 // SetMinterController set a specific minterController in the store from its index
@@ -35,7 +36,7 @@ func (k Keeper) GetMinterController(
 }
 
 // RemoveMinterController removes a minterController from the store
-func (k Keeper) RemoveMinterController(
+func (k Keeper) DeleteMinterController(
 	ctx sdk.Context,
 	minterAddress string,
 

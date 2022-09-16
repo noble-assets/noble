@@ -4,12 +4,13 @@ import (
 	"strconv"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	keepertest "noble/testutil/keeper"
 	"noble/testutil/nullify"
 	"noble/x/tokenfactory/keeper"
 	"noble/x/tokenfactory/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 )
 
 // Prevent strconv unused error
@@ -43,7 +44,7 @@ func TestMinterControllerRemove(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	items := createNMinterController(keeper, ctx, 10)
 	for _, item := range items {
-		keeper.RemoveMinterController(ctx,
+		keeper.DeleteMinterController(ctx,
 			item.MinterAddress,
 		)
 		_, found := keeper.GetMinterController(ctx,
