@@ -23,6 +23,7 @@ service Msg {
   rpc Pause(MsgPause) returns (MsgPauseResponse);
   rpc Unpause(MsgUnpause) returns (MsgUnpauseResponse);
   rpc ConfigureMinterController(MsgConfigureMinterController) returns (MsgConfigureMinterControllerResponse);
+  rpc RemoveMinterController(MsgRemoveMinterController) returns (MsgRemoveMinterControllerResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -137,6 +138,14 @@ message MsgConfigureMinterController {
 }
 
 message MsgConfigureMinterControllerResponse {
+}
+
+message MsgRemoveMinterController {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgRemoveMinterControllerResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
