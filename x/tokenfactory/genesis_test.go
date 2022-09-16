@@ -48,6 +48,14 @@ func TestGenesis(t *testing.T) {
 		Admin: &types.Admin{
 			Address: "45",
 		},
+		MinterControllerList: []types.MinterController{
+			{
+				MinterAddress: "0",
+			},
+			{
+				MinterAddress: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -67,5 +75,6 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.Blacklister, got.Blacklister)
 	require.Equal(t, genesisState.Owner, got.Owner)
 	require.Equal(t, genesisState.Admin, got.Admin)
+	require.ElementsMatch(t, genesisState.MinterControllerList, got.MinterControllerList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

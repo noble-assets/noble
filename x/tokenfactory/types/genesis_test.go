@@ -56,6 +56,14 @@ func TestGenesisState_Validate(t *testing.T) {
 				Admin: &types.Admin{
 					Address: "1",
 				},
+				MinterControllerList: []types.MinterController{
+					{
+						MinterAddress: "0",
+					},
+					{
+						MinterAddress: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -83,6 +91,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Address: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated minterController",
+			genState: &types.GenesisState{
+				MinterControllerList: []types.MinterController{
+					{
+						MinterAddress: "0",
+					},
+					{
+						MinterAddress: "0",
 					},
 				},
 			},

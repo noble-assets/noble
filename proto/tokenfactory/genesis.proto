@@ -11,6 +11,7 @@ import "tokenfactory/pauser.proto";
 import "tokenfactory/blacklister.proto";
 import "tokenfactory/owner.proto";
 import "tokenfactory/admin.proto";
+import "tokenfactory/minter_controller.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "noble/x/tokenfactory/types";
@@ -26,5 +27,6 @@ message GenesisState {
   Blacklister blacklister = 7;
   Owner owner = 8;
   Admin admin = 9;
+  repeated MinterController minterControllerList = 10 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

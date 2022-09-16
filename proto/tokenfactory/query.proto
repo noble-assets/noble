@@ -12,6 +12,7 @@ import "tokenfactory/pauser.proto";
 import "tokenfactory/blacklister.proto";
 import "tokenfactory/owner.proto";
 import "tokenfactory/admin.proto";
+import "tokenfactory/minter_controller.proto";
 // this line is used by starport scaffolding # 1
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -68,6 +69,16 @@ service Query {
 	rpc Admin(QueryGetAdminRequest) returns (QueryGetAdminResponse) {
 		option (google.api.http).get = "/noble/tokenfactory/admin";
 	}
+// Queries a MinterController by index.
+	rpc MinterController(QueryGetMinterControllerRequest) returns (QueryGetMinterControllerResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/minter_controller/{minterAddress}";
+	}
+
+	// Queries a list of MinterController items.
+	rpc MinterControllerAll(QueryAllMinterControllerRequest) returns (QueryAllMinterControllerResponse) {
+		option (google.api.http).get = "/noble/tokenfactory/minter_controller";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -146,4 +157,22 @@ message QueryGetAdminRequest {}
 message QueryGetAdminResponse {
 	Admin Admin = 1 [(gogoproto.nullable) = false];
 }
+message QueryGetMinterControllerRequest {
+	  string minterAddress = 1;
+
+}
+
+message QueryGetMinterControllerResponse {
+	MinterController minterController = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMinterControllerRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllMinterControllerResponse {
+	repeated MinterController minterController = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // this line is used by starport scaffolding # 3

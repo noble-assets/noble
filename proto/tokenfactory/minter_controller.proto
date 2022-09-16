@@ -1,0 +1,11 @@
+syntax = "proto3";
+package noble.tokenfactory;
+
+option go_package = "noble/x/tokenfactory/types";
+
+message MinterController {
+  string minterAddress = 1; 
+  string address = 2; 
+  
+}
+
