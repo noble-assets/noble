@@ -3,11 +3,12 @@ package tokenfactory_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	keepertest "noble/testutil/keeper"
 	"noble/testutil/nullify"
 	"noble/x/tokenfactory"
 	"noble/x/tokenfactory/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
@@ -50,10 +51,10 @@ func TestGenesis(t *testing.T) {
 		},
 		MinterControllerList: []types.MinterController{
 			{
-				MinterAddress: "0",
+				Minter: "0",
 			},
 			{
-				MinterAddress: "1",
+				Minter: "1",
 			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state

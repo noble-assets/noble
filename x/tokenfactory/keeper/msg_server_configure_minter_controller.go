@@ -22,8 +22,8 @@ func (k msgServer) ConfigureMinterController(goCtx context.Context, msg *types.M
 	}
 
 	controller := types.MinterController{
-		MinterAddress: msg.Minter,
-		Address:       msg.Controller,
+		Minter:     msg.Minter,
+		Controller: msg.Controller,
 	}
 
 	k.SetMinterController(ctx, controller)

@@ -11,12 +11,12 @@ const (
 
 // MinterControllerKey returns the store key to retrieve a MinterController from the index fields
 func MinterControllerKey(
-	minterAddress string,
+	controllerAddress string,
 ) []byte {
 	var key []byte
 
-	minterAddressBytes := []byte(minterAddress)
-	key = append(key, minterAddressBytes...)
+	controllerAddressBytes := []byte(controllerAddress)
+	key = append(key, controllerAddressBytes...)
 	key = append(key, []byte("/")...)
 
 	return key

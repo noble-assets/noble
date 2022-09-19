@@ -29,7 +29,7 @@ func networkWithMinterControllerObjects(t *testing.T, n int) (*network.Network, 
 
 	for i := 0; i < n; i++ {
 		minterController := types.MinterController{
-			MinterAddress: strconv.Itoa(i),
+			Minter: strconv.Itoa(i),
 		}
 		nullify.Fill(&minterController)
 		state.MinterControllerList = append(state.MinterControllerList, minterController)
@@ -57,7 +57,7 @@ func TestShowMinterController(t *testing.T) {
 	}{
 		{
 			desc:            "found",
-			idMinterAddress: objs[0].MinterAddress,
+			idMinterAddress: objs[0].Minter,
 
 			args: common,
 			obj:  objs[0],

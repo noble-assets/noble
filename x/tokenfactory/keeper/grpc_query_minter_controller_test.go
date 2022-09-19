@@ -31,14 +31,14 @@ func TestMinterControllerQuerySingle(t *testing.T) {
 		{
 			desc: "First",
 			request: &types.QueryGetMinterControllerRequest{
-				MinterAddress: msgs[0].MinterAddress,
+				MinterAddress: msgs[0].Minter,
 			},
 			response: &types.QueryGetMinterControllerResponse{MinterController: msgs[0]},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryGetMinterControllerRequest{
-				MinterAddress: msgs[1].MinterAddress,
+				MinterAddress: msgs[1].Minter,
 			},
 			response: &types.QueryGetMinterControllerResponse{MinterController: msgs[1]},
 		},

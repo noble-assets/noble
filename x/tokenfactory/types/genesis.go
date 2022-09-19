@@ -51,7 +51,7 @@ func (gs GenesisState) Validate() error {
 	minterControllerIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.MinterControllerList {
-		index := string(MinterControllerKey(elem.MinterAddress))
+		index := string(MinterControllerKey(elem.Minter))
 		if _, ok := minterControllerIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for minterController")
 		}

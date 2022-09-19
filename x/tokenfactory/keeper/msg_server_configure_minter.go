@@ -17,7 +17,7 @@ func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigur
 	minterController, minterControllerFound := k.GetMinterController(ctx, msg.Address)
 
 	notMasterMinter := msg.From != masterMinter.Address
-	notMinterController := minterControllerFound && msg.From != minterController.Address
+	notMinterController := minterControllerFound && msg.From != minterController.Minter
 
 	if notMasterMinter || notMinterController {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the master minter or a minter controller")

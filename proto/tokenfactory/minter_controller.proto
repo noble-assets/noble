@@ -4,8 +4,8 @@ package noble.tokenfactory;
 option go_package = "noble/x/tokenfactory/types";
 
 message MinterController {
-  string minterAddress = 1; 
-  string address = 2; 
+  string minter = 1; 
+  string controller = 2; 
   
 }
 
