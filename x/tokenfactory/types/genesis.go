@@ -19,7 +19,7 @@ func DefaultGenesis() *GenesisState {
 		Owner:                &Owner{Address: "cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh"},
 		Admin:                &Admin{Address: "cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k"},
 		MinterControllerList: []MinterController{},
-		MintingDenom:         nil,
+		MintingDenom:         &MintingDenom{Denom: "usdc"},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
