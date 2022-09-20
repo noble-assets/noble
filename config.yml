@@ -12,6 +12,9 @@ accounts:
   - name: masterminter
     coins: ['10000token', '100000000stake']
     mnemonic: peanut humble castle coin diet spy idea raven candy ice electric walnut fuel lizard depart owner kid piano cram slow session fancy page deposit
+  - name: mintercontroller
+    coins: ['10000token', '100000000stake']
+    mnemonic: dress offer practice nut usual thing prevent indoor hobby capable sketch speak chest destroy layer fatal silk blur salad kitchen zebra wild illness zebra
   - name: blacklister
     coins: ['10000token', '100000000stake']
     mnemonic: cradle change member under cycle soul liquid figure develop digital risk dream render want nice purse spawn simple entry steel average dutch recall census

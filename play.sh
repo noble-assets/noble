@@ -3,7 +3,9 @@
 sleep 2
 nobled tx tokenfactory update-master-minter $(nobled keys show masterminter -a) --from owner -y
 sleep 2
-nobled tx tokenfactory configure-minter $(nobled keys show minter -a) 1000usdc --from masterminter -y
+nobled tx tokenfactory configure-minter-controller $(nobled keys show mintercontroller -a) $(nobled keys show minter -a) --from masterminter -y
+sleep 2
+nobled tx tokenfactory configure-minter $(nobled keys show minter -a) 1000usdc --from mintercontroller -y
 sleep 2
 nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
 sleep 2
