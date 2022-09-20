@@ -43,3 +43,7 @@ func MinterControllerKey(controllerAddress string) []byte {
 	return append([]byte(controllerAddress), []byte("/")...)
 
 }
+
+const (
+	MintingDenomKey = "MintingDenom/value/"
+)
