@@ -56,34 +56,34 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
 // numbers, checks signatures & account numbers, and deducts fees from the first
 // signer
-func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
-	if opts.AccountKeeper == nil {
+func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
+	if options.AccountKeeper == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
 	}
-	if opts.BankKeeper == nil {
+	if options.BankKeeper == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
-	if opts.SignModeHandler == nil {
+	if options.SignModeHandler == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
 	}
-	sigGasConsumer := opts.SigGasConsumer
+	sigGasConsumer := options.SigGasConsumer
 	if sigGasConsumer == nil {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
-		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
-		NewIsPausedDecorator(opts.tokenfactorykeeper),
+		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
+		NewIsPausedDecorator(options.tokenfactorykeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.TxTimeoutHeightDecorator{},
-		ante.NewValidateMemoDecorator(opts.AccountKeeper),
-		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
-		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
-		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
-		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
-		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
+		ante.NewValidateMemoDecorator(options.AccountKeeper),
+		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
+		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
+		ante.NewValidateSigCountDecorator(options.AccountKeeper),
+		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
+		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 	}
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
 
