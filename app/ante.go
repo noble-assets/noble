@@ -31,7 +31,10 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 	for _, m := range msgs {
 		switch m.(type) {
 		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
-			paused, _ := ad.tokenfactory.GetPaused(ctx)
+			paused, found := ad.tokenfactory.GetPaused(ctx)
+			if !found {
+				panic(err)
+			}
 			if paused.Paused {
 				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
 			}
