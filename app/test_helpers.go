@@ -32,7 +32,7 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
-func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
+func setup(withGenesis bool, invCheckPeriod uint) (cmd.App, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := cmd.MakeTestEncodingConfig()
 	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
@@ -43,7 +43,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 }
 
 // Setup initializes a new App. A Nop logger is set in App.
-func Setup(isCheckTx bool) *App {
+func Setup(isCheckTx bool) cmd.App {
 	app, genesisState := setup(!isCheckTx, 5)
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
