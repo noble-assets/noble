@@ -30,7 +30,7 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
 		switch m.(type) {
-		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
+		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
 			paused, found := ad.tokenfactory.GetPaused(ctx)
 			if !found {
 				panic(err)
@@ -59,17 +59,26 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
 		switch m := m.(type) {
-		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
-			var address string
+		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
+			var addresses []string
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
-				address = m.FromAddress
+				addresses = append(addresses, m.FromAddress)
+			case *banktypes.MsgMultiSend:
+				for _, i := range m.Inputs {
+					addresses = append(addresses, i.Address)
+				}
+				for _, i := range m.Outputs {
+					addresses = append(addresses, i.Address)
+				}
 			case *transfertypes.MsgTransfer:
-				address = m.Sender
+				addresses = append(addresses, m.Sender)
 			}
-			_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
-			if found {
-				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an account is blacklisted and can not transfer tokens")
+			for _, address := range addresses {
+				_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
+				if found {
+					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an account is blacklisted and can not transfer tokens")
+				}
 			}
 		default:
 			continue
