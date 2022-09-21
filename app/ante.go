@@ -6,13 +6,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	transfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 )
+
+type HandlerOptions struct {
+	ante.HandlerOptions
+	tokenfactorykeeper tokenfactory.Keeper
+}
 
 type IsPausedDecorator struct {
 	tokenfactory tokenfactory.Keeper
@@ -54,25 +56,34 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
 // numbers, checks signatures & account numbers, and deducts fees from the first
 // signer
-func NewAnteHandler(
-	ak authkeeper.AccountKeeper,
-	bankKeeper types.BankKeeper,
-	feegrantKeeper ante.FeegrantKeeper,
-	sigGasConsumer ante.SignatureVerificationGasConsumer,
-	signModeHandler signing.SignModeHandler,
-	tokenfactoryKeeper tokenfactory.Keeper,
-) sdk.AnteHandler {
-	return sdk.ChainAnteDecorators(
-		NewIsPausedDecorator(tokenfactoryKeeper),
+func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
+	if opts.AccountKeeper == nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
+	}
+	if opts.BankKeeper == nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
+	}
+	if opts.SignModeHandler == nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+	}
+	sigGasConsumer := opts.SigGasConsumer
+	if sigGasConsumer == nil {
+		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
+	}
+
+	anteDecorators := []sdk.AnteDecorator{
+		NewIsPausedDecorator(opts.tokenfactorykeeper),
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewValidateBasicDecorator(),
 		ante.TxTimeoutHeightDecorator{},
-		ante.NewValidateMemoDecorator(ak),
-		ante.NewConsumeGasForTxSizeDecorator(ak),
-		ante.NewSetPubKeyDecorator(ak), // SetPubKeyDecorator must be called before all signature verification decorators
-		ante.NewValidateSigCountDecorator(ak),
-		ante.NewSigGasConsumeDecorator(ak, sigGasConsumer),
-		ante.NewSigVerificationDecorator(ak, signModeHandler),
-		ante.NewIncrementSequenceDecorator(ak),
-	)
+		ante.NewValidateMemoDecorator(opts.AccountKeeper),
+		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
+		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
+		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
+		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
+		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
+	}
+	return sdk.ChainAnteDecorators(anteDecorators...), nil
+
 }

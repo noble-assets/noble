@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -664,14 +665,21 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	anteHandler := NewAnteHandler(
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.FeeGrantKeeper,
-		ante.DefaultSigVerificationGasConsumer,
-		encodingConfig.TxConfig.SignModeHandler(),
-		app.TokenfactoryKeeper,
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			tokenfactorykeeper: app.TokenfactoryKeeper,
+		},
 	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
 
 	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
