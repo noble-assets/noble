@@ -73,6 +73,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
 		NewIsPausedDecorator(opts.tokenfactorykeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.TxTimeoutHeightDecorator{},
