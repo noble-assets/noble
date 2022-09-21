@@ -29,12 +29,34 @@ func NewIsPausedDecorator(tk tokenfactory.Keeper) IsPausedDecorator {
 func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
-		switch m := m.(type) {
+		switch m.(type) {
 		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
 			paused, _ := ad.tokenfactory.GetPaused(ctx)
 			if paused.Paused {
 				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
 			}
+		default:
+			continue
+		}
+	}
+	return next(ctx, tx, simulate)
+}
+
+type IsBlacklistedDecorator struct {
+	tokenfactory tokenfactory.Keeper
+}
+
+func NewIsBlacklistedDecorator(tk tokenfactory.Keeper) IsBlacklistedDecorator {
+	return IsBlacklistedDecorator{
+		tokenfactory: tk,
+	}
+}
+
+func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+	msgs := tx.GetMsgs()
+	for _, m := range msgs {
+		switch m := m.(type) {
+		case *banktypes.MsgSend, *transfertypes.MsgTransfer:
 			var address string
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
@@ -75,6 +97,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
 		NewIsPausedDecorator(options.tokenfactorykeeper),
+		NewIsBlacklistedDecorator(options.tokenfactorykeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
