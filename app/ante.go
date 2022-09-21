@@ -77,7 +77,7 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			for _, address := range addresses {
 				_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
 				if found {
-					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an account is blacklisted and can not transfer tokens")
+					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}
 			}
 		default:
