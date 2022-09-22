@@ -68,9 +68,6 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 				for _, i := range m.Inputs {
 					addresses = append(addresses, i.Address)
 				}
-				for _, i := range m.Outputs {
-					addresses = append(addresses, i.Address)
-				}
 			case *transfertypes.MsgTransfer:
 				addresses = append(addresses, m.Sender)
 			}
