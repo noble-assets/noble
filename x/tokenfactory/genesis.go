@@ -52,10 +52,9 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.BlacklistedList = k.GetAllBlacklisted(ctx)
 	// Get all paused
-	paused, found := k.GetPaused(ctx)
-	if found {
-		genesis.Paused = &paused
-	}
+	paused := k.GetPaused(ctx)
+	genesis.Paused = &paused
+
 	// Get all masterMinter
 	masterMinter, found := k.GetMasterMinter(ctx)
 	if found {

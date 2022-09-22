@@ -3,10 +3,11 @@ package keeper
 import (
 	"context"
 
+	"noble/x/tokenfactory/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"noble/x/tokenfactory/types"
 )
 
 func (k Keeper) Paused(c context.Context, req *types.QueryGetPausedRequest) (*types.QueryGetPausedResponse, error) {
@@ -15,10 +16,7 @@ func (k Keeper) Paused(c context.Context, req *types.QueryGetPausedRequest) (*ty
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetPaused(ctx)
-	if !found {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
+	val := k.GetPaused(ctx)
 
 	return &types.QueryGetPausedResponse{Paused: val}, nil
 }
