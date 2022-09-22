@@ -22,6 +22,12 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "minter address is blacklisted")
 	}
 
+	mintingDenom, _ := k.GetMintingDenom(ctx)
+
+	if msg.Amount.Denom != mintingDenom.Denom {
+		return nil, sdkerrors.Wrapf(types.ErrMint, "burning denom is incorrect")
+	}
+
 	paused, found := k.GetPaused(ctx)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "paused value is not found")
