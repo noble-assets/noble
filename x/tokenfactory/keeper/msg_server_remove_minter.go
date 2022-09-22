@@ -12,13 +12,13 @@ import (
 func (k msgServer) RemoveMinter(goCtx context.Context, msg *types.MsgRemoveMinter) (*types.MsgRemoveMinterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	masterMinter, found := k.GetMasterMinter(ctx)
+	minterController, found := k.GetMinterController(ctx, msg.From)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "master minter is not set")
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "minter controller not found")
 	}
 
-	if masterMinter.Address != msg.From {
-		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the master minter")
+	if msg.From != minterController.Address {
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a controller of this minter")
 	}
 
 	minter, found := k.GetMinters(ctx, msg.Address)
