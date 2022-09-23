@@ -11,8 +11,8 @@ var _ sdk.Msg = &MsgRemoveMinterController{}
 
 func NewMsgRemoveMinterController(from string, address string) *MsgRemoveMinterController {
 	return &MsgRemoveMinterController{
-		From:    from,
-		Address: address,
+		From:       from,
+		Controller: address,
 	}
 }
 
@@ -42,7 +42,7 @@ func (msg *MsgRemoveMinterController) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
 	}
-	_, err = sdk.AccAddressFromBech32(msg.Address)
+	_, err = sdk.AccAddressFromBech32(msg.Controller)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid minter controller address (%s)", err)
 	}

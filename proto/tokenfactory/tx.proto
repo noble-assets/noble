@@ -142,7 +142,7 @@ message MsgConfigureMinterControllerResponse {
 
 message MsgRemoveMinterController {
   string from = 1;
-  string address = 2;
+  string controller = 2;
 }
 
 message MsgRemoveMinterControllerResponse {
