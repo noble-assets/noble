@@ -45,11 +45,11 @@ func (msg *MsgConfigureMinterController) ValidateBasic() error {
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Controller)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid controller address (%s)", err)
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Minter)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid minter address (%s)", err)
 	}
 	return nil
 }
