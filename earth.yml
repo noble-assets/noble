@@ -1,0 +1,34 @@
+accounts:
+  - name: alice
+    coins: ['20000token', '200000000stake']
+  - name: bob
+    coins: ['10000token', '100000000stake']
+  - name: owner
+    coins: ['10000token', '100000000stake']
+    mnemonic: member genre increase friend salmon nest seven custom improve cluster inform axis pact velvet hurt risk point worth excite fiscal omit romance grid evoke
+  - name: admin
+    coins: ['10000token', '100000000stake']
+    mnemonic: nation aim predict ticket friend fetch under undo dirt rapid explain text cloud empower slot year blanket vacant job load lock account devote core
+  - name: masterminter
+    coins: ['10000token', '100000000stake']
+    mnemonic: peanut humble castle coin diet spy idea raven candy ice electric walnut fuel lizard depart owner kid piano cram slow session fancy page deposit
+  - name: blacklister
+    coins: ['10000token', '100000000stake']
+    mnemonic: cradle change member under cycle soul liquid figure develop digital risk dream render want nice purse spawn simple entry steel average dutch recall census
+  - name: minter
+    coins: ['10000token', '100000000stake']
+    mnemonic: wife salt elbow stand result virtual exotic enroll dash jewel shuffle cushion grass arrest unknown swap radar pulse ahead front husband approve dad concert
+  - name: pauser
+    coins: ['10000token', '100000000stake']
+    mnemonic: dune capital pass bounce march dance pretty essence desk wait bulb cattle tone forward drastic vocal when require cat chapter ten ozone material quality
+  - name: user
+    coins: ['10000token', '100000000stake']
+    mnemonic: ridge electric nurse badge farm space notable tip loud humor lizard solar south cable clump cactus crack skin liar advance scorpion junk imitate addict
+validator:
+  name: alice
+  staked: '100000000stake'
+faucet:
+  name: bob
+  coins: ['5token', '100000stake']
+init:
+  home: '$HOME/.earth'

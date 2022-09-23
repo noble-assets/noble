@@ -22,7 +22,7 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "minter address is blacklisted")
 	}
 
-	paused, found := k.GetPaused(ctx)
+	paused := k.GetPaused(ctx)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "paused value is not found")
 	}

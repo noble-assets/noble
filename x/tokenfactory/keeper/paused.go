@@ -14,14 +14,14 @@ func (k Keeper) SetPaused(ctx sdk.Context, paused types.Paused) {
 }
 
 // GetPaused returns paused
-func (k Keeper) GetPaused(ctx sdk.Context) (val types.Paused, found bool) {
+func (k Keeper) GetPaused(ctx sdk.Context) (val types.Paused) {
 	store := ctx.KVStore(k.storeKey)
 
 	b := store.Get(types.KeyPrefix(types.PausedKey))
 	if b == nil {
-		return val, false
+		panic("Paused state is not set")
 	}
 
 	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	return val
 }

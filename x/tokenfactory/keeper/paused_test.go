@@ -21,8 +21,7 @@ func createTestPaused(keeper *keeper.Keeper, ctx sdk.Context) types.Paused {
 func TestPausedGet(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	item := createTestPaused(keeper, ctx)
-	rst, found := keeper.GetPaused(ctx)
-	require.True(t, found)
+	rst := keeper.GetPaused(ctx)
 	require.Equal(t,
 		nullify.Fill(&item),
 		nullify.Fill(&rst),
