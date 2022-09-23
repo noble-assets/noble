@@ -59,6 +59,6 @@ func TestMinterControllerGetAll(t *testing.T) {
 	items := createNMinterController(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllMinterController(ctx)),
+		nullify.Fill(keeper.GetAllMinterControllers(ctx)),
 	)
 }

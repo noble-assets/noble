@@ -48,7 +48,7 @@ func (k Keeper) DeleteMinterController(
 }
 
 // GetAllMinterController returns all minterController
-func (k Keeper) GetAllMinterController(ctx sdk.Context) (list []types.MinterController) {
+func (k Keeper) GetAllMinterControllers(ctx sdk.Context) (list []types.MinterController) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MinterControllerKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

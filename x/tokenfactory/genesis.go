@@ -89,7 +89,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	if found {
 		genesis.Admin = &admin
 	}
-	genesis.MinterControllerList = k.GetAllMinterController(ctx)
+	genesis.MinterControllerList = k.GetAllMinterControllers(ctx)
 	// Get all mintingDenom
 	mintingDenom, found := k.GetMintingDenom(ctx)
 	if found {
