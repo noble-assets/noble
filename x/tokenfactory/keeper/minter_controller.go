@@ -12,7 +12,7 @@ func (k Keeper) SetMinterController(ctx sdk.Context, minterController types.Mint
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MinterControllerKeyPrefix))
 	b := k.cdc.MustMarshal(&minterController)
 	store.Set(types.MinterControllerKey(
-		minterController.Address,
+		minterController.Controller,
 	), b)
 }
 
