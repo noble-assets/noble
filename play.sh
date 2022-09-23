@@ -11,6 +11,8 @@ nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
 sleep 2
 nobled q bank balances $(nobled keys show user -a)
 sleep 2
+nobled tx tokenfactory update-blacklister $(nobled keys show blacklister -a) --from owner -y
+sleep 2
 nobled tx tokenfactory blacklist $(nobled keys show user -a) --from blacklister -y
 sleep 2
 nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
