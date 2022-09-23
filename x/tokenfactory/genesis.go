@@ -45,6 +45,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.MinterControllerList {
 		k.SetMinterController(ctx, elem)
 	}
+	// Set if defined
+	if genState.MintingDenom != nil {
+		k.SetMintingDenom(ctx, *genState.MintingDenom)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -87,6 +91,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		genesis.Admin = &admin
 	}
 	genesis.MinterControllerList = k.GetAllMinterController(ctx)
+	// Get all mintingDenom
+	mintingDenom, found := k.GetMintingDenom(ctx)
+	if found {
+		genesis.MintingDenom = &mintingDenom
+	}
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

@@ -65,6 +65,9 @@ func TestGenesisState_Validate(t *testing.T) {
 						Minter: "1",
 					},
 				},
+				MintingDenom: &types.MintingDenom{
+					Denom: "56",
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,

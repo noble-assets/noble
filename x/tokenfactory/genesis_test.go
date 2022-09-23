@@ -57,6 +57,9 @@ func TestGenesis(t *testing.T) {
 				Minter: "1",
 			},
 		},
+		MintingDenom: &types.MintingDenom{
+			Denom: "65",
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -77,5 +80,6 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.Owner, got.Owner)
 	require.Equal(t, genesisState.Admin, got.Admin)
 	require.ElementsMatch(t, genesisState.MinterControllerList, got.MinterControllerList)
+	require.Equal(t, genesisState.MintingDenom, got.MintingDenom)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
