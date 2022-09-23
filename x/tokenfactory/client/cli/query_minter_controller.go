@@ -3,10 +3,11 @@ package cli
 import (
 	"context"
 
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"noble/x/tokenfactory/types"
 )
 
 func CmdListMinterController() *cobra.Command {
@@ -52,10 +53,10 @@ func CmdShowMinterController() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			argMinterAddress := args[0]
+			argControllerAddress := args[0]
 
 			params := &types.QueryGetMinterControllerRequest{
-				MinterAddress: argMinterAddress,
+				ControllerAddress: argControllerAddress,
 			}
 
 			res, err := queryClient.MinterController(context.Background(), params)

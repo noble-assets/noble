@@ -350,15 +350,15 @@ func request_Query_MinterController_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["minterAddress"]
+	val, ok = pathParams["controllerAddress"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "minterAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "controllerAddress")
 	}
 
-	protoReq.MinterAddress, err = runtime.String(val)
+	protoReq.ControllerAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "minterAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "controllerAddress", err)
 	}
 
 	msg, err := client.MinterController(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -377,15 +377,15 @@ func local_request_Query_MinterController_0(ctx context.Context, marshaler runti
 		_   = err
 	)
 
-	val, ok = pathParams["minterAddress"]
+	val, ok = pathParams["controllerAddress"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "minterAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "controllerAddress")
 	}
 
-	protoReq.MinterAddress, err = runtime.String(val)
+	protoReq.ControllerAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "minterAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "controllerAddress", err)
 	}
 
 	msg, err := server.MinterController(ctx, &protoReq)
@@ -1122,7 +1122,7 @@ var (
 
 	pattern_Query_Admin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "admin"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MinterController_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"noble", "tokenfactory", "minter_controller", "minterAddress"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MinterController_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"noble", "tokenfactory", "minter_controller", "controllerAddress"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_MinterControllerAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "minter_controller"}, "", runtime.AssumeColonVerbOpt(true)))
 

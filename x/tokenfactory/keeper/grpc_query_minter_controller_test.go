@@ -31,21 +31,21 @@ func TestMinterControllerQuerySingle(t *testing.T) {
 		{
 			desc: "First",
 			request: &types.QueryGetMinterControllerRequest{
-				MinterAddress: msgs[0].Minter,
+				ControllerAddress: msgs[0].Minter,
 			},
 			response: &types.QueryGetMinterControllerResponse{MinterController: msgs[0]},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryGetMinterControllerRequest{
-				MinterAddress: msgs[1].Minter,
+				ControllerAddress: msgs[1].Minter,
 			},
 			response: &types.QueryGetMinterControllerResponse{MinterController: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
 			request: &types.QueryGetMinterControllerRequest{
-				MinterAddress: strconv.Itoa(100000),
+				ControllerAddress: strconv.Itoa(100000),
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},

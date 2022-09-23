@@ -72,7 +72,7 @@ service Query {
 	}
 // Queries a MinterController by index.
 	rpc MinterController(QueryGetMinterControllerRequest) returns (QueryGetMinterControllerResponse) {
-		option (google.api.http).get = "/noble/tokenfactory/minter_controller/{minterAddress}";
+		option (google.api.http).get = "/noble/tokenfactory/minter_controller/{controllerAddress}";
 	}
 
 	// Queries a list of MinterController items.
@@ -163,7 +163,7 @@ message QueryGetAdminResponse {
 	Admin Admin = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetMinterControllerRequest {
-	  string minterAddress = 1;
+	  string controllerAddress = 1;
 
 }
 

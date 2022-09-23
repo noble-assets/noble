@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"noble/x/tokenfactory/types"
 )
 
 func (k Keeper) MinterControllerAll(c context.Context, req *types.QueryAllMinterControllerRequest) (*types.QueryAllMinterControllerResponse, error) {
@@ -47,7 +48,7 @@ func (k Keeper) MinterController(c context.Context, req *types.QueryGetMinterCon
 
 	val, found := k.GetMinterController(
 		ctx,
-		req.MinterAddress,
+		req.ControllerAddress,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
