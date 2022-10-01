@@ -19,13 +19,13 @@ func (k Keeper) SetMinterController(ctx sdk.Context, minterController types.Mint
 // GetMinterController returns a minterController from its index
 func (k Keeper) GetMinterController(
 	ctx sdk.Context,
-	address string,
+	controller string,
 
 ) (val types.MinterController, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MinterControllerKeyPrefix))
 
 	b := store.Get(types.MinterControllerKey(
-		address,
+		controller,
 	))
 	if b == nil {
 		return val, false
@@ -38,12 +38,12 @@ func (k Keeper) GetMinterController(
 // RemoveMinterController removes a minterController from the store
 func (k Keeper) DeleteMinterController(
 	ctx sdk.Context,
-	address string,
+	controller string,
 
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MinterControllerKeyPrefix))
 	store.Delete(types.MinterControllerKey(
-		address,
+		controller,
 	))
 }
 
