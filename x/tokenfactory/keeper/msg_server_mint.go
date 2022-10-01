@@ -28,7 +28,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrapf(types.ErrMint, "receiver address is blacklisted")
 	}
 
-	mintingDenom, _ := k.GetMintingDenom(ctx)
+	mintingDenom := k.GetMintingDenom(ctx)
 
 	if msg.Amount.Denom != mintingDenom.Denom {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "minting denom is incorrect")

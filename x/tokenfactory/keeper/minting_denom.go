@@ -15,16 +15,16 @@ func (k Keeper) SetMintingDenom(ctx sdk.Context, mintingDenom types.MintingDenom
 }
 
 // GetMintingDenom returns mintingDenom
-func (k Keeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom, found bool) {
+func (k Keeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
 
 	b := store.Get([]byte{0})
 	if b == nil {
-		return val, false
+		panic("Minting denom is not set")
 	}
 
 	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	return val
 }
 
 // RemoveMintingDenom removes mintingDenom from the store

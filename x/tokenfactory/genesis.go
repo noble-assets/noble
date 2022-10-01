@@ -91,10 +91,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	}
 	genesis.MinterControllerList = k.GetAllMinterControllers(ctx)
 	// Get all mintingDenom
-	mintingDenom, found := k.GetMintingDenom(ctx)
-	if found {
-		genesis.MintingDenom = &mintingDenom
-	}
+	mintingDenom := k.GetMintingDenom(ctx)
+	genesis.MintingDenom = &mintingDenom
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

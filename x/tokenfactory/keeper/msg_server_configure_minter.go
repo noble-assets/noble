@@ -12,7 +12,7 @@ import (
 func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigureMinter) (*types.MsgConfigureMinterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	mintingDenom, _ := k.GetMintingDenom(ctx)
+	mintingDenom := k.GetMintingDenom(ctx)
 
 	if msg.Allowance.Denom != mintingDenom.Denom {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "minting denom is incorrect")

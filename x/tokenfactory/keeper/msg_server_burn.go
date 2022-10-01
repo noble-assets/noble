@@ -22,7 +22,7 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "minter address is blacklisted")
 	}
 
-	mintingDenom, _ := k.GetMintingDenom(ctx)
+	mintingDenom := k.GetMintingDenom(ctx)
 
 	if msg.Amount.Denom != mintingDenom.Denom {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "burning denom is incorrect")
