@@ -3,18 +3,19 @@ package cli
 import (
 	"strconv"
 
+	"noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
-	"noble/x/tokenfactory/types"
 )
 
 var _ = strconv.Itoa(0)
 
 func CmdRemoveMinterController() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-minter-controller [address]",
+		Use:   "remove-minter-controller [controller-address]",
 		Short: "Broadcast message remove-minter-controller",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
