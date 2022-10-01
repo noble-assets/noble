@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 
 func CmdRemoveMinterController() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-minter-controller [controller-address]",
+		Use:   "remove-minter-controller [controller]",
 		Short: "Broadcast message remove-minter-controller",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
