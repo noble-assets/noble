@@ -26,13 +26,6 @@ func (k msgServer) ConfigureMinterController(goCtx context.Context, msg *types.M
 		Controller: msg.Controller,
 	}
 
-	_, found = k.GetMinters(ctx, msg.Minter)
-	if !found {
-		k.SetMinters(ctx, types.Minters{
-			Address: msg.Minter,
-		})
-	}
-
 	k.SetMinterController(ctx, controller)
 
 	return &types.MsgConfigureMinterControllerResponse{}, nil

@@ -27,16 +27,10 @@ func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigur
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a controller of this minter")
 	}
 
-	minter, found := k.GetMinters(ctx, msg.Address)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "minter not found")
-	}
-
-	// TODO: https://github.com/strangelove-ventures/noble/issues/4
-
-	minter.Allowance = msg.Allowance
-
-	k.SetMinters(ctx, minter)
+	k.SetMinters(ctx, types.Minters{
+		Address:   msg.Address,
+		Allowance: msg.Allowance,
+	})
 
 	return &types.MsgConfigureMinterResponse{}, nil
 }
