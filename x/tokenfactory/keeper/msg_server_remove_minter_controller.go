@@ -21,6 +21,11 @@ func (k msgServer) RemoveMinterController(goCtx context.Context, msg *types.MsgR
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the master minter")
 	}
 
+	_, found = k.GetMinterController(ctx, msg.Controller)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "minter controller with a given address (%s) doesn't exist", msg.Controller)
+	}
+
 	k.DeleteMinterController(ctx, msg.Controller)
 
 	return &types.MsgRemoveMinterControllerResponse{}, nil
