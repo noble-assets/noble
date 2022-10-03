@@ -117,12 +117,12 @@ message QueryAllBlacklistedResponse {
 message QueryGetPausedRequest {}
 
 message QueryGetPausedResponse {
-	Paused Paused = 1 [(gogoproto.nullable) = false];
+	Paused paused = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetMasterMinterRequest {}
 
 message QueryGetMasterMinterResponse {
-	MasterMinter MasterMinter = 1 [(gogoproto.nullable) = false];
+	MasterMinter masterMinter = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetMintersRequest {
 	  string address = 1;
@@ -145,22 +145,22 @@ message QueryAllMintersResponse {
 message QueryGetPauserRequest {}
 
 message QueryGetPauserResponse {
-	Pauser Pauser = 1 [(gogoproto.nullable) = false];
+	Pauser pauser = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetBlacklisterRequest {}
 
 message QueryGetBlacklisterResponse {
-	Blacklister Blacklister = 1 [(gogoproto.nullable) = false];
+	Blacklister blacklister = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetOwnerRequest {}
 
 message QueryGetOwnerResponse {
-	Owner Owner = 1 [(gogoproto.nullable) = false];
+	Owner owner = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetAdminRequest {}
 
 message QueryGetAdminResponse {
-	Admin Admin = 1 [(gogoproto.nullable) = false];
+	Admin admin = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetMinterControllerRequest {
 	  string controllerAddress = 1;
@@ -183,6 +183,6 @@ message QueryAllMinterControllerResponse {
 message QueryGetMintingDenomRequest {}
 
 message QueryGetMintingDenomResponse {
-	MintingDenom MintingDenom = 1 [(gogoproto.nullable) = false];
+	MintingDenom mintingDenom = 1 [(gogoproto.nullable) = false];
 }
 // this line is used by starport scaffolding # 3
