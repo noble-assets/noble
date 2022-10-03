@@ -5,9 +5,9 @@ nobled tx tokenfactory update-master-minter $(nobled keys show masterminter -a) 
 sleep 2
 nobled tx tokenfactory configure-minter-controller $(nobled keys show mintercontroller -a) $(nobled keys show minter -a) --from masterminter -y
 sleep 2
-nobled tx tokenfactory configure-minter $(nobled keys show minter -a) 1000usdc --from mintercontroller -y
+nobled tx tokenfactory configure-minter $(nobled keys show minter -a) 1000uusdc --from mintercontroller -y
 sleep 2
-nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+nobled tx tokenfactory mint $(nobled keys show user -a) 100uusdc --from minter -y
 sleep 2
 nobled q bank balances $(nobled keys show user -a)
 sleep 2
@@ -15,31 +15,31 @@ nobled tx tokenfactory update-blacklister $(nobled keys show blacklister -a) --f
 sleep 2
 nobled tx tokenfactory blacklist $(nobled keys show user -a) --from blacklister -y
 sleep 2
-nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+nobled tx tokenfactory mint $(nobled keys show user -a) 100uusdc --from minter -y
 sleep 2
 nobled tx tokenfactory unblacklist $(nobled keys show user -a) --from blacklister -y
 sleep 2
-nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+nobled tx tokenfactory mint $(nobled keys show user -a) 100uusdc --from minter -y
 sleep 2
 nobled tx tokenfactory update-pauser $(nobled keys show pauser -a) --from owner -y
 sleep 2
 nobled tx tokenfactory pause --from pauser -y
 sleep 2
-nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+nobled tx tokenfactory mint $(nobled keys show user -a) 100uusdc --from minter -y
 sleep 2
-nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from user -y
+nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100uusdc --from user -y
 sleep 2
 nobled tx tokenfactory unpause --from pauser -y
 sleep 2
-nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100usdc --from user -y
+nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100uusdc --from user -y
 
-# nobled tx tokenfactory mint $(nobled keys show user -a) 100usdc --from minter -y
+# nobled tx tokenfactory mint $(nobled keys show user -a) 100uusdc --from minter -y
 # sleep 2
 # nobled q bank balances $(nobled keys show user -a)
 # sleep 2
-# nobled tx tokenfactory mint $(nobled keys show minter -a) 100usdc --from minter -y
+# nobled tx tokenfactory mint $(nobled keys show minter -a) 100uusdc --from minter -y
 # sleep 2
-# nobled tx tokenfactory burn 100usdc --from minter -y
+# nobled tx tokenfactory burn 100uusdc --from minter -y
 # sleep 2
 # nobled q bank balances $(nobled keys show user -a)
 
