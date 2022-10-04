@@ -1,0 +1,18 @@
+syntax = "proto3";
+package noble.blockibc;
+
+// this line is used by starport scaffolding # proto/packet/import
+
+option go_package = "noble/x/blockibc/types";
+
+message BlockibcPacketData {
+    oneof packet {
+        NoData noData = 1;
+        // this line is used by starport scaffolding # ibc/packet/proto/field
+    }
+}
+
+message NoData {
+}
+
+// this line is used by starport scaffolding # ibc/packet/proto/message

@@ -103,6 +103,9 @@ import (
 
 	"noble/cmd"
 	"noble/docs"
+	blockibcmodule "noble/x/blockibc"
+	blockibcmodulekeeper "noble/x/blockibc/keeper"
+	blockibcmoduletypes "noble/x/blockibc/types"
 	tokenfactorymodule "noble/x/tokenfactory"
 	tokenfactorymodulekeeper "noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "noble/x/tokenfactory/types"
@@ -162,6 +165,7 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		tokenfactorymodule.AppModuleBasic{},
+		blockibcmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -237,7 +241,9 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
-	TokenfactoryKeeper tokenfactorymodulekeeper.Keeper
+	TokenfactoryKeeper   tokenfactorymodulekeeper.Keeper
+	ScopedBlockibcKeeper capabilitykeeper.ScopedKeeper
+	BlockibcKeeper       blockibcmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -276,6 +282,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		tokenfactorymoduletypes.StoreKey,
+		blockibcmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -494,12 +501,27 @@ func New(
 	)
 	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenfactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
+	scopedBlockibcKeeper := app.CapabilityKeeper.ScopeToModule(blockibcmoduletypes.ModuleName)
+	app.ScopedBlockibcKeeper = scopedBlockibcKeeper
+	app.BlockibcKeeper = *blockibcmodulekeeper.NewKeeper(
+		appCodec,
+		keys[blockibcmoduletypes.StoreKey],
+		keys[blockibcmoduletypes.MemStoreKey],
+		app.GetSubspace(blockibcmoduletypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedBlockibcKeeper,
+	)
+	blockibcModule := blockibcmodule.NewAppModule(appCodec, app.BlockibcKeeper, app.AccountKeeper, app.BankKeeper)
+
+	blockibcIBCModule := blockibcmodule.NewIBCModule(app.BlockibcKeeper)
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter.AddRoute(blockibcmoduletypes.ModuleName, blockibcIBCModule)
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -537,6 +559,7 @@ func New(
 		transferModule,
 		icaModule,
 		tokenfactoryModule,
+		blockibcModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -567,6 +590,7 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
+		blockibcmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -592,6 +616,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
+		blockibcmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -622,6 +647,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
+		blockibcmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -652,6 +678,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		tokenfactoryModule,
+		blockibcModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -855,6 +882,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
+	paramsKeeper.Subspace(blockibcmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
