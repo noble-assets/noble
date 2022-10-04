@@ -30,3 +30,14 @@ accounts:
 validator:
   name: alice
   staked: '100000000stake'
+genesis:
+  app_state:
+    tokenfactory:
+      owner:
+        address: cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh
+      admin:
+        address: cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k
+      paused:
+        paused: false
+      mintingDenom:
+        denom: 'usdc'
