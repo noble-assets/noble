@@ -512,10 +512,11 @@ func New(
 		&app.IBCKeeper.PortKeeper,
 		scopedBlockibcKeeper,
 		app.IBCKeeper.ChannelKeeper,
+		app.TokenfactoryKeeper,
 	)
 	blockibcModule := blockibcmodule.NewAppModule(appCodec, app.BlockibcKeeper, app.AccountKeeper, app.BankKeeper)
 
-	blockibcIBCModule := blockibcmodule.NewIBCMiddleware(transferIBCModule, app.BlockibcKeeper)
+	blockibcIBCModule := blockibcmodule.NewIBCMiddleware(transferIBCModule, app.BlockibcKeeper, app.TokenfactoryKeeper)
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it

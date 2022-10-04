@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"noble/x/blockibc/types"
+	tokenfactorykeeper "noble/x/tokenfactory/keeper"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -16,11 +17,12 @@ import (
 type (
 	Keeper struct {
 		*cosmosibckeeper.Keeper
-		cdc         codec.BinaryCodec
-		storeKey    storetypes.StoreKey
-		memKey      storetypes.StoreKey
-		paramstore  paramtypes.Subspace
-		ics4Wrapper types.ICS4Wrapper
+		cdc                codec.BinaryCodec
+		storeKey           storetypes.StoreKey
+		memKey             storetypes.StoreKey
+		paramstore         paramtypes.Subspace
+		ics4Wrapper        types.ICS4Wrapper
+		tokenfactorykeeper tokenfactorykeeper.Keeper
 	}
 )
 
@@ -33,7 +35,7 @@ func NewKeeper(
 	portKeeper cosmosibckeeper.PortKeeper,
 	scopedKeeper cosmosibckeeper.ScopedKeeper,
 	ics4Wrapper types.ICS4Wrapper,
-
+	tokenfactoryKeeper tokenfactorykeeper.Keeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -48,11 +50,12 @@ func NewKeeper(
 			portKeeper,
 			scopedKeeper,
 		),
-		ics4Wrapper: ics4Wrapper,
-		cdc:         cdc,
-		storeKey:    storeKey,
-		memKey:      memKey,
-		paramstore:  ps,
+		ics4Wrapper:        ics4Wrapper,
+		cdc:                cdc,
+		storeKey:           storeKey,
+		memKey:             memKey,
+		paramstore:         ps,
+		tokenfactorykeeper: tokenfactoryKeeper,
 	}
 }
 

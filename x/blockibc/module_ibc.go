@@ -5,6 +5,7 @@ import (
 
 	"noble/x/blockibc/keeper"
 	"noble/x/blockibc/types"
+	tokenfactorykeeper "noble/x/tokenfactory/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,12 +22,14 @@ var _ porttypes.Middleware = &IBCMiddleware{}
 type IBCMiddleware struct {
 	app    porttypes.IBCModule
 	keeper keeper.Keeper
+	tf     tokenfactorykeeper.Keeper
 }
 
-func NewIBCMiddleware(app porttypes.IBCModule, k keeper.Keeper) IBCMiddleware {
+func NewIBCMiddleware(app porttypes.IBCModule, k keeper.Keeper, tf tokenfactorykeeper.Keeper) IBCMiddleware {
 	return IBCMiddleware{
 		app:    app,
 		keeper: k,
+		tf:     tf,
 	}
 }
 
@@ -193,11 +196,11 @@ func (im IBCMiddleware) OnRecvPacket(
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "cannot unmarshal ICS-20 transfer packet data")
 		ack = channeltypes.NewErrorAcknowledgement(ackErr)
 	}
-	if data.Receiver == "cosmos1vpka0rrdffqc09la7rgkvg29m6hjygd8gl2yvz" {
+	_, found := im.tf.GetBlacklisted(ctx, data.Receiver)
+	if found {
 		sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "this address is blacklisted")
 		ack = channeltypes.NewErrorAcknowledgement(ackErr)
 	}
-
 	return ack
 }
 
