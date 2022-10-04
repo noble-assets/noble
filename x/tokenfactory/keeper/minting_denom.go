@@ -6,31 +6,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 // SetMintingDenom set mintingDenom in the store
 func (k Keeper) SetMintingDenom(ctx sdk.Context, mintingDenom types.MintingDenom) {
-	denom := mintingDenom.Denom
-	metadata := banktypes.Metadata{
-		Base: fmt.Sprintf("u%s", denom),
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    fmt.Sprintf("u%s", denom),
-				Exponent: 0,
-			},
-			{
-				Denom:    fmt.Sprintf("m%s", denom),
-				Exponent: 3,
-			},
-			{
-				Denom:    denom,
-				Exponent: 6,
-			},
-		},
+	_, found := k.bankKeeper.GetDenomMetaData(ctx, mintingDenom.Denom)
+	if !found {
+		panic(fmt.Sprintf("Denom metadata for '%s' should be set", mintingDenom.Denom))
 	}
-	mintingDenom.Denom = fmt.Sprintf("u%s", denom)
-	k.bankKeeper.SetDenomMetaData(ctx, metadata)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
 	b := k.cdc.MustMarshal(&mintingDenom)
 	store.Set(types.KeyPrefix(types.MintingDenomKey), b)

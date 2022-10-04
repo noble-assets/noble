@@ -32,6 +32,23 @@ validator:
   staked: '100000000stake'
 genesis:
   app_state:
+    bank:
+      denom_metadata:
+        - display: 'usdc'
+          base: 'uusdc'
+          name: 'USDC'
+          symbol: 'USDC'
+          denom_units:
+            - denom: 'uusdc'
+              aliases:
+                - 'microusdc'
+              exponent: '0'
+            - denom: 'musdc'
+              aliases:
+                - 'milliusdc'
+              exponent: '3'
+            - denom: 'usdc'
+              exponent: '6'
     tokenfactory:
       owner:
         address: cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh
@@ -40,4 +57,4 @@ genesis:
       paused:
         paused: false
       mintingDenom:
-        denom: 'usdc'
+        denom: 'uusdc'
