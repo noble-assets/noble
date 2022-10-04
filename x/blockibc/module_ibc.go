@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	transfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v5/modules/core/exported"
@@ -185,6 +186,17 @@ func (im IBCMiddleware) OnRecvPacket(
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
 	ack := im.app.OnRecvPacket(ctx, packet, relayer)
+
+	var data transfertypes.FungibleTokenPacketData
+	var ackErr error
+	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		ackErr = sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "cannot unmarshal ICS-20 transfer packet data")
+		ack = channeltypes.NewErrorAcknowledgement(ackErr)
+	}
+	if data.Receiver == "cosmos1vpka0rrdffqc09la7rgkvg29m6hjygd8gl2yvz" {
+		sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "this address is blacklisted")
+		ack = channeltypes.NewErrorAcknowledgement(ackErr)
+	}
 
 	return ack
 }
