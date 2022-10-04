@@ -3,22 +3,24 @@ package keeper
 import (
 	"fmt"
 
+	"noble/x/blockibc/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ignite/cli/ignite/pkg/cosmosibckeeper"
 	"github.com/tendermint/tendermint/libs/log"
-	"noble/x/blockibc/types"
 )
 
 type (
 	Keeper struct {
 		*cosmosibckeeper.Keeper
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
-		paramstore paramtypes.Subspace
+		cdc         codec.BinaryCodec
+		storeKey    storetypes.StoreKey
+		memKey      storetypes.StoreKey
+		paramstore  paramtypes.Subspace
+		ics4Wrapper types.ICS4Wrapper
 	}
 )
 
@@ -30,6 +32,7 @@ func NewKeeper(
 	channelKeeper cosmosibckeeper.ChannelKeeper,
 	portKeeper cosmosibckeeper.PortKeeper,
 	scopedKeeper cosmosibckeeper.ScopedKeeper,
+	ics4Wrapper types.ICS4Wrapper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -45,10 +48,11 @@ func NewKeeper(
 			portKeeper,
 			scopedKeeper,
 		),
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
+		ics4Wrapper: ics4Wrapper,
+		cdc:         cdc,
+		storeKey:    storeKey,
+		memKey:      memKey,
+		paramstore:  ps,
 	}
 }
 
