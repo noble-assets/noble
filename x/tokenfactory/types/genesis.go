@@ -10,6 +10,16 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
+		BlacklistedList:      []Blacklisted{},
+		Paused:               nil,
+		MasterMinter:         nil,
+		MintersList:          []Minters{},
+		Pauser:               nil,
+		Blacklister:          nil,
+		Owner:                nil,
+		Admin:                nil,
+		MinterControllerList: []MinterController{},
+		MintingDenom:         nil,
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
