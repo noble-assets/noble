@@ -22,6 +22,7 @@ service Msg {
   rpc Unblacklist(MsgUnblacklist) returns (MsgUnblacklistResponse);
   rpc Pause(MsgPause) returns (MsgPauseResponse);
   rpc Unpause(MsgUnpause) returns (MsgUnpauseResponse);
+  rpc SoftwareUpgrade(MsgSoftwareUpgrade) returns (MsgSoftwareUpgradeResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -127,6 +128,13 @@ message MsgUnpause {
 }
 
 message MsgUnpauseResponse {
+}
+
+message MsgSoftwareUpgrade {
+  string from = 1;
+}
+
+message MsgSoftwareUpgradeResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
