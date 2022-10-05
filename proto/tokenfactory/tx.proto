@@ -3,6 +3,7 @@ package noble.tokenfactory;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/upgrade/v1beta1/upgrade.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "noble/x/tokenfactory/types";
@@ -132,6 +133,7 @@ message MsgUnpauseResponse {
 
 message MsgSoftwareUpgrade {
   string from = 1;
+  cosmos.upgrade.v1beta1.Plan plan = 2;
 }
 
 message MsgSoftwareUpgradeResponse {

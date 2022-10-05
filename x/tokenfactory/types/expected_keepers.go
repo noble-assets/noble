@@ -22,5 +22,5 @@ type BankKeeper interface {
 }
 
 type UpgradeKeeper interface {
-	SoftwareUpgrade(goCtx sdk.Context, req *upgradetypes.MsgSoftwareUpgrade)
+	ScheduleUpgrade(ctx sdk.Context, plan upgradetypes.Plan) error
 }

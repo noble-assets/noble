@@ -3,15 +3,17 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 const TypeMsgSoftwareUpgrade = "software_upgrade"
 
 var _ sdk.Msg = &MsgSoftwareUpgrade{}
 
-func NewMsgSoftwareUpgrade(from string) *MsgSoftwareUpgrade {
+func NewMsgSoftwareUpgrade(from string, plan upgradetypes.Plan) *MsgSoftwareUpgrade {
 	return &MsgSoftwareUpgrade{
 		From: from,
+		Plan: &plan,
 	}
 }
 
