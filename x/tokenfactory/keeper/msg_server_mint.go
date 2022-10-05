@@ -54,10 +54,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrap(types.ErrSendCoinsToAccount, err.Error())
 	}
 
-	err := ctx.EventManager().EmitTypedEvent(&types.EventMint{
-		Address: msg.Address,
-		Amount:  &msg.Amount,
-	})
+	err := ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgMintResponse{}, err
 }

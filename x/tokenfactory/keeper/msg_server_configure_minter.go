@@ -30,5 +30,7 @@ func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigur
 
 	k.SetMinters(ctx, minter)
 
-	return &types.MsgConfigureMinterResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgConfigureMinterResponse{}, err
 }

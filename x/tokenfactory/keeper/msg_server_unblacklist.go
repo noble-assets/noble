@@ -28,5 +28,7 @@ func (k msgServer) Unblacklist(goCtx context.Context, msg *types.MsgUnblacklist)
 
 	k.RemoveBlacklisted(ctx, blacklisted.Address)
 
-	return &types.MsgUnblacklistResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgUnblacklistResponse{}, err
 }

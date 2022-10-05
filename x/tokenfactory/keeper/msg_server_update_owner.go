@@ -25,5 +25,7 @@ func (k msgServer) UpdateOwner(goCtx context.Context, msg *types.MsgUpdateOwner)
 
 	k.SetOwner(ctx, owner)
 
-	return &types.MsgUpdateOwnerResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgUpdateOwnerResponse{}, err
 }

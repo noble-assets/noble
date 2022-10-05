@@ -29,5 +29,7 @@ func (k msgServer) Blacklist(goCtx context.Context, msg *types.MsgBlacklist) (*t
 
 	k.SetBlacklisted(ctx, blacklisted)
 
-	return &types.MsgBlacklistResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgBlacklistResponse{}, err
 }

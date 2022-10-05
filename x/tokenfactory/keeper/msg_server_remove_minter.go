@@ -28,5 +28,7 @@ func (k msgServer) RemoveMinter(goCtx context.Context, msg *types.MsgRemoveMinte
 
 	k.RemoveMinters(ctx, minter.Address)
 
-	return &types.MsgRemoveMinterResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgRemoveMinterResponse{}, err
 }

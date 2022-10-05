@@ -25,5 +25,7 @@ func (k msgServer) ChangeAdmin(goCtx context.Context, msg *types.MsgChangeAdmin)
 
 	k.SetAdmin(ctx, admin)
 
-	return &types.MsgChangeAdminResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgChangeAdminResponse{}, err
 }
