@@ -76,3 +76,6 @@ nobled tx bank send $(nobled keys show user -a) $(nobled keys show alice -a) 100
 #   --target-gasprice "0.0000025stake" \
 #   --target-prefix "cosmos" \
 #   --target-gaslimit 300000
+
+# docker build --pull --rm -f Dockerfile -t noble:latest "."
+# docker run -it --rm --entrypoint sh noble:latest
