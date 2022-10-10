@@ -13,7 +13,6 @@ import (
 	"github.com/strangelove-ventures/ibctest/v6"
 	"github.com/strangelove-ventures/ibctest/v6/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v6/ibc"
-	"github.com/strangelove-ventures/ibctest/v6/internal/configutil"
 	"github.com/strangelove-ventures/ibctest/v6/test"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -41,10 +40,10 @@ func TestNobleChain(t *testing.T) {
 	}
 
 	configFileOverrides := make(map[string]any)
-	appTomlOverrides := make(configutil.Toml)
+	appTomlOverrides := make(ibc.ChainUtilToml)
 
 	// state sync snapshots every stateSyncSnapshotInterval blocks.
-	stateSync := make(configutil.Toml)
+	stateSync := make(ibc.ChainUtilToml)
 	stateSync["snapshot-interval"] = 10
 	appTomlOverrides["state-sync"] = stateSync
 

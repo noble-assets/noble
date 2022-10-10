@@ -1012,8 +1012,8 @@ github.com/spf13/viper v1.12.0/go.mod h1:b6COn30jlNxbm/V2IqWiNWkJ+vZNiMNksliPCiu
 github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4/go.mod h1:RZLeN1LMWmRsyYjvAu+I6Dm9QmlDaIIt+Y+4Kd7Tp+Q=
 github.com/strangelove-ventures/go-subkey v1.0.7 h1:cOP/Lajg3uxV/tvspu0m6+0Cu+DJgygkEAbx/s+f35I=
 github.com/strangelove-ventures/go-subkey v1.0.7/go.mod h1:E34izOIEm+sZ1YmYawYRquqBQWeZBjVB4pF7bMuhc1c=
-github.com/strangelove-ventures/ibctest/v6 v6.0.0-20221005224632-cb2a9a3fbd2e h1:UZd6LG7gOE6VlNR7HdfMVvCuYxxhfLXKvKYed6jdLuY=
-github.com/strangelove-ventures/ibctest/v6 v6.0.0-20221005224632-cb2a9a3fbd2e/go.mod h1:Z4se9RL/mP5DbZ7kEGoDrjQJU06yEs5+Bznt41Uvi5o=
+github.com/strangelove-ventures/ibctest/v6 v6.0.0-20221007170215-4718676b8bdd h1:P79VqiBXweBEbaRsXUWyfwB21QDt2JCyh5DUZ++uroE=
+github.com/strangelove-ventures/ibctest/v6 v6.0.0-20221007170215-4718676b8bdd/go.mod h1:Z4se9RL/mP5DbZ7kEGoDrjQJU06yEs5+Bznt41Uvi5o=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
