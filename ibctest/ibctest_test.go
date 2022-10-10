@@ -13,6 +13,7 @@ import (
 	"github.com/strangelove-ventures/ibctest/v6"
 	"github.com/strangelove-ventures/ibctest/v6/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v6/ibc"
+	"github.com/strangelove-ventures/ibctest/v6/internal/configutil"
 	"github.com/strangelove-ventures/ibctest/v6/test"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -39,6 +40,19 @@ func TestNobleChain(t *testing.T) {
 		t.Skip()
 	}
 
+	configFileOverrides := make(map[string]any)
+	appTomlOverrides := make(configutil.Toml)
+
+	// state sync snapshots every stateSyncSnapshotInterval blocks.
+	stateSync := make(configutil.Toml)
+	stateSync["snapshot-interval"] = 10
+	appTomlOverrides["state-sync"] = stateSync
+
+	// state sync snapshot interval must be a multiple of pruning keep every interval.
+	appTomlOverrides["pruning"] = "nothing"
+
+	configFileOverrides["config/app.toml"] = appTomlOverrides
+
 	t.Parallel()
 
 	ctx := context.Background()
@@ -46,16 +60,17 @@ func TestNobleChain(t *testing.T) {
 	client, network := ibctest.DockerSetup(t)
 
 	chainCfg := ibc.ChainConfig{
-		Type:           "cosmos",
-		Name:           "noble",
-		ChainID:        "noble-1",
-		Bin:            "nobled",
-		Denom:          "token",
-		Bech32Prefix:   "cosmos",
-		GasPrices:      "0.0token",
-		GasAdjustment:  1.1,
-		TrustingPeriod: "504h",
-		NoHostMount:    false,
+		Type:                "cosmos",
+		Name:                "noble",
+		ChainID:             "noble-1",
+		Bin:                 "nobled",
+		Denom:               "token",
+		Bech32Prefix:        "cosmos",
+		GasPrices:           "0.0token",
+		ConfigFileOverrides: configFileOverrides,
+		GasAdjustment:       1.1,
+		TrustingPeriod:      "504h",
+		NoHostMount:         false,
 		Images: []ibc.DockerImage{
 			{
 				Repository: "noble",
