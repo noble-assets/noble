@@ -76,6 +76,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUnpause int = 100
 
+	opWeightMsgConfigureMinterController = "op_weight_msg_configure_minter_controller"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgConfigureMinterController int = 100
+
+	opWeightMsgRemoveMinterController = "op_weight_msg_remove_minter_controller"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgRemoveMinterController int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -251,6 +259,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUnpause,
 		tokenfactorysimulation.SimulateMsgUnpause(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgConfigureMinterController int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgConfigureMinterController, &weightMsgConfigureMinterController, nil,
+		func(_ *rand.Rand) {
+			weightMsgConfigureMinterController = defaultWeightMsgConfigureMinterController
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgConfigureMinterController,
+		tokenfactorysimulation.SimulateMsgConfigureMinterController(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgRemoveMinterController int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveMinterController, &weightMsgRemoveMinterController, nil,
+		func(_ *rand.Rand) {
+			weightMsgRemoveMinterController = defaultWeightMsgRemoveMinterController
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRemoveMinterController,
+		tokenfactorysimulation.SimulateMsgRemoveMinterController(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

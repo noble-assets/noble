@@ -10,14 +10,16 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		BlacklistedList: []Blacklisted{},
-		Paused:          &Paused{Paused: false},
-		MasterMinter:    nil,
-		MintersList:     []Minters{},
-		Pauser:          nil,
-		Blacklister:     nil,
-		Owner:           &Owner{Address: "cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh"},
-		Admin:           &Admin{Address: "cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k"},
+		BlacklistedList:      []Blacklisted{},
+		Paused:               nil,
+		MasterMinter:         nil,
+		MintersList:          []Minters{},
+		Pauser:               nil,
+		Blacklister:          nil,
+		Owner:                nil,
+		Admin:                nil,
+		MinterControllerList: []MinterController{},
+		MintingDenom:         nil,
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -45,6 +47,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for minters")
 		}
 		mintersIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in minterController
+	minterControllerIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.MinterControllerList {
+		index := string(MinterControllerKey(elem.Minter))
+		if _, ok := minterControllerIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for minterController")
+		}
+		minterControllerIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

@@ -3,11 +3,12 @@ package tokenfactory_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	keepertest "noble/testutil/keeper"
 	"noble/testutil/nullify"
 	"noble/x/tokenfactory"
 	"noble/x/tokenfactory/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
@@ -48,6 +49,17 @@ func TestGenesis(t *testing.T) {
 		Admin: &types.Admin{
 			Address: "45",
 		},
+		MinterControllerList: []types.MinterController{
+			{
+				Minter: "0",
+			},
+			{
+				Minter: "1",
+			},
+		},
+		MintingDenom: &types.MintingDenom{
+			Denom: "65",
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -67,5 +79,7 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.Blacklister, got.Blacklister)
 	require.Equal(t, genesisState.Owner, got.Owner)
 	require.Equal(t, genesisState.Admin, got.Admin)
+	require.ElementsMatch(t, genesisState.MinterControllerList, got.MinterControllerList)
+	require.Equal(t, genesisState.MintingDenom, got.MintingDenom)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

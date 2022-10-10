@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"noble/x/tokenfactory/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -56,6 +57,17 @@ func TestGenesisState_Validate(t *testing.T) {
 				Admin: &types.Admin{
 					Address: "1",
 				},
+				MinterControllerList: []types.MinterController{
+					{
+						Minter: "0",
+					},
+					{
+						Minter: "1",
+					},
+				},
+				MintingDenom: &types.MintingDenom{
+					Denom: "56",
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -83,6 +95,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Address: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated minterController",
+			genState: &types.GenesisState{
+				MinterControllerList: []types.MinterController{
+					{
+						Minter: "0",
+					},
+					{
+						Minter: "0",
 					},
 				},
 			},

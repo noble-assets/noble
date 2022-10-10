@@ -13,14 +13,15 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_tokenfactory"
 
-	PausedKey            = "Paused/value/"
-	MasterMinterKey      = "MasterMinter/value/"
-	PauserKey            = "Pauser/value/"
-	BlacklisterKey       = "Blacklister/value/"
-	OwnerKey             = "Owner/value/"
-	AdminKey             = "Admin/value/"
-	BlacklistedKeyPrefix = "Blacklisted/value/"
-	MintersKeyPrefix     = "Minters/value/"
+	PausedKey                 = "Paused/value/"
+	MasterMinterKey           = "MasterMinter/value/"
+	PauserKey                 = "Pauser/value/"
+	BlacklisterKey            = "Blacklister/value/"
+	OwnerKey                  = "Owner/value/"
+	AdminKey                  = "Admin/value/"
+	BlacklistedKeyPrefix      = "Blacklisted/value/"
+	MintersKeyPrefix          = "Minters/value/"
+	MinterControllerKeyPrefix = "MinterController/value/"
 )
 
 func KeyPrefix(p string) []byte {
@@ -36,3 +37,13 @@ func BlacklistedKey(address string) []byte {
 func MintersKey(address string) []byte {
 	return append([]byte(address), []byte("/")...)
 }
+
+// MinterControllerKey returns the store key to retrieve a MinterController from the index fields
+func MinterControllerKey(controllerAddress string) []byte {
+	return append([]byte(controllerAddress), []byte("/")...)
+
+}
+
+const (
+	MintingDenomKey = "MintingDenom/value/"
+)
