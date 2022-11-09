@@ -26,5 +26,8 @@ func (k msgServer) UpdateBlacklister(goCtx context.Context, msg *types.MsgUpdate
 	}
 
 	k.SetBlacklister(ctx, blacklister)
-	return &types.MsgUpdateBlacklisterResponse{}, nil
+
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgUpdateBlacklisterResponse{}, err
 }

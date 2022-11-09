@@ -27,5 +27,7 @@ func (k msgServer) Unpause(goCtx context.Context, msg *types.MsgUnpause) (*types
 
 	k.SetPaused(ctx, paused)
 
-	return &types.MsgUnpauseResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgUnpauseResponse{}, err
 }

@@ -27,5 +27,7 @@ func (k msgServer) UpdateMasterMinter(goCtx context.Context, msg *types.MsgUpdat
 
 	k.SetMasterMinter(ctx, masterMinter)
 
-	return &types.MsgUpdateMasterMinterResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgUpdateMasterMinterResponse{}, err
 }

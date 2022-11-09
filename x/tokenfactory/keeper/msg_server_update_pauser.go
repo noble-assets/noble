@@ -27,5 +27,7 @@ func (k msgServer) UpdatePauser(goCtx context.Context, msg *types.MsgUpdatePause
 
 	k.SetPauser(ctx, pauser)
 
-	return &types.MsgUpdatePauserResponse{}, nil
+	err := ctx.EventManager().EmitTypedEvent(msg)
+
+	return &types.MsgUpdatePauserResponse{}, err
 }
