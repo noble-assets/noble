@@ -1100,33 +1100,33 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Blacklisted_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "blacklisted", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Blacklisted_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"noble", "tokenfactory", "blacklisted", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_BlacklistedAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "blacklisted"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BlacklistedAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "blacklisted"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Paused_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "paused"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Paused_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "paused"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MasterMinter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "master_minter"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MasterMinter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "master_minter"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Minters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "minters", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Minters_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"noble", "tokenfactory", "minters", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MintersAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "minters"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MintersAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "minters"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Pauser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "pauser"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Pauser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "pauser"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Blacklister_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "blacklister"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Blacklister_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "blacklister"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Owner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Owner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Admin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "admin"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Admin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "admin"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MinterController_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "minter_controller", "controllerAddress"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MinterController_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"noble", "tokenfactory", "minter_controller", "controllerAddress"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MinterControllerAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "minter_controller"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MinterControllerAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "minter_controller"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MintingDenom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"github.com/strangelove-ventures/noble", "tokenfactory", "minting_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MintingDenom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"noble", "tokenfactory", "minting_denom"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

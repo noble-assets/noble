@@ -1,27 +1,24 @@
-package ibc_swap
+package blockibc
 
 import (
-	"encoding/json"
-
-	"github.com/NicholasDotSol/duality/x/ibc-swap/keeper"
-	"github.com/strangelove-ventures/noble/x/blockibc/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
+	transfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
+	ibcexported "github.com/cosmos/ibc-go/v5/modules/core/exported"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
-var _ porttypes.Middleware = &IBCMiddleware{}
+var _ porttypes.IBCModule = &IBCMiddleware{}
 
 // IBCMiddleware implements the ICS26 callbacks for the swap middleware given the
 // swap keeper and the underlying application.
 type IBCMiddleware struct {
 	app    porttypes.IBCModule
-	keeper keeper.Keeper
+	keeper tokenfactory.Keeper
 }
 
 // NewIBCMiddleware creates a new IBCMiddleware given the keeper and underlying application.
@@ -42,7 +39,7 @@ func (im IBCMiddleware) OnChanOpenInit(
 	chanCap *capabilitytypes.Capability,
 	counterparty channeltypes.Counterparty,
 	version string,
-) error {
+) (string, error) {
 	return im.app.OnChanOpenInit(ctx, order, connectionHops, portID, channelID, chanCap, counterparty, version)
 }
 
@@ -92,50 +89,24 @@ func (im IBCMiddleware) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
+
 	var data transfertypes.FungibleTokenPacketData
-	if err := transfertypes.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
+	var ackErr error
+	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		ackErr = sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "cannot unmarshal ICS-20 transfer packet data")
+		return channeltypes.NewErrorAcknowledgement(ackErr)
+	}
+	_, found := im.keeper.GetBlacklisted(ctx, data.Receiver)
+	if found {
+		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
+		return channeltypes.NewErrorAcknowledgement(ackErr)
 	}
 
-	m := &types.PacketMetadata{}
-	err := json.Unmarshal([]byte(data.Memo), m)
-	if err != nil || m.Swap == nil {
-		// Not a packet that should be handled by the swap middleware
-		return im.app.OnRecvPacket(ctx, packet, relayer)
+	_, found = im.keeper.GetBlacklisted(ctx, data.Sender)
+	if found {
+		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
+		return channeltypes.NewErrorAcknowledgement(ackErr)
 	}
-
-	metadata := m.Swap
-	if err := metadata.Validate(); err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
-
-	// Attempt to perform a swap since this packets memo included swap metadata.
-	res, err := im.keeper.Swap(ctx, metadata.MsgSwap)
-	if err != nil {
-		im.keeper.Logger(ctx).Error(types.ErrSwapFailed.Error(), "err", err, "swap", metadata.MsgSwap)
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
-
-	// Set the new packet data to include the token denom and amount that was received from the swap.
-	data.Denom = res.CoinOut.Denom
-	data.Amount = res.CoinOut.Amount.String()
-
-	// Swaps can come into Duality over IBC where the swap creator is a module/contract swapping on behalf of the user.
-	// Then the swap's receiver field will be the user controlled address where funds are deposited afterwards.
-	// Before passing to the forward middleware we need to override the packet receiver field to now point to the
-	// user controlled address that will be initiating the forward since this is where the funds are after the swap.
-	data.Receiver = m.Swap.Receiver
-
-	// We need to reset the packets memo field so that the root key in the metadata is the
-	// next metadata from the current metadata.
-	data.Memo = m.Swap.Next
-	dataBz, err := transfertypes.ModuleCdc.Marshal(&data)
-	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
-
-	packet.Data = dataBz
-
 	return im.app.OnRecvPacket(ctx, packet, relayer)
 }
 
@@ -152,23 +123,4 @@ func (im IBCMiddleware) OnAcknowledgementPacket(
 // OnTimeoutPacket implements the IBCModule interface.
 func (im IBCMiddleware) OnTimeoutPacket(ctx sdk.Context, packet channeltypes.Packet, relayer sdk.AccAddress) error {
 	return im.app.OnTimeoutPacket(ctx, packet, relayer)
-}
-
-// SendPacket implements the ICS4 Wrapper interface.
-func (im IBCMiddleware) SendPacket(
-	ctx sdk.Context,
-	chanCap *capabilitytypes.Capability,
-	packet ibcexported.PacketI,
-) error {
-	return im.keeper.SendPacket(ctx, chanCap, packet)
-}
-
-// WriteAcknowledgement implements the ICS4 Wrapper interface.
-func (im IBCMiddleware) WriteAcknowledgement(
-	ctx sdk.Context,
-	chanCap *capabilitytypes.Capability,
-	packet ibcexported.PacketI,
-	ack ibcexported.Acknowledgement,
-) error {
-	return im.keeper.WriteAcknowledgement(ctx, chanCap, packet, ack)
 }

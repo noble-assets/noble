@@ -1,60 +1,101 @@
+version: 1
+build:
+  proto:
+    path: proto
+    third_party_paths:
+    - third_party/proto
+    - proto_vendor
 accounts:
-  - name: alice
-    coins: ['20000token', '200000000stake']
-  - name: bob
-    coins: ['10000token', '100000000stake']
-  - name: owner
-    coins: ['10000token', '100000000stake']
-    mnemonic: member genre increase friend salmon nest seven custom improve cluster inform axis pact velvet hurt risk point worth excite fiscal omit romance grid evoke
-  - name: admin
-    coins: ['10000token', '100000000stake']
-    mnemonic: nation aim predict ticket friend fetch under undo dirt rapid explain text cloud empower slot year blanket vacant job load lock account devote core
-  - name: masterminter
-    coins: ['10000token', '100000000stake']
-    mnemonic: peanut humble castle coin diet spy idea raven candy ice electric walnut fuel lizard depart owner kid piano cram slow session fancy page deposit
-  - name: mintercontroller
-    coins: ['10000token', '100000000stake']
-    mnemonic: dress offer practice nut usual thing prevent indoor hobby capable sketch speak chest destroy layer fatal silk blur salad kitchen zebra wild illness zebra
-  - name: blacklister
-    coins: ['10000token', '100000000stake']
-    mnemonic: cradle change member under cycle soul liquid figure develop digital risk dream render want nice purse spawn simple entry steel average dutch recall census
-  - name: minter
-    coins: ['10000token', '100000000stake']
-    mnemonic: wife salt elbow stand result virtual exotic enroll dash jewel shuffle cushion grass arrest unknown swap radar pulse ahead front husband approve dad concert
-  - name: pauser
-    coins: ['10000token', '100000000stake']
-    mnemonic: dune capital pass bounce march dance pretty essence desk wait bulb cattle tone forward drastic vocal when require cat chapter ten ozone material quality
-  - name: user
-    coins: ['10000token', '100000000stake']
-    mnemonic: ridge electric nurse badge farm space notable tip loud humor lizard solar south cable clump cactus crack skin liar advance scorpion junk imitate addict
-validator:
-  name: alice
-  staked: '100000000stake'
+- name: alice
+  coins:
+  - 20000token
+  - 200000000stake
+- name: bob
+  coins:
+  - 10000token
+  - 100000000stake
+- name: owner
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: member genre increase friend salmon nest seven custom improve cluster
+    inform axis pact velvet hurt risk point worth excite fiscal omit romance grid
+    evoke
+- name: admin
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: nation aim predict ticket friend fetch under undo dirt rapid explain text
+    cloud empower slot year blanket vacant job load lock account devote core
+- name: masterminter
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: peanut humble castle coin diet spy idea raven candy ice electric walnut
+    fuel lizard depart owner kid piano cram slow session fancy page deposit
+- name: mintercontroller
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: dress offer practice nut usual thing prevent indoor hobby capable sketch
+    speak chest destroy layer fatal silk blur salad kitchen zebra wild illness zebra
+- name: blacklister
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: cradle change member under cycle soul liquid figure develop digital risk
+    dream render want nice purse spawn simple entry steel average dutch recall census
+- name: minter
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: wife salt elbow stand result virtual exotic enroll dash jewel shuffle
+    cushion grass arrest unknown swap radar pulse ahead front husband approve dad
+    concert
+- name: pauser
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: dune capital pass bounce march dance pretty essence desk wait bulb cattle
+    tone forward drastic vocal when require cat chapter ten ozone material quality
+- name: user
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: ridge electric nurse badge farm space notable tip loud humor lizard solar
+    south cable clump cactus crack skin liar advance scorpion junk imitate addict
+faucet:
+  name: null
+  coins: []
+  host: 0.0.0.0:4500
 genesis:
   app_state:
     bank:
       denom_metadata:
-        - display: 'usdc'
-          base: 'uusdc'
-          name: 'USDC'
-          symbol: 'USDC'
-          denom_units:
-            - denom: 'uusdc'
-              aliases:
-                - 'microusdc'
-              exponent: '0'
-            - denom: 'musdc'
-              aliases:
-                - 'milliusdc'
-              exponent: '3'
-            - denom: 'usdc'
-              exponent: '6'
+      - base: uusdc
+        denom_units:
+        - aliases:
+          - microusdc
+          denom: uusdc
+          exponent: "0"
+        - aliases:
+          - milliusdc
+          denom: musdc
+          exponent: "3"
+        - denom: usdc
+          exponent: "6"
+        display: usdc
+        name: USDC
+        symbol: USDC
     tokenfactory:
-      owner:
-        address: cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh
       admin:
         address: cosmos1qqj305p7vhzfcxku8wp7eh64he452nerwlw93k
+      mintingDenom:
+        denom: uusdc
+      owner:
+        address: cosmos1rde4hcxtztnzdzkta5xergke5yzsf877xzfxdh
       paused:
         paused: false
-      mintingDenom:
-        denom: 'uusdc'
+validators:
+- name: alice
+  bonded: 100000000stake
