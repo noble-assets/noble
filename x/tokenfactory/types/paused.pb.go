@@ -67,7 +67,7 @@ func (m *Paused) GetPaused() bool {
 }
 
 func init() {
-	proto.RegisterType((*Paused)(nil), "noble.tokenfactory.Paused")
+	proto.RegisterType((*Paused)(nil), "github.com/strangelove-ventures/noble.tokenfactory.Paused")
 }
 
 func init() { proto.RegisterFile("tokenfactory/paused.proto", fileDescriptor_f80e08031f66ef0e) }

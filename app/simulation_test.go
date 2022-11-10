@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"noble/app"
-	"noble/cmd"
+	app "github.com/strangelove-ventures/noble/app"
+	"github.com/strangelove-ventures/noble/cmd"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

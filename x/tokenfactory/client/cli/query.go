@@ -10,7 +10,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

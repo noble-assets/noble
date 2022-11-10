@@ -60,7 +60,7 @@ func (m *Params) XXX_DiscardUnknown() {
 var xxx_messageInfo_Params proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*Params)(nil), "noble.tokenfactory.Params")
+	proto.RegisterType((*Params)(nil), "github.com/strangelove-ventures/noble.tokenfactory.Params")
 }
 
 func init() { proto.RegisterFile("tokenfactory/params.proto", fileDescriptor_0f39a375875b281a) }

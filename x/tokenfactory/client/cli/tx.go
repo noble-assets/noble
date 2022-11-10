@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 var (

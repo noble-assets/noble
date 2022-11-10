@@ -67,7 +67,7 @@ func (m *Owner) GetAddress() string {
 }
 
 func init() {
-	proto.RegisterType((*Owner)(nil), "noble.tokenfactory.Owner")
+	proto.RegisterType((*Owner)(nil), "github.com/strangelove-ventures/noble.tokenfactory.Owner")
 }
 
 func init() { proto.RegisterFile("tokenfactory/owner.proto", fileDescriptor_9a4e397b1130eab4) }

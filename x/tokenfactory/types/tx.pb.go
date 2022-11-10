@@ -1358,36 +1358,36 @@ func (m *MsgRemoveMinterControllerResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRemoveMinterControllerResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgChangeAdmin)(nil), "noble.tokenfactory.MsgChangeAdmin")
-	proto.RegisterType((*MsgChangeAdminResponse)(nil), "noble.tokenfactory.MsgChangeAdminResponse")
-	proto.RegisterType((*MsgUpdateMasterMinter)(nil), "noble.tokenfactory.MsgUpdateMasterMinter")
-	proto.RegisterType((*MsgUpdateMasterMinterResponse)(nil), "noble.tokenfactory.MsgUpdateMasterMinterResponse")
-	proto.RegisterType((*MsgUpdatePauser)(nil), "noble.tokenfactory.MsgUpdatePauser")
-	proto.RegisterType((*MsgUpdatePauserResponse)(nil), "noble.tokenfactory.MsgUpdatePauserResponse")
-	proto.RegisterType((*MsgUpdateBlacklister)(nil), "noble.tokenfactory.MsgUpdateBlacklister")
-	proto.RegisterType((*MsgUpdateBlacklisterResponse)(nil), "noble.tokenfactory.MsgUpdateBlacklisterResponse")
-	proto.RegisterType((*MsgUpdateOwner)(nil), "noble.tokenfactory.MsgUpdateOwner")
-	proto.RegisterType((*MsgUpdateOwnerResponse)(nil), "noble.tokenfactory.MsgUpdateOwnerResponse")
-	proto.RegisterType((*MsgConfigureMinter)(nil), "noble.tokenfactory.MsgConfigureMinter")
-	proto.RegisterType((*MsgConfigureMinterResponse)(nil), "noble.tokenfactory.MsgConfigureMinterResponse")
-	proto.RegisterType((*MsgRemoveMinter)(nil), "noble.tokenfactory.MsgRemoveMinter")
-	proto.RegisterType((*MsgRemoveMinterResponse)(nil), "noble.tokenfactory.MsgRemoveMinterResponse")
-	proto.RegisterType((*MsgMint)(nil), "noble.tokenfactory.MsgMint")
-	proto.RegisterType((*MsgMintResponse)(nil), "noble.tokenfactory.MsgMintResponse")
-	proto.RegisterType((*MsgBurn)(nil), "noble.tokenfactory.MsgBurn")
-	proto.RegisterType((*MsgBurnResponse)(nil), "noble.tokenfactory.MsgBurnResponse")
-	proto.RegisterType((*MsgBlacklist)(nil), "noble.tokenfactory.MsgBlacklist")
-	proto.RegisterType((*MsgBlacklistResponse)(nil), "noble.tokenfactory.MsgBlacklistResponse")
-	proto.RegisterType((*MsgUnblacklist)(nil), "noble.tokenfactory.MsgUnblacklist")
-	proto.RegisterType((*MsgUnblacklistResponse)(nil), "noble.tokenfactory.MsgUnblacklistResponse")
-	proto.RegisterType((*MsgPause)(nil), "noble.tokenfactory.MsgPause")
-	proto.RegisterType((*MsgPauseResponse)(nil), "noble.tokenfactory.MsgPauseResponse")
-	proto.RegisterType((*MsgUnpause)(nil), "noble.tokenfactory.MsgUnpause")
-	proto.RegisterType((*MsgUnpauseResponse)(nil), "noble.tokenfactory.MsgUnpauseResponse")
-	proto.RegisterType((*MsgConfigureMinterController)(nil), "noble.tokenfactory.MsgConfigureMinterController")
-	proto.RegisterType((*MsgConfigureMinterControllerResponse)(nil), "noble.tokenfactory.MsgConfigureMinterControllerResponse")
-	proto.RegisterType((*MsgRemoveMinterController)(nil), "noble.tokenfactory.MsgRemoveMinterController")
-	proto.RegisterType((*MsgRemoveMinterControllerResponse)(nil), "noble.tokenfactory.MsgRemoveMinterControllerResponse")
+	proto.RegisterType((*MsgChangeAdmin)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgChangeAdmin")
+	proto.RegisterType((*MsgChangeAdminResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgChangeAdminResponse")
+	proto.RegisterType((*MsgUpdateMasterMinter)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdateMasterMinter")
+	proto.RegisterType((*MsgUpdateMasterMinterResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdateMasterMinterResponse")
+	proto.RegisterType((*MsgUpdatePauser)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdatePauser")
+	proto.RegisterType((*MsgUpdatePauserResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdatePauserResponse")
+	proto.RegisterType((*MsgUpdateBlacklister)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdateBlacklister")
+	proto.RegisterType((*MsgUpdateBlacklisterResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdateBlacklisterResponse")
+	proto.RegisterType((*MsgUpdateOwner)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdateOwner")
+	proto.RegisterType((*MsgUpdateOwnerResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUpdateOwnerResponse")
+	proto.RegisterType((*MsgConfigureMinter)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgConfigureMinter")
+	proto.RegisterType((*MsgConfigureMinterResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgConfigureMinterResponse")
+	proto.RegisterType((*MsgRemoveMinter)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgRemoveMinter")
+	proto.RegisterType((*MsgRemoveMinterResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgRemoveMinterResponse")
+	proto.RegisterType((*MsgMint)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgMint")
+	proto.RegisterType((*MsgMintResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgMintResponse")
+	proto.RegisterType((*MsgBurn)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgBurn")
+	proto.RegisterType((*MsgBurnResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgBurnResponse")
+	proto.RegisterType((*MsgBlacklist)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgBlacklist")
+	proto.RegisterType((*MsgBlacklistResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgBlacklistResponse")
+	proto.RegisterType((*MsgUnblacklist)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUnblacklist")
+	proto.RegisterType((*MsgUnblacklistResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUnblacklistResponse")
+	proto.RegisterType((*MsgPause)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgPause")
+	proto.RegisterType((*MsgPauseResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgPauseResponse")
+	proto.RegisterType((*MsgUnpause)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUnpause")
+	proto.RegisterType((*MsgUnpauseResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgUnpauseResponse")
+	proto.RegisterType((*MsgConfigureMinterController)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgConfigureMinterController")
+	proto.RegisterType((*MsgConfigureMinterControllerResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgConfigureMinterControllerResponse")
+	proto.RegisterType((*MsgRemoveMinterController)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgRemoveMinterController")
+	proto.RegisterType((*MsgRemoveMinterControllerResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.MsgRemoveMinterControllerResponse")
 }
 
 func init() { proto.RegisterFile("tokenfactory/tx.proto", fileDescriptor_51ab120c97d57038) }
@@ -1962,7 +1962,7 @@ func _Msg_RemoveMinterController_Handler(srv interface{}, ctx context.Context, d
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "noble.tokenfactory.Msg",
+	ServiceName: "github.com/strangelove-ventures/noble.tokenfactory.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

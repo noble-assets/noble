@@ -1,4 +1,4 @@
-module noble
+module github.com/strangelove-ventures/noble
 
 go 1.18
 

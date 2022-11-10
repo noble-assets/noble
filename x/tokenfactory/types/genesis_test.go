@@ -3,7 +3,7 @@ package types_test
 import (
 	"testing"
 
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 	"github.com/stretchr/testify/require"
 )

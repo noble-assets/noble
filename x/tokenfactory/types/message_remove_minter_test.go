@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/stretchr/testify/require"
-	"noble/testutil/sample"
 )
 
 func TestMsgRemoveMinter_ValidateBasic(t *testing.T) {

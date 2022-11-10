@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 var _ = strconv.Itoa(0)

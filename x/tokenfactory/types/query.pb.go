@@ -1227,34 +1227,34 @@ func (m *QueryGetMintingDenomResponse) GetMintingDenom() MintingDenom {
 }
 
 func init() {
-	proto.RegisterType((*QueryParamsRequest)(nil), "noble.tokenfactory.QueryParamsRequest")
-	proto.RegisterType((*QueryParamsResponse)(nil), "noble.tokenfactory.QueryParamsResponse")
-	proto.RegisterType((*QueryGetBlacklistedRequest)(nil), "noble.tokenfactory.QueryGetBlacklistedRequest")
-	proto.RegisterType((*QueryGetBlacklistedResponse)(nil), "noble.tokenfactory.QueryGetBlacklistedResponse")
-	proto.RegisterType((*QueryAllBlacklistedRequest)(nil), "noble.tokenfactory.QueryAllBlacklistedRequest")
-	proto.RegisterType((*QueryAllBlacklistedResponse)(nil), "noble.tokenfactory.QueryAllBlacklistedResponse")
-	proto.RegisterType((*QueryGetPausedRequest)(nil), "noble.tokenfactory.QueryGetPausedRequest")
-	proto.RegisterType((*QueryGetPausedResponse)(nil), "noble.tokenfactory.QueryGetPausedResponse")
-	proto.RegisterType((*QueryGetMasterMinterRequest)(nil), "noble.tokenfactory.QueryGetMasterMinterRequest")
-	proto.RegisterType((*QueryGetMasterMinterResponse)(nil), "noble.tokenfactory.QueryGetMasterMinterResponse")
-	proto.RegisterType((*QueryGetMintersRequest)(nil), "noble.tokenfactory.QueryGetMintersRequest")
-	proto.RegisterType((*QueryGetMintersResponse)(nil), "noble.tokenfactory.QueryGetMintersResponse")
-	proto.RegisterType((*QueryAllMintersRequest)(nil), "noble.tokenfactory.QueryAllMintersRequest")
-	proto.RegisterType((*QueryAllMintersResponse)(nil), "noble.tokenfactory.QueryAllMintersResponse")
-	proto.RegisterType((*QueryGetPauserRequest)(nil), "noble.tokenfactory.QueryGetPauserRequest")
-	proto.RegisterType((*QueryGetPauserResponse)(nil), "noble.tokenfactory.QueryGetPauserResponse")
-	proto.RegisterType((*QueryGetBlacklisterRequest)(nil), "noble.tokenfactory.QueryGetBlacklisterRequest")
-	proto.RegisterType((*QueryGetBlacklisterResponse)(nil), "noble.tokenfactory.QueryGetBlacklisterResponse")
-	proto.RegisterType((*QueryGetOwnerRequest)(nil), "noble.tokenfactory.QueryGetOwnerRequest")
-	proto.RegisterType((*QueryGetOwnerResponse)(nil), "noble.tokenfactory.QueryGetOwnerResponse")
-	proto.RegisterType((*QueryGetAdminRequest)(nil), "noble.tokenfactory.QueryGetAdminRequest")
-	proto.RegisterType((*QueryGetAdminResponse)(nil), "noble.tokenfactory.QueryGetAdminResponse")
-	proto.RegisterType((*QueryGetMinterControllerRequest)(nil), "noble.tokenfactory.QueryGetMinterControllerRequest")
-	proto.RegisterType((*QueryGetMinterControllerResponse)(nil), "noble.tokenfactory.QueryGetMinterControllerResponse")
-	proto.RegisterType((*QueryAllMinterControllerRequest)(nil), "noble.tokenfactory.QueryAllMinterControllerRequest")
-	proto.RegisterType((*QueryAllMinterControllerResponse)(nil), "noble.tokenfactory.QueryAllMinterControllerResponse")
-	proto.RegisterType((*QueryGetMintingDenomRequest)(nil), "noble.tokenfactory.QueryGetMintingDenomRequest")
-	proto.RegisterType((*QueryGetMintingDenomResponse)(nil), "noble.tokenfactory.QueryGetMintingDenomResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryParamsResponse")
+	proto.RegisterType((*QueryGetBlacklistedRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetBlacklistedRequest")
+	proto.RegisterType((*QueryGetBlacklistedResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetBlacklistedResponse")
+	proto.RegisterType((*QueryAllBlacklistedRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryAllBlacklistedRequest")
+	proto.RegisterType((*QueryAllBlacklistedResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryAllBlacklistedResponse")
+	proto.RegisterType((*QueryGetPausedRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetPausedRequest")
+	proto.RegisterType((*QueryGetPausedResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetPausedResponse")
+	proto.RegisterType((*QueryGetMasterMinterRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMasterMinterRequest")
+	proto.RegisterType((*QueryGetMasterMinterResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMasterMinterResponse")
+	proto.RegisterType((*QueryGetMintersRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMintersRequest")
+	proto.RegisterType((*QueryGetMintersResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMintersResponse")
+	proto.RegisterType((*QueryAllMintersRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryAllMintersRequest")
+	proto.RegisterType((*QueryAllMintersResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryAllMintersResponse")
+	proto.RegisterType((*QueryGetPauserRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetPauserRequest")
+	proto.RegisterType((*QueryGetPauserResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetPauserResponse")
+	proto.RegisterType((*QueryGetBlacklisterRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetBlacklisterRequest")
+	proto.RegisterType((*QueryGetBlacklisterResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetBlacklisterResponse")
+	proto.RegisterType((*QueryGetOwnerRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetOwnerRequest")
+	proto.RegisterType((*QueryGetOwnerResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetOwnerResponse")
+	proto.RegisterType((*QueryGetAdminRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetAdminRequest")
+	proto.RegisterType((*QueryGetAdminResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetAdminResponse")
+	proto.RegisterType((*QueryGetMinterControllerRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMinterControllerRequest")
+	proto.RegisterType((*QueryGetMinterControllerResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMinterControllerResponse")
+	proto.RegisterType((*QueryAllMinterControllerRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryAllMinterControllerRequest")
+	proto.RegisterType((*QueryAllMinterControllerResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryAllMinterControllerResponse")
+	proto.RegisterType((*QueryGetMintingDenomRequest)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMintingDenomRequest")
+	proto.RegisterType((*QueryGetMintingDenomResponse)(nil), "github.com/strangelove-ventures/noble.tokenfactory.QueryGetMintingDenomResponse")
 }
 
 func init() { proto.RegisterFile("tokenfactory/query.proto", fileDescriptor_78516c77a1ba9513) }
@@ -1847,7 +1847,7 @@ func _Query_MintingDenom_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "noble.tokenfactory.Query",
+	ServiceName: "github.com/strangelove-ventures/noble.tokenfactory.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

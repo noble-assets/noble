@@ -67,7 +67,7 @@ func (m *Pauser) GetAddress() string {
 }
 
 func init() {
-	proto.RegisterType((*Pauser)(nil), "noble.tokenfactory.Pauser")
+	proto.RegisterType((*Pauser)(nil), "github.com/strangelove-ventures/noble.tokenfactory.Pauser")
 }
 
 func init() { proto.RegisterFile("tokenfactory/pauser.proto", fileDescriptor_67e2f3360489cd3e) }

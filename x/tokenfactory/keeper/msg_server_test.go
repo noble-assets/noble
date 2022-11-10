@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keepertest "noble/testutil/keeper"
-	"noble/x/tokenfactory/keeper"
-	"noble/x/tokenfactory/types"
+	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
