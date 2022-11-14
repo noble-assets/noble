@@ -513,7 +513,6 @@ func New(
 	// create IBC module from bottom to top of stack
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
-	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
 	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenfactoryKeeper)
 
 	// Add transfer stack to IBC Router
@@ -524,7 +523,6 @@ func New(
 
 	var icaHostStack porttypes.IBCModule
 	icaHostStack = icahost.NewIBCModule(app.ICAHostKeeper)
-	icaHostStack = ibcfee.NewIBCMiddleware(icaHostStack, app.IBCFeeKeeper)
 
 	// Add host to IBC router
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostStack)
