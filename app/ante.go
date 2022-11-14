@@ -1,8 +1,8 @@
 package app
 
 import (
-	tokenfactory "noble/x/tokenfactory/keeper"
-	tokenfactorytypes "noble/x/tokenfactory/types"
+	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

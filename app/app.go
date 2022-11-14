@@ -101,11 +101,11 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"noble/cmd"
-	"noble/docs"
-	tokenfactorymodule "noble/x/tokenfactory"
-	tokenfactorymodulekeeper "noble/x/tokenfactory/keeper"
-	tokenfactorymoduletypes "noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/cmd"
+	"github.com/strangelove-ventures/noble/docs"
+	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
+	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 

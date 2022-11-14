@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 var _ types.QueryServer = Keeper{}

@@ -18,8 +18,8 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
-	"noble/app"
-	"noble/cmd"
+	"github.com/strangelove-ventures/noble/app"
+	"github.com/strangelove-ventures/noble/cmd"
 )
 
 type (

@@ -6,9 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"noble/x/tokenfactory/types"
 )
 
 func (k Keeper) BlacklistedAll(c context.Context, req *types.QueryAllBlacklistedRequest) (*types.QueryAllBlacklistedResponse, error) {

@@ -9,10 +9,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-	"noble/testutil/network"
-	"noble/testutil/nullify"
-	"noble/x/tokenfactory/client/cli"
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/testutil/network"
+	"github.com/strangelove-ventures/noble/testutil/nullify"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 func networkWithMintingDenomObjects(t *testing.T) (*network.Network, types.MintingDenom) {
