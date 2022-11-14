@@ -5,19 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/spf13/cobra"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
@@ -66,6 +65,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	}
 	return genState.Validate()
 }
+
+func (AppModuleBasic) RegisterRESTRoutes(client.Context, *mux.Router) {}
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
