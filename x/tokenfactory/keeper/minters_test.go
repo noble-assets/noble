@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
+	"github.com/strangelove-ventures/noble/testutil/nullify"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
-	keepertest "noble/testutil/keeper"
-	"noble/testutil/nullify"
-	"noble/x/tokenfactory/keeper"
-	"noble/x/tokenfactory/types"
 )
 
 // Prevent strconv unused error

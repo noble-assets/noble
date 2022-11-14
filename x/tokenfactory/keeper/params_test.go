@@ -3,9 +3,9 @@ package keeper_test
 import (
 	"testing"
 
+	testkeeper "github.com/strangelove-ventures/noble/testutil/keeper"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
-	testkeeper "noble/testutil/keeper"
-	"noble/x/tokenfactory/types"
 )
 
 func TestGetParams(t *testing.T) {

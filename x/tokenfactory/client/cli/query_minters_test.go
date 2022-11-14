@@ -12,10 +12,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"noble/testutil/network"
-	"noble/testutil/nullify"
-	"noble/x/tokenfactory/client/cli"
-	"noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/testutil/network"
+	"github.com/strangelove-ventures/noble/testutil/nullify"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 // Prevent strconv unused error
