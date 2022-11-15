@@ -14,8 +14,7 @@ import (
 
 var _ porttypes.IBCModule = &IBCMiddleware{}
 
-// IBCMiddleware implements the ICS26 callbacks for the swap middleware given the
-// swap keeper and the underlying application.
+// IBCMiddleware implements the tokenfactory keeper in order to check againset blacklisted addresses.
 type IBCMiddleware struct {
 	app    porttypes.IBCModule
 	keeper tokenfactory.Keeper
@@ -81,9 +80,9 @@ func (im IBCMiddleware) OnChanCloseConfirm(ctx sdk.Context, portID, channelID st
 	return im.app.OnChanCloseConfirm(ctx, portID, channelID)
 }
 
-// OnRecvPacket checks the memo field on this packet and if the metadata inside's root key indicates this packet
-// should be handled by the swap middleware it attempts to perform a swap. If the swap is successful
-// the underlying application's OnRecvPacket callback is invoked, an ack error is returned otherwise.
+// OnRecvPacket intercepts the packet data and checks the the sender and receiver address against
+// the blacklisted addresses held in the tokenfactory keeper. If the address is found in the blacklist, an
+// acknoledgmet error is returned.
 func (im IBCMiddleware) OnRecvPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
