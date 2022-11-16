@@ -2,11 +2,14 @@ package cosmos_test
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
+	"github.com/icza/dyno"
 	"github.com/strangelove-ventures/ibctest/v3"
 	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v3/ibc"
@@ -17,12 +20,75 @@ import (
 )
 
 const (
-	ownerKeyName  = "owner"
-	ownerMnemonic = "member genre increase friend salmon nest seven custom improve cluster inform axis pact velvet hurt risk point worth excite fiscal omit romance grid evoke"
+	ownerKeyName            = "owner"
+	adminKeyName            = "admin"
+	masterMinterKeyName     = "masterminter"
+	minterKeyName           = "minter"
+	minterControllerKeyName = "mintercontroller"
+	blacklisterKeyName      = "blacklister"
+	pauserKeyName           = "pauser"
+	userKeyName             = "user"
+	aliceKeyName            = "alice"
 
-	masterMinterKeyName = "masterminter"
-	minterKeyName       = "minter"
+	mintingDenom = "uusdc"
 )
+
+var (
+	denomMetadata = []DenomMetadata{
+		{
+			Display: "usdc",
+			Base:    "uusdc",
+			Name:    "USDC",
+			Symbol:  "USDC",
+			DenomUnits: []DenomUnit{
+				{
+					Denom: "uusdc",
+					Aliases: []string{
+						"microusdc",
+					},
+					Exponent: "0",
+				},
+				{
+					Denom: "musdc",
+					Aliases: []string{
+						"milliusdc",
+					},
+					Exponent: "3",
+				},
+				{
+					Denom:    "usdc",
+					Exponent: "6",
+				},
+			},
+		},
+	}
+)
+
+type DenomMetadata struct {
+	Display    string      `json:"display"`
+	Base       string      `json:"base"`
+	Name       string      `json:"name"`
+	Symbol     string      `json:"symbol"`
+	DenomUnits []DenomUnit `json:"denom_units"`
+}
+
+type DenomUnit struct {
+	Denom    string   `json:"denom"`
+	Aliases  []string `json:"aliases"`
+	Exponent string   `json:"exponent"`
+}
+
+type TokenFactoryAddress struct {
+	Address string `json:"address"`
+}
+
+type TokenFactoryPaused struct {
+	Paused bool `json:"paused"`
+}
+
+type TokenFactoryDenom struct {
+	Denom string `json:"denom"`
+}
 
 func NobleEncoding() *simappparams.EncodingConfig {
 	cfg := cosmos.DefaultEncoding()
@@ -85,39 +151,87 @@ func TestNobleChain(t *testing.T) {
 	err = noble.Initialize(ctx, t.Name(), client, network)
 	require.NoError(t, err, "failed to initialize noble chain")
 
-	err = noble.RecoverKey(ctx, ownerKeyName, ownerMnemonic)
-	require.NoError(t, err, "failed to recover owner key")
-
-	ownerAddressBz, err := noble.GetAddress(ctx, ownerKeyName)
-	require.NoError(t, err, "failed to get address for owner key")
-
-	ownerAddress := types.MustBech32ifyAddressBytes(chainCfg.Bech32Prefix, ownerAddressBz)
-
 	kr := keyring.NewInMemory()
 
 	masterMinter := ibctest.BuildWallet(kr, masterMinterKeyName, chainCfg)
 	minter := ibctest.BuildWallet(kr, minterKeyName, chainCfg)
+	owner := ibctest.BuildWallet(kr, ownerKeyName, chainCfg)
+	admin := ibctest.BuildWallet(kr, adminKeyName, chainCfg)
+	minterController := ibctest.BuildWallet(kr, minterControllerKeyName, chainCfg)
+	blacklister := ibctest.BuildWallet(kr, blacklisterKeyName, chainCfg)
+	pauser := ibctest.BuildWallet(kr, pauserKeyName, chainCfg)
+	user := ibctest.BuildWallet(kr, userKeyName, chainCfg)
+	alice := ibctest.BuildWallet(kr, aliceKeyName, chainCfg)
 
 	nobleValidator := noble.Validators[0]
+
+	err = nobleValidator.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
+	require.NoError(t, err, "failed to restore owner key")
+
+	err = nobleValidator.RecoverKey(ctx, masterMinterKeyName, masterMinter.Mnemonic)
+	require.NoError(t, err, "failed to restore masterminter key")
+
+	err = nobleValidator.RecoverKey(ctx, minterControllerKeyName, minterController.Mnemonic)
+	require.NoError(t, err, "failed to restore mintercontroller key")
+
+	err = nobleValidator.RecoverKey(ctx, minterKeyName, minter.Mnemonic)
+	require.NoError(t, err, "failed to restore minter key")
+
+	err = nobleValidator.RecoverKey(ctx, blacklisterKeyName, blacklister.Mnemonic)
+	require.NoError(t, err, "failed to restore blacklister key")
+
+	err = nobleValidator.RecoverKey(ctx, pauserKeyName, pauser.Mnemonic)
+	require.NoError(t, err, "failed to restore pauser key")
+
+	err = nobleValidator.RecoverKey(ctx, userKeyName, user.Mnemonic)
+	require.NoError(t, err, "failed to restore user key")
+
+	err = nobleValidator.RecoverKey(ctx, aliceKeyName, alice.Mnemonic)
+	require.NoError(t, err, "failed to restore alice key")
 
 	err = nobleValidator.InitFullNodeFiles(ctx)
 	require.NoError(t, err, "failed to initialize noble validator config")
 
 	genesisWallets := []ibc.WalletAmount{
 		{
-			Address: ownerAddress,
+			Address: owner.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  100_000_000,
+			Amount:  10_000,
 		},
 		{
 			Address: masterMinter.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  100_000_000,
+			Amount:  10_000,
 		},
 		{
 			Address: minter.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  100_000_000,
+			Amount:  10_000,
+		},
+		{
+			Address: minterController.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: blacklister.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: pauser.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: user.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: alice.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
 		},
 	}
 
@@ -125,6 +239,15 @@ func TestNobleChain(t *testing.T) {
 		err = nobleValidator.AddGenesisAccount(ctx, wallet.Address, []types.Coin{types.NewCoin(wallet.Denom, types.NewIntFromUint64(uint64(wallet.Amount)))})
 		require.NoError(t, err, "failed to add genesis account")
 	}
+
+	genBz, err := nobleValidator.GenesisFileContent(ctx)
+	require.NoError(t, err, "failed to read genesis file")
+
+	genBz, err = modifyGenesisNoble(genBz, owner.Address, admin.Address)
+	require.NoError(t, err, "failed to modify genesis file")
+
+	err = nobleValidator.OverwriteGenesisFile(ctx, genBz)
+	require.NoError(t, err, "failed to write genesis file")
 
 	_, _, err = nobleValidator.ExecBin(ctx, "add-consumer-section")
 	require.NoError(t, err, "failed to add consumer section to noble validator genesis file")
@@ -140,7 +263,189 @@ func TestNobleChain(t *testing.T) {
 	)
 	require.NoError(t, err, "failed to execute update master minter tx")
 
-	err = test.WaitForBlocks(ctx, 20, noble)
+	err = test.WaitForBlocks(ctx, 1, noble)
 	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, masterMinterKeyName,
+		"tokenfactory", "configure-minter-controller", minterController.Address, minter.Address,
+	)
+	require.NoError(t, err, "failed to execute configure minter controller tx")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, minterControllerKeyName,
+		"tokenfactory", "configure-minter", minter.Address, "1000uusdc",
+	)
+	require.NoError(t, err, "failed to execute configure minter tx")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
+		"tokenfactory", "mint", user.Address, "100uusdc",
+	)
+	require.NoError(t, err, "failed to execute mint to user tx")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	userBalance, err := noble.GetBalance(ctx, user.Address, "uusdc")
+	require.NoError(t, err, "failed to get user balance")
+
+	require.Equal(t, int64(100), userBalance, "failed to mint uusdc to user")
+
+	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
+		"tokenfactory", "update-blacklister", blacklister.Address,
+	)
+	require.NoError(t, err, "failed to set blacklister")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, blacklisterKeyName,
+		"tokenfactory", "blacklist", user.Address,
+	)
+	require.NoError(t, err, "failed to blacklist user address")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
+		"tokenfactory", "mint", user.Address, "100uusdc",
+	)
+	require.NoError(t, err, "failed to execute mint to user tx")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	userBalance, err = noble.GetBalance(ctx, user.Address, "uusdc")
+	require.NoError(t, err, "failed to get user balance")
+
+	require.Equal(t, int64(100), userBalance, "user balance should not have incremented while blacklisted")
+
+	_, err = nobleValidator.ExecTx(ctx, blacklisterKeyName,
+		"tokenfactory", "unblacklist", user.Address,
+	)
+	require.NoError(t, err, "failed to unblacklist user address")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
+		"tokenfactory", "mint", user.Address, "100uusdc",
+	)
+	require.NoError(t, err, "failed to execute mint to user tx")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	userBalance, err = noble.GetBalance(ctx, user.Address, "uusdc")
+	require.NoError(t, err, "failed to get user balance")
+
+	require.Equal(t, int64(200), userBalance, "user balance should have increased now that they are no longer blacklisted")
+
+	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
+		"tokenfactory", "update-pauser", pauser.Address,
+	)
+	require.NoError(t, err, "failed to update pauser")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
+		"tokenfactory", "pause",
+	)
+	require.NoError(t, err, "failed to pause mints")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
+		"tokenfactory", "mint", user.Address, "100uusdc",
+	)
+	require.NoError(t, err, "failed to execute mint to user tx")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	userBalance, err = noble.GetBalance(ctx, user.Address, "uusdc")
+	require.NoError(t, err, "failed to get user balance")
+
+	require.Equal(t, int64(200), userBalance, "user balance should not have increased while chain is paused")
+
+	_, err = nobleValidator.ExecTx(ctx, userKeyName,
+		"bank", "send", user.Address, alice.Address, "100uusdc",
+	)
+	require.Error(t, err, "transaction was successful while chain was paused")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	userBalance, err = noble.GetBalance(ctx, user.Address, "uusdc")
+	require.NoError(t, err, "failed to get user balance")
+
+	require.Equal(t, int64(200), userBalance, "user balance should not have changed while chain is paused")
+
+	aliceBalance, err := noble.GetBalance(ctx, alice.Address, "uusdc")
+	require.NoError(t, err, "failed to get alice balance")
+
+	require.Equal(t, int64(0), aliceBalance, "alice balance should not have increased while chain is paused")
+
+	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
+		"tokenfactory", "unpause",
+	)
+	require.NoError(t, err, "failed to unpause mints")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	_, err = nobleValidator.ExecTx(ctx, userKeyName,
+		"bank", "send", user.Address, alice.Address, "100uusdc",
+	)
+	require.NoError(t, err, "failed to send tx bank from user to alice")
+
+	err = test.WaitForBlocks(ctx, 1, noble)
+	require.NoError(t, err, "failed to wait for a block on noble chain")
+
+	userBalance, err = noble.GetBalance(ctx, user.Address, "uusdc")
+	require.NoError(t, err, "failed to get user balance")
+
+	require.Equal(t, int64(100), userBalance, "user balance should not have changed while chain is paused")
+
+	aliceBalance, err = noble.GetBalance(ctx, alice.Address, "uusdc")
+	require.NoError(t, err, "failed to get alice balance")
+
+	require.Equal(t, int64(100), aliceBalance, "alice balance should not have increased while chain is paused")
+
+}
+
+func modifyGenesisNoble(genbz []byte, ownerAddress, adminAddress string) ([]byte, error) {
+	g := make(map[string]interface{})
+	if err := json.Unmarshal(genbz, &g); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "tokenfactory", "owner"); err != nil {
+		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{adminAddress}, "app_state", "tokenfactory", "admin"); err != nil {
+		return nil, fmt.Errorf("failed to set admin address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", "tokenfactory", "paused"); err != nil {
+		return nil, fmt.Errorf("failed to set paused in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryDenom{mintingDenom}, "app_state", "tokenfactory", "mintingDenom"); err != nil {
+		return nil, fmt.Errorf("failed to set minting denom in genesis json: %w", err)
+	}
+
+	if err := dyno.Set(g, denomMetadata, "app_state", "bank", "denom_metadata"); err != nil {
+		return nil, fmt.Errorf("failed to set denom metadata in genesis json: %w", err)
+	}
+
+	out, err := json.Marshal(g)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+	}
+	return out, nil
 
 }

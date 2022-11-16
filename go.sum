@@ -1345,8 +1345,8 @@ github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570/go.mod h1:8
 github.com/steakknife/hamming v0.0.0-20180906055917-c99c65617cd3/go.mod h1:hpGUWaI9xL8pRQCTXQgocU38Qw1g0Us7n5PxxTwTCYU=
 github.com/strangelove-ventures/go-subkey v1.0.7 h1:cOP/Lajg3uxV/tvspu0m6+0Cu+DJgygkEAbx/s+f35I=
 github.com/strangelove-ventures/go-subkey v1.0.7/go.mod h1:E34izOIEm+sZ1YmYawYRquqBQWeZBjVB4pF7bMuhc1c=
-github.com/strangelove-ventures/ibctest/v3 v3.0.0-20221114184853-4ff8042c35cc h1:WfULjVGB84u+XL6MgBS55/4gEk2vPzrxxfOIYC57VHY=
-github.com/strangelove-ventures/ibctest/v3 v3.0.0-20221114184853-4ff8042c35cc/go.mod h1:eBsJH/AxsQjO/ReW0NPHbqzr5WePJZYHqD+Otv+kBvI=
+github.com/strangelove-ventures/ibctest/v3 v3.0.0-20221116020951-dbb1d47def73 h1:TUsJfUi269QRb4q778vLXoMfCmpgkyUQuweYcjANY+w=
+github.com/strangelove-ventures/ibctest/v3 v3.0.0-20221116020951-dbb1d47def73/go.mod h1:eBsJH/AxsQjO/ReW0NPHbqzr5WePJZYHqD+Otv+kBvI=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
