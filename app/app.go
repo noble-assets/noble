@@ -364,8 +364,11 @@ func New(
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
+
+	var transferStack ibcporttypes.IBCModule
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = tokenfactorymodule.NewIBCMiddleware(transferStack, app.TokenfactoryKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, keys[icahosttypes.StoreKey],
@@ -439,7 +442,7 @@ func New(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(ccvconsumertypes.ModuleName, consumerModule)
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
