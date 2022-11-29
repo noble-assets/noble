@@ -71,32 +71,16 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 
 ###############################################################################
-###                              Building                                   ###
+###                              Building / Install                         ###
 ###############################################################################
 
-all: install lint test
+all: install
 
-BUILD_TARGETS := build install
+install: go.sum
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/nobled
 
-build: BUILD_ARGS=-o $(BUILDDIR)/
-
-$(BUILD_TARGETS): go.sum $(BUILDDIR)/
-	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
-
-$(BUILDDIR)/:
-	mkdir -p $(BUILDDIR)/
-
-
-build-linux: go.sum
-	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
-
-go-mod-cache: go.sum
-	@echo "--> Download go modules to local cache"
-	@go mod download
-
-go.sum: go.mod
-	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
+build:
+	go build $(BUILD_FLAGS) -o bin/nobled ./cmd/nobled
 
 
 ###############################################################################
