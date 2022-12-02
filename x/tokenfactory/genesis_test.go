@@ -46,9 +46,6 @@ func TestGenesis(t *testing.T) {
 		Owner: &types.Owner{
 			Address: "98",
 		},
-		Admin: &types.Admin{
-			Address: "45",
-		},
 		MinterControllerList: []types.MinterController{
 			{
 				Minter: "0",
@@ -78,7 +75,6 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.Pauser, got.Pauser)
 	require.Equal(t, genesisState.Blacklister, got.Blacklister)
 	require.Equal(t, genesisState.Owner, got.Owner)
-	require.Equal(t, genesisState.Admin, got.Admin)
 	require.ElementsMatch(t, genesisState.MinterControllerList, got.MinterControllerList)
 	require.Equal(t, genesisState.MintingDenom, got.MintingDenom)
 	// this line is used by starport scaffolding # genesis/test/assert

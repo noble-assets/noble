@@ -24,10 +24,6 @@ var (
 )
 
 const (
-	opWeightMsgChangeAdmin = "op_weight_msg_change_admin"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgChangeAdmin int = 100
-
 	opWeightMsgUpdateMasterMinter = "op_weight_msg_update_master_minter"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateMasterMinter int = 100
@@ -117,17 +113,6 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightMsgChangeAdmin int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgChangeAdmin, &weightMsgChangeAdmin, nil,
-		func(_ *rand.Rand) {
-			weightMsgChangeAdmin = defaultWeightMsgChangeAdmin
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgChangeAdmin,
-		tokenfactorysimulation.SimulateMsgChangeAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	var weightMsgUpdateMasterMinter int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateMasterMinter, &weightMsgUpdateMasterMinter, nil,

@@ -37,10 +37,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Owner != nil {
 		k.SetOwner(ctx, *genState.Owner)
 	}
-	// Set if defined
-	if genState.Admin != nil {
-		k.SetAdmin(ctx, *genState.Admin)
-	}
 	// Set all the minterController
 	for _, elem := range genState.MinterControllerList {
 		k.SetMinterController(ctx, elem)
@@ -83,11 +79,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	owner, found := k.GetOwner(ctx)
 	if found {
 		genesis.Owner = &owner
-	}
-	// Get all admin
-	admin, found := k.GetAdmin(ctx)
-	if found {
-		genesis.Admin = &admin
 	}
 	genesis.MinterControllerList = k.GetAllMinterControllers(ctx)
 	// Get all mintingDenom

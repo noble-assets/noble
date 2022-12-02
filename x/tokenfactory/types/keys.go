@@ -18,7 +18,6 @@ const (
 	PauserKey                 = "Pauser/value/"
 	BlacklisterKey            = "Blacklister/value/"
 	OwnerKey                  = "Owner/value/"
-	AdminKey                  = "Admin/value/"
 	BlacklistedKeyPrefix      = "Blacklisted/value/"
 	MintersKeyPrefix          = "Minters/value/"
 	MinterControllerKeyPrefix = "MinterController/value/"
