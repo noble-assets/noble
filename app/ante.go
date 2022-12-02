@@ -66,13 +66,16 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			var addresses []string
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
-				addresses = append(addresses, m.FromAddress)
+				addresses = append(addresses, m.ToAddress, m.FromAddress)
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					addresses = append(addresses, i.Address)
 				}
+				for _, o := range m.Outputs {
+					addresses = append(addresses, o.Address)
+				}
 			case *transfertypes.MsgTransfer:
-				addresses = append(addresses, m.Sender)
+				addresses = append(addresses, m.Sender, m.Receiver)
 			}
 			for _, address := range addresses {
 				_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
