@@ -9,7 +9,6 @@ option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 // Msg defines the Msg service.
 service Msg {
-      rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
   rpc UpdateMasterMinter(MsgUpdateMasterMinter) returns (MsgUpdateMasterMinterResponse);
   rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
   rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
@@ -25,14 +24,6 @@ service Msg {
   rpc ConfigureMinterController(MsgConfigureMinterController) returns (MsgConfigureMinterControllerResponse);
   rpc RemoveMinterController(MsgRemoveMinterController) returns (MsgRemoveMinterControllerResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
-}
-
-message MsgChangeAdmin {
-  string from = 1;
-  string address = 2;
-}
-
-message MsgChangeAdminResponse {
 }
 
 message MsgUpdateMasterMinter {

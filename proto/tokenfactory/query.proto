@@ -11,7 +11,6 @@ import "tokenfactory/minters.proto";
 import "tokenfactory/pauser.proto";
 import "tokenfactory/blacklister.proto";
 import "tokenfactory/owner.proto";
-import "tokenfactory/admin.proto";
 import "tokenfactory/minter_controller.proto";
 import "tokenfactory/minting_denom.proto";
 // this line is used by starport scaffolding # 1
@@ -65,10 +64,6 @@ service Query {
 // Queries a Owner by index.
 	rpc Owner(QueryGetOwnerRequest) returns (QueryGetOwnerResponse) {
 		option (google.api.http).get = "/noble/tokenfactory/owner";
-	}
-// Queries a Admin by index.
-	rpc Admin(QueryGetAdminRequest) returns (QueryGetAdminResponse) {
-		option (google.api.http).get = "/noble/tokenfactory/admin";
 	}
 // Queries a MinterController by index.
 	rpc MinterController(QueryGetMinterControllerRequest) returns (QueryGetMinterControllerResponse) {
@@ -157,11 +152,7 @@ message QueryGetOwnerRequest {}
 message QueryGetOwnerResponse {
 	Owner owner = 1 [(gogoproto.nullable) = false];
 }
-message QueryGetAdminRequest {}
 
-message QueryGetAdminResponse {
-	Admin admin = 1 [(gogoproto.nullable) = false];
-}
 message QueryGetMinterControllerRequest {
 	  string controllerAddress = 1;
 
