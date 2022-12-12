@@ -91,7 +91,7 @@ type TokenFactoryDenom struct {
 	Denom string `json:"denom"`
 }
 
-func HeroEncoding() *simappparams.EncodingConfig {
+func NobleEncoding() *simappparams.EncodingConfig {
 	cfg := cosmos.DefaultEncoding()
 
 	// register custom types
@@ -100,7 +100,7 @@ func HeroEncoding() *simappparams.EncodingConfig {
 	return &cfg
 }
 
-func TestHeroChain(t *testing.T) {
+func TestNobleChain(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -131,7 +131,7 @@ func TestHeroChain(t *testing.T) {
 				UidGid:     "1025:1025",
 			},
 		},
-		EncodingConfig: HeroEncoding(),
+		EncodingConfig: NobleEncoding(),
 	}
 
 	nv := 1
@@ -245,7 +245,7 @@ func TestHeroChain(t *testing.T) {
 	genBz, err := nobleValidator.GenesisFileContent(ctx)
 	require.NoError(t, err, "failed to read genesis file")
 
-	genBz, err = modifyGenesisHero(genBz, owner.Address, admin.Address)
+	genBz, err = modifyGenesisNoble(genBz, owner.Address, admin.Address)
 	require.NoError(t, err, "failed to modify genesis file")
 
 	err = nobleValidator.OverwriteGenesisFile(ctx, genBz)
@@ -422,7 +422,7 @@ func TestHeroChain(t *testing.T) {
 
 }
 
-func modifyGenesisHero(genbz []byte, ownerAddress, adminAddress string) ([]byte, error) {
+func modifyGenesisNoble(genbz []byte, ownerAddress, adminAddress string) ([]byte, error) {
 	g := make(map[string]interface{})
 	if err := json.Unmarshal(genbz, &g); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
