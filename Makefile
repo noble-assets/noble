@@ -93,3 +93,30 @@ lint:
 
 .PHONY: all build-linux install lint \
 	go-mod-cache build \
+
+###############################################################################
+###                                IBCTEST                                  ###
+###############################################################################
+
+ibctest:
+	cd ibctest && go test -race -v -run TestHeroChain .
+
+
+###############################################################################
+###                                Build Image                              ###
+###############################################################################
+get-heighliner:
+	git clone https://github.com/strangelove-ventures/heighliner.git
+	cd heighliner && go build
+	mv ./heighliner/heighliner $(GOPATH)/bin/
+	rm -rf heighliner
+
+local-image:
+ifeq (,$(shell which heighliner))
+	echo 'heighliner' binary not found. Consider running `make get-heighliner`
+else
+	heighliner build -c noble --local -f ./chains.yaml
+endif
+
+.PHONY: all build-linux install lint \
+	go-mod-cache build ibctest get-heighliner local-image \

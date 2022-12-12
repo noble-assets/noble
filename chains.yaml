@@ -1,0 +1,10 @@
+# This file is used to create docker images using the heighliner binary.
+
+- name: noble
+  language: go
+  build-target: install
+  build-env:
+    - LEDGER_ENABLED=false
+    - BUILD_TAGS=muslc
+  binaries:
+    - /go/bin/nobled
