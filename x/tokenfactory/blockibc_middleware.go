@@ -95,6 +95,12 @@ func (im IBCMiddleware) OnRecvPacket(
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "cannot unmarshal ICS-20 transfer packet data")
 		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
 	}
+
+	mintingDenom := im.keeper.GetMintingDenom(ctx)
+	if data.Denom != mintingDenom.Denom {
+		return im.app.OnRecvPacket(ctx, packet, relayer)
+	}
+
 	_, found := im.keeper.GetBlacklisted(ctx, data.Receiver)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")

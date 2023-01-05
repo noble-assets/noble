@@ -66,13 +66,28 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			var addresses []string
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
-				addresses = append(addresses, m.FromAddress)
+				for _, c := range m.Amount {
+					if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory) {
+						addresses = append(addresses, m.ToAddress, m.FromAddress)
+					}
+				}
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
-					addresses = append(addresses, i.Address)
+					for _, c := range i.Coins {
+						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory) {
+							addresses = append(addresses, i.Address)
+						}
+					}
+				}
+				for _, o := range m.Outputs {
+					for _, c := range o.Coins {
+						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory) {
+							addresses = append(addresses, o.Address)
+						}
+					}
 				}
 			case *transfertypes.MsgTransfer:
-				addresses = append(addresses, m.Sender)
+				addresses = append(addresses, m.Sender, m.Receiver)
 			}
 			for _, address := range addresses {
 				_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
@@ -111,7 +126,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		NewIsBlacklistedDecorator(options.tokenfactorykeeper),
 		NewIsPausedDecorator(options.tokenfactorykeeper),
 		// temporarily disabled so that chain can be tested locally without the provider chain running
-		//consumerante.NewMsgFilterDecorator(options.ConsumerKeeper),
+		// consumerante.NewMsgFilterDecorator(options.ConsumerKeeper),
 		consumerante.NewDisabledModulesDecorator("/cosmos.evidence", "/cosmos.slashing"),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
@@ -128,4 +143,9 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
 
+}
+
+func checkIfMintedAsset(ctx sdk.Context, denom string, k tokenfactory.Keeper) bool {
+	mintingDenom := tokenfactory.Keeper.GetMintingDenom(k, ctx)
+	return mintingDenom.Denom == denom
 }
