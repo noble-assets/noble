@@ -98,7 +98,7 @@ lint:
 ###############################################################################
 
 ibctest:
-	cd ibctest && go test -race -v -run TestHeroChain .
+	cd ibctest && go test -race -v -run TestNobleChain .
 
 
 ###############################################################################

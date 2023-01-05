@@ -99,7 +99,7 @@ func HeroEncoding() *simappparams.EncodingConfig {
 	return &cfg
 }
 
-func TestHeroChain(t *testing.T) {
+func TestNobleChain(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
