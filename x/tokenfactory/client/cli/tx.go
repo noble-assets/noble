@@ -30,7 +30,6 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdChangeAdmin())
 	cmd.AddCommand(CmdUpdateMasterMinter())
 	cmd.AddCommand(CmdUpdatePauser())
 	cmd.AddCommand(CmdUpdateBlacklister())

@@ -54,9 +54,6 @@ func TestGenesisState_Validate(t *testing.T) {
 				Owner: &types.Owner{
 					Address: "73",
 				},
-				Admin: &types.Admin{
-					Address: "1",
-				},
 				MinterControllerList: []types.MinterController{
 					{
 						Minter: "0",
