@@ -18,7 +18,27 @@ Come up with a moniker for your node, then run:
 ```
 nobled init $MONIKER
 ```
- 
+
+## Access Control
+
+|                                | **Admin** | **Owner** | **Minter** | **Master Minter** | **Minter Controller** | **Pauser** | **Blacklister** | **Is Paused<br>(Actions Allowed)** |
+|--------------------------------|:---------:|:---------:|:----------:|:-----------------:|:---------------------:|:----------:|:---------------:|:--------------------------------:|
+| **Blacklist**                  |           |           |            |                   |                       |            |        x        |                 x                |
+| **Unblacklist**                |           |           |            |                   |                       |            |        x        |                 x                |
+| **Burn**                       |           |           |      x     |                   |                       |            |                 |                                  |
+| **Mint**                       |           |           |      x     |                   |                       |            |                 |                                  |
+| **Change Admin**               |     x     |           |            |                   |                       |            |                 |                 x                |
+| **Configure Mint Controller**  |           |           |            |         x         |                       |            |                 |                 x                |
+| **Configure Minter allowance** |           |           |            |                   |           x           |            |                 |                 x                |
+| **Pause**                      |           |           |            |                   |                       |      x     |                 |                 x                |
+| **Unpause**                    |           |           |            |                   |                       |      x     |                 |                 x                |
+| **Remove Minter Controller**   |           |           |            |         x         |                       |            |                 |                 x                |
+| **Remove Minter**              |           |           |            |                   |                       |            |                 |                 x                |
+| **Update Blacklister**         |           |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Master Minter**       |           |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Owner**               |           |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Pauser**              |           |     x     |            |                   |                       |            |                 |                 x                |
+| **Transer Tokens**             |     x     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
  
  
 ## Launch with genesis file or run as standalone chain
