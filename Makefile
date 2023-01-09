@@ -91,5 +91,31 @@ lint:
 	@echo "--> Running linter"
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
+
+
+###############################################################################
+###                                IBCTEST                                  ###
+###############################################################################
+
+ibctest:
+	cd ibctest && go test -race -v -run TestNobleChain .
+
+
+###############################################################################
+###                                Build Image                              ###
+###############################################################################
+get-heighliner:
+	git clone https://github.com/strangelove-ventures/heighliner.git
+	cd heighliner && go build
+	mv ./heighliner/heighliner $(GOPATH)/bin/
+	rm -rf heighliner
+
+local-image:
+ifeq (,$(shell which heighliner))
+	echo 'heighliner' binary not found. Consider running `make get-heighliner`
+else
+	heighliner build -c noble --local -f ./chains.yaml
+endif
+
 .PHONY: all build-linux install lint \
-	go-mod-cache build \
+	go-mod-cache build ibctest get-heighliner local-image \
