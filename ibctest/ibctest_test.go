@@ -90,7 +90,7 @@ type TokenFactoryDenom struct {
 	Denom string `json:"denom"`
 }
 
-func HeroEncoding() *simappparams.EncodingConfig {
+func NobleEncoding() *simappparams.EncodingConfig {
 	cfg := cosmos.DefaultEncoding()
 
 	// register custom types
@@ -130,7 +130,7 @@ func TestNobleChain(t *testing.T) {
 				UidGid:     "1025:1025",
 			},
 		},
-		EncodingConfig: HeroEncoding(),
+		EncodingConfig: NobleEncoding(),
 	}
 
 	nv := 1
@@ -166,6 +166,9 @@ func TestNobleChain(t *testing.T) {
 
 	nobleValidator := noble.Validators[0]
 
+	err = nobleValidator.InitFullNodeFiles(ctx)
+	require.NoError(t, err, "failed to initialize noble validator config")
+
 	err = nobleValidator.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
 	require.NoError(t, err, "failed to restore owner key")
 
@@ -192,9 +195,6 @@ func TestNobleChain(t *testing.T) {
 
 	err = nobleValidator.RecoverKey(ctx, aliceKeyName, alice.Mnemonic)
 	require.NoError(t, err, "failed to restore alice key")
-
-	err = nobleValidator.InitFullNodeFiles(ctx)
-	require.NoError(t, err, "failed to initialize noble validator config")
 
 	genesisWallets := []ibc.WalletAmount{
 		{
@@ -252,7 +252,7 @@ func TestNobleChain(t *testing.T) {
 	genBz, err := nobleValidator.GenesisFileContent(ctx)
 	require.NoError(t, err, "failed to read genesis file")
 
-	genBz, err = modifyGenesisHero(genBz, owner.Address)
+	genBz, err = modifyGenesisNoble(genBz, owner.Address)
 	require.NoError(t, err, "failed to modify genesis file")
 
 	err = nobleValidator.OverwriteGenesisFile(ctx, genBz)
@@ -413,7 +413,7 @@ func TestNobleChain(t *testing.T) {
 
 }
 
-func modifyGenesisHero(genbz []byte, ownerAddress string) ([]byte, error) {
+func modifyGenesisNoble(genbz []byte, ownerAddress string) ([]byte, error) {
 	g := make(map[string]interface{})
 	if err := json.Unmarshal(genbz, &g); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)

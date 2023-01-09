@@ -87,7 +87,9 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				addresses = append(addresses, m.Sender, m.Receiver)
+				if checkIfMintedAsset(ctx, m.Token.Denom, ad.tokenfactory) {
+					addresses = append(addresses, m.Sender, m.Receiver)
+				}
 			}
 			for _, address := range addresses {
 				_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
