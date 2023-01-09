@@ -21,7 +21,7 @@ FROM alpine:latest
 
 ENV USER_HOME /noble
 
-RUN addgroup nobleuser && adduser -S -G nobleuser nobleuser -h "$USER_HOME"
+RUN addgroup --gid 1025 nobleuser && adduser --uid 1025 -S -G nobleuser nobleuser -h "$USER_HOME"
 
 USER nobleuser
 
