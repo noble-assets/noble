@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/cosmos/cosmos-sdk v0.45.9
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/noble v0.0.1
 	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20221116020951-dbb1d47def73
+	github.com/strangelove-ventures/noble v0.0.1
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.23.0
 )
