@@ -3,10 +3,11 @@ module github.com/strangelove-ventures/noble/ibctest
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.9
+	github.com/cosmos/cosmos-sdk v0.45.10
+	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20221116020951-dbb1d47def73
-	github.com/strangelove-ventures/noble v0.0.1
+	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20230110211600-98a0cb3083d0
+	github.com/strangelove-ventures/noble v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.23.0
 )
@@ -34,7 +35,6 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.4 // indirect
-	github.com/cosmos/ibc-go/v3 v3.3.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
@@ -76,6 +76,7 @@ require (
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.0.0-20220222234857-c00d1f31bab3 // indirect
