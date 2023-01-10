@@ -83,6 +83,9 @@ import (
 	ccvconsumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	ccvconsumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	"github.com/spf13/cast"
+	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
+	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -142,6 +145,8 @@ var (
 			),
 		),
 		tokenfactorymodule.AppModuleBasic{},
+		router.AppModuleBasic{},
+
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -205,6 +210,7 @@ type App struct {
 	FeeGrantKeeper    feegrantkeeper.Keeper
 	ConsumerKeeper    ccvconsumerkeeper.Keeper
 	AdminmoduleKeeper adminmodulemodulekeeper.Keeper
+	RouterKeeper      routerkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper         capabilitykeeper.ScopedKeeper
@@ -213,10 +219,14 @@ type App struct {
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
 	TokenfactoryKeeper tokenfactorymodulekeeper.Keeper
+
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
 	mm *module.Manager
+
+	// Modules
+	RouterModule router.AppModule
 
 	// sm is the simulation manager
 	sm           *module.SimulationManager
@@ -439,10 +449,21 @@ func New(
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
+	app.RouterKeeper = routerkeeper.NewKeeper(
+		appCodec, keys[routertypes.StoreKey],
+		app.GetSubspace(routertypes.ModuleName),
+		app.TransferKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		NoopDistributionKeeper{},
+		app.BankKeeper,
+	)
+	app.RouterModule = router.NewAppModule(app.RouterKeeper, transferStack, 0,
+		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferStack).
+		AddRoute(ibctransfertypes.ModuleName, app.RouterModule).
 		AddRoute(ccvconsumertypes.ModuleName, consumerModule)
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -827,4 +848,10 @@ func (app *App) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
 // GetE2eEvidenceKeeper implements the ConsumerApp interface.
 func (app *App) GetE2eEvidenceKeeper() e2e.E2eEvidenceKeeper {
 	return app.EvidenceKeeper
+}
+
+type NoopDistributionKeeper struct{}
+
+func (NoopDistributionKeeper) FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error {
+	panic("Not Implemented!")
 }
