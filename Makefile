@@ -97,8 +97,11 @@ lint:
 ###                                IBCTEST                                  ###
 ###############################################################################
 
-ibctest:
+ibctest-tkn-factory:
 	cd ibctest && go test -race -v -run TestNobleChain .
+
+ibctest-packet-forward:
+	cd ibctest && go test -race -v -run TestPacketForwardMiddleware .
 
 
 ###############################################################################
