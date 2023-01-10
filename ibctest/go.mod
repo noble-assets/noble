@@ -3,7 +3,7 @@ module github.com/strangelove-ventures/noble/ibctest
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.10
+	github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20230110211600-98a0cb3083d0
