@@ -6,9 +6,9 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20230110211600-98a0cb3083d0
+	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20230116195536-501cd29ca805
 	github.com/strangelove-ventures/noble v0.0.0-00010101000000-000000000000
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	go.uber.org/zap v1.23.0
 )
 
@@ -36,7 +36,7 @@ require (
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.4 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
-	github.com/cosmos/ledger-go v0.9.2 // indirect
+	github.com/cosmos/ledger-go v0.9.3 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
@@ -53,8 +53,8 @@ require (
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac // indirect
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
 	github.com/ethereum/go-ethereum v1.10.17 // indirect
-	github.com/felixge/httpsnoop v1.0.1 // indirect
-	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/felixge/httpsnoop v1.0.2 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
@@ -126,21 +126,21 @@ require (
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	github.com/spf13/afero v1.8.2 // indirect
+	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.6.0 // indirect
+	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.13.0 // indirect
+	github.com/spf13/viper v1.14.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220614013038-64ee5596c38a // indirect
 	github.com/tendermint/btcd v0.1.1 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
-	github.com/tendermint/tendermint v0.34.23 // indirect
+	github.com/tendermint/tendermint v0.34.24 // indirect
 	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/vedhavyas/go-subkey v1.0.3 // indirect
-	github.com/zondax/hid v0.9.1-0.20220302062450-5552068d2266 // indirect
+	github.com/zondax/hid v0.9.1 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect

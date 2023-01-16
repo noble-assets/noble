@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"strconv"
 	"time"
 
 	ibctypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
@@ -20,7 +21,8 @@ func CreateMinimalConsumerTestGenesis() *ccvconsumertypes.GenesisState {
 	genesisState.ProviderClientState = ccvprovidertypes.DefaultParams().TemplateClient
 	genesisState.ProviderClientState.ChainId = "noble"
 	genesisState.ProviderClientState.LatestHeight = ibctypes.Height{RevisionNumber: 0, RevisionHeight: 1}
-	genesisState.ProviderClientState.TrustingPeriod = genesisState.Params.UnbondingPeriod / ccvprovidertypes.DefaultTrustingPeriodFraction
+	defaultTrustingPeriod, _ := strconv.ParseFloat(ccvprovidertypes.DefaultTrustingPeriodFraction, 64)
+	genesisState.ProviderClientState.TrustingPeriod = time.Duration(float64(genesisState.Params.UnbondingPeriod.Milliseconds())*defaultTrustingPeriod) * time.Millisecond
 	genesisState.ProviderClientState.UnbondingPeriod = genesisState.Params.UnbondingPeriod
 	genesisState.ProviderClientState.MaxClockDrift = ccvprovidertypes.DefaultMaxClockDrift
 	genesisState.ProviderConsensusState = &ibctmtypes.ConsensusState{
