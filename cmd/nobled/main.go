@@ -12,7 +12,7 @@ import (
 func main() {
 	rootCmd, _ := cmd.NewRootCmd(
 		"noble",
-		"cosmos",
+		"noble",
 		app.DefaultNodeHome,
 		"noble-1",
 		app.ModuleBasics,
