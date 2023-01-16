@@ -3,7 +3,7 @@
 
 It is meant to be run as a Consumer Chain using [Interchain Security](https://github.com/cosmos/interchain-security) (ICS).
 
-Noble chain includes the Tokenfactory Module which allow for the minting of generic assets. 
+Noble chain includes the Tokenfactory Module which allows for the minting of generic assets. 
 
 ## Tokenfactory
 
@@ -63,7 +63,7 @@ nobled start
 
 ## Testing
 
-Testing Noble as a standalone chain (without Provider) is possible by running the blow command prior to starting node:
+Testing Noble as a standalone chain (without Provider) is possible by running the below command prior to starting node:
 
 ```
 nobled add-consumer-section
