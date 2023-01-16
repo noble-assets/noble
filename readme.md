@@ -27,7 +27,7 @@ The Access Control table below shows the functionality tied to each privileged a
 | **Pause**                      |           |           |            |                   |                       |      x     |                 |                 x                |
 | **Unpause**                    |           |           |            |                   |                       |      x     |                 |                 x                |
 | **Remove Minter Controller**   |           |           |            |         x         |                       |            |                 |                 x                |
-| **Remove Minter**              |           |           |            |         x         |                       |            |                 |                 x                |
+| **Remove Minter**              |           |           |            |                   |           x           |            |                 |                 x                |
 | **Update Blacklister**         |           |     x     |            |                   |                       |            |                 |                 x                |
 | **Update Master Minter**       |           |     x     |            |                   |                       |            |                 |                 x                |
 | **Update Owner**               |           |     x     |            |                   |                       |            |                 |                 x                |
