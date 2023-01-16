@@ -119,6 +119,7 @@ func TestNobleChain(t *testing.T) {
 		Bin:            "nobled",
 		Denom:          "token",
 		Bech32Prefix:   "noble",
+		CoinType:       "118",
 		GasPrices:      "0.0token",
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
