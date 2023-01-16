@@ -109,9 +109,7 @@ ibctest-packet-forward:
 ###############################################################################
 get-heighliner:
 	git clone https://github.com/strangelove-ventures/heighliner.git
-	cd heighliner && go build
-	mv ./heighliner/heighliner $(GOPATH)/bin/
-	rm -rf heighliner
+	cd heighliner && go install
 
 local-image:
 ifeq (,$(shell which heighliner))
