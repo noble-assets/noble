@@ -6,6 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	"github.com/strangelove-ventures/ibctest/v3"
 	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
@@ -33,6 +36,119 @@ type ForwardMetadata struct {
 	RefundSequence *uint64       `json:"refund_sequence,omitempty"`
 }
 
+func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (string, error) {
+	_, _, err := val.ExecBin(ctx, "add-consumer-section")
+	if err != nil {
+		return "", err
+	}
+
+	chainCfg := val.Chain.Config()
+
+	kr := keyring.NewInMemory()
+
+	masterMinter := ibctest.BuildWallet(kr, masterMinterKeyName, chainCfg)
+	minter := ibctest.BuildWallet(kr, minterKeyName, chainCfg)
+	owner := ibctest.BuildWallet(kr, ownerKeyName, chainCfg)
+	minterController := ibctest.BuildWallet(kr, minterControllerKeyName, chainCfg)
+	blacklister := ibctest.BuildWallet(kr, blacklisterKeyName, chainCfg)
+	pauser := ibctest.BuildWallet(kr, pauserKeyName, chainCfg)
+	user := ibctest.BuildWallet(kr, userKeyName, chainCfg)
+	user2 := ibctest.BuildWallet(kr, user2KeyName, chainCfg)
+	alice := ibctest.BuildWallet(kr, aliceKeyName, chainCfg)
+
+	err = val.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, masterMinterKeyName, masterMinter.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, minterControllerKeyName, minterController.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, minterKeyName, minter.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, blacklisterKeyName, blacklister.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, pauserKeyName, pauser.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, userKeyName, user.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, user2KeyName, user2.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	err = val.RecoverKey(ctx, aliceKeyName, alice.Mnemonic)
+	if err != nil {
+		return "", err
+	}
+	genesisWallets := []ibc.WalletAmount{
+		{
+			Address: owner.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: masterMinter.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: minter.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: minterController.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: blacklister.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: pauser.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: user.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: user2.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+		{
+			Address: alice.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  10_000,
+		},
+	}
+
+	for _, wallet := range genesisWallets {
+		err = val.AddGenesisAccount(ctx, wallet.Address, []types.Coin{types.NewCoin(wallet.Denom, types.NewIntFromUint64(uint64(wallet.Amount)))})
+		if err != nil {
+			return "", err
+		}
+	}
+	return owner.Address, nil
+}
+
 func TestPacketForwardMiddleware(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping in short mode")
@@ -49,98 +165,188 @@ func TestPacketForwardMiddleware(t *testing.T) {
 
 	repo, version := integration.GetDockerImageInfo()
 
+	var chainA, chainB, chainC, chainD ibc.Chain
+
+	var ownerA, ownerB, ownerC, ownerD string
+
+	nv := 1
+	nf := 0
+	coinType := "118"
+	skipGenTx := true
+
 	cf := ibctest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*ibctest.ChainSpec{
-		{ChainConfig: ibc.ChainConfig{
-			Type:           "cosmos",
-			Name:           "noble",
-			ChainID:        "chainID_A",
-			Bin:            "nobled",
-			Denom:          "token",
-			Bech32Prefix:   "cosmos",
-			GasPrices:      "0.0token",
-			GasAdjustment:  1.1,
-			TrustingPeriod: "504h",
-			NoHostMount:    false,
-			Images: []ibc.DockerImage{
-				{
-					Repository: repo,
-					Version:    version,
-					UidGid:     "1025:1025",
+		{
+			NumValidators: &nv,
+			NumFullNodes:  &nf,
+			ChainConfig: ibc.ChainConfig{
+				Type:           "cosmos",
+				Name:           "noble",
+				ChainID:        chainID_A,
+				Bin:            "nobled",
+				Denom:          "token",
+				Bech32Prefix:   "noble",
+				CoinType:       coinType,
+				SkipGenTx:      &skipGenTx,
+				GasPrices:      "0.0token",
+				GasAdjustment:  1.1,
+				TrustingPeriod: "504h",
+				NoHostMount:    false,
+				Images: []ibc.DockerImage{
+					{
+						Repository: repo,
+						Version:    version,
+						UidGid:     "1025:1025",
+					},
 				},
-			},
-			EncodingConfig: NobleEncoding(),
-		}},
-		{ChainConfig: ibc.ChainConfig{
-			Type:           "cosmos",
-			Name:           "noble",
-			ChainID:        "chainID_B",
-			Bin:            "nobled",
-			Denom:          "token",
-			Bech32Prefix:   "cosmos",
-			GasPrices:      "0.0token",
-			GasAdjustment:  1.1,
-			TrustingPeriod: "504h",
-			NoHostMount:    false,
-			Images: []ibc.DockerImage{
-				{
-					Repository: repo,
-					Version:    version,
-					UidGid:     "1025:1025",
+				EncodingConfig: NobleEncoding(),
+				PreGenesis: func(cc ibc.ChainConfig) error {
+					val := chainA.(*cosmos.CosmosChain).Validators[0]
+					_, _, err := val.ExecBin(ctx, "add-consumer-section")
+					if err != nil {
+						return err
+					}
+					ownerA, err = noblePreGenesis(ctx, val)
+					if err != nil {
+						return err
+					}
+					return nil
 				},
-			},
-		}},
-		{ChainConfig: ibc.ChainConfig{
-			Type:           "cosmos",
-			Name:           "noble",
-			ChainID:        "chainID_C",
-			Bin:            "nobled",
-			Denom:          "token",
-			Bech32Prefix:   "cosmos",
-			GasPrices:      "0.0token",
-			GasAdjustment:  1.1,
-			TrustingPeriod: "504h",
-			NoHostMount:    false,
-			Images: []ibc.DockerImage{
-				{
-					Repository: repo,
-					Version:    version,
-					UidGid:     "1025:1025",
+				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+					return modifyGenesisNoble(b, ownerA)
 				},
-			},
-			EncodingConfig: NobleEncoding(),
-		}},
-		{ChainConfig: ibc.ChainConfig{
-			Type:           "cosmos",
-			Name:           "noble",
-			ChainID:        "chainID_D",
-			Bin:            "nobled",
-			Denom:          "token",
-			Bech32Prefix:   "cosmos",
-			GasPrices:      "0.0token",
-			GasAdjustment:  1.1,
-			TrustingPeriod: "504h",
-			NoHostMount:    false,
-			Images: []ibc.DockerImage{
-				{
-					Repository: repo,
-					Version:    version,
-					UidGid:     "1025:1025",
+			}},
+		{
+			NumValidators: &nv,
+			NumFullNodes:  &nf,
+			ChainConfig: ibc.ChainConfig{
+				Type:           "cosmos",
+				Name:           "noble",
+				ChainID:        chainID_B,
+				Bin:            "nobled",
+				Denom:          "token",
+				Bech32Prefix:   "noble",
+				CoinType:       coinType,
+				SkipGenTx:      &skipGenTx,
+				GasPrices:      "0.0token",
+				GasAdjustment:  1.1,
+				TrustingPeriod: "504h",
+				NoHostMount:    false,
+				Images: []ibc.DockerImage{
+					{
+						Repository: repo,
+						Version:    version,
+						UidGid:     "1025:1025",
+					},
 				},
-			},
-			EncodingConfig: NobleEncoding(),
-		}},
+				EncodingConfig: NobleEncoding(),
+				PreGenesis: func(cc ibc.ChainConfig) error {
+					val := chainB.(*cosmos.CosmosChain).Validators[0]
+					_, _, err := val.ExecBin(ctx, "add-consumer-section")
+					if err != nil {
+						return err
+					}
+					ownerB, err = noblePreGenesis(ctx, val)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+					return modifyGenesisNoble(b, ownerB)
+				},
+			}},
+		{
+			NumValidators: &nv,
+			NumFullNodes:  &nf,
+			ChainConfig: ibc.ChainConfig{
+				Type:           "cosmos",
+				Name:           "noble",
+				ChainID:        chainID_C,
+				Bin:            "nobled",
+				Denom:          "token",
+				Bech32Prefix:   "noble",
+				CoinType:       coinType,
+				SkipGenTx:      &skipGenTx,
+				GasPrices:      "0.0token",
+				GasAdjustment:  1.1,
+				TrustingPeriod: "504h",
+				NoHostMount:    false,
+				Images: []ibc.DockerImage{
+					{
+						Repository: repo,
+						Version:    version,
+						UidGid:     "1025:1025",
+					},
+				},
+				EncodingConfig: NobleEncoding(),
+				PreGenesis: func(cc ibc.ChainConfig) error {
+					val := chainC.(*cosmos.CosmosChain).Validators[0]
+					_, _, err := val.ExecBin(ctx, "add-consumer-section")
+					if err != nil {
+						return err
+					}
+					ownerC, err = noblePreGenesis(ctx, val)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+					return modifyGenesisNoble(b, ownerC)
+				},
+			}},
+		{
+			NumValidators: &nv,
+			NumFullNodes:  &nf,
+			ChainConfig: ibc.ChainConfig{
+				Type:           "cosmos",
+				Name:           "noble",
+				ChainID:        chainID_D,
+				Bin:            "nobled",
+				Denom:          "token",
+				Bech32Prefix:   "noble",
+				CoinType:       coinType,
+				SkipGenTx:      &skipGenTx,
+				GasPrices:      "0.0token",
+				GasAdjustment:  1.1,
+				TrustingPeriod: "504h",
+				NoHostMount:    false,
+				Images: []ibc.DockerImage{
+					{
+						Repository: repo,
+						Version:    version,
+						UidGid:     "1025:1025",
+					},
+				},
+				EncodingConfig: NobleEncoding(),
+				PreGenesis: func(cc ibc.ChainConfig) error {
+					val := chainD.(*cosmos.CosmosChain).Validators[0]
+					_, _, err := val.ExecBin(ctx, "add-consumer-section")
+					if err != nil {
+						return err
+					}
+					ownerD, err = noblePreGenesis(ctx, val)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+					return modifyGenesisNoble(b, ownerD)
+				},
+			}},
 	})
 
 	chains, err := cf.Chains(t.Name())
 	require.NoError(t, err)
 
-	chainA, chainB, chainC, chainD := chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain), chains[2].(*cosmos.CosmosChain), chains[3].(*cosmos.CosmosChain)
+	chainA, chainB, chainC, chainD = chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain), chains[2].(*cosmos.CosmosChain), chains[3].(*cosmos.CosmosChain)
 
 	r := ibctest.NewBuiltinRelayerFactory(
 		ibc.CosmosRly,
 		zaptest.NewLogger(t),
 		// TODO remove this line once default rly version includes https://github.com/cosmos/relayer/pull/1038
-		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "main", rly.RlyDefaultUidGid),
+		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-trusting_period_ics", rly.RlyDefaultUidGid),
 	).Build(t, client, network)
 
 	const pathAB = "ab"
@@ -233,9 +439,9 @@ func TestPacketForwardMiddleware(t *testing.T) {
 	secondHopIBCDenom := secondHopDenomTrace.IBCDenom()
 	thirdHopIBCDenom := thirdHopDenomTrace.IBCDenom()
 
-	firstHopEscrowAccount := transfertypes.GetEscrowAddress(abChan.PortID, abChan.ChannelID).String()
-	secondHopEscrowAccount := transfertypes.GetEscrowAddress(bcChan.PortID, bcChan.ChannelID).String()
-	thirdHopEscrowAccount := transfertypes.GetEscrowAddress(cdChan.PortID, abChan.ChannelID).String()
+	firstHopEscrowAccount := sdk.MustBech32ifyAddressBytes(chainA.Config().Bech32Prefix, transfertypes.GetEscrowAddress(abChan.PortID, abChan.ChannelID))
+	secondHopEscrowAccount := sdk.MustBech32ifyAddressBytes(chainB.Config().Bech32Prefix, transfertypes.GetEscrowAddress(bcChan.PortID, bcChan.ChannelID))
+	thirdHopEscrowAccount := sdk.MustBech32ifyAddressBytes(chainC.Config().Bech32Prefix, transfertypes.GetEscrowAddress(cdChan.PortID, abChan.ChannelID))
 
 	t.Run("multi-hop a->b->c->d", func(t *testing.T) {
 		// Send packet from Chain A->Chain B->Chain C->Chain D
@@ -612,7 +818,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		chainABalance, err := chainA.GetBalance(ctx, userA.Bech32Address(chainA.Config().Bech32Prefix), baIBCDenom)
 		require.NoError(t, err)
 
-		baEscrowBalance, err := chainB.GetBalance(ctx, transfertypes.GetEscrowAddress(baChan.PortID, baChan.ChannelID).String(), chainB.Config().Denom)
+		baEscrowBalance, err := chainB.GetBalance(
+			ctx,
+			sdk.MustBech32ifyAddressBytes(chainB.Config().Bech32Prefix, transfertypes.GetEscrowAddress(baChan.PortID, baChan.ChannelID)),
+			chainB.Config().Denom,
+		)
 		require.NoError(t, err)
 
 		require.Equal(t, transferAmount, chainABalance)
@@ -681,13 +891,25 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		require.Equal(t, int64(0), chainDBalance)
 
 		// assert balances for IBC escrow accounts
-		cdEscrowBalance, err := chainC.GetBalance(ctx, transfertypes.GetEscrowAddress(cdChan.PortID, cdChan.ChannelID).String(), bcIBCDenom)
+		cdEscrowBalance, err := chainC.GetBalance(
+			ctx,
+			sdk.MustBech32ifyAddressBytes(chainC.Config().Bech32Prefix, transfertypes.GetEscrowAddress(cdChan.PortID, cdChan.ChannelID)),
+			bcIBCDenom,
+		)
 		require.NoError(t, err)
 
-		bcEscrowBalance, err := chainB.GetBalance(ctx, transfertypes.GetEscrowAddress(bcChan.PortID, bcChan.ChannelID).String(), chainB.Config().Denom)
+		bcEscrowBalance, err := chainB.GetBalance(
+			ctx,
+			sdk.MustBech32ifyAddressBytes(chainB.Config().Bech32Prefix, transfertypes.GetEscrowAddress(bcChan.PortID, bcChan.ChannelID)),
+			chainB.Config().Denom,
+		)
 		require.NoError(t, err)
 
-		baEscrowBalance, err = chainB.GetBalance(ctx, transfertypes.GetEscrowAddress(baChan.PortID, baChan.ChannelID).String(), chainB.Config().Denom)
+		baEscrowBalance, err = chainB.GetBalance(
+			ctx,
+			sdk.MustBech32ifyAddressBytes(chainB.Config().Bech32Prefix, transfertypes.GetEscrowAddress(baChan.PortID, baChan.ChannelID)),
+			chainB.Config().Denom,
+		)
 		require.NoError(t, err)
 
 		require.Equal(t, transferAmount, baEscrowBalance)
