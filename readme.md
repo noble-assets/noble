@@ -15,24 +15,23 @@ The Access Control table below shows the functionality tied to each privileged a
 
 ## Access Control
 
-|                                | **Admin** | **Owner** | **Minter** | **Master Minter** | **Minter Controller** | **Pauser** | **Blacklister** | **Is Paused<br>(Actions Allowed)** |
-|--------------------------------|:---------:|:---------:|:----------:|:-----------------:|:---------------------:|:----------:|:---------------:|:--------------------------------:|
-| **Blacklist**                  |           |           |            |                   |                       |            |        x        |                 x                |
-| **Unblacklist**                |           |           |            |                   |                       |            |        x        |                 x                |
-| **Burn**                       |           |           |      x     |                   |                       |            |                 |                                  |
-| **Mint**                       |           |           |      x     |                   |                       |            |                 |                                  |
-| **Change Admin**               |     x     |           |            |                   |                       |            |                 |                 x                |
-| **Configure Mint Controller**  |           |           |            |         x         |                       |            |                 |                 x                |
-| **Configure Minter allowance** |           |           |            |                   |           x           |            |                 |                 x                |
-| **Pause**                      |           |           |            |                   |                       |      x     |                 |                 x                |
-| **Unpause**                    |           |           |            |                   |                       |      x     |                 |                 x                |
-| **Remove Minter Controller**   |           |           |            |         x         |                       |            |                 |                 x                |
-| **Remove Minter**              |           |           |            |                   |           x           |            |                 |                 x                |
-| **Update Blacklister**         |           |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Master Minter**       |           |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Owner**               |           |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Pauser**              |           |     x     |            |                   |                       |            |                 |                 x                |
-| **Transer Tokens**             |     x     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
+|                                | **Owner** | **Minter** | **Master Minter** | **Minter Controller** | **Pauser** | **Blacklister** | **Is Paused<br>(Actions Allowed)** |
+|--------------------------------|:---------:|:----------:|:-----------------:|:---------------------:|:----------:|:---------------:|:--------------------------------:|
+| **Blacklist**                  |           |            |                   |                       |            |        x        |                 x                |
+| **Unblacklist**                |           |            |                   |                       |            |        x        |                 x                |
+| **Burn**                       |           |      x     |                   |                       |            |                 |                                  |
+| **Mint**                       |           |      x     |                   |                       |            |                 |                                  |
+| **Configure Mint Controller**  |           |            |         x         |                       |            |                 |                 x                |
+| **Configure Minter allowance** |           |            |                   |           x           |            |                 |                 x                |
+| **Pause**                      |           |            |                   |                       |      x     |                 |                 x                |
+| **Unpause**                    |           |            |                   |                       |      x     |                 |                 x                |
+| **Remove Minter Controller**   |           |            |         x         |                       |            |                 |                 x                |
+| **Remove Minter**              |           |            |                   |           x           |            |                 |                 x                |
+| **Update Blacklister**         |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Master Minter**       |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Owner**               |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Pauser**              |     x     |            |                   |                       |            |                 |                 x                |
+| **Transer Tokens**             |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
  
  
 ## Build and install to go bin path
