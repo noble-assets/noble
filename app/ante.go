@@ -17,16 +17,16 @@ import (
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	tokenfactorykeeper tokenfactory.Keeper
+	tokenFactoryKeeper *tokenfactory.Keeper
 	IBCKeeper          *ibckeeper.Keeper
 	ConsumerKeeper     ibcconsumerkeeper.Keeper
 }
 
 type IsPausedDecorator struct {
-	tokenfactory tokenfactory.Keeper
+	tokenfactory *tokenfactory.Keeper
 }
 
-func NewIsPausedDecorator(tk tokenfactory.Keeper) IsPausedDecorator {
+func NewIsPausedDecorator(tk *tokenfactory.Keeper) IsPausedDecorator {
 	return IsPausedDecorator{
 		tokenfactory: tk,
 	}
@@ -49,10 +49,10 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 }
 
 type IsBlacklistedDecorator struct {
-	tokenfactory tokenfactory.Keeper
+	tokenfactory *tokenfactory.Keeper
 }
 
-func NewIsBlacklistedDecorator(tk tokenfactory.Keeper) IsBlacklistedDecorator {
+func NewIsBlacklistedDecorator(tk *tokenfactory.Keeper) IsBlacklistedDecorator {
 	return IsBlacklistedDecorator{
 		tokenfactory: tk,
 	}
@@ -125,8 +125,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
-		NewIsBlacklistedDecorator(options.tokenfactorykeeper),
-		NewIsPausedDecorator(options.tokenfactorykeeper),
+		NewIsBlacklistedDecorator(options.tokenFactoryKeeper),
+		NewIsPausedDecorator(options.tokenFactoryKeeper),
 		// temporarily disabled so that chain can be tested locally without the provider chain running
 		// consumerante.NewMsgFilterDecorator(options.ConsumerKeeper),
 		consumerante.NewDisabledModulesDecorator("/cosmos.evidence", "/cosmos.slashing"),
@@ -147,7 +147,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 }
 
-func checkIfMintedAsset(ctx sdk.Context, denom string, k tokenfactory.Keeper) bool {
-	mintingDenom := tokenfactory.Keeper.GetMintingDenom(k, ctx)
+func checkIfMintedAsset(ctx sdk.Context, denom string, k *tokenfactory.Keeper) bool {
+	mintingDenom := k.GetMintingDenom(ctx)
 	return mintingDenom.Denom == denom
 }

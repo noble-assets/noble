@@ -10,7 +10,7 @@ import (
 )
 
 // SetMintingDenom set mintingDenom in the store
-func (k Keeper) SetMintingDenom(ctx sdk.Context, mintingDenom types.MintingDenom) {
+func (k *Keeper) SetMintingDenom(ctx sdk.Context, mintingDenom types.MintingDenom) {
 	_, found := k.bankKeeper.GetDenomMetaData(ctx, mintingDenom.Denom)
 	if !found {
 		panic(fmt.Sprintf("Denom metadata for '%s' should be set", mintingDenom.Denom))
@@ -21,7 +21,7 @@ func (k Keeper) SetMintingDenom(ctx sdk.Context, mintingDenom types.MintingDenom
 }
 
 // GetMintingDenom returns mintingDenom
-func (k Keeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom) {
+func (k *Keeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
 
 	b := store.Get(types.KeyPrefix(types.MintingDenomKey))

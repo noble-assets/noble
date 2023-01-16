@@ -46,15 +46,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/x/upgrade"
-	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
@@ -76,6 +70,15 @@ import (
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	paramauthority "github.com/strangelove-ventures/paramauthority/x/params"
+	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
+	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types"
+	paramauthorityupgrade "github.com/strangelove-ventures/paramauthority/x/upgrade"
+	paramauthorityupgradekeeper "github.com/strangelove-ventures/paramauthority/x/upgrade/keeper"
+	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
+
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -109,12 +112,12 @@ var (
 		authzmodule.AppModuleBasic{},
 		bank.AppModuleBasic{},
 		capability.AppModuleBasic{},
-		params.AppModuleBasic{},
+		paramauthority.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
+		paramauthorityupgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		ica.AppModuleBasic{},
@@ -177,8 +180,8 @@ type App struct {
 	CapabilityKeeper    *capabilitykeeper.Keeper
 	SlashingKeeper      slashingkeeper.Keeper
 	CrisisKeeper        crisiskeeper.Keeper
-	UpgradeKeeper       upgradekeeper.Keeper
-	ParamsKeeper        paramskeeper.Keeper
+	UpgradeKeeper       paramauthorityupgradekeeper.Keeper
+	ParamsKeeper        paramauthoritykeeper.Keeper
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      ibctransferkeeper.Keeper
@@ -193,7 +196,7 @@ type App struct {
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
-	TokenfactoryKeeper tokenfactorymodulekeeper.Keeper
+	TokenFactoryKeeper *tokenfactorymodulekeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -229,13 +232,16 @@ func New(
 
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey,
-		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
+		paramauthoritytypes.StoreKey, ibchost.StoreKey, paramauthorityupgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, ccvconsumertypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
-	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
+	tkeys := sdk.NewTransientStoreKeys(paramauthoritytypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+
+	// TODO CHANGE THIS
+	authority := "cosmos1kn4tkqezr3c7zc43lsu5r4p2l2qqf4mp3hnjax"
 
 	app := &App{
 		BaseApp:           bApp,
@@ -251,12 +257,13 @@ func New(
 	app.ParamsKeeper = initParamsKeeper(
 		appCodec,
 		cdc,
-		keys[paramstypes.StoreKey],
-		tkeys[paramstypes.TStoreKey],
+		keys[paramauthoritytypes.StoreKey],
+		tkeys[paramauthoritytypes.TStoreKey],
+		authority,
 	)
 
 	// set the BaseApp's parameter store
-	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()))
+	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramauthoritykeeper.ConsensusParamsKeyTable()))
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -315,12 +322,13 @@ func New(
 		app.AccountKeeper,
 	)
 
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(
+	app.UpgradeKeeper = paramauthorityupgradekeeper.NewKeeper(
 		skipUpgradeHeights,
-		keys[upgradetypes.StoreKey],
+		keys[paramauthorityupgradetypes.StoreKey],
 		appCodec,
 		homePath,
 		app.BaseApp,
+		authority,
 	)
 
 	// ... other modules keepers
@@ -405,14 +413,14 @@ func New(
 	app.ConsumerKeeper = *app.ConsumerKeeper.SetHooks(app.SlashingKeeper.Hooks())
 	consumerModule := ccvconsumer.NewAppModule(app.ConsumerKeeper)
 
-	app.TokenfactoryKeeper = *tokenfactorymodulekeeper.NewKeeper(
+	app.TokenFactoryKeeper = tokenfactorymodulekeeper.NewKeeper(
 		appCodec,
 		keys[tokenfactorymoduletypes.StoreKey],
 		app.GetSubspace(tokenfactorymoduletypes.ModuleName),
 
 		app.BankKeeper,
 	)
-	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenfactoryKeeper, app.AccountKeeper, app.BankKeeper)
+	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -423,7 +431,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = tokenfactorymodule.NewIBCMiddleware(transferStack, app.TokenfactoryKeeper)
+	transferStack = tokenfactorymodule.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -451,10 +459,10 @@ func New(
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.ConsumerKeeper),
-		upgrade.NewAppModule(app.UpgradeKeeper),
+		paramauthorityupgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		params.NewAppModule(app.ParamsKeeper),
+		paramauthority.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
 		consumerModule,
@@ -469,7 +477,7 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		// upgrades should be run first
-		upgradetypes.ModuleName,
+		paramauthorityupgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -482,7 +490,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
+		paramauthoritytypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
@@ -502,8 +510,8 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
-		upgradetypes.ModuleName,
+		paramauthoritytypes.ModuleName,
+		paramauthorityupgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
@@ -528,8 +536,8 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
-		upgradetypes.ModuleName,
+		paramauthoritytypes.ModuleName,
+		paramauthorityupgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
@@ -553,7 +561,7 @@ func New(
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.ConsumerKeeper),
-		params.NewAppModule(app.ParamsKeeper),
+		paramauthority.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
@@ -580,7 +588,7 @@ func New(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			tokenfactorykeeper: app.TokenfactoryKeeper,
+			tokenFactoryKeeper: app.TokenFactoryKeeper,
 			IBCKeeper:          app.IBCKeeper,
 			ConsumerKeeper:     app.ConsumerKeeper,
 		},
@@ -746,8 +754,8 @@ func GetMaccPerms() map[string][]string {
 }
 
 // initParamsKeeper init params keeper and its subspaces
-func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
-	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
+func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey, authority string) paramauthoritykeeper.Keeper {
+	paramsKeeper := paramauthoritykeeper.NewKeeper(appCodec, legacyAmino, key, tkey, authority)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
