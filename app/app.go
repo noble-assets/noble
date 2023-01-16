@@ -7,10 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	adminmodulemodule "github.com/cosmos/admin-module/x/adminmodule"
-	adminmodulecli "github.com/cosmos/admin-module/x/adminmodule/client/cli"
-	adminmodulemodulekeeper "github.com/cosmos/admin-module/x/adminmodule/keeper"
-	adminmodulemoduletypes "github.com/cosmos/admin-module/x/adminmodule/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -50,18 +46,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	proposaltypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
-	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
@@ -73,7 +64,6 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
@@ -83,6 +73,9 @@ import (
 	ccvconsumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	ccvconsumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	"github.com/spf13/cast"
+	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
+	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
+	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -127,21 +120,9 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		ccvconsumer.AppModuleBasic{},
-		adminmodulemodule.NewAppModuleBasic(
-			govclient.NewProposalHandler(
-				adminmodulecli.NewSubmitParamChangeProposalTxCmd,
-				paramsrest.ProposalRESTHandler,
-			),
-			govclient.NewProposalHandler(
-				adminmodulecli.NewCmdSubmitUpgradeProposal,
-				upgraderest.ProposalRESTHandler,
-			),
-			govclient.NewProposalHandler(
-				adminmodulecli.NewCmdSubmitCancelUpgradeProposal,
-				upgraderest.ProposalCancelRESTHandler,
-			),
-		),
 		tokenfactorymodule.AppModuleBasic{},
+		packetforward.AppModuleBasic{},
+
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -190,21 +171,21 @@ type App struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper     authkeeper.AccountKeeper
-	AuthzKeeper       authzkeeper.Keeper
-	BankKeeper        bankkeeper.Keeper
-	CapabilityKeeper  *capabilitykeeper.Keeper
-	SlashingKeeper    slashingkeeper.Keeper
-	CrisisKeeper      crisiskeeper.Keeper
-	UpgradeKeeper     upgradekeeper.Keeper
-	ParamsKeeper      paramskeeper.Keeper
-	IBCKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	EvidenceKeeper    evidencekeeper.Keeper
-	TransferKeeper    ibctransferkeeper.Keeper
-	ICAHostKeeper     icahostkeeper.Keeper
-	FeeGrantKeeper    feegrantkeeper.Keeper
-	ConsumerKeeper    ccvconsumerkeeper.Keeper
-	AdminmoduleKeeper adminmodulemodulekeeper.Keeper
+	AccountKeeper       authkeeper.AccountKeeper
+	AuthzKeeper         authzkeeper.Keeper
+	BankKeeper          bankkeeper.Keeper
+	CapabilityKeeper    *capabilitykeeper.Keeper
+	SlashingKeeper      slashingkeeper.Keeper
+	CrisisKeeper        crisiskeeper.Keeper
+	UpgradeKeeper       upgradekeeper.Keeper
+	ParamsKeeper        paramskeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	EvidenceKeeper      evidencekeeper.Keeper
+	TransferKeeper      ibctransferkeeper.Keeper
+	ICAHostKeeper       icahostkeeper.Keeper
+	FeeGrantKeeper      feegrantkeeper.Keeper
+	ConsumerKeeper      ccvconsumerkeeper.Keeper
+	PacketForwardKeeper *packetforwardkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper         capabilitykeeper.ScopedKeeper
@@ -213,6 +194,7 @@ type App struct {
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
 	TokenfactoryKeeper tokenfactorymodulekeeper.Keeper
+
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -249,7 +231,7 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, ccvconsumertypes.StoreKey,
-		adminmodulemoduletypes.StoreKey, tokenfactorymoduletypes.StoreKey,
+		tokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -352,12 +334,24 @@ func New(
 		scopedIBCKeeper,
 	)
 
+	app.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
+		appCodec,
+		keys[packetforwardtypes.StoreKey],
+		app.GetSubspace(packetforwardtypes.ModuleName),
+		app.TransferKeeper, // will be zero-value here. reference set later on with SetTransferKeeper.
+		app.IBCKeeper.ChannelKeeper,
+		NoopDistributionKeeper{},
+		app.BankKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.IBCKeeper.ChannelKeeper,
+	)
+
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
+		app.PacketForwardKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -365,10 +359,9 @@ func New(
 		scopedTransferKeeper,
 	)
 
-	var transferStack ibcporttypes.IBCModule
+	app.PacketForwardKeeper.SetTransferKeeper(app.TransferKeeper)
+
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	transferStack = transfer.NewIBCModule(app.TransferKeeper)
-	transferStack = tokenfactorymodule.NewIBCMiddleware(transferStack, app.TokenfactoryKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, keys[icahosttypes.StoreKey],
@@ -412,32 +405,25 @@ func New(
 	app.ConsumerKeeper = *app.ConsumerKeeper.SetHooks(app.SlashingKeeper.Hooks())
 	consumerModule := ccvconsumer.NewAppModule(app.ConsumerKeeper)
 
-	adminRouter := govtypes.NewRouter()
-	adminRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(proposaltypes.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
-
-	app.AdminmoduleKeeper = *adminmodulemodulekeeper.NewKeeper(
-		appCodec,
-		keys[adminmodulemoduletypes.StoreKey],
-		keys[adminmodulemoduletypes.MemStoreKey],
-		adminRouter,
-		IsProposalWhitelisted,
-	)
-	adminModule := adminmodulemodule.NewAppModule(appCodec, app.AdminmoduleKeeper)
-
 	app.TokenfactoryKeeper = *tokenfactorymodulekeeper.NewKeeper(
 		appCodec,
 		keys[tokenfactorymoduletypes.StoreKey],
-		keys[tokenfactorymoduletypes.MemStoreKey],
 		app.GetSubspace(tokenfactorymoduletypes.ModuleName),
 
 		app.BankKeeper,
 	)
 	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenfactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
-	// this line is used by starport scaffolding # stargate/app/keeperDefinition
+	var transferStack ibcporttypes.IBCModule
+	transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = packetforward.NewIBCMiddleware(
+		transferStack,
+		app.PacketForwardKeeper,
+		0,
+		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
+		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
+	)
+	transferStack = tokenfactorymodule.NewIBCMiddleware(transferStack, app.TokenfactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -472,8 +458,8 @@ func New(
 		transferModule,
 		icaModule,
 		consumerModule,
-		adminModule,
 		tokenfactoryModule,
+		packetforward.NewAppModule(app.PacketForwardKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -493,12 +479,12 @@ func New(
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
-		adminmodulemoduletypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
@@ -508,6 +494,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -519,7 +506,6 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
-		adminmodulemoduletypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
@@ -538,6 +524,7 @@ func New(
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -545,7 +532,6 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
-		adminmodulemoduletypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -768,6 +754,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
+	paramsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(ccvconsumertypes.ModuleName)
@@ -827,4 +814,10 @@ func (app *App) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
 // GetE2eEvidenceKeeper implements the ConsumerApp interface.
 func (app *App) GetE2eEvidenceKeeper() e2e.E2eEvidenceKeeper {
 	return app.EvidenceKeeper
+}
+
+type NoopDistributionKeeper struct{}
+
+func (NoopDistributionKeeper) FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error {
+	panic("Not Implemented!")
 }

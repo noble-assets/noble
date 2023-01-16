@@ -5,3 +5,5 @@ release/
 .vscode/
 .DS_Store
 play_sh/
+/heighliner*
+
