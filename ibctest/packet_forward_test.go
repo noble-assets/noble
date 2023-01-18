@@ -6,8 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	"github.com/strangelove-ventures/ibctest/v3"
@@ -36,119 +34,6 @@ type ForwardMetadata struct {
 	RefundSequence *uint64       `json:"refund_sequence,omitempty"`
 }
 
-func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (string, error) {
-	_, _, err := val.ExecBin(ctx, "add-consumer-section")
-	if err != nil {
-		return "", err
-	}
-
-	chainCfg := val.Chain.Config()
-
-	kr := keyring.NewInMemory()
-
-	masterMinter := ibctest.BuildWallet(kr, masterMinterKeyName, chainCfg)
-	minter := ibctest.BuildWallet(kr, minterKeyName, chainCfg)
-	owner := ibctest.BuildWallet(kr, ownerKeyName, chainCfg)
-	minterController := ibctest.BuildWallet(kr, minterControllerKeyName, chainCfg)
-	blacklister := ibctest.BuildWallet(kr, blacklisterKeyName, chainCfg)
-	pauser := ibctest.BuildWallet(kr, pauserKeyName, chainCfg)
-	user := ibctest.BuildWallet(kr, userKeyName, chainCfg)
-	user2 := ibctest.BuildWallet(kr, user2KeyName, chainCfg)
-	alice := ibctest.BuildWallet(kr, aliceKeyName, chainCfg)
-
-	err = val.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, masterMinterKeyName, masterMinter.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, minterControllerKeyName, minterController.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, minterKeyName, minter.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, blacklisterKeyName, blacklister.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, pauserKeyName, pauser.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, userKeyName, user.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, user2KeyName, user2.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	err = val.RecoverKey(ctx, aliceKeyName, alice.Mnemonic)
-	if err != nil {
-		return "", err
-	}
-	genesisWallets := []ibc.WalletAmount{
-		{
-			Address: owner.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: masterMinter.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: minter.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: minterController.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: blacklister.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: pauser.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: user.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: user2.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-		{
-			Address: alice.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  10_000,
-		},
-	}
-
-	for _, wallet := range genesisWallets {
-		err = val.AddGenesisAccount(ctx, wallet.Address, []types.Coin{types.NewCoin(wallet.Denom, types.NewIntFromUint64(uint64(wallet.Amount)))})
-		if err != nil {
-			return "", err
-		}
-	}
-	return owner.Address, nil
-}
-
 func TestPacketForwardMiddleware(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping in short mode")
@@ -165,8 +50,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 
 	repo, version := integration.GetDockerImageInfo()
 
-	var chainA, chainB, chainC, chainD ibc.Chain
-
+	var chainA, chainB, chainC, chainD *cosmos.CosmosChain
 	var ownerA, ownerB, ownerC, ownerD string
 
 	nv := 1
@@ -200,15 +84,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				},
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainA.(*cosmos.CosmosChain).Validators[0]
+					val := chainA.Validators[0]
 					_, _, err := val.ExecBin(ctx, "add-consumer-section")
 					if err != nil {
 						return err
 					}
-					ownerA, err = noblePreGenesis(ctx, val)
+					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
 					}
+					ownerA = roles.Owner.Address
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -240,15 +125,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				},
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainB.(*cosmos.CosmosChain).Validators[0]
+					val := chainB.Validators[0]
 					_, _, err := val.ExecBin(ctx, "add-consumer-section")
 					if err != nil {
 						return err
 					}
-					ownerB, err = noblePreGenesis(ctx, val)
+					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
 					}
+					ownerB = roles.Owner.Address
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -280,15 +166,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				},
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainC.(*cosmos.CosmosChain).Validators[0]
+					val := chainC.Validators[0]
 					_, _, err := val.ExecBin(ctx, "add-consumer-section")
 					if err != nil {
 						return err
 					}
-					ownerC, err = noblePreGenesis(ctx, val)
+					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
 					}
+					ownerC = roles.Owner.Address
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -320,15 +207,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				},
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainD.(*cosmos.CosmosChain).Validators[0]
+					val := chainD.Validators[0]
 					_, _, err := val.ExecBin(ctx, "add-consumer-section")
 					if err != nil {
 						return err
 					}
-					ownerD, err = noblePreGenesis(ctx, val)
+					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
 					}
+					ownerD = roles.Owner.Address
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
