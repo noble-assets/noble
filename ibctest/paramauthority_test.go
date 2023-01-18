@@ -2,11 +2,13 @@ package ibctest_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/icza/dyno"
 	"github.com/strangelove-ventures/ibctest/v3"
 	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v3/ibc"
@@ -219,4 +221,23 @@ func TestNobleParamAuthority(t *testing.T) {
 			testParamsCase(t, ctx, broadcaster, testCase)
 		})
 	}
+
+	height, err := noble.Height(ctx)
+	require.NoError(t, err, "failed to get noble height")
+
+	err = noble.StopAllNodes(ctx)
+	require.NoError(t, err, "failed to stop noble chain")
+
+	state, err := noble.ExportState(ctx, int64(height))
+	require.NoError(t, err, "failed to export noble state")
+
+	var gs interface{}
+	err = json.Unmarshal([]byte(state), &gs)
+	require.NoError(t, err, "failed to unmarshal state export")
+
+	authority, err := dyno.Get(gs, "app_state", "params", "params", "authority")
+	require.NoError(t, err, "failed to get authority from state export")
+
+	require.Equal(t, roles.User2.Address, authority, "authority does not match")
+
 }
