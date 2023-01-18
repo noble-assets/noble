@@ -422,6 +422,12 @@ func modifyGenesisNoble(genbz []byte, ownerAddress string) ([]byte, error) {
 	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "tokenfactory", "owner"); err != nil {
 		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
+	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "params", "authority"); err != nil {
+		return nil, fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "upgrade", "authority"); err != nil {
+		return nil, fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
+	}
 	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", "tokenfactory", "paused"); err != nil {
 		return nil, fmt.Errorf("failed to set paused in genesis json: %w", err)
 	}

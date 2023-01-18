@@ -240,9 +240,6 @@ func New(
 	tkeys := sdk.NewTransientStoreKeys(paramauthoritytypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	// TODO CHANGE THIS
-	authority := "cosmos1kn4tkqezr3c7zc43lsu5r4p2l2qqf4mp3hnjax"
-
 	app := &App{
 		BaseApp:           bApp,
 		cdc:               cdc,
@@ -259,7 +256,6 @@ func New(
 		cdc,
 		keys[paramauthoritytypes.StoreKey],
 		tkeys[paramauthoritytypes.TStoreKey],
-		authority,
 	)
 
 	// set the BaseApp's parameter store
@@ -328,7 +324,6 @@ func New(
 		appCodec,
 		homePath,
 		app.BaseApp,
-		authority,
 	)
 
 	// ... other modules keepers
@@ -754,8 +749,8 @@ func GetMaccPerms() map[string][]string {
 }
 
 // initParamsKeeper init params keeper and its subspaces
-func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey, authority string) paramauthoritykeeper.Keeper {
-	paramsKeeper := paramauthoritykeeper.NewKeeper(appCodec, legacyAmino, key, tkey, authority)
+func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramauthoritykeeper.Keeper {
+	paramsKeeper := paramauthoritykeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)

@@ -15,7 +15,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.1
-	github.com/strangelove-ventures/paramauthority v0.0.0-20230117003501-96172c45dba0
+	github.com/strangelove-ventures/paramauthority v0.0.0-20230118021040-ceef566989a8
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
