@@ -13,7 +13,9 @@ import (
 )
 
 func createTestMintingDenom(keeper *keeper.Keeper, ctx sdk.Context) types.MintingDenom {
-	item := types.MintingDenom{}
+	item := types.MintingDenom{
+		Denom: "abcd",
+	}
 	keeper.SetMintingDenom(ctx, item)
 	return item
 }

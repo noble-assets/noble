@@ -19,7 +19,7 @@ var _ = strconv.IntSize
 func createNMinterController(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.MinterController {
 	items := make([]types.MinterController, n)
 	for i := range items {
-		items[i].Minter = strconv.Itoa(i)
+		items[i].Controller = strconv.Itoa(i)
 
 		keeper.SetMinterController(ctx, items[i])
 	}
@@ -31,7 +31,7 @@ func TestMinterControllerGet(t *testing.T) {
 	items := createNMinterController(keeper, ctx, 10)
 	for _, item := range items {
 		rst, found := keeper.GetMinterController(ctx,
-			item.Minter,
+			item.Controller,
 		)
 		require.True(t, found)
 		require.Equal(t,

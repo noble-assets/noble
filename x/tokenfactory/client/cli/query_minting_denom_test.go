@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
@@ -21,12 +22,25 @@ func networkWithMintingDenomObjects(t *testing.T) (*network.Network, types.Minti
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
-	mintingDenom := &types.MintingDenom{}
-	nullify.Fill(&mintingDenom)
-	state.MintingDenom = mintingDenom
-	buf, err := cfg.Codec.MarshalJSON(&state)
+	testDenom := "test"
+
+	state.MintingDenom = &types.MintingDenom{
+		Denom: testDenom,
+	}
+
+	bankState := banktypes.DefaultGenesisState()
+	bankState.DenomMetadata = []banktypes.Metadata{{
+		Base: testDenom,
+	}}
+
+	buf, err := cfg.Codec.MarshalJSON(bankState)
+	require.NoError(t, err)
+	cfg.GenesisState[banktypes.ModuleName] = buf
+
+	buf, err = cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
+
 	return network.New(t, cfg), *state.MintingDenom
 }
 

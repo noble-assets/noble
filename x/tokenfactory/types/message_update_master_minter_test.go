@@ -15,15 +15,26 @@ func TestMsgUpdateMasterMinter_ValidateBasic(t *testing.T) {
 		err  error
 	}{
 		{
-			name: "invalid address",
+			name: "invalid from",
 			msg: MsgUpdateMasterMinter{
-				From: "invalid_address",
+				From:    "invalid_address",
+				Address: sample.AccAddress(),
 			},
 			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
+		},
+		{
+			name: "invalid address",
 			msg: MsgUpdateMasterMinter{
-				From: sample.AccAddress(),
+				From:    sample.AccAddress(),
+				Address: "invalid_address",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		{
+			name: "valid address and from",
+			msg: MsgUpdateMasterMinter{
+				From:    sample.AccAddress(),
+				Address: sample.AccAddress(),
 			},
 		},
 	}

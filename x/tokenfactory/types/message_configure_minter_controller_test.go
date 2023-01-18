@@ -15,15 +15,38 @@ func TestMsgConfigureMinterController_ValidateBasic(t *testing.T) {
 		err  error
 	}{
 		{
-			name: "invalid address",
+			name: "invalid from",
 			msg: MsgConfigureMinterController{
-				From: "invalid_address",
+				From:       "invalid_address",
+				Controller: sample.AccAddress(),
+				Minter:     sample.AccAddress(),
 			},
 			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
+		},
+		{
+			name: "invalid controller",
 			msg: MsgConfigureMinterController{
-				From: sample.AccAddress(),
+				From:       sample.AccAddress(),
+				Controller: "invalid_address",
+				Minter:     sample.AccAddress(),
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		{
+			name: "invalid minter",
+			msg: MsgConfigureMinterController{
+				From:       sample.AccAddress(),
+				Controller: sample.AccAddress(),
+				Minter:     "invalid_address",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		{
+			name: "valid address, minter, and controller",
+			msg: MsgConfigureMinterController{
+				From:       sample.AccAddress(),
+				Controller: sample.AccAddress(),
+				Minter:     sample.AccAddress(),
 			},
 		},
 	}
