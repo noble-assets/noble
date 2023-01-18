@@ -61,8 +61,8 @@ func TestGenesis(t *testing.T) {
 	}
 
 	k, ctx := keepertest.TokenfactoryKeeper(t)
-	tokenfactory.InitGenesis(ctx, *k, genesisState)
-	got := tokenfactory.ExportGenesis(ctx, *k)
+	tokenfactory.InitGenesis(ctx, k, genesisState)
+	got := tokenfactory.ExportGenesis(ctx, k)
 	require.NotNil(t, got)
 
 	nullify.Fill(&genesisState)

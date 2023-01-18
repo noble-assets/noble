@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.18-alpine as BUILD
+FROM --platform=$BUILDPLATFORM golang:1.19-alpine as BUILD
 
 WORKDIR /noble
 

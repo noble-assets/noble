@@ -103,6 +103,9 @@ ibctest-tkn-factory:
 ibctest-packet-forward:
 	cd ibctest && go test -race -v -run TestPacketForwardMiddleware .
 
+ibctest-paramauthority:
+	cd ibctest && go test -race -v -run TestNobleParamAuthority .
+
 
 ###############################################################################
 ###                                Build Image                              ###

@@ -82,9 +82,9 @@ func DefaultConfig() network.Config {
 				baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 			)
 		},
-		GenesisState:    app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
-		TimeoutCommit:   2 * time.Second,
-		ChainID:         "chain-" + tmrand.NewRand().Str(6),
+		GenesisState:  app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
+		TimeoutCommit: 2 * time.Second,
+		ChainID:       "chain-" + tmrand.NewRand().Str(6),
 		// Some changes are introduced to make the tests run as if Noble is a standalone chain.
 		// This will only work if NumValidators is set to 1.
 		NumValidators:   1,
