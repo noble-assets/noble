@@ -323,6 +323,7 @@ func New(
 		appCodec,
 		homePath,
 		app.BaseApp,
+		app.GetSubspace(upgradetypes.ModuleName),
 	)
 
 	// ... other modules keepers
@@ -761,6 +762,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(ccvconsumertypes.ModuleName)
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
+	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

@@ -13,6 +13,8 @@ import (
 	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v3/ibc"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
+	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
 
 const (
@@ -91,6 +93,8 @@ func NobleEncoding() *simappparams.EncodingConfig {
 
 	// register custom types
 	tokenfactorytypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	proposaltypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	upgradetypes.RegisterInterfaces(cfg.InterfaceRegistry)
 
 	return &cfg
 }
@@ -238,10 +242,10 @@ func modifyGenesisNoble(genbz []byte, ownerAddress string) ([]byte, error) {
 	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "tokenfactory", "owner"); err != nil {
 		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, ownerAddress, "app_state", "params", "authority"); err != nil {
+	if err := dyno.Set(g, ownerAddress, "app_state", "params", "params", "authority"); err != nil {
 		return nil, fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, ownerAddress, "app_state", "upgrade", "authority"); err != nil {
+	if err := dyno.Set(g, ownerAddress, "app_state", "upgrade", "params", "authority"); err != nil {
 		return nil, fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
 	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", "tokenfactory", "paused"); err != nil {
@@ -250,11 +254,9 @@ func modifyGenesisNoble(genbz []byte, ownerAddress string) ([]byte, error) {
 	if err := dyno.Set(g, TokenFactoryDenom{mintingDenom}, "app_state", "tokenfactory", "mintingDenom"); err != nil {
 		return nil, fmt.Errorf("failed to set minting denom in genesis json: %w", err)
 	}
-
 	if err := dyno.Set(g, denomMetadata, "app_state", "bank", "denom_metadata"); err != nil {
 		return nil, fmt.Errorf("failed to set denom metadata in genesis json: %w", err)
 	}
-
 	out, err := json.Marshal(g)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
