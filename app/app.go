@@ -46,9 +46,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
+	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
@@ -72,12 +75,8 @@ import (
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 	paramauthority "github.com/strangelove-ventures/paramauthority/x/params"
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
-	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types"
 	paramauthorityupgrade "github.com/strangelove-ventures/paramauthority/x/upgrade"
 	paramauthorityupgradekeeper "github.com/strangelove-ventures/paramauthority/x/upgrade/keeper"
-	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
-
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -232,12 +231,12 @@ func New(
 
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey,
-		paramauthoritytypes.StoreKey, ibchost.StoreKey, paramauthorityupgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
+		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, ccvconsumertypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
-	tkeys := sdk.NewTransientStoreKeys(paramauthoritytypes.TStoreKey)
+	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
 	app := &App{
@@ -254,12 +253,12 @@ func New(
 	app.ParamsKeeper = initParamsKeeper(
 		appCodec,
 		cdc,
-		keys[paramauthoritytypes.StoreKey],
-		tkeys[paramauthoritytypes.TStoreKey],
+		keys[paramstypes.StoreKey],
+		tkeys[paramstypes.TStoreKey],
 	)
 
 	// set the BaseApp's parameter store
-	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramauthoritykeeper.ConsensusParamsKeyTable()))
+	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()))
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -320,7 +319,7 @@ func New(
 
 	app.UpgradeKeeper = paramauthorityupgradekeeper.NewKeeper(
 		skipUpgradeHeights,
-		keys[paramauthorityupgradetypes.StoreKey],
+		keys[upgradetypes.StoreKey],
 		appCodec,
 		homePath,
 		app.BaseApp,
@@ -472,7 +471,7 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		// upgrades should be run first
-		paramauthorityupgradetypes.ModuleName,
+		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -485,7 +484,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramauthoritytypes.ModuleName,
+		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
@@ -505,8 +504,8 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramauthoritytypes.ModuleName,
-		paramauthorityupgradetypes.ModuleName,
+		paramstypes.ModuleName,
+		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
@@ -531,8 +530,8 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramauthoritytypes.ModuleName,
-		paramauthorityupgradetypes.ModuleName,
+		paramstypes.ModuleName,
+		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		ccvconsumertypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,

@@ -837,6 +837,10 @@ github.com/strangelove-ventures/paramauthority v0.0.0-20230118020526-fd815d90bf5
 github.com/strangelove-ventures/paramauthority v0.0.0-20230118020526-fd815d90bf58/go.mod h1:vllEy2s8KKn9SO+mNpeBNXv3EfjRy6OzQfvFhFzK0os=
 github.com/strangelove-ventures/paramauthority v0.0.0-20230118021040-ceef566989a8 h1:8CViTFXMQtKxiVGLPYmKuVW+aXhHDxwsFsBuHZfNjX4=
 github.com/strangelove-ventures/paramauthority v0.0.0-20230118021040-ceef566989a8/go.mod h1:vllEy2s8KKn9SO+mNpeBNXv3EfjRy6OzQfvFhFzK0os=
+github.com/strangelove-ventures/paramauthority v0.0.0-20230118040942-fe758725ec60 h1:R1p1NtV3vd2YNkGprQIeoHdF57S3v7XHl+ewmZ+0wwA=
+github.com/strangelove-ventures/paramauthority v0.0.0-20230118040942-fe758725ec60/go.mod h1:PHq/b8q6YfBDJpo34RlnWw+cL5m5Bids2prBUWzsoEM=
+github.com/strangelove-ventures/paramauthority v0.0.0-20230118041552-16d9b4b79297 h1:G0EOyaNqdxe8rSFRzvVnI+VB6Nkl8tQeCN52QLui4dY=
+github.com/strangelove-ventures/paramauthority v0.0.0-20230118041552-16d9b4b79297/go.mod h1:PHq/b8q6YfBDJpo34RlnWw+cL5m5Bids2prBUWzsoEM=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
