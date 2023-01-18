@@ -3,7 +3,6 @@ package keeper
 import (
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -29,6 +28,6 @@ func (k Keeper) GetPauser(ctx sdk.Context) (val types.Pauser, found bool) {
 
 // RemovePauser removes pauser from the store
 func (k Keeper) RemovePauser(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PauserKey))
+	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyPrefix(types.PauserKey))
 }

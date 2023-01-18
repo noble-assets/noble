@@ -15,15 +15,26 @@ func TestMsgRemoveMinterController_ValidateBasic(t *testing.T) {
 		err  error
 	}{
 		{
-			name: "invalid address",
+			name: "invalid from",
 			msg: MsgRemoveMinterController{
-				From: "invalid_address",
+				From:       "invalid_address",
+				Controller: sample.AccAddress(),
 			},
 			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
+		},
+		{
+			name: "invalid controller",
 			msg: MsgRemoveMinterController{
-				From: sample.AccAddress(),
+				From:       sample.AccAddress(),
+				Controller: "invalid_address",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		{
+			name: "valid controller and from",
+			msg: MsgRemoveMinterController{
+				From:       sample.AccAddress(),
+				Controller: sample.AccAddress(),
 			},
 		},
 	}

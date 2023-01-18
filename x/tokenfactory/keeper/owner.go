@@ -3,7 +3,6 @@ package keeper
 import (
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -29,6 +28,6 @@ func (k Keeper) GetOwner(ctx sdk.Context) (val types.Owner, found bool) {
 
 // RemoveOwner removes owner from the store
 func (k Keeper) RemoveOwner(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OwnerKey))
+	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyPrefix(types.OwnerKey))
 }

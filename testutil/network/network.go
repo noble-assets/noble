@@ -23,11 +23,16 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ccvconsumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/testutil"
+	"github.com/strangelove-ventures/noble/testutil/sample"
+	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
+	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 	types1 "github.com/tendermint/tendermint/abci/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -62,7 +67,7 @@ func DefaultConfig() network.Config {
 	app.ModuleBasics[stakingtypes.ModuleName] = staking.AppModuleBasic{}
 
 	encoding := cmd.MakeEncodingConfig(app.ModuleBasics)
-	return network.Config{
+	cfg := network.Config{
 		Codec:             encoding.Marshaler,
 		TxConfig:          encoding.TxConfig,
 		LegacyAmino:       encoding.Amino,
@@ -98,6 +103,18 @@ func DefaultConfig() network.Config {
 		SigningAlgo:     string(hd.Secp256k1Type),
 		KeyringOptions:  []keyring.Option{},
 	}
+
+	// Authority needs to be present to pass genesis validation
+	params := paramauthoritytypes.DefaultGenesis()
+	params.Params.Authority = sample.AccAddress()
+	cfg.GenesisState[paramstypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(params)
+
+	// Authority needs to be present to pass genesis validation
+	upgrade := paramauthorityupgradetypes.DefaultGenesis()
+	upgrade.Params.Authority = sample.AccAddress()
+	cfg.GenesisState[upgradetypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(upgrade)
+
+	return cfg
 }
 
 func modifyConsumerGenesis(val network.Validator) error {
