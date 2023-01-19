@@ -6,9 +6,10 @@
 #     - Adds/deletes noble keys
 #     
 
-# This script is meant for quick experimentation of the Tokenfactory Module. 
+# This script is meant for quick experimentation of the Tokenfactory Module and Noble Chain functionality. 
 #   - Starts Noble chain
-#   - Delagates and funds all privledged accounts
+#   - Delagates and funds all privledged accounts relating to the Tokenfactory Module
+#   - The "owner" account is both the Tokenfactory Owner AND the Param Authority
 
 killall nobled
 [ -d "play_sh" ] && rm -r "play_sh"
@@ -84,6 +85,8 @@ if [ $platform = 'linux' ]; then
   sed -i 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "token", "base": "utoken", "name": "Token", "symbol": "Token", "denom_units": [ { "denom": "utoken", "aliases": [ "microtoken" ], "exponent": "0" }, { "denom": "mtoken", "aliases": [ "militoken" ], "exponent": "3" }, { "denom": "token", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
+
 else
   sed -i '' 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:'"$RPCPORT"'"#g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:'"$P2PPORT"'"#g' $CHAINDIR/$CHAINID/config/config.toml
@@ -95,6 +98,7 @@ else
   sed -i '' 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "token", "base": "utoken", "name": "Token", "symbol": "Token", "denom_units": [ { "denom": "utoken", "aliases": [ "microtoken" ], "exponent": "0" }, { "denom": "mtoken", "aliases": [ "militoken" ], "exponent": "3" }, { "denom": "token", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i '' 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 fi
 
@@ -106,7 +110,6 @@ KEYS=("owner" "masterminter" "mintercontroller" "minter" "blacklister" "pauser" 
 for KEY in ${KEYS[@]}
 do 
     if nobled keys show $KEY > /dev/null 2>&1; then
-        echo "need to delte `$KEY`"
         nobled keys delete $KEY -y
     else
         continue
