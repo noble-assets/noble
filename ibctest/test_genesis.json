@@ -1,0 +1,233 @@
+{
+  "genesis_time": "2023-01-26T23:49:26.022035Z",
+  "chain_id": "noble-1",
+  "initial_height": "1",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "22020096",
+      "max_gas": "-1",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    },
+    "version": {}
+  },
+  "app_hash": "",
+  "app_state": {
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": []
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [],
+      "supply": [],
+      "denom_metadata": [
+        {
+          "base": "uusdc",
+          "denom_units": [
+            {
+              "aliases": [
+                "microusdc"
+              ],
+              "denom": "uusdc",
+              "exponent": 0
+            },
+            {
+              "aliases": [
+                "milliusdc"
+              ],
+              "denom": "musdc",
+              "exponent": 3
+            },
+            {
+              "aliases": [],
+              "denom": "usdc",
+              "exponent": 6
+            }
+          ],
+          "description": "",
+          "display": "usdc",
+          "name": "USDC",
+          "symbol": "USDC"
+        }
+      ]
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
+    },
+    "ccvconsumer": {
+      "params": {
+        "enabled": false,
+        "blocks_per_distribution_transmission": "1000",
+        "distribution_transmission_channel": "",
+        "provider_fee_pool_addr_str": "",
+        "ccv_timeout_period": "2419200s",
+        "transfer_timeout_period": "3600s",
+        "consumer_redistribution_fraction": "0.75",
+        "historical_entries": "10000",
+        "unbonding_period": "1728000s"
+      },
+      "provider_client_id": "",
+      "provider_channel_id": "",
+      "new_chain": false,
+      "provider_client_state": null,
+      "provider_consensus_state": null,
+      "maturing_packets": [],
+      "initial_val_set": [],
+      "height_to_valset_update_id": [],
+      "outstanding_downtime_slashing": [],
+      "pending_consumer_packets": {
+        "list": []
+      },
+      "last_transmission_block_height": {
+        "height": "0"
+      }
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "stake",
+        "amount": "1000"
+      }
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      }
+    },
+    "interchainaccounts": {
+      "controller_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "ports": [],
+        "params": {
+          "controller_enabled": true
+        }
+      },
+      "host_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "port": "icahost",
+        "params": {
+          "host_enabled": true,
+          "allow_messages": []
+        }
+      }
+    },
+    "packetfowardmiddleware": {
+      "params": {
+        "fee_percentage": "0.000000000000000000"
+      },
+      "in_flight_packets": {}
+    },
+    "params": {
+      "params": {
+        "authority": "noble1vnf8e3fu6dvn2m2c5gk7lu6pk8rvmutj3dsefu"
+      }
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "tokenfactory": {
+      "blacklistedList": [],
+      "blacklister": {
+        "address": "noble19fnsh2k9yg62fc6jyf8hgqlp3mk64ctjuzuvgd"
+      },
+      "masterMinter": {
+        "address": "noble1wcrs32ukha45nssftyywd3n2mq8d55kk8levlu"
+      },
+      "minterControllerList": [],
+      "mintersList": [],
+      "mintingDenom": {
+        "denom": "uusdc"
+      },
+      "owner": {
+        "address": "noble1nye3jsmqf3v2wag09sfwzm30fl0lpfmjhczchm"
+      },
+      "params": {},
+      "paused": {
+        "paused": false
+      },
+      "pauser": {
+        "address": "noble19wxs8y2zkmadgeq23vegeyrrgkmfq3shen6ll5"
+      }
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      }
+    },
+    "upgrade": {
+      "params": {
+        "authority": "noble1vnf8e3fu6dvn2m2c5gk7lu6pk8rvmutj3dsefu"
+      }
+    },
+    "vesting": {}
+  }
+}
