@@ -1,0 +1,942 @@
+{
+    "app_hash": "",
+    "app_state": {
+        "auth": {
+            "accounts": [
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "6",
+                    "address": "noble1p2j0r4aavq9jkn2mgljm8h5c0fwlvrlw990uu0",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "AhnOkUfsGwucM3D+9k98OR6VYfMEw4b9dwm4SjuqjBWr"
+                    },
+                    "sequence": "2"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+                    "base_account": {
+                        "account_number": "13",
+                        "address": "noble1ywtansy6ss0jtq8ckrcv6jzkps8yh8mfsyn5qw",
+                        "pub_key": null,
+                        "sequence": "0"
+                    },
+                    "name": "cons_to_send_to_provider",
+                    "permissions": []
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+                    "base_account": {
+                        "account_number": "0",
+                        "address": "noble1yl6hdjhmkf37639730gffanpzndzdpmhxurp0d",
+                        "pub_key": null,
+                        "sequence": "0"
+                    },
+                    "name": "transfer",
+                    "permissions": [
+                        "minter",
+                        "burner"
+                    ]
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+                    "base_account": {
+                        "account_number": "14",
+                        "address": "noble19ejy8n9qsectrf4semdp9cpknflld0j64rg940",
+                        "pub_key": null,
+                        "sequence": "0"
+                    },
+                    "name": "tokenfactory",
+                    "permissions": [
+                        "minter",
+                        "burner",
+                        "staking"
+                    ]
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+                    "base_account": {
+                        "account_number": "12",
+                        "address": "noble1x69dz0c0emw8m2c6kp5v6c08kgjxmu309fpdva",
+                        "pub_key": null,
+                        "sequence": "0"
+                    },
+                    "name": "cons_redistribute",
+                    "permissions": []
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "1",
+                    "address": "noble1tup4qggp3ssc9rdh25lntt7x4h6903tm3yhpdy",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "A+pSQ6wEb4ntFpuF4GC4o+7CNlI5NtIlEyAF74LaFCQW"
+                    },
+                    "sequence": "3"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "10",
+                    "address": "noble1w4fl2yemg6etnmarquh4h8rpr4g94zd3w2tv20",
+                    "pub_key": null,
+                    "sequence": "0"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "8",
+                    "address": "noble13xt6cxlnpe6cds44e37r09wjpl8y5stpchldng",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "A0eHRNcOtR+3OFKELlW6ppL4frWQtWjSEyn4xHHoqN3V"
+                    },
+                    "sequence": "1"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "5",
+                    "address": "noble1ha7ptd3c46klzlwlhnqjvwzz4r27jxwjhfk8t6",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "AzJBiaPUTL6ICpzjskv/7KheaOwBJNXayfgevSgTLVX0"
+                    },
+                    "sequence": "4"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "7",
+                    "address": "noble1cx25se2fkjrw66fut802kqtwq7gp7a4yl5tyr2",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "AzE7WfCh6Zct9Rny76iQoi4ui1OBZGP05m+XKFyZWyf7"
+                    },
+                    "sequence": "1"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "3",
+                    "address": "noble16gnww4529fmnxs8ttsjx55k440ts0nep3k6vxg",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "Aq6JQoohI/9Aem2/K1gFyFaNz1y38KFFV279O35jJtn4"
+                    },
+                    "sequence": "8"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "2",
+                    "address": "noble1aqttquu8jfnctt4r6hyslvtxrfwy0f75zphvtp",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "A9aMul/OMbb5+VLMmJUTFkEzAUtj0fqBJABpxFzhzq1w"
+                    },
+                    "sequence": "2"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+                    "base_account": {
+                        "account_number": "11",
+                        "address": "noble17xpfvakm2amg962yls6f84z3kell8c5lc6kgnn",
+                        "pub_key": null,
+                        "sequence": "0"
+                    },
+                    "name": "fee_collector",
+                    "permissions": []
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "9",
+                    "address": "noble17kxjkupmdqhk2c8xzld27acmgxz0qgxfm97hyz",
+                    "pub_key": null,
+                    "sequence": "0"
+                },
+                {
+                    "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                    "account_number": "4",
+                    "address": "noble1lpxspfhydgqa47nn3qcnvf09sktk8wahzp9zh4",
+                    "pub_key": {
+                        "@type": "/cosmos.crypto.secp256k1.PubKey",
+                        "key": "Aq+/RvOcuSxKU45KSGfQnk0ooHeNru/g/7lUhKYRyPEU"
+                    },
+                    "sequence": "3"
+                }
+            ],
+            "params": {
+                "max_memo_characters": "256",
+                "sig_verify_cost_ed25519": "590",
+                "sig_verify_cost_secp256k1": "1000",
+                "tx_sig_limit": "7",
+                "tx_size_cost_per_byte": "10"
+            }
+        },
+        "authz": {
+            "authorization": []
+        },
+        "bank": {
+            "balances": [
+                {
+                    "address": "noble1p2j0r4aavq9jkn2mgljm8h5c0fwlvrlw990uu0",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble1tup4qggp3ssc9rdh25lntt7x4h6903tm3yhpdy",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble1w4fl2yemg6etnmarquh4h8rpr4g94zd3w2tv20",
+                    "coins": [
+                        {
+                            "amount": "100000000000000",
+                            "denom": "token"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble13xt6cxlnpe6cds44e37r09wjpl8y5stpchldng",
+                    "coins": [
+                        {
+                            "amount": "9900",
+                            "denom": "token"
+                        },
+                        {
+                            "amount": "100",
+                            "denom": "uusdc"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble1ha7ptd3c46klzlwlhnqjvwzz4r27jxwjhfk8t6",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble1cx25se2fkjrw66fut802kqtwq7gp7a4yl5tyr2",
+                    "coins": [
+                        {
+                            "amount": "10100",
+                            "denom": "token"
+                        },
+                        {
+                            "amount": "100",
+                            "denom": "uusdc"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble16gnww4529fmnxs8ttsjx55k440ts0nep3k6vxg",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        },
+                        {
+                            "amount": "90",
+                            "denom": "uusdc"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble1aqttquu8jfnctt4r6hyslvtxrfwy0f75zphvtp",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble17kxjkupmdqhk2c8xzld27acmgxz0qgxfm97hyz",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        },
+                        {
+                            "amount": "100",
+                            "denom": "uusdc"
+                        }
+                    ]
+                },
+                {
+                    "address": "noble1lpxspfhydgqa47nn3qcnvf09sktk8wahzp9zh4",
+                    "coins": [
+                        {
+                            "amount": "10000",
+                            "denom": "token"
+                        }
+                    ]
+                }
+            ],
+            "denom_metadata": [
+                {
+                    "base": "uusdc",
+                    "denom_units": [
+                        {
+                            "aliases": [
+                                "microusdc"
+                            ],
+                            "denom": "uusdc",
+                            "exponent": 0
+                        },
+                        {
+                            "aliases": [
+                                "milliusdc"
+                            ],
+                            "denom": "musdc",
+                            "exponent": 3
+                        },
+                        {
+                            "aliases": [],
+                            "denom": "usdc",
+                            "exponent": 6
+                        }
+                    ],
+                    "description": "",
+                    "display": "usdc",
+                    "name": "USDC",
+                    "symbol": "USDC"
+                }
+            ],
+            "params": {
+                "default_send_enabled": true,
+                "send_enabled": []
+            },
+            "supply": [
+                {
+                    "amount": "100000000090000",
+                    "denom": "token"
+                },
+                {
+                    "amount": "390",
+                    "denom": "uusdc"
+                }
+            ]
+        },
+        "capability": {
+            "index": "4",
+            "owners": [
+                {
+                    "index": "1",
+                    "index_owners": {
+                        "owners": [
+                            {
+                                "module": "ibc",
+                                "name": "ports/transfer"
+                            },
+                            {
+                                "module": "transfer",
+                                "name": "ports/transfer"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "index": "2",
+                    "index_owners": {
+                        "owners": [
+                            {
+                                "module": "ibc",
+                                "name": "ports/icahost"
+                            },
+                            {
+                                "module": "icahost",
+                                "name": "ports/icahost"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "index": "3",
+                    "index_owners": {
+                        "owners": [
+                            {
+                                "module": "ccvconsumer",
+                                "name": "ports/consumer"
+                            },
+                            {
+                                "module": "ibc",
+                                "name": "ports/consumer"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "ccvconsumer": {
+            "height_to_valset_update_id": [
+                {
+                    "height": "0",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "2",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "3",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "4",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "5",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "6",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "7",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "8",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "9",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "10",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "11",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "12",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "13",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "14",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "15",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "16",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "17",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "18",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "19",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "20",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "21",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "22",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "23",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "24",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "25",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "26",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "27",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "28",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "29",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "30",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "31",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "32",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "33",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "34",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "35",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "36",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "37",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "38",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "39",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "40",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "41",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "42",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "43",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "44",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "45",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "46",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "47",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "48",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "49",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "50",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "51",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "52",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "53",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "54",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "55",
+                    "valset_update_id": "0"
+                },
+                {
+                    "height": "56",
+                    "valset_update_id": "0"
+                }
+            ],
+            "initial_val_set": [
+                {
+                    "power": "100",
+                    "pub_key": {
+                        "ed25519": "sSxlmIxXmE1k8q1ro09oDgCmLfSlwbuBKsB0Cb4PIMg="
+                    }
+                }
+            ],
+            "last_transmission_block_height": {
+                "height": "0"
+            },
+            "maturing_packets": [],
+            "new_chain": false,
+            "outstanding_downtime_slashing": [],
+            "params": {
+                "blocks_per_distribution_transmission": "1000",
+                "ccv_timeout_period": "2419200s",
+                "consumer_redistribution_fraction": "0.75",
+                "distribution_transmission_channel": "",
+                "enabled": true,
+                "historical_entries": "10000",
+                "provider_fee_pool_addr_str": "",
+                "transfer_timeout_period": "3600s",
+                "unbonding_period": "1728000s"
+            },
+            "pending_consumer_packets": {
+                "list": []
+            },
+            "provider_channel_id": "",
+            "provider_client_id": "07-tendermint-0",
+            "provider_client_state": null,
+            "provider_consensus_state": null
+        },
+        "crisis": {
+            "constant_fee": {
+                "amount": "1000",
+                "denom": "token"
+            }
+        },
+        "evidence": {
+            "evidence": []
+        },
+        "feegrant": {
+            "allowances": []
+        },
+        "ibc": {
+            "channel_genesis": {
+                "ack_sequences": [],
+                "acknowledgements": [],
+                "channels": [],
+                "commitments": [],
+                "next_channel_sequence": "0",
+                "receipts": [],
+                "recv_sequences": [],
+                "send_sequences": []
+            },
+            "client_genesis": {
+                "clients": [
+                    {
+                        "client_id": "07-tendermint-0",
+                        "client_state": {
+                            "@type": "/ibc.lightclients.tendermint.v1.ClientState",
+                            "allow_update_after_expiry": true,
+                            "allow_update_after_misbehaviour": true,
+                            "chain_id": "noble",
+                            "frozen_height": {
+                                "revision_height": "0",
+                                "revision_number": "0"
+                            },
+                            "latest_height": {
+                                "revision_height": "1",
+                                "revision_number": "0"
+                            },
+                            "max_clock_drift": "10s",
+                            "proof_specs": [
+                                {
+                                    "inner_spec": {
+                                        "child_order": [
+                                            0,
+                                            1
+                                        ],
+                                        "child_size": 33,
+                                        "empty_child": null,
+                                        "hash": "SHA256",
+                                        "max_prefix_length": 12,
+                                        "min_prefix_length": 4
+                                    },
+                                    "leaf_spec": {
+                                        "hash": "SHA256",
+                                        "length": "VAR_PROTO",
+                                        "prefix": "AA==",
+                                        "prehash_key": "NO_HASH",
+                                        "prehash_value": "SHA256"
+                                    },
+                                    "max_depth": 0,
+                                    "min_depth": 0
+                                },
+                                {
+                                    "inner_spec": {
+                                        "child_order": [
+                                            0,
+                                            1
+                                        ],
+                                        "child_size": 32,
+                                        "empty_child": null,
+                                        "hash": "SHA256",
+                                        "max_prefix_length": 1,
+                                        "min_prefix_length": 1
+                                    },
+                                    "leaf_spec": {
+                                        "hash": "SHA256",
+                                        "length": "VAR_PROTO",
+                                        "prefix": "AA==",
+                                        "prehash_key": "NO_HASH",
+                                        "prehash_value": "SHA256"
+                                    },
+                                    "max_depth": 0,
+                                    "min_depth": 0
+                                }
+                            ],
+                            "trust_level": {
+                                "denominator": "3",
+                                "numerator": "1"
+                            },
+                            "trusting_period": "1140480s",
+                            "unbonding_period": "1728000s",
+                            "upgrade_path": [
+                                "upgrade",
+                                "upgradedIBCState"
+                            ]
+                        }
+                    }
+                ],
+                "clients_consensus": [
+                    {
+                        "client_id": "07-tendermint-0",
+                        "consensus_states": [
+                            {
+                                "consensus_state": {
+                                    "@type": "/ibc.lightclients.tendermint.v1.ConsensusState",
+                                    "next_validators_hash": "410739B046DB6B58D2A09074293A0627DF347430E12340661C0BAAEF7D2E4248",
+                                    "root": {
+                                        "hash": "ZHVtbXk="
+                                    },
+                                    "timestamp": "2023-01-26T23:31:52.086166839Z"
+                                },
+                                "height": {
+                                    "revision_height": "1",
+                                    "revision_number": "0"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "clients_metadata": [
+                    {
+                        "client_id": "07-tendermint-0",
+                        "client_metadata": [
+                            {
+                                "key": "Y29uc2Vuc3VzU3RhdGVzLzAtMS9wcm9jZXNzZWRIZWlnaHQ=",
+                                "value": "MS0w"
+                            },
+                            {
+                                "key": "Y29uc2Vuc3VzU3RhdGVzLzAtMS9wcm9jZXNzZWRUaW1l",
+                                "value": "Fz3/0UNYd0c="
+                            },
+                            {
+                                "key": "aXRlcmF0ZUNvbnNlbnN1c1N0YXRlcwAAAAAAAAAAAAAAAAAAAAE=",
+                                "value": "Y29uc2Vuc3VzU3RhdGVzLzAtMQ=="
+                            }
+                        ]
+                    }
+                ],
+                "create_localhost": false,
+                "next_client_sequence": "1",
+                "params": {
+                    "allowed_clients": [
+                        "06-solomachine",
+                        "07-tendermint"
+                    ]
+                }
+            },
+            "connection_genesis": {
+                "client_connection_paths": [],
+                "connections": [],
+                "next_connection_sequence": "0",
+                "params": {
+                    "max_expected_time_per_block": "30000000000"
+                }
+            }
+        },
+        "interchainaccounts": {
+            "controller_genesis_state": {
+                "active_channels": [],
+                "interchain_accounts": [],
+                "params": {
+                    "controller_enabled": true
+                },
+                "ports": []
+            },
+            "host_genesis_state": {
+                "active_channels": [],
+                "interchain_accounts": [],
+                "params": {
+                    "allow_messages": [],
+                    "host_enabled": true
+                },
+                "port": "icahost"
+            }
+        },
+        "packetfowardmiddleware": {
+            "in_flight_packets": {},
+            "params": {
+                "fee_percentage": "0.000000000000000000"
+            }
+        },
+        "params": {
+            "params": {
+                "authority": "noble1tup4qggp3ssc9rdh25lntt7x4h6903tm3yhpdy"
+            }
+        },
+        "slashing": {
+            "missed_blocks": [
+                {
+                    "address": "noblevalcons1tvpkrzg5nvz87m63sjyzy5zywhtcs9z93q9tqh",
+                    "missed_blocks": []
+                }
+            ],
+            "params": {
+                "downtime_jail_duration": "600s",
+                "min_signed_per_window": "0.500000000000000000",
+                "signed_blocks_window": "100",
+                "slash_fraction_double_sign": "0.050000000000000000",
+                "slash_fraction_downtime": "0.010000000000000000"
+            },
+            "signing_infos": [
+                {
+                    "address": "noblevalcons1tvpkrzg5nvz87m63sjyzy5zywhtcs9z93q9tqh",
+                    "validator_signing_info": {
+                        "address": "noblevalcons1tvpkrzg5nvz87m63sjyzy5zywhtcs9z93q9tqh",
+                        "index_offset": "54",
+                        "jailed_until": "1970-01-01T00:00:00Z",
+                        "missed_blocks_counter": "0",
+                        "start_height": "0",
+                        "tombstoned": false
+                    }
+                }
+            ]
+        },
+        "tokenfactory": {
+            "blacklistedList": [
+                {
+                    "address": "noble13xt6cxlnpe6cds44e37r09wjpl8y5stpchldng"
+                },
+                {
+                    "address": "noble1cx25se2fkjrw66fut802kqtwq7gp7a4yl5tyr2"
+                }
+            ],
+            "blacklister": {
+                "address": "noble1ha7ptd3c46klzlwlhnqjvwzz4r27jxwjhfk8t6"
+            },
+            "masterMinter": {
+                "address": "noble1aqttquu8jfnctt4r6hyslvtxrfwy0f75zphvtp"
+            },
+            "minterControllerList": [
+                {
+                    "controller": "noble1lpxspfhydgqa47nn3qcnvf09sktk8wahzp9zh4",
+                    "minter": "noble1cx25se2fkjrw66fut802kqtwq7gp7a4yl5tyr2"
+                }
+            ],
+            "mintersList": [
+                {
+                    "address": "noble16gnww4529fmnxs8ttsjx55k440ts0nep3k6vxg",
+                    "allowance": {
+                        "amount": "1000",
+                        "denom": "uusdc"
+                    }
+                }
+            ],
+            "mintingDenom": {
+                "denom": "uusdc"
+            },
+            "owner": {
+                "address": "noble1tup4qggp3ssc9rdh25lntt7x4h6903tm3yhpdy"
+            },
+            "params": {},
+            "paused": {
+                "paused": false
+            },
+            "pauser": {
+                "address": "noble1p2j0r4aavq9jkn2mgljm8h5c0fwlvrlw990uu0"
+            }
+        },
+        "transfer": {
+            "denom_traces": [],
+            "params": {
+                "receive_enabled": true,
+                "send_enabled": true
+            },
+            "port_id": "transfer"
+        },
+        "upgrade": {
+            "params": {
+                "authority": "noble1tup4qggp3ssc9rdh25lntt7x4h6903tm3yhpdy"
+            }
+        },
+        "vesting": {}
+    },
+    "chain_id": "noble-1",
+    "consensus_params": {
+        "block": {
+            "max_bytes": "22020096",
+            "max_gas": "-1",
+            "time_iota_ms": "1000"
+        },
+        "evidence": {
+            "max_age_duration": "172800000000000",
+            "max_age_num_blocks": "100000",
+            "max_bytes": "1048576"
+        },
+        "validator": {
+            "pub_key_types": [
+                "ed25519"
+            ]
+        },
+        "version": {}
+    },
+    "genesis_time": "2023-01-26T23:31:50.694811463Z",
+    "initial_height": "56",
+    "validators": [
+        {
+            "address": "5B036189149B047F6F51848822504475D7881445",
+            "name": "",
+            "power": "100",
+            "pub_key": null
+        }
+    ]
+}
