@@ -126,7 +126,7 @@ func TestNobleParamAuthority(t *testing.T) {
 			return nil
 		},
 		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			return modifyGenesisNoble(b, roles.Owner.Address)
+			return modifyGenesisNobleOwner(b, roles.Owner.Address)
 		},
 	}
 

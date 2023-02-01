@@ -6,7 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20230118084640-e3d09f0aa9a5
+	github.com/strangelove-ventures/ibctest/v3 v3.0.0-20230130181147-7d21083e48df
 	github.com/strangelove-ventures/noble v0.0.0-00010101000000-000000000000
 	github.com/strangelove-ventures/paramauthority v0.0.0-20230118074850-b40c4c394865
 	github.com/stretchr/testify v1.8.1
@@ -39,7 +39,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.4 // indirect
-	github.com/cosmos/interchain-security v1.0.0-rc1 // indirect
+	github.com/cosmos/interchain-security v1.0.0-rc2 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.3 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
