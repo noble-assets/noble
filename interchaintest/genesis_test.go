@@ -1,4 +1,4 @@
-package ibctest_test
+package interchaintest_test
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
-	"github.com/strangelove-ventures/ibctest/v3"
-	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/ibctest/v3/ibc"
+	"github.com/strangelove-ventures/interchaintest/v3"
+	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
@@ -121,15 +121,15 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 
 	kr := keyring.NewInMemory()
 
-	masterMinter := ibctest.BuildWallet(kr, masterMinterKeyName, chainCfg)
-	minter := ibctest.BuildWallet(kr, minterKeyName, chainCfg)
-	owner := ibctest.BuildWallet(kr, ownerKeyName, chainCfg)
-	minterController := ibctest.BuildWallet(kr, minterControllerKeyName, chainCfg)
-	blacklister := ibctest.BuildWallet(kr, blacklisterKeyName, chainCfg)
-	pauser := ibctest.BuildWallet(kr, pauserKeyName, chainCfg)
-	user := ibctest.BuildWallet(kr, userKeyName, chainCfg)
-	user2 := ibctest.BuildWallet(kr, user2KeyName, chainCfg)
-	alice := ibctest.BuildWallet(kr, aliceKeyName, chainCfg)
+	masterMinter := interchaintest.BuildWallet(kr, masterMinterKeyName, chainCfg)
+	minter := interchaintest.BuildWallet(kr, minterKeyName, chainCfg)
+	owner := interchaintest.BuildWallet(kr, ownerKeyName, chainCfg)
+	minterController := interchaintest.BuildWallet(kr, minterControllerKeyName, chainCfg)
+	blacklister := interchaintest.BuildWallet(kr, blacklisterKeyName, chainCfg)
+	pauser := interchaintest.BuildWallet(kr, pauserKeyName, chainCfg)
+	user := interchaintest.BuildWallet(kr, userKeyName, chainCfg)
+	user2 := interchaintest.BuildWallet(kr, user2KeyName, chainCfg)
+	alice := interchaintest.BuildWallet(kr, aliceKeyName, chainCfg)
 
 	err = val.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
 	if err != nil {

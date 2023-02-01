@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
-	ibctesting "github.com/cosmos/ibc-go/v3/testing"
+	interchaintesting "github.com/cosmos/ibc-go/v3/testing"
 	icssimapp "github.com/cosmos/interchain-security/testutil/simapp"
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestConsumerWhitelistingKeys(t *testing.T) {
-	chain := ibctesting.NewTestChain(t, icssimapp.NewBasicCoordinator(t), SetupTestingAppConsumer, "test")
+	chain := interchaintesting.NewTestChain(t, icssimapp.NewBasicCoordinator(t), SetupTestingAppConsumer, "test")
 	paramKeeper := chain.App.(*app.App).ParamsKeeper
 	for paramKey := range app.WhitelistedParams {
 		ss, ok := paramKeeper.GetSubspace(paramKey.Subspace)
@@ -25,7 +25,7 @@ func TestConsumerWhitelistingKeys(t *testing.T) {
 	}
 }
 
-func SetupTestingAppConsumer() (ibctesting.TestingApp, map[string]json.RawMessage) {
+func SetupTestingAppConsumer() (interchaintesting.TestingApp, map[string]json.RawMessage) {
 	encoding := cmd.MakeEncodingConfig(app.ModuleBasics)
 	testApp := app.New(
 		log.NewNopLogger(),

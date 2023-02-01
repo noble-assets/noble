@@ -1,14 +1,14 @@
-package ibctest_test
+package interchaintest_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/strangelove-ventures/ibctest/v3"
-	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/ibctest/v3/ibc"
-	"github.com/strangelove-ventures/ibctest/v3/testreporter"
-	integration "github.com/strangelove-ventures/noble/ibctest"
+	"github.com/strangelove-ventures/interchaintest/v3"
+	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v3/ibc"
+	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
@@ -25,7 +25,7 @@ func TestNobleChain(t *testing.T) {
 	rep := testreporter.NewNopReporter()
 	eRep := rep.RelayerExecReporter(t)
 
-	client, network := ibctest.DockerSetup(t)
+	client, network := interchaintest.DockerSetup(t)
 
 	repo, version := integration.GetDockerImageInfo()
 
@@ -72,7 +72,7 @@ func TestNobleChain(t *testing.T) {
 	nv := 1
 	nf := 0
 
-	cf := ibctest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*ibctest.ChainSpec{
+	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
 			ChainConfig:   chainCfg,
 			NumValidators: &nv,
@@ -85,14 +85,14 @@ func TestNobleChain(t *testing.T) {
 
 	noble = chains[0].(*cosmos.CosmosChain)
 
-	ic := ibctest.NewInterchain().
+	ic := interchaintest.NewInterchain().
 		AddChain(noble)
 
-	require.NoError(t, ic.Build(ctx, eRep, ibctest.InterchainBuildOptions{
+	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
 		TestName:          t.Name(),
 		Client:            client,
 		NetworkID:         network,
-		BlockDatabaseFile: ibctest.DefaultBlockDatabaseFilepath(),
+		BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
 
 		SkipPathCreation: false,
 	}))
