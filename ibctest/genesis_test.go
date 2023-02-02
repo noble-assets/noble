@@ -215,7 +215,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		{
 			Address: user2.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  10_000, // used in testing to test non-tokenfactory assets
 		},
 		{
 			Address: alice.Address,
