@@ -94,16 +94,16 @@ lint:
 
 
 ###############################################################################
-###                                IBCTEST                                  ###
+###                          INTERCHAINTEST (ictest)                        ###
 ###############################################################################
 
-interchaintest-tkn-factory:
+ictest-tkn-factory:
 	cd interchaintest && go test -race -v -run TestNobleChain .
 
-interchaintest-packet-forward:
+ictest-packet-forward:
 	cd interchaintest && go test -race -v -run TestPacketForwardMiddleware .
 
-interchaintest-paramauthority:
+ictest-paramauthority:
 	cd interchaintest && go test -race -v -run TestNobleParamAuthority .
 
 
