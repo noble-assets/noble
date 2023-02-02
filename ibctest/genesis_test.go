@@ -30,33 +30,33 @@ const (
 	user2KeyName            = "user2"
 	aliceKeyName            = "alice"
 
-	mintingDenom = "uusdc"
+	mintingDenom = "urupee"
 )
 
 var (
 	denomMetadata = []DenomMetadata{
 		{
-			Display: "usdc",
-			Base:    "uusdc",
+			Display: "rupee",
+			Base:    "urupee",
 			Name:    "USDC",
 			Symbol:  "USDC",
 			DenomUnits: []DenomUnit{
 				{
-					Denom: "uusdc",
+					Denom: "urupee",
 					Aliases: []string{
-						"microusdc",
+						"microrupee",
 					},
 					Exponent: "0",
 				},
 				{
-					Denom: "musdc",
+					Denom: "mrupee",
 					Aliases: []string{
-						"milliusdc",
+						"millirupee",
 					},
 					Exponent: "3",
 				},
 				{
-					Denom:    "usdc",
+					Denom:    "rupee",
 					Exponent: "6",
 				},
 			},
@@ -115,10 +115,6 @@ type NobleRoles struct {
 }
 
 func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, error) {
-	_, _, err := val.ExecBin(ctx, "add-consumer-section")
-	if err != nil {
-		return NobleRoles{}, err
-	}
 	chainCfg := val.Chain.Config()
 
 	kr := keyring.NewInMemory()
@@ -135,7 +131,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	user2 := ibctest.BuildWallet(kr, user2KeyName, chainCfg)
 	alice := ibctest.BuildWallet(kr, aliceKeyName, chainCfg)
 
-	err = val.RecoverKey(ctx, authorityKeyName, authority.Mnemonic)
+	err := val.RecoverKey(ctx, authorityKeyName, authority.Mnemonic)
 	if err != nil {
 		return NobleRoles{}, err
 	}
@@ -219,7 +215,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		{
 			Address: user2.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  0,
+			Amount:  10_000,
 		},
 		{
 			Address: alice.Address,
