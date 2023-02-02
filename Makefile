@@ -107,8 +107,7 @@ ibctest-paramauthority:
 	cd ibctest && go test -race -v -run TestNobleParamAuthority .
 
 ibctest-ics:
-  cd ibctest && go test -race -v -run TestICS .
-
+	cd ibctest && go test -race -v -run TestICS .
 
 ###############################################################################
 ###                                Build Image                              ###
