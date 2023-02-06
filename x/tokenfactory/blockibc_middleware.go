@@ -103,6 +103,10 @@ func (im IBCMiddleware) OnRecvPacket(
 		return im.app.OnRecvPacket(ctx, packet, relayer)
 	}
 
+	if im.keeper.GetPaused(ctx).Paused {
+		return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
+	}
+
 	_, found := im.keeper.GetBlacklisted(ctx, data.Receiver)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
