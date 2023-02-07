@@ -26,5 +26,5 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 done
 
 # move proto files to the right places
-cp -r github.com/strangelove-ventures/noble/x/tokenfactory/types/* x/tokenfactory/types/
+cp -r github.com/strangelove-ventures/noble/* ./
 rm -rf github.com
