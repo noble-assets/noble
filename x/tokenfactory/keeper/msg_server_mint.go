@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 	sdkerrors "cosmossdk.io/errors"
@@ -18,12 +19,22 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a minter")
 	}
 
-	_, found = k.GetBlacklisted(ctx, msg.From)
+	_, pubBz, err := bech32.DecodeAndConvert(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	_, found = k.GetBlacklisted(ctx, pubBz)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "minter address is blacklisted")
 	}
 
-	_, found = k.GetBlacklisted(ctx, msg.Address)
+	_, pubBz, err = bech32.DecodeAndConvert(msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	_, found = k.GetBlacklisted(ctx, pubBz)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "receiver address is blacklisted")
 	}
@@ -60,7 +71,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrap(types.ErrSendCoinsToAccount, err.Error())
 	}
 
-	err := ctx.EventManager().EmitTypedEvent(msg)
+	err = ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgMintResponse{}, err
 }

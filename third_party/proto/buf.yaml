@@ -1,0 +1,9 @@
+version: v1
+lint:
+  ignore:
+    - tendermint
+    - gogoproto
+    - cosmos_proto
+    - amino
+    - cosmos
+    - google
