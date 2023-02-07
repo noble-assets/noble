@@ -94,20 +94,20 @@ lint:
 
 
 ###############################################################################
-###                                IBCTEST                                  ###
+###                          INTERCHAINTEST (ictest)                        ###
 ###############################################################################
 
-ibctest-tkn-factory:
-	cd ibctest && go test -race -v -run TestNobleChain .
+ictest-tkn-factory:
+	cd interchaintest && go test -race -v -run TestNobleChain .
 
-ibctest-packet-forward:
-	cd ibctest && go test -race -v -run TestPacketForwardMiddleware .
+ictest-packet-forward:
+	cd interchaintest && go test -race -v -run TestPacketForwardMiddleware .
 
-ibctest-paramauthority:
-	cd ibctest && go test -race -v -run TestNobleParamAuthority .
+ictest-paramauthority:
+	cd interchaintest && go test -race -v -run TestNobleParamAuthority .
 
-ibctest-ics:
-	cd ibctest && go test -race -v -run TestICS .
+ictest-ics:
+	cd interchaintest && go test -race -v -run TestICS .
 
 ###############################################################################
 ###                                Build Image                              ###
@@ -124,4 +124,4 @@ else
 endif
 
 .PHONY: all build-linux install lint \
-	go-mod-cache build ibctest get-heighliner local-image \
+	go-mod-cache build interchaintest get-heighliner local-image \
