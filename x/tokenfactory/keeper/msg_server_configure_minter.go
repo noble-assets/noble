@@ -12,6 +12,10 @@ import (
 func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigureMinter) (*types.MsgConfigureMinterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	if k.GetPaused(ctx).Paused {
+		return nil, sdkerrors.Wrap(types.ErrPaused, "minters cannot be configured while the tokenfactory is paused")
+	}
+
 	mintingDenom := k.GetMintingDenom(ctx)
 
 	if msg.Allowance.Denom != mintingDenom.Denom {
