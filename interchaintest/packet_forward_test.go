@@ -97,7 +97,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerA)
+					return modifyGenesisNobleOwner(b, ownerA)
 				},
 			}},
 		{
@@ -138,7 +138,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerB)
+					return modifyGenesisNobleOwner(b, ownerB)
 				},
 			}},
 		{
@@ -179,7 +179,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerC)
+					return modifyGenesisNobleOwner(b, ownerC)
 				},
 			}},
 		{
@@ -220,7 +220,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerD)
+					return modifyGenesisNobleOwner(b, ownerD)
 				},
 			}},
 	})

@@ -56,10 +56,10 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				MinterControllerList: []types.MinterController{
 					{
-						Minter: "0",
+						Controller: "0",
 					},
 					{
-						Minter: "1",
+						Controller: "1",
 					},
 				},
 				MintingDenom: &types.MintingDenom{

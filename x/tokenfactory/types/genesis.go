@@ -4,9 +4,6 @@ import (
 	"fmt"
 )
 
-// DefaultIndex is the default global index
-const DefaultIndex uint64 = 1
-
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
@@ -51,7 +48,7 @@ func (gs GenesisState) Validate() error {
 	minterControllerIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.MinterControllerList {
-		index := string(MinterControllerKey(elem.Minter))
+		index := string(MinterControllerKey(elem.Controller))
 		if _, ok := minterControllerIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for minterController")
 		}
