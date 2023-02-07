@@ -245,16 +245,16 @@ func TestNobleChain(t *testing.T) {
 	_, err = nobleValidator.ExecTx(ctx, masterMinterKeyName,
 		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.User.Address,
 	)
-	require.NoError(t, err, "failed to execute configure minter controller tx")
+	require.NoError(t, err, "tx to configure minter controller should still succeed even though in paused state")
 
 	_, _, err = nobleValidator.ExecQuery(ctx, "tokenfactory", "show-minters", roles.User.Address)
 	require.Error(t, err, "'user' should not have been able to become a minter while chain is paused")
 
 	_, err = nobleValidator.ExecTx(ctx, minterControllerKeyName, "tokenfactory", "remove-minter", roles.Minter.Address)
-	require.NoError(t, err, "failed to send remove minter tx")
+	require.NoError(t, err, "minters should be able to be removed while in paused state")
 
 	_, _, err = nobleValidator.ExecQuery(ctx, "tokenfactory", "show-minters", roles.Minter.Address)
-	require.Error(t, err, "minter should have been removed, even while chain is puased")
+	require.Error(t, err, "minter should not have been added so remove should be a no-op and this should fail")
 
 	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
 		"tokenfactory", "unpause",
