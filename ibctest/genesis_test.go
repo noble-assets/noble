@@ -18,6 +18,8 @@ import (
 )
 
 const (
+	authorityKeyName = "authority"
+
 	ownerKeyName            = "owner"
 	masterMinterKeyName     = "masterminter"
 	minterKeyName           = "minter"
@@ -28,33 +30,33 @@ const (
 	user2KeyName            = "user2"
 	aliceKeyName            = "alice"
 
-	mintingDenom = "uusdc"
+	mintingDenom = "urupee"
 )
 
 var (
 	denomMetadata = []DenomMetadata{
 		{
-			Display: "usdc",
-			Base:    "uusdc",
+			Display: "rupee",
+			Base:    "urupee",
 			Name:    "USDC",
 			Symbol:  "USDC",
 			DenomUnits: []DenomUnit{
 				{
-					Denom: "uusdc",
+					Denom: "urupee",
 					Aliases: []string{
-						"microusdc",
+						"microrupee",
 					},
 					Exponent: "0",
 				},
 				{
-					Denom: "musdc",
+					Denom: "mrupee",
 					Aliases: []string{
-						"milliusdc",
+						"millirupee",
 					},
 					Exponent: "3",
 				},
 				{
-					Denom:    "usdc",
+					Denom:    "rupee",
 					Exponent: "6",
 				},
 			},
@@ -100,6 +102,7 @@ func NobleEncoding() *simappparams.EncodingConfig {
 }
 
 type NobleRoles struct {
+	Authority        ibc.Wallet
 	Owner            ibc.Wallet
 	MasterMinter     ibc.Wallet
 	MinterController ibc.Wallet
@@ -112,14 +115,11 @@ type NobleRoles struct {
 }
 
 func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, error) {
-	_, _, err := val.ExecBin(ctx, "add-consumer-section")
-	if err != nil {
-		return NobleRoles{}, err
-	}
-
 	chainCfg := val.Chain.Config()
 
 	kr := keyring.NewInMemory()
+
+	authority := ibctest.BuildWallet(kr, authorityKeyName, chainCfg)
 
 	masterMinter := ibctest.BuildWallet(kr, masterMinterKeyName, chainCfg)
 	minter := ibctest.BuildWallet(kr, minterKeyName, chainCfg)
@@ -131,6 +131,10 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	user2 := ibctest.BuildWallet(kr, user2KeyName, chainCfg)
 	alice := ibctest.BuildWallet(kr, aliceKeyName, chainCfg)
 
+	err := val.RecoverKey(ctx, authorityKeyName, authority.Mnemonic)
+	if err != nil {
+		return NobleRoles{}, err
+	}
 	err = val.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
 	if err != nil {
 		return NobleRoles{}, err
@@ -169,49 +173,54 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	}
 	genesisWallets := []ibc.WalletAmount{
 		{
+			Address: authority.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  0,
+		},
+		{
 			Address: owner.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: masterMinter.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: minter.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: minterController.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: blacklister.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: pauser.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: user.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 		{
 			Address: user2.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  10_000, // used in testing to test non-tokenfactory assets
 		},
 		{
 			Address: alice.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  10_000,
+			Amount:  0,
 		},
 	}
 
@@ -222,6 +231,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		}
 	}
 	return NobleRoles{
+		Authority:        authority,
 		Owner:            owner,
 		MasterMinter:     masterMinter,
 		MinterController: minterController,
@@ -234,7 +244,9 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	}, nil
 }
 
-func modifyGenesisNoble(genbz []byte, ownerAddress string) ([]byte, error) {
+// Sets the minamum genesis modifications needed to start chain
+// Owner account is used for both tokenfactory owner and param authority
+func modifyGenesisNobleOwner(genbz []byte, ownerAddress string) ([]byte, error) {
 	g := make(map[string]interface{})
 	if err := json.Unmarshal(genbz, &g); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
@@ -246,6 +258,47 @@ func modifyGenesisNoble(genbz []byte, ownerAddress string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
 	if err := dyno.Set(g, ownerAddress, "app_state", "upgrade", "params", "authority"); err != nil {
+		return nil, fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", "tokenfactory", "paused"); err != nil {
+		return nil, fmt.Errorf("failed to set paused in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryDenom{mintingDenom}, "app_state", "tokenfactory", "mintingDenom"); err != nil {
+		return nil, fmt.Errorf("failed to set minting denom in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, denomMetadata, "app_state", "bank", "denom_metadata"); err != nil {
+		return nil, fmt.Errorf("failed to set denom metadata in genesis json: %w", err)
+	}
+	out, err := json.Marshal(g)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+	}
+	return out, nil
+
+}
+
+// Sets the aurhority, owner, masterminter, blacklister and pauser to separate accounts in genesis.
+func modifyGenesisNobleAll(genbz []byte, authorityAddress, ownerAddress, masterMinterAddress, blacklisterAddress, pauserAddress string) ([]byte, error) {
+	g := make(map[string]interface{})
+	if err := json.Unmarshal(genbz, &g); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "tokenfactory", "owner"); err != nil {
+		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{masterMinterAddress}, "app_state", "tokenfactory", "masterMinter"); err != nil {
+		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{blacklisterAddress}, "app_state", "tokenfactory", "blacklister"); err != nil {
+		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, TokenFactoryAddress{pauserAddress}, "app_state", "tokenfactory", "pauser"); err != nil {
+		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, authorityAddress, "app_state", "params", "params", "authority"); err != nil {
+		return nil, fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, authorityAddress, "app_state", "upgrade", "params", "authority"); err != nil {
 		return nil, fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
 	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", "tokenfactory", "paused"); err != nil {

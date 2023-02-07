@@ -70,7 +70,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      &skipGenTx,
+				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -97,7 +97,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerA)
+					return modifyGenesisNobleOwner(b, ownerA)
 				},
 			}},
 		{
@@ -111,7 +111,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      &skipGenTx,
+				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -138,7 +138,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerB)
+					return modifyGenesisNobleOwner(b, ownerB)
 				},
 			}},
 		{
@@ -152,7 +152,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      &skipGenTx,
+				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -179,7 +179,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerC)
+					return modifyGenesisNobleOwner(b, ownerC)
 				},
 			}},
 		{
@@ -193,7 +193,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      &skipGenTx,
+				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -220,7 +220,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					return nil
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNoble(b, ownerD)
+					return modifyGenesisNobleOwner(b, ownerD)
 				},
 			}},
 	})
