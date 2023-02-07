@@ -24,7 +24,7 @@ func (k msgServer) Blacklist(goCtx context.Context, msg *types.MsgBlacklist) (*t
 	// TODO: fail if address is already blacklisted?
 
 	blacklisted := types.Blacklisted{
-		Address: msg.Address,
+		Pubkey: msg.Pubkey,
 	}
 
 	k.SetBlacklisted(ctx, blacklisted)

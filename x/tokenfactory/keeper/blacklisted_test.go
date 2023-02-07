@@ -18,7 +18,7 @@ var _ = strconv.IntSize
 func createNBlacklisted(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Blacklisted {
 	items := make([]types.Blacklisted, n)
 	for i := range items {
-		items[i].Address = strconv.Itoa(i)
+		items[i].Pubkey = []byte{byte(i)}
 
 		keeper.SetBlacklisted(ctx, items[i])
 	}
@@ -30,7 +30,7 @@ func TestBlacklistedGet(t *testing.T) {
 	items := createNBlacklisted(keeper, ctx, 10)
 	for _, item := range items {
 		rst, found := keeper.GetBlacklisted(ctx,
-			item.Address,
+			item.Pubkey,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -39,15 +39,16 @@ func TestBlacklistedGet(t *testing.T) {
 		)
 	}
 }
+
 func TestBlacklistedRemove(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	items := createNBlacklisted(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveBlacklisted(ctx,
-			item.Address,
+			item.Pubkey,
 		)
 		_, found := keeper.GetBlacklisted(ctx,
-			item.Address,
+			item.Pubkey,
 		)
 		require.False(t, found)
 	}

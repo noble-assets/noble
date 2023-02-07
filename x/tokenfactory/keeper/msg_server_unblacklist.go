@@ -21,12 +21,12 @@ func (k msgServer) Unblacklist(goCtx context.Context, msg *types.MsgUnblacklist)
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the blacklister")
 	}
 
-	blacklisted, found := k.GetBlacklisted(ctx, msg.Address)
+	blacklisted, found := k.GetBlacklisted(ctx, msg.Pubkey)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "a given address is not blacklisted")
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "the specified pubkey is not blacklisted")
 	}
 
-	k.RemoveBlacklisted(ctx, blacklisted.Address)
+	k.RemoveBlacklisted(ctx, blacklisted.Pubkey)
 
 	err := ctx.EventManager().EmitTypedEvent(msg)
 

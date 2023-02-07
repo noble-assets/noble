@@ -2,6 +2,7 @@ package tokenfactory
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
@@ -107,17 +108,28 @@ func (im IBCMiddleware) OnRecvPacket(
 		return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
 	}
 
-	_, found := im.keeper.GetBlacklisted(ctx, data.Receiver)
+	_, pubBz, err := bech32.DecodeAndConvert(data.Receiver)
+	if err != nil {
+		return channeltypes.NewErrorAcknowledgement(err.Error())
+	}
+
+	_, found := im.keeper.GetBlacklisted(ctx, pubBz)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
 		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
 	}
 
-	_, found = im.keeper.GetBlacklisted(ctx, data.Sender)
+	_, pubBz, err = bech32.DecodeAndConvert(data.Sender)
+	if err != nil {
+		return channeltypes.NewErrorAcknowledgement(err.Error())
+	}
+
+	_, found = im.keeper.GetBlacklisted(ctx, pubBz)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
 		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
 	}
+
 	return im.app.OnRecvPacket(ctx, packet, relayer)
 }
 

@@ -7,6 +7,7 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 )
 
 func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBurnResponse, error) {
@@ -17,7 +18,12 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a minter")
 	}
 
-	_, found = k.GetBlacklisted(ctx, msg.From)
+	_, pubBz, err := bech32.DecodeAndConvert(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	_, found = k.GetBlacklisted(ctx, pubBz)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "minter address is blacklisted")
 	}
@@ -38,13 +44,16 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 
 	amount := sdk.NewCoins(msg.Amount)
 
-	k.bankKeeper.SendCoinsFromAccountToModule(ctx, minterAddress, types.ModuleName, amount)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, minterAddress, types.ModuleName, amount)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount); err != nil {
 		return nil, sdkerrors.Wrap(types.ErrBurn, err.Error())
 	}
 
-	err := ctx.EventManager().EmitTypedEvent(msg)
+	err = ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgBurnResponse{}, err
 }

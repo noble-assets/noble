@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
@@ -21,50 +22,53 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithBlacklistedObjects(t *testing.T, n int) (*network.Network, []types.Blacklisted) {
+func networkWithBlacklistedObjects(t *testing.T, n int) (*network.Network, []types.Blacklisted, []sample.Account) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
+	accounts := make([]sample.Account, n)
 	for i := 0; i < n; i++ {
+		account := sample.TestAccount()
 		blacklisted := types.Blacklisted{
-			Address: strconv.Itoa(i),
+			Pubkey: account.PubKeyBz,
 		}
-		nullify.Fill(&blacklisted)
 		state.BlacklistedList = append(state.BlacklistedList, blacklisted)
+		accounts[i] = account
 	}
+
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.BlacklistedList
+	return network.New(t, cfg), state.BlacklistedList, accounts
 }
 
 func TestShowBlacklisted(t *testing.T) {
-	net, objs := networkWithBlacklistedObjects(t, 2)
+	net, _, objs := networkWithBlacklistedObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
 		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 	}
 	for _, tc := range []struct {
-		desc      string
-		idAddress string
+		desc    string
+		address string
 
 		args []string
 		err  error
-		obj  types.Blacklisted
+		obj  sample.Account
 	}{
 		{
-			desc:      "found",
-			idAddress: objs[0].Address,
+			desc:    "found",
+			address: objs[0].Address,
 
 			args: common,
 			obj:  objs[0],
 		},
 		{
-			desc:      "not found",
-			idAddress: strconv.Itoa(100000),
+			desc:    "not found",
+			address: sample.TestAccount().Address,
 
 			args: common,
 			err:  status.Error(codes.NotFound, "not found"),
@@ -72,7 +76,7 @@ func TestShowBlacklisted(t *testing.T) {
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			args := []string{
-				tc.idAddress,
+				tc.address,
 			}
 			args = append(args, tc.args...)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowBlacklisted(), args)
@@ -86,8 +90,8 @@ func TestShowBlacklisted(t *testing.T) {
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.Blacklisted)
 				require.Equal(t,
-					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.Blacklisted),
+					nullify.Fill(&tc.obj.PubKeyBz),
+					nullify.Fill(&resp.Blacklisted.Pubkey),
 				)
 			}
 		})
@@ -95,7 +99,7 @@ func TestShowBlacklisted(t *testing.T) {
 }
 
 func TestListBlacklisted(t *testing.T) {
-	net, objs := networkWithBlacklistedObjects(t, 5)
+	net, objs, _ := networkWithBlacklistedObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {

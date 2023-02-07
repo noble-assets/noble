@@ -31,21 +31,21 @@ func TestBlacklistedQuerySingle(t *testing.T) {
 		{
 			desc: "First",
 			request: &types.QueryGetBlacklistedRequest{
-				Address: msgs[0].Address,
+				Pubkey: msgs[0].Pubkey,
 			},
 			response: &types.QueryGetBlacklistedResponse{Blacklisted: msgs[0]},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryGetBlacklistedRequest{
-				Address: msgs[1].Address,
+				Pubkey: msgs[1].Pubkey,
 			},
 			response: &types.QueryGetBlacklistedResponse{Blacklisted: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
 			request: &types.QueryGetBlacklistedRequest{
-				Address: strconv.Itoa(100000),
+				Pubkey: []byte(strconv.Itoa(100000)),
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
