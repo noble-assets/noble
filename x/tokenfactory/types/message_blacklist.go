@@ -9,10 +9,10 @@ const TypeMsgBlacklist = "blacklist"
 
 var _ sdk.Msg = &MsgBlacklist{}
 
-func NewMsgBlacklist(from string, address string) *MsgBlacklist {
+func NewMsgBlacklist(from string, pubkey []byte) *MsgBlacklist {
 	return &MsgBlacklist{
-		From:    from,
-		Address: address,
+		From:   from,
+		Pubkey: pubkey,
 	}
 }
 
@@ -42,9 +42,9 @@ func (msg *MsgBlacklist) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
 	}
-	_, err = sdk.AccAddressFromBech32(msg.Address)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid blacklist address (%s)", err)
+
+	if len(msg.Pubkey) <= 0 {
+		return sdkerrors.Wrap(ErrInvalidPubkey, "pubkey bytes cannot be less than or equal to 0")
 	}
 	return nil
 }

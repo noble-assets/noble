@@ -28,8 +28,8 @@ func KeyPrefix(p string) []byte {
 }
 
 // BlacklistedKey returns the store key to retrieve a Blacklisted from the index fields
-func BlacklistedKey(address string) []byte {
-	return append([]byte(address), []byte("/")...)
+func BlacklistedKey(pubkey []byte) []byte {
+	return append(pubkey, []byte("/")...)
 }
 
 // MintersKey returns the store key to retrieve a Minters from the index fields

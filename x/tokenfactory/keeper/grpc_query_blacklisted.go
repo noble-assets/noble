@@ -45,10 +45,7 @@ func (k Keeper) Blacklisted(c context.Context, req *types.QueryGetBlacklistedReq
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetBlacklisted(
-		ctx,
-		req.Address,
-	)
+	val, found := k.GetBlacklisted(ctx, req.Pubkey)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/spf13/cobra"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
@@ -53,9 +54,13 @@ func CmdShowBlacklisted() *cobra.Command {
 			queryClient := types.NewQueryClient(clientCtx)
 
 			argAddress := args[0]
+			_, pubBz, err := bech32.DecodeAndConvert(argAddress)
+			if err != nil {
+				return err
+			}
 
 			params := &types.QueryGetBlacklistedRequest{
-				Address: argAddress,
+				Pubkey: pubBz,
 			}
 
 			res, err := queryClient.Blacklisted(context.Background(), params)

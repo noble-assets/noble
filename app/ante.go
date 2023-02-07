@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
@@ -91,8 +92,14 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 					addresses = append(addresses, m.Sender, m.Receiver)
 				}
 			}
+
 			for _, address := range addresses {
-				_, found := ad.tokenfactory.GetBlacklisted(ctx, address)
+				_, pubBz, err := bech32.DecodeAndConvert(address)
+				if err != nil {
+					return ctx, err
+				}
+
+				_, found := ad.tokenfactory.GetBlacklisted(ctx, pubBz)
 				if found {
 					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}

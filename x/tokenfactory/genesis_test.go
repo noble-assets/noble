@@ -17,10 +17,10 @@ func TestGenesis(t *testing.T) {
 
 		BlacklistedList: []types.Blacklisted{
 			{
-				Address: "0",
+				Pubkey: []byte("0"),
 			},
 			{
-				Address: "1",
+				Pubkey: []byte("1"),
 			},
 		},
 		Paused: &types.Paused{
