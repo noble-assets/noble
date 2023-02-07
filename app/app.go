@@ -345,7 +345,6 @@ func New(
 		app.IBCKeeper.ChannelKeeper,
 		NoopDistributionKeeper{},
 		app.BankKeeper,
-		&app.IBCKeeper.PortKeeper,
 		app.IBCKeeper.ChannelKeeper,
 	)
 
