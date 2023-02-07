@@ -2,110 +2,124 @@ package ibctest_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
-	"github.com/strangelove-ventures/ibctest/v3"
+	ibctest "github.com/strangelove-ventures/ibctest/v3"
 	"github.com/strangelove-ventures/ibctest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v3/ibc"
+	"github.com/strangelove-ventures/ibctest/v3/relayer"
+	"github.com/strangelove-ventures/ibctest/v3/relayer/rly"
 	"github.com/strangelove-ventures/ibctest/v3/testreporter"
+	"github.com/strangelove-ventures/ibctest/v3/testutil"
 	integration "github.com/strangelove-ventures/noble/ibctest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
 
-func TestNobleChain(t *testing.T) {
+// This tests Cosmos Interchain Security, spinning up a provider and a single consumer chain.
+func TestICS(t *testing.T) {
 	if testing.Short() {
-		t.Skip()
+		t.Skip("skipping in short mode")
 	}
 
 	t.Parallel()
 
 	ctx := context.Background()
 
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
-	client, network := ibctest.DockerSetup(t)
-
 	repo, version := integration.GetDockerImageInfo()
 
+	// ownerAddress_ := "noble1nye3jsmqf3v2wag09sfwzm30fl0lpfmjhczchm"
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
+	var err error
 
-	chainCfg := ibc.ChainConfig{
-		Type:           "cosmos",
-		Name:           "noble",
-		ChainID:        "noble-1",
-		Bin:            "nobled",
-		Denom:          "token",
-		Bech32Prefix:   "noble",
-		CoinType:       "118",
-		SkipGenTx:      true,
-		GasPrices:      "0.0token",
-		GasAdjustment:  1.1,
-		TrustingPeriod: "504h",
-		NoHostMount:    false,
-		Images: []ibc.DockerImage{
-			{
-				Repository: repo,
-				Version:    version,
-				UidGid:     "1025:1025",
-			},
-		},
-		EncodingConfig: NobleEncoding(),
-		PreGenesis: func(cc ibc.ChainConfig) error {
-			val := noble.Validators[0]
-			_, _, err := val.ExecBin(ctx, "add-consumer-section")
-			if err != nil {
-				return err
-			}
-			roles, err = noblePreGenesis(ctx, val)
-			if err != nil {
-				return err
-			}
-			return nil
-		},
-		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			return modifyGenesisNobleOwner(b, roles.Owner.Address)
-		},
-	}
-
-	nv := 1
-	nf := 0
-
+	// Chain Factory
 	cf := ibctest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*ibctest.ChainSpec{
-		{
-			ChainConfig:   chainCfg,
-			NumValidators: &nv,
-			NumFullNodes:  &nf,
-		},
+		{Name: "gaia", Version: "v9.0.0-rc1", ChainConfig: ibc.ChainConfig{GasAdjustment: 1.5}},
+		{Name: "noble", ChainConfig: ibc.ChainConfig{
+			Type:           "cosmos",
+			Name:           "noble",
+			ChainID:        "noble-1",
+			Bin:            "nobled",
+			Denom:          "token",
+			Bech32Prefix:   "noble",
+			CoinType:       "118",
+			SkipGenTx:      true,
+			GasPrices:      "0.0token",
+			GasAdjustment:  1.1,
+			TrustingPeriod: "504h",
+			NoHostMount:    false,
+			Images: []ibc.DockerImage{
+				{
+					Repository: repo,
+					Version:    version,
+					UidGid:     "1025:1025",
+				},
+			},
+			EncodingConfig: NobleEncoding(),
+			PreGenesis: func(cc ibc.ChainConfig) error {
+				val := noble.Validators[0]
+				roles, err = noblePreGenesis(ctx, val)
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+			ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+				return modifyGenesisNobleAll(b, roles.Authority.Address, roles.Owner.Address, roles.MasterMinter.Address, roles.Blacklister.Address, roles.Pauser.Address)
+			},
+		}},
 	})
 
 	chains, err := cf.Chains(t.Name())
 	require.NoError(t, err)
+	provider, noble := chains[0], chains[1].(*cosmos.CosmosChain)
 
-	noble = chains[0].(*cosmos.CosmosChain)
+	// Relayer Factory
+	client, network := ibctest.DockerSetup(t)
+	r := ibctest.NewBuiltinRelayerFactory(
+		ibc.CosmosRly,
+		zaptest.NewLogger(t),
+		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-paths_update", rly.RlyDefaultUidGid),
+	).Build(t, client, network)
 
+	// Prep Interchain
+	const ibcPath = "ics-path"
 	ic := ibctest.NewInterchain().
-		AddChain(noble)
+		AddChain(provider).
+		AddChain(noble).
+		AddRelayer(r, "relayer").
+		AddProviderConsumerLink(ibctest.ProviderConsumerLink{
+			Provider: provider,
+			Consumer: noble,
+			Relayer:  r,
+			Path:     ibcPath,
+		})
 
-	require.NoError(t, ic.Build(ctx, eRep, ibctest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
+	// Log location
+	f, err := ibctest.CreateLogFile(fmt.Sprintf("%d.json", time.Now().Unix()))
+	require.NoError(t, err)
+	// Reporter/logs
+	rep := testreporter.NewReporter(f)
+	eRep := rep.RelayerExecReporter(t)
+
+	// Build interchain
+	err = ic.Build(ctx, eRep, ibctest.InterchainBuildOptions{
+		TestName:          t.Name(),
+		Client:            client,
+		NetworkID:         network,
+		BlockDatabaseFile: ibctest.DefaultBlockDatabaseFilepath(),
 
 		SkipPathCreation: false,
-	}))
-	t.Cleanup(func() {
-		_ = ic.Close()
 	})
+	require.NoError(t, err, "failed to build interchain")
+
+	err = testutil.WaitForBlocks(ctx, 7, provider, noble)
+	require.NoError(t, err, "failed to wait for blocks")
 
 	nobleValidator := noble.Validators[0]
-
-	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
-		"tokenfactory", "update-master-minter", roles.MasterMinter.Address,
-	)
-	require.NoError(t, err, "failed to execute update master minter tx")
 
 	_, err = nobleValidator.ExecTx(ctx, masterMinterKeyName,
 		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.Minter.Address,
@@ -125,11 +139,6 @@ func TestNobleChain(t *testing.T) {
 	userBalance, err := noble.GetBalance(ctx, roles.User.Address, "urupee")
 	require.NoError(t, err, "failed to get user balance")
 	require.Equal(t, int64(100), userBalance, "failed to mint urupee to user")
-
-	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
-		"tokenfactory", "update-blacklister", roles.Blacklister.Address,
-	)
-	require.NoError(t, err, "failed to set blacklister")
 
 	_, err = nobleValidator.ExecTx(ctx, blacklisterKeyName,
 		"tokenfactory", "blacklist", roles.User.Address,
@@ -201,11 +210,6 @@ func TestNobleChain(t *testing.T) {
 	minterBalance, err = noble.GetBalance(ctx, roles.Minter.Address, "urupee")
 	require.NoError(t, err, "failed to get minter balance")
 	require.Equal(t, int64(90), minterBalance, "minter balance should have decreased because tokens were burned")
-
-	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
-		"tokenfactory", "update-pauser", roles.Pauser.Address,
-	)
-	require.NoError(t, err, "failed to update pauser")
 
 	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
 		"tokenfactory", "pause",
