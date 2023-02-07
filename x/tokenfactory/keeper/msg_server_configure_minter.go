@@ -27,6 +27,14 @@ func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigur
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a controller of this minter")
 	}
 
+	if msg.Address != minterController.Minter {
+		return nil, sdkerrors.Wrapf(
+			types.ErrUnauthorized,
+			"minter address ≠ minter controller's minter address, (%s≠%s)",
+			msg.Address, minterController.Minter,
+		)
+	}
+
 	k.SetMinters(ctx, types.Minters{
 		Address:   msg.Address,
 		Allowance: msg.Allowance,
