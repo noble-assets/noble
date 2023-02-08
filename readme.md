@@ -2,7 +2,7 @@
 
 ## Overview
 
-Noble is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance for the wider Cosmos and IBC ecosystem. Noble leverages the [Cosmos-SDK](https://v1.cosmos.network/sdk) – a flexible toolkit that allows developers to leverage existing [modules](https://github.com/cosmos/cosmos-sdk), and to seamlessly integrate custom modules that add to the offerings of the Noble blockchain. 
+Noble is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance for the wider Cosmos ecosystem such as USDC, among others. Noble leverages the [Cosmos-SDK](https://v1.cosmos.network/sdk) – a flexible toolkit that allows developers to leverage existing [modules](https://github.com/cosmos/cosmos-sdk), and to seamlessly integrate custom modules that add to the offerings of the Noble blockchain. 
 
 ## Noble App-Chain Design 
 
@@ -16,11 +16,9 @@ Key authorities include:
 
 **Blacklist:** The asset issuer has the authority to blacklist addresses. A blacklisted address will be unable to transfer tokens outside of the Noble chain via IBC, or to approve, mint, or burn tokens. 
 
-Noble leverages [TokenFactory](https://docs.osmosis.zone/osmosis-core/modules/tokenfactory/) to enable the minting of generic assets in Cosmos. Further, TokenFactory modules are in the purview of the asset issuers and are distinct from governance of the app-chain. Additionally, each TokenFactory module is distinct from one other as they each house unique access controls with ownership over the minting and burning of a specific asset. 
-
 ## Tokenfactory
 
-The Tokenfactory Module allows generic assets to be minted and controlled by privileged accounts.
+Noble leverages [TokenFactory](https://docs.osmosis.zone/osmosis-core/modules/tokenfactory/) to enable the minting of generic assets in Cosmos. Further, TokenFactory modules are in the purview of the asset issuers and are distinct from governance of the app-chain. Additionally, each TokenFactory module is distinct from one other as they each house unique access controls with ownership over the minting and burning of a specific asset. 
 
 The Access Control table below shows the functionality tied to each privileged account.
 
