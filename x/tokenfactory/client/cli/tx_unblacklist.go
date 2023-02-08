@@ -34,9 +34,7 @@ func CmdUnblacklist() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				pubBz,
 			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
