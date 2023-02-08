@@ -49,3 +49,15 @@ func (k Keeper) MintingDenomSet(ctx sdk.Context) bool {
 
 	return true
 }
+
+// MintingDenomSet returns true if the MintingDenom is already set in the store, it returns false otherwise.
+func (k Keeper) MintingDenomSet(ctx sdk.Context) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
+
+	b := store.Get(types.KeyPrefix(types.MintingDenomKey))
+	if b == nil {
+		return false
+	}
+
+	return true
+}
