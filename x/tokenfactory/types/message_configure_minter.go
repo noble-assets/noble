@@ -43,9 +43,23 @@ func (msg *MsgConfigureMinter) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
 	}
+
 	_, err = sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid minter address (%s)", err)
 	}
+
+	if msg.Allowance.IsNil() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "allowance amount cannot be nil")
+	}
+
+	if msg.Allowance.IsNegative() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "allowance amount cannot be negative")
+	}
+
+	if msg.Allowance.IsZero() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "allowance amount cannot be zero")
+	}
+
 	return nil
 }

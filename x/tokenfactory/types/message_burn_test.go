@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/stretchr/testify/require"
@@ -23,7 +24,8 @@ func TestMsgBurn_ValidateBasic(t *testing.T) {
 		}, {
 			name: "valid address",
 			msg: MsgBurn{
-				From: sample.AccAddress(),
+				From:   sample.AccAddress(),
+				Amount: sdk.NewCoin("test", sdk.NewInt(1)),
 			},
 		},
 	}
