@@ -7,7 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
+func init() {
+	RegisterLegacyAminoCodec(amino)
+	amino.Seal()
+}
+
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateMasterMinter{}, "tokenfactory/UpdateMasterMinter", nil)
 	cdc.RegisterConcrete(&MsgUpdatePauser{}, "tokenfactory/UpdatePauser", nil)
 	cdc.RegisterConcrete(&MsgUpdateBlacklister{}, "tokenfactory/UpdateBlacklister", nil)
@@ -28,52 +33,27 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateMasterMinter{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdatePauser{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateBlacklister{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateOwner{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgConfigureMinter{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRemoveMinter{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMint{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgBurn{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgBlacklist{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUnblacklist{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgPause{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUnpause{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgConfigureMinterController{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRemoveMinterController{},
 	)
+
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
 var (
-	Amino     = codec.NewLegacyAmino()
+	amino     = codec.NewLegacyAmino()
 	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
 )
