@@ -99,6 +99,9 @@ lint:
 ###                          INTERCHAINTEST (ictest)                        ###
 ###############################################################################
 
+test:
+	go test -v -race ./...
+
 ictest-tkn-factory:
 	cd interchaintest && go test -race -v -run TestNobleChain .
 
@@ -125,7 +128,7 @@ else
 	heighliner build -c noble --local -f ./chains.yaml
 endif
 
-.PHONY: all build-linux install lint \
+.PHONY: all build-linux install lint test \
 	go-mod-cache build interchaintest get-heighliner local-image \
 
 ###############################################################################
