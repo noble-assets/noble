@@ -97,10 +97,8 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
-	if gs.MintingDenom != nil {
-		if gs.MintingDenom.Denom == "" {
-			return fmt.Errorf("minting denom cannot be an empty string")
-		}
+	if gs.MintingDenom != nil && gs.MintingDenom.Denom == "" {
+		return fmt.Errorf("minting denom cannot be an empty string")
 	}
 
 	// this line is used by starport scaffolding # genesis/types/validate
