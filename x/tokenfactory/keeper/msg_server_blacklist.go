@@ -21,7 +21,10 @@ func (k msgServer) Blacklist(goCtx context.Context, msg *types.MsgBlacklist) (*t
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the blacklister")
 	}
 
-	// TODO: fail if address is already blacklisted?
+	_, found = k.GetBlacklisted(ctx, msg.Pubkey)
+	if found {
+		return nil, types.ErrUserBlacklisted
+	}
 
 	blacklisted := types.Blacklisted{
 		Pubkey: msg.Pubkey,
