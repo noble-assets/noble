@@ -25,9 +25,3 @@ func (k Keeper) GetPauser(ctx sdk.Context) (val types.Pauser, found bool) {
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
-
-// RemovePauser removes pauser from the store
-func (k Keeper) RemovePauser(ctx sdk.Context) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.KeyPrefix(types.PauserKey))
-}

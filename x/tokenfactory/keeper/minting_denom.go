@@ -32,9 +32,3 @@ func (k *Keeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom) {
 	k.cdc.MustUnmarshal(b, &val)
 	return val
 }
-
-// RemoveMintingDenom removes mintingDenom from the store
-func (k Keeper) RemoveMintingDenom(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
-	store.Delete(types.KeyPrefix(types.MintingDenomKey))
-}
