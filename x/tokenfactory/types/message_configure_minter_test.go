@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/stretchr/testify/require"
@@ -33,8 +34,9 @@ func TestMsgConfigureMinter_ValidateBasic(t *testing.T) {
 		{
 			name: "valid address and from",
 			msg: MsgConfigureMinter{
-				From:    sample.AccAddress(),
-				Address: sample.AccAddress(),
+				From:      sample.AccAddress(),
+				Address:   sample.AccAddress(),
+				Allowance: sdk.NewCoin("test", sdk.NewInt(1)),
 			},
 		},
 	}
