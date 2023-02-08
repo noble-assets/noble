@@ -18,7 +18,7 @@ Key authorities include:
 
 ## Tokenfactory
 
-Noble leverages [TokenFactory](https://docs.osmosis.zone/osmosis-core/modules/tokenfactory/) to enable the minting of generic assets in Cosmos. Further, TokenFactory modules are in the purview of the asset issuers and are distinct from governance of the app-chain. Additionally, each TokenFactory module is distinct from one other as they each house unique access controls with ownership over the minting and burning of a specific asset. 
+Noble implements a `tokenfactory` module pattern to enable the minting of generic assets in Cosmos. Further, `tokenfactory` modules are in the purview of the asset issuers and are distinct from governance of the app-chain. Additionally, each `tokenfactory` module is distinct from one other as they each house unique access controls with ownership over the minting and burning of a specific asset. 
 
 The Access Control table below shows the functionality tied to each privileged account.
 
