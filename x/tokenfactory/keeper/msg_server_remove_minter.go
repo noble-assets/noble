@@ -21,6 +21,14 @@ func (k msgServer) RemoveMinter(goCtx context.Context, msg *types.MsgRemoveMinte
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a controller of this minter")
 	}
 
+	if msg.Address != minterController.Minter {
+		return nil, sdkerrors.Wrapf(
+			types.ErrUnauthorized,
+			"minter address ≠ minter controller's minter address, (%s≠%s)",
+			msg.Address, minterController.Minter,
+		)
+	}
+
 	minter, found := k.GetMinters(ctx, msg.Address)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "a minter with a given address doesn't exist")

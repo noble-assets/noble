@@ -12,6 +12,10 @@ import (
 func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigureMinter) (*types.MsgConfigureMinterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	if k.GetPaused(ctx).Paused {
+		return nil, sdkerrors.Wrap(types.ErrPaused, "minters cannot be configured while the tokenfactory is paused")
+	}
+
 	mintingDenom := k.GetMintingDenom(ctx)
 
 	if msg.Allowance.Denom != mintingDenom.Denom {
@@ -25,6 +29,14 @@ func (k msgServer) ConfigureMinter(goCtx context.Context, msg *types.MsgConfigur
 
 	if msg.From != minterController.Controller {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a controller of this minter")
+	}
+
+	if msg.Address != minterController.Minter {
+		return nil, sdkerrors.Wrapf(
+			types.ErrUnauthorized,
+			"minter address ≠ minter controller's minter address, (%s≠%s)",
+			msg.Address, minterController.Minter,
+		)
 	}
 
 	k.SetMinters(ctx, types.Minters{
