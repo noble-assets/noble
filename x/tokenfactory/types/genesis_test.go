@@ -3,6 +3,8 @@ package types_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 	"github.com/stretchr/testify/require"
@@ -35,35 +37,39 @@ func TestGenesisState_Validate(t *testing.T) {
 					Paused: true,
 				},
 				MasterMinter: &types.MasterMinter{
-					Address: "82",
+					Address: sample.AccAddress(),
 				},
 				MintersList: []types.Minters{
 					{
-						Address: "0",
+						Address:   sample.AccAddress(),
+						Allowance: sdk.NewCoin("test", sdk.NewInt(1)),
 					},
 					{
-						Address: "1",
+						Address:   sample.AccAddress(),
+						Allowance: sdk.NewCoin("test", sdk.NewInt(1)),
 					},
 				},
 				Pauser: &types.Pauser{
-					Address: "32",
+					Address: sample.AccAddress(),
 				},
 				Blacklister: &types.Blacklister{
-					Address: "78",
+					Address: sample.AccAddress(),
 				},
 				Owner: &types.Owner{
-					Address: "73",
+					Address: sample.AccAddress(),
 				},
 				MinterControllerList: []types.MinterController{
 					{
-						Controller: "0",
+						Controller: sample.AccAddress(),
+						Minter:     sample.AccAddress(),
 					},
 					{
-						Controller: "1",
+						Controller: sample.AccAddress(),
+						Minter:     sample.AccAddress(),
 					},
 				},
 				MintingDenom: &types.MintingDenom{
-					Denom: "56",
+					Denom: "test",
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
