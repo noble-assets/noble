@@ -42,5 +42,18 @@ func (msg *MsgBurn) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
 	}
+
+	if msg.Amount.IsNil() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "burn amount cannot be nil")
+	}
+
+	if msg.Amount.IsNegative() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "burn amount cannot be negative")
+	}
+
+	if msg.Amount.IsZero() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "burn amount cannot be zero")
+	}
+
 	return nil
 }
