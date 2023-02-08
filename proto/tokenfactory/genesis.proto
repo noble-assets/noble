@@ -26,7 +26,7 @@ message GenesisState {
   Pauser pauser = 6;
   Blacklister blacklister = 7;
   Owner owner = 8;
-  repeated MinterController minterControllerList = 10 [(gogoproto.nullable) = false];
-  MintingDenom mintingDenom = 11;
+  repeated MinterController minterControllerList = 9 [(gogoproto.nullable) = false];
+  MintingDenom mintingDenom = 10;
   // this line is used by starport scaffolding # genesis/proto/state
 }
