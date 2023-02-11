@@ -67,7 +67,6 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	"github.com/cosmos/interchain-security/testutil/e2e"
 	"github.com/spf13/cast"
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
@@ -776,26 +775,6 @@ func (app *App) GetStakingKeeper() ibcclienttypes.StakingKeeper {
 // GetScopedIBCKeeper implements the TestingApp interface.
 func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 	return app.ScopedIBCKeeper
-}
-
-// GetE2eBankKeeper implements the ConsumerApp interface.
-func (app *App) GetE2eBankKeeper() e2e.E2eBankKeeper {
-	return app.BankKeeper
-}
-
-// GetE2eAccountKeeper implements the ConsumerApp interface.
-func (app *App) GetE2eAccountKeeper() e2e.E2eAccountKeeper {
-	return app.AccountKeeper
-}
-
-// GetE2eSlashingKeeper implements the ConsumerApp interface.
-func (app *App) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
-	return app.SlashingKeeper
-}
-
-// GetE2eEvidenceKeeper implements the ConsumerApp interface.
-func (app *App) GetE2eEvidenceKeeper() e2e.E2eEvidenceKeeper {
-	return app.EvidenceKeeper
 }
 
 type NoopDistributionKeeper struct{}
