@@ -22,7 +22,7 @@ func TestKeeperUpdateValidatorSetFunctions(t *testing.T) {
 	pubKeyAny1, err := cdctypes.NewAnyWithValue(valPubKey1)
 	require.NoError(t, err)
 
-	pubKeyAny2, err := cdctypes.NewAnyWithValue(valPubKey1)
+	pubKeyAny2, err := cdctypes.NewAnyWithValue(valPubKey2)
 	require.NoError(t, err)
 
 	validator := &types.Validator{
@@ -38,15 +38,17 @@ func TestKeeperUpdateValidatorSetFunctions(t *testing.T) {
 	}
 
 	// Set a value in the store
-	keeper.SetValidator(ctx, validator)
+	keeper.SaveValidator(ctx, validator)
+
 	err = keeper.CalculateValidatorVotes(ctx)
 	require.NoError(t, err)
 
+	// Validator 1 joins consensus even though it does not have any votes because it's the only validator.
 	updates, err := keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
 	require.Equal(t, 1, len(updates))
 
-	keeper.SetValidator(ctx, validator2)
+	keeper.SaveValidator(ctx, validator2)
 
 	vote := &types.Vote{
 		VoterAddress:     validator.Address,
@@ -60,18 +62,19 @@ func TestKeeperUpdateValidatorSetFunctions(t *testing.T) {
 		InFavor:          true,
 	}
 
-	// Validator 1 votes for validator 2 to join the consensus
+	// Validator 1 votes for validator 2 to join consensus
 	keeper.SetVote(ctx, vote)
 
-	// Validator 2 votes for validator 2 to join the consensus
+	// Validator 2 votes for validator 2 to join consensus
 	keeper.SetVote(ctx, vote2)
+
 	err = keeper.CalculateValidatorVotes(ctx)
 	require.NoError(t, err)
 
-	// Validator 2 joins the consensus
+	// Validator 2 joins consensus, but validator 1 is booted because it does not have any votes
 	updates, err = keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	require.Equal(t, 1, len(updates))
+	require.Equal(t, 2, len(updates))
 
 	// No updates to the set
 	updates, err = keeper.ApplyAndReturnValidatorSetUpdates(ctx)
@@ -106,7 +109,7 @@ func TestKeeperCalculateValidatorVoteFunction(t *testing.T) {
 	}
 
 	// Set a value in the store
-	keeper.SetValidator(ctx, validator)
+	keeper.SaveValidator(ctx, validator)
 
 	_, err = keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
@@ -120,7 +123,7 @@ func TestKeeperCalculateValidatorVoteFunction(t *testing.T) {
 	require.True(t, found)
 
 	// Set the second validator and assert its not accepted
-	keeper.SetValidator(ctx, validator2)
+	keeper.SaveValidator(ctx, validator2)
 	retVal, found = keeper.GetValidator(ctx, validator2.Address)
 	require.False(t, retVal.IsAccepted)
 

@@ -28,7 +28,7 @@ func (k msgServer) CreateValidator(goCtx context.Context, msg *types.MsgCreateVa
 		Pubkey:      msg.Pubkey,
 	}
 
-	k.SetValidator(ctx, validator)
+	k.SaveValidator(ctx, validator)
 
 	// ctx.EventManager().EmitEvents(sdk.Events{
 	// 	sdk.NewEvent(

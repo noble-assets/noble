@@ -13,7 +13,7 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	k.SetParams(ctx, genState.Params)
 
 	for _, validator := range genState.Validators {
-		k.SetValidator(ctx, validator)
+		k.SaveValidator(ctx, validator)
 	}
 
 	_, err := k.ApplyAndReturnValidatorSetUpdates(ctx)

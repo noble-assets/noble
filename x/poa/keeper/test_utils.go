@@ -7,20 +7,22 @@ import (
 
 	"testing"
 
-	"github.com/strangelove-ventures/noble/x/poa/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	abci "github.com/tendermint/tendermint/abci/types"
-
-	dbm "github.com/tendermint/tm-db"
+	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
+	testutilkeeper "github.com/strangelove-ventures/noble/testutil/keeper"
+	"github.com/strangelove-ventures/noble/x/poa/types"
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmdb "github.com/tendermint/tm-db"
 )
 
 const (
@@ -58,48 +60,38 @@ func CreateTestPubKeys(numPubKeys int) []cryptotypes.PubKey {
 }
 
 func MakeTestCtxAndKeeper(t *testing.T) (sdk.Context, Keeper) {
-	var cdc = codec.NewProtoCodec()
-	codec.RegisterCrypto(cdc)
+	storeKey := sdk.NewKVStoreKey(types.StoreKey)
+	tStoreKey := sdk.NewTransientStoreKey(types.TransientStoreKey)
 
-	keyPoa := sdk.NewKVStoreKey(types.StoreKey)
-	keyAcc := sdk.NewKVStoreKey(auth.StoreKey)
-	keyParams := sdk.NewKVStoreKey(params.StoreKey)
-	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(tStoreKey, storetypes.StoreTypeTransient, db)
+	require.NoError(t, stateStore.LoadLatestVersion())
 
-	db := dbm.NewMemDB()
-	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyPoa, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
-	_ = ms.LoadLatestVersion()
+	registry := codectypes.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(registry)
+	cryptocodec.RegisterInterfaces(registry)
 
-	ctx := sdk.NewContext(ms, abci.Header{ChainID: "foochainid"}, true, nil)
-
-	pk := params.NewKeeper(
-		cdc,
-		keyParams,
-		tkeyParams,
+	paramsSubspace := typesparams.NewSubspace(cdc,
+		codec.NewLegacyAmino(),
+		storeKey,
+		tStoreKey,
+		"POAParams",
 	)
 
-	accountKeeper := auth.NewAccountKeeper(
-		cdc,
-		keyAcc,
-		pk.Subspace(auth.DefaultParamspace),
-		auth.ProtoBaseAccount,
-	)
-
-	bk := bank.NewBaseKeeper(
-		accountKeeper,
-		pk.Subspace(bank.DefaultParamspace),
-		nil,
-	)
+	bk := testutilkeeper.MockBankKeeper{}
 
 	keeper := NewKeeper(
 		bk,
 		cdc,
-		keyPoa,
-		pk.Subspace(DefaultParamspace),
+		storeKey,
+		paramsSubspace,
 	)
+
+	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
+
+	// Initialize params
 	keeper.SetParams(ctx, types.DefaultParams())
 
 	return ctx, keeper

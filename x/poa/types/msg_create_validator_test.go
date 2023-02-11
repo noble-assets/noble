@@ -26,19 +26,21 @@ func TestMsgCreateValidator(t *testing.T) {
 		name, moniker, identity, website, securityContact, details string
 		validatorAddr                                              sdk.ValAddress
 		pubkey                                                     cryptotypes.PubKey
+		expectPassPackPubKey                                       bool
 		expectPass                                                 bool
 	}{
-		{"basic good", "a", "b", "c", "d", "e", valAddr1, pk1, true},
-		{"empty name", "", "", "c", "", "", valAddr1, pk1, false},
-		{"empty description", "", "", "", "", "", valAddr1, pk1, false},
-		{"empty address", "a", "b", "c", "d", "e", emptyAddr, pk1, false},
-		{"empty pubkey", "a", "b", "c", "d", "e", valAddr1, emptyPubkey, true},
+		{"basic good", "a", "b", "c", "d", "e", valAddr1, pk1, true, true},
+		{"empty description", "", "", "", "", "", valAddr1, pk1, true, false},
+		{"empty address", "a", "b", "c", "d", "e", emptyAddr, pk1, true, false},
+		{"empty pubkey", "a", "b", "c", "d", "e", valAddr1, emptyPubkey, false, true},
 	}
 
 	for _, tc := range tests {
 		description := stakingtypes.NewDescription(tc.moniker, tc.identity, tc.website, tc.securityContact, tc.details)
 		pk, err := cdctypes.NewAnyWithValue(tc.pubkey)
-		require.NoError(t, err)
+		if tc.expectPassPackPubKey {
+			require.NoError(t, err, "test: %v", tc.name)
+		}
 		msg := &MsgCreateValidator{
 			Description: description,
 			Address:     tc.validatorAddr.String(),

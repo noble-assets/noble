@@ -6,8 +6,8 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/golang/protobuf/proto"
 	"github.com/strangelove-ventures/noble/x/poa/types"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -27,14 +27,13 @@ func TestKeeperValidatorFunctions(t *testing.T) {
 		Address:     valAddr,
 		Pubkey:      pubKeyAny,
 	}
-	// TODO: split into multiple test cases
 
 	// Set a validator in the store
-	keeper.SetValidator(ctx, validator)
+	keeper.SaveValidator(ctx, validator)
 
 	// Check the store to see if the validator was saved
 	retVal, found := keeper.GetValidator(ctx, validator.Address)
-	assert.Equal(t, validator, retVal, "Should return the correct validator from the store")
+	require.True(t, proto.Equal(validator, retVal), "Should return the correct validator from the store")
 	require.True(t, found)
 
 	// Get all validators from the store

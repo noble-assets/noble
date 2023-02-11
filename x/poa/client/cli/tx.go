@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cobra"
-	flag "github.com/spf13/pflag"
-	"github.com/tendermint/tendermint/proto/tendermint/crypto"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 	"github.com/strangelove-ventures/noble/x/poa/types"
 )
 
@@ -95,7 +94,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, fs *flag.FlagSet) (*ty
 		valPubKey = pk.Bytes()
 	}
 
-	pubKeyAny, err := cdctypes.NewAnyWithValue(&crypto.PublicKey{Sum: &crypto.PublicKey_Ed25519{Ed25519: valPubKey}})
+	pubKeyAny, err := cdctypes.NewAnyWithValue(&ed25519.PubKey{Key: valPubKey})
 	if err != nil {
 		return nil, err
 

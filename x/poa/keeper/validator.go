@@ -6,7 +6,7 @@ import (
 	"github.com/strangelove-ventures/noble/x/poa/types"
 )
 
-func (k Keeper) SetValidator(ctx sdk.Context, validator *types.Validator) {
+func (k Keeper) SaveValidator(ctx sdk.Context, validator *types.Validator) {
 	k.Set(ctx, validator.Address, types.ValidatorsKey, validator)
 }
 
@@ -15,20 +15,20 @@ func (k Keeper) SetValidator(ctx sdk.Context, validator *types.Validator) {
 // SetValidatorIsInSet after a validator has been accepted and not added to the set we need this function
 func (k Keeper) SetValidatorIsInSet(ctx sdk.Context, validator *types.Validator, isInSet bool) {
 	validator.InSet = isInSet
-	k.SetValidator(ctx, validator)
+	k.SaveValidator(ctx, validator)
 }
 
 // SetValidatorIsAccepted when the validator is accepeted into the consensus accepted is set to true
 func (k Keeper) SetValidatorIsAccepted(ctx sdk.Context, validator *types.Validator, isAccepted bool) {
 	validator.IsAccepted = isAccepted
-	k.SetValidator(ctx, validator)
+	k.SaveValidator(ctx, validator)
 }
 
 // SetValidatorIsAccepted when the validator is accepeted into the consensus accepted is set to true and is in the validator set
 func (k Keeper) SetValidatorIsAcceptedAndInSet(ctx sdk.Context, validator *types.Validator, isAccepted bool, isInSet bool) {
 	validator.IsAccepted = isAccepted
 	validator.InSet = isInSet
-	k.SetValidator(ctx, validator)
+	k.SaveValidator(ctx, validator)
 }
 
 func (k Keeper) GetValidator(ctx sdk.Context, key []byte) (*types.Validator, bool) {
@@ -37,12 +37,8 @@ func (k Keeper) GetValidator(ctx sdk.Context, key []byte) (*types.Validator, boo
 }
 
 func (k Keeper) UnmarshalValidator(value []byte) (proto.Message, bool) {
-	validator := types.Validator{}
-	err := k.cdc.UnmarshalInterface(value, &validator)
-	if err != nil {
-		return &types.Validator{}, false
-	}
-	return &validator, true
+	validator := &types.Validator{}
+	return validator, validator.Unmarshal(value) == nil
 }
 
 // ValidatorSelectorFn allows validators to be selected by certain conditions

@@ -1,14 +1,20 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"github.com/strangelove-ventures/noble/x/poa/types"
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 )
@@ -37,33 +43,131 @@ func PrepareFlagsForTxCreateValidator(config *cfg.Config, nodeID,
 	viper.Set(FlagNodeID, nodeID)
 }
 
-// // BuildCreateValidatorMsg - used for gen-tx
-func BuildCreateValidatorMsg(cliCtx context.CLIContext,
-	txBldr authtypes.TxBuilder) (authtypes.TxBuilder, sdk.Msg, error) {
-	pkStr := viper.GetString(flagPubKey)
+type TxCreateValidatorConfig struct {
+	ChainID string
+	NodeID  string
+	Moniker string
 
-	valAddr := cliCtx.GetFromAddress()
-	consAddr := sdk.ValAddress(cliCtx.GetFromAddress())
+	PubKey cryptotypes.PubKey
 
-	pk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, pkStr)
+	IP              string
+	Website         string
+	SecurityContact string
+	Details         string
+	Identity        string
+}
 
-	moniker := viper.GetString(flagMoniker)
-	identity := viper.GetString(flagIdentity)
-	website := viper.GetString(flagWebsite)
-	securityContact := viper.GetString(flagSecurityContact)
-	details := viper.GetString(flagDetails)
+func PrepareConfigForTxCreateValidator(flagSet *flag.FlagSet, moniker, nodeID, chainID string, valPubKey cryptotypes.PubKey) (TxCreateValidatorConfig, error) {
+	c := TxCreateValidatorConfig{}
 
-	msg := types.NewMsgCreateValidatorPOA(
-		consAddr.String(),
-		consAddr,
-		pk,
-		stakingtypes.NewDescription(moniker, identity, website, securityContact, details),
-		valAddr,
+	ip, err := flagSet.GetString(FlagIP)
+	if err != nil {
+		return c, err
+	}
+	if ip == "" {
+		_, _ = fmt.Fprintf(os.Stderr, "couldn't retrieve an external IP; "+
+			"the tx's memo field will be unset")
+	}
+	c.IP = ip
+
+	website, err := flagSet.GetString(FlagWebsite)
+	if err != nil {
+		return c, err
+	}
+	c.Website = website
+
+	securityContact, err := flagSet.GetString(FlagSecurityContact)
+	if err != nil {
+		return c, err
+	}
+	c.SecurityContact = securityContact
+
+	details, err := flagSet.GetString(FlagDetails)
+	if err != nil {
+		return c, err
+	}
+	c.SecurityContact = details
+
+	identity, err := flagSet.GetString(FlagIdentity)
+	if err != nil {
+		return c, err
+	}
+	c.Identity = identity
+
+	c.NodeID = nodeID
+	c.PubKey = valPubKey
+	c.Website = website
+	c.SecurityContact = securityContact
+	c.Details = details
+	c.Identity = identity
+	c.ChainID = chainID
+	c.Moniker = moniker
+
+	return c, nil
+}
+
+// BuildCreateValidatorMsg makes a new MsgCreateValidator.
+func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorConfig, txBldr tx.Factory, generateOnly bool) (tx.Factory, sdk.Msg, error) {
+	valAddr := clientCtx.GetFromAddress()
+	description := stakingtypes.NewDescription(
+		config.Moniker,
+		config.Identity,
+		config.Website,
+		config.SecurityContact,
+		config.Details,
 	)
-	ip := viper.GetString(flagIP)
-	nodeID := viper.GetString(flagNodeId)
 
-	txBldr = txBldr.WithMemo(fmt.Sprintf("%s@%s:26656", nodeID, ip))
+	pubKeyAny, err := cdctypes.NewAnyWithValue(config.PubKey)
+	if err != nil {
+		return txBldr, nil, err
+	}
+
+	msg := &types.MsgCreateValidator{
+		Description: description,
+		Address:     valAddr.String(),
+		Pubkey:      pubKeyAny,
+	}
+
+	if err != nil {
+		return txBldr, msg, err
+	}
+	if generateOnly {
+		ip := config.IP
+		nodeID := config.NodeID
+
+		if nodeID != "" && ip != "" {
+			txBldr = txBldr.WithMemo(fmt.Sprintf("%s@%s:26656", nodeID, ip))
+		}
+	}
 
 	return txBldr, msg, nil
+}
+
+type printInfo struct {
+	Moniker    string          `json:"moniker" yaml:"moniker"`
+	ChainID    string          `json:"chain_id" yaml:"chain_id"`
+	NodeID     string          `json:"node_id" yaml:"node_id"`
+	GenTxsDir  string          `json:"gentxs_dir" yaml:"gentxs_dir"`
+	AppMessage json.RawMessage `json:"app_message" yaml:"app_message"`
+}
+
+func newPrintInfo(moniker, chainID, nodeID, genTxsDir string, appMessage json.RawMessage) printInfo {
+	return printInfo{
+		Moniker:    moniker,
+		ChainID:    chainID,
+		NodeID:     nodeID,
+		GenTxsDir:  genTxsDir,
+		AppMessage: appMessage,
+	}
+}
+
+func displayInfo(info printInfo) error {
+	out, err := json.MarshalIndent(info, "", " ")
+	if err != nil {
+		return err
+	}
+
+	_, err = fmt.Fprintf(os.Stderr, "%s\n", string(sdk.MustSortJSON(out)))
+
+	return err
 }

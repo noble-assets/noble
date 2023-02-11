@@ -18,4 +18,7 @@ const (
 
 	// QuerierRoute to be used for querier msgs
 	QuerierRoute = ModuleName
+
+	// TransientStoreKey defines the transient store key
+	TransientStoreKey = "transient_poa"
 )

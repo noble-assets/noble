@@ -46,7 +46,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // Set sets a value in the db with a prefixed key
 func (k Keeper) Set(ctx sdk.Context, key []byte, prefix []byte, i proto.Message) error {
 	store := ctx.KVStore(k.storeKey)
-	bz, err := k.cdc.MarshalInterface(i)
+	bz, err := proto.Marshal(i)
 	if err != nil {
 		return err
 	}

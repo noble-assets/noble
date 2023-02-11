@@ -13,7 +13,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 	// handle the case if there is only one validator in the set
 	if len(validators) == 1 && !validators[0].InSet {
 		k.SetValidatorIsAcceptedAndInSet(ctx, validators[0], true, true)
-		update, err := validators[0].ABCIValidatorUpdate(10)
+		update, err := validators[0].ABCIValidatorUpdate(k.cdc, 10)
 		if err != nil {
 			return nil, err
 		}
@@ -28,7 +28,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 			// validator has been accepted but is not yet in the set
 			if validator.IsAccepted && !validator.InSet {
 				k.SetValidatorIsInSet(ctx, validator, true)
-				update, err := validator.ABCIValidatorUpdate(10)
+				update, err := validator.ABCIValidatorUpdate(k.cdc, 10)
 				if err != nil {
 					return nil, err
 				}
@@ -38,7 +38,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 		// validator has been kicked but not yet removed from the set
 		if !validator.IsAccepted && validator.InSet {
 			k.SetValidatorIsInSet(ctx, validator, false)
-			update, err := validator.ABCIValidatorUpdate(0)
+			update, err := validator.ABCIValidatorUpdate(k.cdc, 0)
 			if err != nil {
 				return nil, err
 			}
