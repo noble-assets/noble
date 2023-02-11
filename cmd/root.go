@@ -31,6 +31,8 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
+
+	poacli "github.com/strangelove-ventures/noble/x/poa/client/cli"
 )
 
 type (
@@ -198,9 +200,9 @@ func initRootCmd(
 ) {
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(moduleBasics, defaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, defaultNodeHome),
+		poacli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, defaultNodeHome),
 		genutilcli.MigrateGenesisCmd(),
-		genutilcli.GenTxCmd(
+		poacli.GenTxCmd(
 			moduleBasics,
 			encodingConfig.TxConfig,
 			banktypes.GenesisBalancesIterator{},

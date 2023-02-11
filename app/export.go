@@ -75,18 +75,27 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 			return false
 		},
 	)
+
+	_, err := app.POAKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // GetValidatorSet returns a slice of bonded validators.
 func (app *App) GetValidatorSet(ctx sdk.Context) ([]tmtypes.GenesisValidator, error) {
-	cVals := app.ConsumerKeeper.GetAllCCValidator(ctx)
+	cVals := app.POAKeeper.GetAllValidators(ctx)
 	if len(cVals) == 0 {
 		return nil, fmt.Errorf("empty validator set")
 	}
 
 	vals := []tmtypes.GenesisValidator{}
 	for _, v := range cVals {
-		vals = append(vals, tmtypes.GenesisValidator{Address: v.Address, Power: v.Power})
+		power := int64(0)
+		if v.InSet {
+			power = 10
+		}
+		vals = append(vals, tmtypes.GenesisValidator{Address: v.Address, Power: power})
 	}
 	return vals, nil
 }

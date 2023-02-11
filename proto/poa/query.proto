@@ -7,16 +7,16 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
 
 service Query {
-  rpc Validator(QueryValidatorRequest) returns (QueryValidatorResponse) {
+  rpc QueryValidator(QueryValidatorRequest) returns (QueryValidatorResponse) {
     option (google.api.http).get = "/noble/poa/validator";
   }
-  rpc Validators(QueryValidatorsRequest) returns (QueryValidatorsResponse) {
+  rpc QueryValidators(QueryValidatorsRequest) returns (QueryValidatorsResponse) {
     option (google.api.http).get = "/noble/poa/validator";
   }
-  rpc Vote(QueryVoteRequest) returns (QueryVoteResponse) {
+  rpc QueryVote(QueryVoteRequest) returns (QueryVoteResponse) {
     option (google.api.http).get = "/noble/poa/vote";
   }
-  rpc Votes(QueryVotesRequest) returns (QueryVotesResponse) {
+  rpc QueryVotes(QueryVotesRequest) returns (QueryVotesResponse) {
     option (google.api.http).get = "/noble/poa/vote";
   }
 }

@@ -17,7 +17,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
-	testutilkeeper "github.com/strangelove-ventures/noble/testutil/keeper"
 	"github.com/strangelove-ventures/noble/x/poa/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
@@ -80,10 +79,7 @@ func MakeTestCtxAndKeeper(t *testing.T) (sdk.Context, Keeper) {
 		"POAParams",
 	)
 
-	bk := testutilkeeper.MockBankKeeper{}
-
 	keeper := NewKeeper(
-		bk,
 		cdc,
 		storeKey,
 		paramsSubspace,

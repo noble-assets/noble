@@ -23,14 +23,11 @@ type Keeper struct {
 	cdc        codec.BinaryCodec
 	storeKey   storetypes.StoreKey
 	paramspace paramtypes.Subspace
-
-	bankKeeper types.BankKeeper
 }
 
 // NewKeeper creates a poa keeper
-func NewKeeper(bankKeeper types.BankKeeper, cdc codec.BinaryCodec, key sdk.StoreKey, paramspace paramtypes.Subspace) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, paramspace paramtypes.Subspace) Keeper {
 	keeper := Keeper{
-		bankKeeper: bankKeeper,
 		storeKey:   key,
 		cdc:        cdc,
 		paramspace: paramspace.WithKeyTable(types.ParamKeyTable()),

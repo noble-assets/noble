@@ -47,7 +47,7 @@ func CmdValidator() *cobra.Command {
 				ValidatorAddress: args[0],
 			}
 
-			res, err := queryClient.Validator(context.Background(), params)
+			res, err := queryClient.QueryValidator(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -80,7 +80,7 @@ func CmdValidators() *cobra.Command {
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.Validators(context.Background(), params)
+			res, err := queryClient.QueryValidators(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -110,7 +110,7 @@ func CmdVote() *cobra.Command {
 				VoterAddress:     args[1],
 			}
 
-			res, err := queryClient.Vote(context.Background(), params)
+			res, err := queryClient.QueryVote(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -143,7 +143,7 @@ func CmdVotes() *cobra.Command {
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.Votes(context.Background(), params)
+			res, err := queryClient.QueryVotes(context.Background(), params)
 			if err != nil {
 				return err
 			}
