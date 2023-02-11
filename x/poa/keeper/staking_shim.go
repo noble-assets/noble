@@ -48,7 +48,7 @@ func (k *Keeper) Validator(sdk.Context, sdk.ValAddress) stakingtypes.ValidatorI 
 }
 
 // slash the validator and delegators of the validator, specifying offence height, offence power, and slash fraction
-func (k *Keeper) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec, stakingtypes.InfractionType) {
+func (k *Keeper) Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec) {
 	// TODO
 	panic("not yet implemented")
 }
