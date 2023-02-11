@@ -12,15 +12,12 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	consumerante "github.com/cosmos/interchain-security/app/consumer/ante"
-	ibcconsumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 )
 
 type HandlerOptions struct {
 	ante.HandlerOptions
 	tokenFactoryKeeper *tokenfactory.Keeper
 	IBCKeeper          *ibckeeper.Keeper
-	ConsumerKeeper     ibcconsumerkeeper.Keeper
 }
 
 type IsPausedDecorator struct {
@@ -134,9 +131,6 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewRejectExtensionOptionsDecorator(),
 		NewIsBlacklistedDecorator(options.tokenFactoryKeeper),
 		NewIsPausedDecorator(options.tokenFactoryKeeper),
-		// temporarily disabled so that chain can be tested locally without the provider chain running
-		// consumerante.NewMsgFilterDecorator(options.ConsumerKeeper),
-		consumerante.NewDisabledModulesDecorator("/cosmos.evidence", "/cosmos.slashing"),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

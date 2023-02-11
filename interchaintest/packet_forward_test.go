@@ -56,7 +56,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 	nv := 1
 	nf := 0
 	coinType := "118"
-	skipGenTx := true
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
@@ -70,7 +69,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -85,10 +83,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainA.Validators[0]
-					_, _, err := val.ExecBin(ctx, "add-consumer-section")
-					if err != nil {
-						return err
-					}
 					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
@@ -111,7 +105,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -126,10 +119,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainB.Validators[0]
-					_, _, err := val.ExecBin(ctx, "add-consumer-section")
-					if err != nil {
-						return err
-					}
 					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
@@ -152,7 +141,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -167,10 +155,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainC.Validators[0]
-					_, _, err := val.ExecBin(ctx, "add-consumer-section")
-					if err != nil {
-						return err
-					}
 					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
@@ -193,7 +177,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Denom:          "token",
 				Bech32Prefix:   "noble",
 				CoinType:       coinType,
-				SkipGenTx:      skipGenTx,
 				GasPrices:      "0.0token",
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
@@ -208,10 +191,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainD.Validators[0]
-					_, _, err := val.ExecBin(ctx, "add-consumer-section")
-					if err != nil {
-						return err
-					}
 					roles, err := noblePreGenesis(ctx, val)
 					if err != nil {
 						return err
@@ -234,7 +213,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		ibc.CosmosRly,
 		zaptest.NewLogger(t),
 		// TODO remove this line once default rly version includes https://github.com/cosmos/relayer/pull/1038
-		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-trusting_period_ics", rly.RlyDefaultUidGid),
+		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-poa", rly.RlyDefaultUidGid),
 	).Build(t, client, network)
 
 	const pathAB = "ab"

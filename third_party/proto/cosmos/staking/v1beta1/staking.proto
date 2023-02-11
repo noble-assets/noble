@@ -1,0 +1,22 @@
+syntax = "proto3";
+package cosmos.staking.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cosmos/cosmos-sdk/x/staking/types";
+
+// Description defines a validator description.
+message Description {
+  option (gogoproto.equal) = true;
+
+  // moniker defines a human-readable name for the validator.
+  string moniker = 1;
+  // identity defines an optional identity signature (ex. UPort or Keybase).
+  string identity = 2;
+  // website defines an optional website link.
+  string website = 3;
+  // security_contact defines an optional email for security contact.
+  string security_contact = 4;
+  // details define other optional details.
+  string details = 5;
+}

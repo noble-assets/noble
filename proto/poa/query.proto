@@ -1,0 +1,61 @@
+syntax = "proto3";
+package noble.poa;
+
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
+
+service Query {
+  rpc QueryValidator(QueryValidatorRequest) returns (QueryValidatorResponse) {
+    option (google.api.http).get = "/noble/poa/validator";
+  }
+  rpc QueryValidators(QueryValidatorsRequest) returns (QueryValidatorsResponse) {
+    option (google.api.http).get = "/noble/poa/validators";
+  }
+  rpc QueryVouch(QueryVouchRequest) returns (QueryVouchResponse) {
+    option (google.api.http).get = "/noble/poa/vouch";
+  }
+  rpc QueryVouches(QueryVouchesRequest) returns (QueryVouchesResponse) {
+    option (google.api.http).get = "/noble/poa/vouches";
+  }
+}
+
+message QueryValidatorRequest {
+  string validator_address = 1;
+}
+
+message QueryValidatorResponse {
+  string validator_address = 1;
+  bool is_accepted = 2;
+}
+
+message QueryValidatorsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryValidatorsResponse {
+  repeated QueryValidatorResponse validators = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryVouchRequest {
+  string candidate_address = 1;
+  string voucher_address = 2;
+}
+  
+message QueryVouchResponse {
+  string candidate_address = 1;
+  string voucher_address = 2;
+  bool in_favor = 3;
+}
+
+message QueryVouchesRequest {
+  string candidate_address = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+  
+message QueryVouchesResponse {
+  repeated QueryVouchResponse vouches = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
