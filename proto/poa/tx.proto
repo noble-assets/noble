@@ -19,9 +19,8 @@ message MsgCreateValidator {
 
   // string name = 1 [(gogoproto.moretags) = "yaml:\"name\""];
   cosmos.staking.v1beta1.Description description = 1 [(gogoproto.nullable) = false];
-  string owner_address = 2 [(gogoproto.moretags) = "yaml:\"owner_address\""];
-  string validator_address = 3 [(gogoproto.moretags) = "yaml:\"validator_address\""];
-  google.protobuf.Any pubkey = 4 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
+  string address = 2 [(gogoproto.moretags) = "yaml:\"validator_address\""];
+  google.protobuf.Any pubkey = 3 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
 }
 
 message MsgCreateValidatorResponse {
@@ -31,7 +30,7 @@ message MsgVoteValidator {
   // string name = 1 [(gogoproto.moretags) = "yaml:\"name\""];
   string voter_address = 1 [(gogoproto.moretags) = "yaml:\"voter_address\""];
   bool in_favor = 2 [(gogoproto.moretags) = "yaml:\"infavor\""];
-  string owner_address = 3 [(gogoproto.moretags) = "yaml:\"owner_address\""];
+  string candidate_address = 3 [(gogoproto.moretags) = "yaml:\"candidate_address\""];
 }
 
 message MsgVoteValidatorResponse {

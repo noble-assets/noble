@@ -1,0 +1,14 @@
+syntax = "proto3";
+package noble.poa;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+
+  uint32 max_validators = 1;
+  uint32 quorum = 2;
+}
