@@ -2,6 +2,8 @@ package types
 
 import (
 	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultIndex is the default global index
@@ -57,7 +59,32 @@ func (gs GenesisState) Validate() error {
 		}
 		minterControllerIndexMap[index] = struct{}{}
 	}
-	// this line is used by starport scaffolding # genesis/types/validate
+
+	if gs.Owner == nil {
+		return fmt.Errorf("tokenfactory owner account cannot be blank")
+	}
+	_, err := sdk.AccAddressFromBech32(gs.Owner.Address)
+	if err != nil {
+		return fmt.Errorf("invalid tokenfactory owner address")
+	}
+
+	if gs.Blacklister != nil {
+		_, err := sdk.AccAddressFromBech32(gs.Blacklister.Address)
+		if err != nil {
+			return fmt.Errorf("invalid tokenfactory blacklister address")
+		}
+	}
+
+	if gs.Pauser != nil {
+		_, err := sdk.AccAddressFromBech32(gs.Pauser.Address)
+		if err != nil {
+			return fmt.Errorf("invalid tokenfactory pauser address")
+		}
+	}
+
+	if gs.MintingDenom.Denom == "" {
+		return fmt.Errorf("tokenfactory minting denom must be a registered in denom_metadata")
+	}
 
 	return gs.Params.Validate()
 }
