@@ -2,37 +2,29 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/strangelove-ventures/noble/x/poa/types"
 )
 
 func (k Keeper) SaveValidator(ctx sdk.Context, validator *types.Validator) {
 	k.Set(ctx, validator.Address, types.ValidatorsKey, validator)
+
+	pubKey, err := validator.ConsPubKey()
+	if err != nil {
+		panic(err)
+	}
+	consAddr := sdk.ConsAddress(pubKey.Address().Bytes())
+	k.Set(ctx, consAddr, types.ValidatorsByConsKey, validator)
 }
 
-// NOTE: could this be a state
-
-// SetValidatorIsInSet after a validator has been accepted and not added to the set we need this function
-func (k Keeper) SetValidatorIsInSet(ctx sdk.Context, validator *types.Validator, isInSet bool) {
-	validator.InSet = isInSet
-	k.SaveValidator(ctx, validator)
+func (k Keeper) GetValidator(ctx sdk.Context, addr sdk.AccAddress) (*types.Validator, bool) {
+	val, found := k.Get(ctx, addr, types.ValidatorsKey, k.UnmarshalValidator)
+	return val.(*types.Validator), found
 }
 
-// SetValidatorIsAccepted when the validator is accepeted into the consensus accepted is set to true
-func (k Keeper) SetValidatorIsAccepted(ctx sdk.Context, validator *types.Validator, isAccepted bool) {
-	validator.IsAccepted = isAccepted
-	k.SaveValidator(ctx, validator)
-}
-
-// SetValidatorIsAccepted when the validator is accepeted into the consensus accepted is set to true and is in the validator set
-func (k Keeper) SetValidatorIsAcceptedAndInSet(ctx sdk.Context, validator *types.Validator, isAccepted bool, isInSet bool) {
-	validator.IsAccepted = isAccepted
-	validator.InSet = isInSet
-	k.SaveValidator(ctx, validator)
-}
-
-func (k Keeper) GetValidator(ctx sdk.Context, key []byte) (*types.Validator, bool) {
-	val, found := k.Get(ctx, key, types.ValidatorsKey, k.UnmarshalValidator)
+func (k Keeper) GetValidatorByConsKey(ctx sdk.Context, addr sdk.ConsAddress) (*types.Validator, bool) {
+	val, found := k.Get(ctx, addr, types.ValidatorsByConsKey, k.UnmarshalValidator)
 	return val.(*types.Validator), found
 }
 
@@ -46,11 +38,6 @@ type ValidatorSelectorFn func(validator *types.Validator) bool
 
 func (k Keeper) GetAllValidatorsWithCondition(ctx sdk.Context, validatorSelector ValidatorSelectorFn) (validators []*types.Validator) {
 	val := k.GetAll(ctx, types.ValidatorsKey, k.UnmarshalValidator)
-
-	// handle the case that there is only one validator in the set
-	if len(val) == 1 {
-		return append(validators, val[0].(*types.Validator))
-	}
 
 	for _, value := range val {
 		validator := value.(*types.Validator)
@@ -69,6 +56,19 @@ func (k Keeper) GetAllValidators(ctx sdk.Context) (validators []*types.Validator
 	return k.GetAllValidatorsWithCondition(ctx, selectAllValidators)
 }
 
+func (k Keeper) GetAllValidatorsStaking(ctx sdk.Context) stakingtypes.Validators {
+	vals := k.GetAll(ctx, types.ValidatorsKey, k.UnmarshalValidator)
+
+	var validators stakingtypes.Validators
+
+	for _, value := range vals {
+		validator := value.(*types.Validator)
+		validators = append(validators, validator.ToStakingValidator())
+	}
+
+	return validators
+}
+
 func (k Keeper) GetAllAcceptedValidators(ctx sdk.Context) (validators []*types.Validator) {
 	var selectAcceptedValidators ValidatorSelectorFn = func(validator *types.Validator) bool {
 		return validator.IsAccepted
@@ -76,9 +76,9 @@ func (k Keeper) GetAllAcceptedValidators(ctx sdk.Context) (validators []*types.V
 	return k.GetAllValidatorsWithCondition(ctx, selectAcceptedValidators)
 }
 
-func (k Keeper) GetAllValidatorsAcceptedAndInSet(ctx sdk.Context) (validators []*types.Validator) {
-	var selectValidatorsAcceptedAndInSet ValidatorSelectorFn = func(validator *types.Validator) bool {
-		return validator.InSet || validator.IsAccepted
+func (k Keeper) GetAllValidatorsInSet(ctx sdk.Context) (validators []*types.Validator) {
+	var selectAcceptedValidators ValidatorSelectorFn = func(validator *types.Validator) bool {
+		return validator.InSet
 	}
-	return k.GetAllValidatorsWithCondition(ctx, selectValidatorsAcceptedAndInSet)
+	return k.GetAllValidatorsWithCondition(ctx, selectAcceptedValidators)
 }

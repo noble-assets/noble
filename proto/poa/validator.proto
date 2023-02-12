@@ -4,6 +4,7 @@ package noble.poa;
 import "cosmos/staking/v1beta1/staking.proto";
 import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
@@ -16,6 +17,8 @@ message Validator {
   cosmos.staking.v1beta1.Description description = 1 [(gogoproto.nullable) = false];
   bytes address = 2;
   google.protobuf.Any pubkey = 3 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
-  bool is_accepted = 4;
-  bool in_set = 5;
+  bool in_set = 4;
+  bool is_accepted = 5;
+  google.protobuf.Timestamp jailed_timestamp = 6 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"jailed_timestamp\""];
+  uint64 jail_count = 7;
 }
