@@ -27,9 +27,7 @@ func CmdUnpause() *cobra.Command {
 			msg := types.NewMsgUnpause(
 				clientCtx.GetFromAddress().String(),
 			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

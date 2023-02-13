@@ -35,9 +35,7 @@ func CmdMint() *cobra.Command {
 				argAddress,
 				argAmount,
 			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
