@@ -33,7 +33,7 @@ type Params struct {
 	UnbondingTime time.Duration `protobuf:"bytes,1,opt,name=unbonding_time,json=unbondingTime,proto3,stdduration" json:"unbonding_time" yaml:"unbonding_time"`
 	// max_validators is the maximum number of validators.
 	MaxValidators uint32 `protobuf:"varint,2,opt,name=max_validators,json=maxValidators,proto3" json:"max_validators,omitempty" yaml:"max_validators"`
-	// max_entries is the max entries for either unbonding delegation or redelegation (per pair/trio).
+	// quorum is the percentage of validators that must vouch for another validator for them to enter the active set.
 	Quorum uint32 `protobuf:"varint,3,opt,name=quorum,proto3" json:"quorum,omitempty" yaml:"quorum"`
 	// historical_entries is the number of historical entries to persist.
 	HistoricalEntries uint32 `protobuf:"varint,4,opt,name=historical_entries,json=historicalEntries,proto3" json:"historical_entries,omitempty" yaml:"historical_entries"`

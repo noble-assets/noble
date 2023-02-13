@@ -37,17 +37,17 @@ func (gs GenesisState) Validate() error {
 		valPubKeyMap[pubKey] = struct{}{}
 	}
 
-	votesMap := make(map[string]struct{})
+	vouchesMap := make(map[string]struct{})
 
-	for _, vote := range gs.Votes {
-		// Check for duplicated votes
-		voter := sdk.ValAddress(vote.VoterAddress).String()
-		candidate := sdk.ValAddress(vote.CandidateAddress).String()
-		voterCandidateKey := voter + candidate
-		if _, ok := votesMap[voterCandidateKey]; ok {
-			return fmt.Errorf("duplicated vote from voter: %s for candidate: %s", voter, candidate)
+	for _, vouch := range gs.Vouches {
+		// Check for duplicated vouches
+		vouchr := sdk.ValAddress(vouch.VoucherAddress).String()
+		candidate := sdk.ValAddress(vouch.CandidateAddress).String()
+		vouchrCandidateKey := vouchr + candidate
+		if _, ok := vouchesMap[vouchrCandidateKey]; ok {
+			return fmt.Errorf("duplicated vouch from vouchr: %s for candidate: %s", vouchr, candidate)
 		}
-		valAddressMap[voterCandidateKey] = struct{}{}
+		valAddressMap[vouchrCandidateKey] = struct{}{}
 	}
 
 	return gs.Params.Validate()

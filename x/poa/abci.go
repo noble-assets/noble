@@ -16,7 +16,7 @@ import (
 func BeginBlocker(ctx sdk.Context, k *keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
-	k.CalculateValidatorVotes(ctx)
+	k.CalculateValidatorVouches(ctx)
 
 	k.TrackHistoricalInfo(ctx)
 }

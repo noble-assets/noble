@@ -2,7 +2,7 @@ package types
 
 // poa module event types
 const (
-	EventTypeVote = "vote"
+	EventTypeVouch = "vouch"
 
 	AttributeKeyCandidate = "name"
 

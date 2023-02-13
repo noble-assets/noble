@@ -29,7 +29,7 @@ func NewTxCmd() *cobra.Command {
 
 	poaTxCmd.AddCommand(
 		NewCreateValidatorCmd(),
-		NewVoteValidatorCmd(),
+		NewVouchValidatorCmd(),
 	)
 
 	return poaTxCmd
@@ -143,12 +143,12 @@ func CreateValidatorMsgFlagSet(ipDefault string) *flag.FlagSet {
 	return fsCreateValidator
 }
 
-func newBuildVoteValidatorMsg(clientCtx client.Context, candidate string, inFavor bool) (*types.MsgVoteValidator, error) {
+func newBuildVouchValidatorMsg(clientCtx client.Context, candidate string, inFavor bool) (*types.MsgVouchValidator, error) {
 	valAddr := clientCtx.GetFromAddress()
 
-	msg := &types.MsgVoteValidator{
+	msg := &types.MsgVouchValidator{
 		CandidateAddress: candidate,
-		VoterAddress:     valAddr.String(),
+		VoucherAddress:   valAddr.String(),
 		InFavor:          inFavor,
 	}
 
@@ -160,13 +160,13 @@ func newBuildVoteValidatorMsg(clientCtx client.Context, candidate string, inFavo
 	return msg, nil
 }
 
-func NewVoteValidatorCmd() *cobra.Command {
+func NewVouchValidatorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vote-validator [candidate-address] [in-favor]",
+		Use:   "vouch-validator [candidate-address] [in-favor]",
 		Args:  cobra.ExactArgs(2),
-		Short: "vote for a candidate validator (y/n)",
-		Example: `tx poa vote-validator <validator-bech32> yes
-		tx poa vote-validator <validator-bech32> no		
+		Short: "vouch for a candidate validator (y/n)",
+		Example: `tx poa vouch-validator <validator-bech32> yes
+		tx poa vouch-validator <validator-bech32> no		
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -186,7 +186,7 @@ func NewVoteValidatorCmd() *cobra.Command {
 				return fmt.Errorf("no valid option provided for [in-favor]. valid: (y,n,yes,no,true,false,1,0)")
 			}
 
-			msg, err := newBuildVoteValidatorMsg(clientCtx, args[0], inFavor)
+			msg, err := newBuildVouchValidatorMsg(clientCtx, args[0], inFavor)
 			if err != nil {
 				return err
 			}

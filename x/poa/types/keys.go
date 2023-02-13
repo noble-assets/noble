@@ -3,11 +3,11 @@ package types
 import "strconv"
 
 var (
-	ValidatorsKey       = []byte{0x25} // prefix for each key to a validator account key
-	ValidatorsByConsKey = []byte{0x26} // prefix for each key to a validator consensus key
-	VotesKey            = []byte{0x27} // prefix for each key to a vote
-	VotesByValidatorKey = []byte{0x28} // prefix for each key to a validator
-	HistoricalInfoKey   = []byte{0x29} // prefix for historical entries
+	ValidatorsKey         = []byte{0x25} // prefix for each key to a validator account key
+	ValidatorsByConsKey   = []byte{0x26} // prefix for each key to a validator consensus key
+	VouchesKey            = []byte{0x27} // prefix for each key to a vouch
+	VouchesByValidatorKey = []byte{0x28} // prefix for each key to a validator
+	HistoricalInfoKey     = []byte{0x29} // prefix for historical entries
 )
 
 const (

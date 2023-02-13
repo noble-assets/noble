@@ -12,29 +12,29 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	// set the params
 	k.SetParams(ctx, genState.Params)
 
-	initVotes := len(genState.Votes) == 0
+	initVouches := len(genState.Vouches) == 0
 
 	for _, validator := range genState.Validators {
 		k.SaveValidator(ctx, validator)
 
-		if !initVotes {
+		if !initVouches {
 			continue
 		}
 
-		// All genesis validators vote for each other
+		// All genesis validators vouch for each other
 		for _, nestedVal := range genState.Validators {
 			if nestedVal == validator {
 				continue
 			}
-			k.SetVote(ctx, &types.Vote{
-				VoterAddress:     validator.Address,
+			k.SetVouch(ctx, &types.Vouch{
+				VoucherAddress:   validator.Address,
 				CandidateAddress: nestedVal.Address,
 				InFavor:          true,
 			})
 		}
 	}
 
-	err := k.CalculateValidatorVotes(ctx)
+	err := k.CalculateValidatorVouches(ctx)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
 	genesis.Validators = k.GetAllValidators(ctx)
-	genesis.Votes = k.GetAllVotes(ctx)
+	genesis.Vouches = k.GetAllVouches(ctx)
 
 	return genesis
 }

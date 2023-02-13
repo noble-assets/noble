@@ -3,7 +3,7 @@ package noble.poa;
 
 import "gogoproto/gogo.proto";
 import "poa/validator.proto";
-import "poa/vote.proto";
+import "poa/vouch.proto";
 import "poa/params.proto";
 
 option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
@@ -12,5 +12,5 @@ option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated Validator validators = 2;
-  repeated Vote votes = 3;
+  repeated Vouch vouches = 3;
 }

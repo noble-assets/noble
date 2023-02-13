@@ -12,7 +12,7 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	// Default percentage of votes to join the set
+	// Default percentage of vouches to join the set
 	DefaultQuorum uint32 = 49
 
 	// Default maximum number of bonded validators

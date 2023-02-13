@@ -11,13 +11,13 @@ service Query {
     option (google.api.http).get = "/noble/poa/validator";
   }
   rpc QueryValidators(QueryValidatorsRequest) returns (QueryValidatorsResponse) {
-    option (google.api.http).get = "/noble/poa/validator";
+    option (google.api.http).get = "/noble/poa/validators";
   }
-  rpc QueryVote(QueryVoteRequest) returns (QueryVoteResponse) {
-    option (google.api.http).get = "/noble/poa/vote";
+  rpc QueryVouch(QueryVouchRequest) returns (QueryVouchResponse) {
+    option (google.api.http).get = "/noble/poa/vouch";
   }
-  rpc QueryVotes(QueryVotesRequest) returns (QueryVotesResponse) {
-    option (google.api.http).get = "/noble/poa/vote";
+  rpc QueryVouches(QueryVouchesRequest) returns (QueryVouchesResponse) {
+    option (google.api.http).get = "/noble/poa/vouches";
   }
 }
 
@@ -39,23 +39,23 @@ message QueryValidatorsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryVoteRequest {
+message QueryVouchRequest {
   string candidate_address = 1;
-  string voter_address = 2;
+  string voucher_address = 2;
 }
   
-message QueryVoteResponse {
+message QueryVouchResponse {
   string candidate_address = 1;
-  string voter_address = 2;
+  string voucher_address = 2;
   bool in_favor = 3;
 }
 
-message QueryVotesRequest {
+message QueryVouchesRequest {
   string candidate_address = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
   
-message QueryVotesResponse {
-  repeated QueryVoteResponse votes = 1;
+message QueryVouchesResponse {
+  repeated QueryVouchResponse vouches = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

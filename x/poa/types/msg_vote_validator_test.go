@@ -9,23 +9,23 @@ import (
 )
 
 // test ValidateBasic for MsgDelegate
-func TestMsgVoteValidator(t *testing.T) {
+func TestMsgVouchValidator(t *testing.T) {
 	tests := []struct {
 		name       string
 		candidate  sdk.ValAddress
-		voter      sdk.ValAddress
+		vouchr     sdk.ValAddress
 		inFavor    bool
 		expectPass bool
 	}{
 		{"basic good", valAddr1, valAddr1, true, true},
 		{"infavor", valAddr1, valAddr1, true, true},
 		{"empty name", nil, valAddr1, true, false},
-		{"empty voter", valAddr1, emptyAddr, true, false},
+		{"empty vouchr", valAddr1, emptyAddr, true, false},
 	}
 
 	for _, tc := range tests {
-		msg := &MsgVoteValidator{
-			VoterAddress:     tc.voter.String(),
+		msg := &MsgVouchValidator{
+			VoucherAddress:   tc.vouchr.String(),
 			CandidateAddress: tc.candidate.String(),
 			InFavor:          tc.inFavor,
 		}

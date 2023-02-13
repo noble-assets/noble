@@ -21,13 +21,13 @@ func init() {
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateValidator{}, "poa/MsgCreateValidator", nil)
-	cdc.RegisterConcrete(&MsgVoteValidator{}, "poa/MsgVoteValidator", nil)
+	cdc.RegisterConcrete(&MsgVouchValidator{}, "poa/MsgVouchValidator", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateValidator{},
-		&MsgVoteValidator{},
+		&MsgVouchValidator{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

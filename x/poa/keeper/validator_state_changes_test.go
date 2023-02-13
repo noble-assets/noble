@@ -40,38 +40,38 @@ func TestKeeperUpdateValidatorSetFunctions(t *testing.T) {
 	// Set a value in the store
 	keeper.SaveValidator(ctx, validator)
 
-	err = keeper.CalculateValidatorVotes(ctx)
+	err = keeper.CalculateValidatorVouches(ctx)
 	require.NoError(t, err)
 
-	// Validator 1 joins consensus even though it does not have any votes because it's the only validator.
+	// Validator 1 joins consensus even though it does not have any vouches because it's the only validator.
 	updates, err := keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
 	require.Equal(t, 1, len(updates))
 
 	keeper.SaveValidator(ctx, validator2)
 
-	vote := &types.Vote{
-		VoterAddress:     validator.Address,
+	vouch := &types.Vouch{
+		VoucherAddress:   validator.Address,
 		CandidateAddress: validator2.Address,
 		InFavor:          true,
 	}
 
-	vote2 := &types.Vote{
-		VoterAddress:     validator2.Address,
+	vouch2 := &types.Vouch{
+		VoucherAddress:   validator2.Address,
 		CandidateAddress: validator2.Address,
 		InFavor:          true,
 	}
 
-	// Validator 1 votes for validator 2 to join consensus
-	keeper.SetVote(ctx, vote)
+	// Validator 1 vouches for validator 2 to join consensus
+	keeper.SetVouch(ctx, vouch)
 
-	// Validator 2 votes for validator 2 to join consensus
-	keeper.SetVote(ctx, vote2)
+	// Validator 2 vouches for validator 2 to join consensus
+	keeper.SetVouch(ctx, vouch2)
 
-	err = keeper.CalculateValidatorVotes(ctx)
+	err = keeper.CalculateValidatorVouches(ctx)
 	require.NoError(t, err)
 
-	// Validator 2 joins consensus, but validator 1 is booted because it does not have any votes
+	// Validator 2 joins consensus, but validator 1 is booted because it does not have any vouches
 	updates, err = keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
 	require.Equal(t, 2, len(updates))
@@ -82,7 +82,7 @@ func TestKeeperUpdateValidatorSetFunctions(t *testing.T) {
 	require.Equal(t, 0, len(updates))
 }
 
-func TestKeeperCalculateValidatorVoteFunction(t *testing.T) {
+func TestKeeperCalculateValidatorVouchFunction(t *testing.T) {
 	ctx, keeper := MakeTestCtxAndKeeper(t)
 
 	// Create test validators
@@ -114,7 +114,7 @@ func TestKeeperCalculateValidatorVoteFunction(t *testing.T) {
 	_, err = keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
 
-	err = keeper.CalculateValidatorVotes(ctx)
+	err = keeper.CalculateValidatorVouches(ctx)
 	require.NoError(t, err)
 
 	// Check to see if validator is accepted
@@ -127,15 +127,15 @@ func TestKeeperCalculateValidatorVoteFunction(t *testing.T) {
 	retVal, found = keeper.GetValidator(ctx, validator2.Address)
 	require.False(t, retVal.IsAccepted)
 
-	vote := &types.Vote{
-		VoterAddress:     validator.Address,
+	vouch := &types.Vouch{
+		VoucherAddress:   validator.Address,
 		CandidateAddress: validator2.Address,
 		InFavor:          true,
 	}
 
-	// Validator 1 votes for validator 2 to join the consensus
-	keeper.SetVote(ctx, vote)
-	err = keeper.CalculateValidatorVotes(ctx)
+	// Validator 1 vouches for validator 2 to join the consensus
+	keeper.SetVouch(ctx, vouch)
+	err = keeper.CalculateValidatorVouches(ctx)
 	require.NoError(t, err)
 
 	// Validator 2's accepted value is set to false

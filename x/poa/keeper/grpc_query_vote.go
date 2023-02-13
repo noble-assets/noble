@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) QueryVote(c context.Context, req *types.QueryVoteRequest) (*types.QueryVoteResponse, error) {
+func (k Keeper) QueryVouch(c context.Context, req *types.QueryVouchRequest) (*types.QueryVouchResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -23,29 +23,29 @@ func (k Keeper) QueryVote(c context.Context, req *types.QueryVoteRequest) (*type
 		return nil, fmt.Errorf("failed to decode candidate address as bech32: %w", err)
 	}
 
-	voterAddr, err := sdk.AccAddressFromBech32(req.CandidateAddress)
+	vouchrAddr, err := sdk.AccAddressFromBech32(req.CandidateAddress)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode voter address as bech32: %w", err)
+		return nil, fmt.Errorf("failed to decode vouchr address as bech32: %w", err)
 	}
 
-	val, found := k.GetVote(ctx, append(candidateAddr, voterAddr...))
+	val, found := k.GetVouch(ctx, append(candidateAddr, vouchrAddr...))
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryVoteResponse{
+	return &types.QueryVouchResponse{
 		CandidateAddress: req.CandidateAddress,
-		VoterAddress:     req.VoterAddress,
+		VoucherAddress:   req.VoucherAddress,
 		InFavor:          val.InFavor,
 	}, nil
 }
 
-func (k Keeper) QueryVotes(c context.Context, req *types.QueryVotesRequest) (*types.QueryVotesResponse, error) {
+func (k Keeper) QueryVouches(c context.Context, req *types.QueryVouchesRequest) (*types.QueryVouchesResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var votes []*types.QueryVoteResponse
+	var vouches []*types.QueryVouchResponse
 	ctx := sdk.UnwrapSDKContext(c)
 
 	var candidateBz []byte
@@ -58,15 +58,15 @@ func (k Keeper) QueryVotes(c context.Context, req *types.QueryVotesRequest) (*ty
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	voteStore := prefix.NewStore(store, append(types.VotesKey, candidateBz...))
+	vouchStore := prefix.NewStore(store, append(types.VouchesKey, candidateBz...))
 
-	pageRes, err := query.Paginate(voteStore, req.Pagination, func(key []byte, value []byte) error {
-		var vote types.QueryVoteResponse
-		if err := k.cdc.Unmarshal(value, &vote); err != nil {
+	pageRes, err := query.Paginate(vouchStore, req.Pagination, func(key []byte, value []byte) error {
+		var vouch types.QueryVouchResponse
+		if err := k.cdc.Unmarshal(value, &vouch); err != nil {
 			return err
 		}
 
-		votes = append(votes, &vote)
+		vouches = append(vouches, &vouch)
 		return nil
 	})
 
@@ -74,5 +74,5 @@ func (k Keeper) QueryVotes(c context.Context, req *types.QueryVotesRequest) (*ty
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryVotesResponse{Votes: votes, Pagination: pageRes}, nil
+	return &types.QueryVouchesResponse{Vouches: vouches, Pagination: pageRes}, nil
 }

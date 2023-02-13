@@ -27,8 +27,8 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdValidator())
 	cmd.AddCommand(CmdValidators())
-	cmd.AddCommand(CmdVote())
-	cmd.AddCommand(CmdVotes())
+	cmd.AddCommand(CmdVouch())
+	cmd.AddCommand(CmdVouches())
 
 	return cmd
 }
@@ -95,22 +95,22 @@ func CmdValidators() *cobra.Command {
 	return cmd
 }
 
-func CmdVote() *cobra.Command {
+func CmdVouch() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vote [candidate] [voter]",
-		Short: "show vote for a given candidate validator and voter validator, both in bech32 format",
+		Use:   "vouch [candidate] [vouchr]",
+		Short: "show vouch for a given candidate validator and vouchr validator, both in bech32 format",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryVoteRequest{
+			params := &types.QueryVouchRequest{
 				CandidateAddress: args[0],
-				VoterAddress:     args[1],
+				VoucherAddress:   args[1],
 			}
 
-			res, err := queryClient.QueryVote(context.Background(), params)
+			res, err := queryClient.QueryVouch(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -124,10 +124,10 @@ func CmdVote() *cobra.Command {
 	return cmd
 }
 
-func CmdVotes() *cobra.Command {
+func CmdVouches() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "votes",
-		Short: "show all votes",
+		Use:   "vouches",
+		Short: "show all vouches",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -139,11 +139,11 @@ func CmdVotes() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryVotesRequest{
+			params := &types.QueryVouchesRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.QueryVotes(context.Background(), params)
+			res, err := queryClient.QueryVouches(context.Background(), params)
 			if err != nil {
 				return err
 			}

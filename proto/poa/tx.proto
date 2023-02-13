@@ -10,7 +10,7 @@ option go_package = "github.com/strangelove-ventures/noble/x/poa/types";
 
 service Msg {
   rpc CreateValidator(MsgCreateValidator) returns (MsgCreateValidatorResponse);
-  rpc VoteValidator(MsgVoteValidator) returns (MsgVoteValidatorResponse);
+  rpc VouchValidator(MsgVouchValidator) returns (MsgVouchValidatorResponse);
 }
 
 message MsgCreateValidator {
@@ -26,12 +26,12 @@ message MsgCreateValidator {
 message MsgCreateValidatorResponse {
 }
 
-message MsgVoteValidator {
+message MsgVouchValidator {
   // string name = 1 [(gogoproto.moretags) = "yaml:\"name\""];
-  string voter_address = 1 [(gogoproto.moretags) = "yaml:\"voter_address\""];
+  string voucher_address = 1 [(gogoproto.moretags) = "yaml:\"voucher_address\""];
   bool in_favor = 2 [(gogoproto.moretags) = "yaml:\"infavor\""];
   string candidate_address = 3 [(gogoproto.moretags) = "yaml:\"candidate_address\""];
 }
 
-message MsgVoteValidatorResponse {
+message MsgVouchValidatorResponse {
 }

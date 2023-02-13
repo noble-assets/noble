@@ -114,26 +114,26 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 	return updates, nil
 }
 
-// CalculateValidatorVote happens at the start of every block to ensure no malacious actors
-func (k Keeper) CalculateValidatorVotes(ctx sdk.Context) error {
+// CalculateValidatorVouch happens at the start of every block to ensure no malacious actors
+func (k Keeper) CalculateValidatorVouches(ctx sdk.Context) error {
 	qourum := k.GetParams(ctx).Quorum
 	acceptedValidators := k.GetAllAcceptedValidators(ctx)
 	validators := k.GetAllValidators(ctx)
 
 	// Query method
 	for _, validator := range validators {
-		votes := k.GetAllVotesForValidator(ctx, validator.Address)
+		vouches := k.GetAllVouchesForValidator(ctx, validator.Address)
 
-		// check the number of votes are greater that the qourum needed
-		if canValidatorJoinConsensus(len(votes), len(acceptedValidators), qourum) {
+		// check the number of vouches are greater that the qourum needed
+		if canValidatorJoinConsensus(len(vouches), len(acceptedValidators), qourum) {
 			validator.IsAccepted = true
 			k.SaveValidator(ctx, validator)
 		} else {
-			// if the validator does not have enough votes but is still accepted
+			// if the validator does not have enough vouches but is still accepted
 			if validator.IsAccepted {
 				validator.IsAccepted = false
 				k.SaveValidator(ctx, validator)
-				if err := k.DeleteAllVotesByValidator(ctx, validator.Address); err != nil {
+				if err := k.DeleteAllVouchesByValidator(ctx, validator.Address); err != nil {
 					return err
 				}
 				// TODO: avoid cascading changes to validator set
@@ -147,6 +147,6 @@ func (k Keeper) CalculateValidatorVotes(ctx sdk.Context) error {
 }
 
 // canValidatorJoinConsensus if this function returns true a validator can join consensus
-func canValidatorJoinConsensus(numberOfVotes int, numberOfValidators int, qourum uint32) bool {
-	return (float32(numberOfVotes) >= (float32(numberOfValidators))*(float32(qourum)/100))
+func canValidatorJoinConsensus(numberOfVouches int, numberOfValidators int, qourum uint32) bool {
+	return (float32(numberOfVouches) >= (float32(numberOfValidators))*(float32(qourum)/100))
 }
