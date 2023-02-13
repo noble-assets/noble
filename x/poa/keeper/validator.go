@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"encoding/base64"
+	"encoding/hex"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/golang/protobuf/proto"
@@ -16,19 +19,39 @@ func (k Keeper) SaveValidator(ctx sdk.Context, validator *types.Validator) {
 	}
 	consAddr := sdk.ConsAddress(pubKey.Address().Bytes())
 	k.Set(ctx, consAddr, types.ValidatorsByConsKey, validator)
+
+	k.Logger(ctx).Info("SaveValidator",
+		"val_addr", sdk.ValAddress(validator.Address).String(),
+		"cons_addr_bech32", consAddr.String(),
+		"cons_addr_hex", hex.EncodeToString(consAddr),
+		"cons_pubkey_base64", base64.StdEncoding.EncodeToString(pubKey.Bytes()),
+		"in_set", validator.InSet,
+		"is_accepted", validator.IsAccepted,
+		"jailed", validator.Jailed,
+		"jail_count", validator.JailCount,
+	)
 }
 
 func (k Keeper) GetValidator(ctx sdk.Context, addr sdk.AccAddress) (*types.Validator, bool) {
 	val, found := k.Get(ctx, addr, types.ValidatorsKey, k.UnmarshalValidator)
+	if !found || val == nil {
+		return nil, false
+	}
 	return val.(*types.Validator), found
 }
 
 func (k Keeper) GetValidatorByConsKey(ctx sdk.Context, addr sdk.ConsAddress) (*types.Validator, bool) {
 	val, found := k.Get(ctx, addr, types.ValidatorsByConsKey, k.UnmarshalValidator)
+	if !found || val == nil {
+		return nil, false
+	}
 	return val.(*types.Validator), found
 }
 
 func (k Keeper) UnmarshalValidator(value []byte) (proto.Message, bool) {
+	if value == nil {
+		return nil, false
+	}
 	validator := &types.Validator{}
 	return validator, validator.Unmarshal(value) == nil
 }

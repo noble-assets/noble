@@ -1,6 +1,7 @@
 package types
 
 import (
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -85,7 +86,7 @@ func (v Validator) TmConsPublicKey() (tmprotocrypto.PublicKey, error) {
 	if err != nil {
 		return tmprotocrypto.PublicKey{}, err
 	}
-	return tmprotocrypto.PublicKey{Sum: &tmprotocrypto.PublicKey_Ed25519{Ed25519: pubKey.Bytes()}}, nil
+	return cryptocodec.ToTmProtoPublicKey(pubKey)
 }
 
 func (v Validator) GetConsAddr() (sdk.ConsAddress, error) {

@@ -15,6 +15,9 @@ func (k Keeper) SetVouch(ctx sdk.Context, vouch *types.Vouch) {
 
 func (k Keeper) GetVouch(ctx sdk.Context, key []byte) (*types.Vouch, bool) {
 	vouch, found := k.Get(ctx, key, types.VouchesKey, k.UnmarshalVouch)
+	if !found || vouch == nil {
+		return nil, false
+	}
 	return vouch.(*types.Vouch), found
 }
 
@@ -23,6 +26,9 @@ func (k Keeper) DeleteVouch(ctx sdk.Context, key []byte) {
 }
 
 func (k Keeper) UnmarshalVouch(value []byte) (proto.Message, bool) {
+	if value == nil {
+		return nil, false
+	}
 	vouch := &types.Vouch{}
 	return vouch, vouch.Unmarshal(value) == nil
 }

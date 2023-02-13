@@ -9,6 +9,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	poatypes "github.com/strangelove-ventures/noble/x/poa/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
@@ -76,10 +77,10 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		},
 	)
 
-	_, err := app.POAKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	if err != nil {
-		panic(err)
-	}
+	// _, err := app.POAKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 // GetValidatorSet returns a slice of bonded validators.
@@ -93,7 +94,7 @@ func (app *App) GetValidatorSet(ctx sdk.Context) ([]tmtypes.GenesisValidator, er
 	for _, v := range cVals {
 		power := int64(0)
 		if v.InSet {
-			power = 10
+			power = poatypes.ValidatorActivePower
 		}
 		vals = append(vals, tmtypes.GenesisValidator{Address: v.Address, Power: power})
 	}

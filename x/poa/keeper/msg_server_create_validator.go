@@ -19,7 +19,7 @@ func (k msgServer) CreateValidator(goCtx context.Context, msg *types.MsgCreateVa
 	}
 
 	if _, found := k.GetValidator(ctx, valAddr); found {
-		return nil, sdkerrors.Wrap(types.ErrBadValidatorAddr, fmt.Sprintf("unrecognized %s validator already exists: %T", types.ModuleName, msg))
+		return nil, sdkerrors.Wrap(types.ErrBadValidatorAddr, fmt.Sprintf("%s validator already exists: %T", types.ModuleName, msg))
 	}
 
 	validator := &types.Validator{
@@ -29,6 +29,16 @@ func (k msgServer) CreateValidator(goCtx context.Context, msg *types.MsgCreateVa
 	}
 
 	k.SaveValidator(ctx, validator)
+
+	// call the after-creation hook
+	k.AfterValidatorCreated(ctx, validator.GetOperator())
+
+	consAddr, err := validator.GetConsAddr()
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrBadValidatorPubKey, err.Error())
+	}
+
+	k.AfterValidatorBonded(ctx, consAddr, validator.GetOperator())
 
 	// ctx.EventManager().EmitEvents(sdk.Events{
 	// 	sdk.NewEvent(

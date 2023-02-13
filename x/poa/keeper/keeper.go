@@ -7,6 +7,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/strangelove-ventures/noble/x/poa/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -23,6 +24,8 @@ type Keeper struct {
 	cdc        codec.BinaryCodec
 	storeKey   storetypes.StoreKey
 	paramspace paramtypes.Subspace
+
+	hooks stakingtypes.StakingHooks
 }
 
 // NewKeeper creates a poa keeper
@@ -33,6 +36,17 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, paramspace paramtypes.Su
 		paramspace: paramspace.WithKeyTable(types.ParamKeyTable()),
 	}
 	return keeper
+}
+
+// Set the validator hooks
+func (k *Keeper) SetHooks(sh stakingtypes.StakingHooks) *Keeper {
+	if k.hooks != nil {
+		panic("cannot set validator hooks twice")
+	}
+
+	k.hooks = sh
+
+	return k
 }
 
 // Logger returns a module-specific logger.

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -50,8 +52,9 @@ func (msg *MsgCreateValidator) Type() string { return "create_validator" }
 
 // ValidateBasic runs stateless checks on the message
 func (msg *MsgCreateValidator) ValidateBasic() error {
-	if msg.Address == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty name")
+	_, err := sdk.AccAddressFromBech32(msg.Address)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("address must be bech32 with prefix: %s", sdk.Bech32PrefixAccAddr))
 	}
 
 	if msg.Description == (stakingtypes.Description{}) {

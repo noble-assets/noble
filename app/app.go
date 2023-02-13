@@ -329,6 +329,10 @@ func New(
 		app.GetSubspace(upgradetypes.ModuleName),
 	)
 
+	// register the staking hooks
+	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
+	app.POAKeeper = *app.POAKeeper.SetHooks(app.SlashingKeeper.Hooks())
+
 	// ... other modules keepers
 
 	// Create IBC Keeper

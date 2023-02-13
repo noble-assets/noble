@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/strangelove-ventures/noble/x/poa/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -14,23 +14,27 @@ import (
 // Called in each EndBlock
 func (k Keeper) BlockValidatorUpdates(ctx sdk.Context) []abci.ValidatorUpdate {
 	// Calculate validator set changes.
-	validatorUpdates, err := k.ApplyAndReturnValidatorSetUpdates(ctx)
+
+	updates, err := k.ApplyAndReturnValidatorSetUpdates(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	return validatorUpdates
+	k.Logger(ctx).Info("Returning end block updates", "count", len(updates), "updates", updates)
+
+	return updates
 }
 
 // ApplyAndReturnValidatorSetUpdates at the end of every block we update and return the validator set
 func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.ValidatorUpdate, error) {
 	validators := k.GetAllValidators(ctx)
 	activeVals := len(k.GetAllValidatorsInSet(ctx))
+	acceptedVals := len(k.GetAllAcceptedValidators(ctx))
 	maxVals := k.GetParams(ctx).MaxValidators
 
 	var updates []abci.ValidatorUpdate
 
-	if activeVals == 0 {
+	if acceptedVals == 0 {
 		// Recovery fallback, active set will be all validators in recent history, regardless of accepted, in set, or jailed.
 		history := k.GetAllHistoricalInfo(ctx)
 		for _, entry := range history {
@@ -41,7 +45,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 					panic(err)
 				}
 				for _, existingVal := range updates {
-					if existingVal.PubKey == consKey {
+					if existingVal.PubKey.Compare(consKey) == 0 {
 						continue ValSetLoop
 					}
 					updates = append(updates, abci.ValidatorUpdate{
@@ -69,11 +73,14 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 		}
 
 		for _, update := range updates {
-			consKey := update.PubKey.GetEd25519()
-			pubKey := &ed25519.PubKey{Key: consKey}
-			val, found := k.GetValidatorByConsKey(ctx, sdk.ConsAddress(pubKey.Address().Bytes()))
+			pubKey, err := cryptocodec.FromTmProtoPublicKey(update.PubKey)
+			if err != nil {
+				panic(err)
+			}
+			consAddr := sdk.ConsAddress(pubKey.Address().Bytes())
+			val, found := k.GetValidatorByConsKey(ctx, consAddr)
 			if !found {
-				panic(fmt.Errorf("validator not found by consensus key: %s", hex.EncodeToString(consKey)))
+				panic(fmt.Errorf("validator not found by consensus addr: %s", hex.EncodeToString(consAddr)))
 			}
 			val.InSet = true
 			k.SaveValidator(ctx, val)
@@ -100,7 +107,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 			}
 		}
 		// validator has been kicked but not yet removed from the set
-		if validator.InSet && (!validator.IsAccepted || validator.IsJailed()) {
+		if validator.InSet && ((!validator.IsAccepted && acceptedVals > 0) || validator.IsJailed()) {
 			validator.InSet = false
 			k.SaveValidator(ctx, validator)
 			update, err := validator.ABCIValidatorUpdate(0)
@@ -148,5 +155,5 @@ func (k Keeper) CalculateValidatorVouches(ctx sdk.Context) error {
 
 // canValidatorJoinConsensus if this function returns true a validator can join consensus
 func canValidatorJoinConsensus(numberOfVouches int, numberOfValidators int, qourum uint32) bool {
-	return (float32(numberOfVouches) >= (float32(numberOfValidators))*(float32(qourum)/100))
+	return numberOfValidators > 0 && (float32(numberOfVouches) >= (float32(numberOfValidators))*(float32(qourum)/100))
 }

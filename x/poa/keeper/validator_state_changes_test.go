@@ -3,6 +3,7 @@ package keeper
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -125,7 +126,20 @@ func TestKeeperCalculateValidatorVouchFunction(t *testing.T) {
 	// Set the second validator and assert its not accepted
 	keeper.SaveValidator(ctx, validator2)
 	retVal, found = keeper.GetValidator(ctx, validator2.Address)
+	require.True(t, found)
 	require.False(t, retVal.IsAccepted)
+
+	// Ensure we can fetch validator by the consensus key also
+	pubKey, err := validator.ConsPubKey()
+	if err != nil {
+		panic(err)
+	}
+
+	consAddr := sdk.ConsAddress(pubKey.Address().Bytes())
+	retVal2, found := keeper.GetValidatorByConsKey(ctx, consAddr)
+	require.True(t, found)
+
+	require.True(t, proto.Equal(retVal, retVal2))
 
 	vouch := &types.Vouch{
 		VoucherAddress:   validator.Address,
