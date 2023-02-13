@@ -15,16 +15,16 @@ import (
 var (
 	pk1      = ed25519.GenPrivKey().PubKey()
 	addr1    = pk1.Address()
-	valAddr1 = sdk.ValAddress(addr1)
+	valAddr1 = sdk.AccAddress(addr1)
 
-	emptyAddr   sdk.ValAddress
+	emptyAddr   sdk.AccAddress
 	emptyPubkey cryptotypes.PubKey
 )
 
 func TestMsgCreateValidator(t *testing.T) {
 	tests := []struct {
 		name, moniker, identity, website, securityContact, details string
-		validatorAddr                                              sdk.ValAddress
+		validatorAddr                                              sdk.AccAddress
 		pubkey                                                     cryptotypes.PubKey
 		expectPassPackPubKey                                       bool
 		expectPass                                                 bool

@@ -12,8 +12,8 @@ import (
 func TestMsgVouchValidator(t *testing.T) {
 	tests := []struct {
 		name       string
-		candidate  sdk.ValAddress
-		vouchr     sdk.ValAddress
+		candidate  sdk.AccAddress
+		vouchr     sdk.AccAddress
 		inFavor    bool
 		expectPass bool
 	}{
