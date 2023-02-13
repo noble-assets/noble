@@ -12,11 +12,34 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	// set the params
 	k.SetParams(ctx, genState.Params)
 
+	initVotes := len(genState.Votes) == 0
+
 	for _, validator := range genState.Validators {
 		k.SaveValidator(ctx, validator)
+
+		if !initVotes {
+			continue
+		}
+
+		// All genesis validators vote for each other
+		for _, nestedVal := range genState.Validators {
+			if nestedVal == validator {
+				continue
+			}
+			k.SetVote(ctx, &types.Vote{
+				VoterAddress:     validator.Address,
+				CandidateAddress: nestedVal.Address,
+				InFavor:          true,
+			})
+		}
 	}
 
-	_, err := k.ApplyAndReturnValidatorSetUpdates(ctx)
+	err := k.CalculateValidatorVotes(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = k.ApplyAndReturnValidatorSetUpdates(ctx)
 	return err
 }
 
@@ -25,6 +48,7 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
 	genesis.Validators = k.GetAllValidators(ctx)
+	genesis.Votes = k.GetAllVotes(ctx)
 
 	return genesis
 }
