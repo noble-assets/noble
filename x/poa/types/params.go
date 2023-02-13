@@ -26,6 +26,18 @@ const (
 	// DefaultUnbondingTime reflects three weeks in seconds as the default
 	// unbonding time.
 	DefaultUnbondingTime time.Duration = time.Hour * 24 * 7 * 3
+
+	// DefaultMinJailTime is the minimum amount of time a validator must be in jail before unjailing.
+	DefaultMinJailTime time.Duration = time.Hour * 24
+)
+
+// nolint - Keys for parameter access
+var (
+	KeyQuorum            = []byte("Quorum")
+	KeyMaxValidators     = []byte("MaxValidators")
+	KeyUnbondingTime     = []byte("UnbondingTime")
+	KeyHistoricalEntries = []byte("HistoricalEntries")
+	KeyPowerReduction    = []byte("PowerReduction")
 )
 
 // ParamKeyTable the param key table for launch module
@@ -64,14 +76,22 @@ func (p Params) String() string {
 	return string(out)
 }
 
-// nolint - Keys for parameter access
-var (
-	KeyQuorum            = []byte("Quorum")
-	KeyMaxValidators     = []byte("MaxValidators")
-	KeyUnbondingTime     = []byte("UnbondingTime")
-	KeyHistoricalEntries = []byte("HistoricalEntries")
-	KeyPowerReduction    = []byte("PowerReduction")
-)
+// validate a set of params
+func (p Params) Validate() error {
+	if err := validateQuorum(p.Quorum); err != nil {
+		return err
+	}
+
+	if err := validateUnbondingTime(p.UnbondingTime); err != nil {
+		return err
+	}
+
+	if err := validateMaxValidators(p.MaxValidators); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func validateQuorum(i interface{}) error {
 	val, ok := i.(uint32)
@@ -94,23 +114,6 @@ func validateMaxValidators(i interface{}) error {
 
 	if val == 0 {
 		return fmt.Errorf("max validators must greater than 0: %d", val)
-	}
-
-	return nil
-}
-
-// validate a set of params
-func (p Params) Validate() error {
-	if err := validateQuorum(p.Quorum); err != nil {
-		return err
-	}
-
-	if err := validateUnbondingTime(p.UnbondingTime); err != nil {
-		return err
-	}
-
-	if err := validateMaxValidators(p.MaxValidators); err != nil {
-		return err
 	}
 
 	return nil

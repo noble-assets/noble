@@ -18,7 +18,7 @@ func (v *Validator) ToStakingValidator() stakingtypes.Validator {
 	return stakingtypes.Validator{
 		OperatorAddress:   sdk.ValAddress(v.Address).String(),
 		ConsensusPubkey:   v.Pubkey,
-		Jailed:            !v.JailedTimestamp.IsZero(),
+		Jailed:            v.Jailed,
 		Status:            v.GetStatus(),
 		Tokens:            v.GetTokens(),
 		DelegatorShares:   v.GetDelegatorShares(),
@@ -40,13 +40,12 @@ func (v Validator) ABCIValidatorUpdate(power int64) (abci.ValidatorUpdate, error
 	}, nil
 }
 
-// TODO jailing
 func (v Validator) IsJailed() bool {
-	return !v.JailedTimestamp.IsZero()
+	return v.Jailed
 }
 
 func (v *Validator) EligibleToJoinSet() bool {
-	return v.IsAccepted && !v.IsJailed()
+	return v.IsAccepted && !v.Jailed
 }
 
 func (v Validator) GetMoniker() string {

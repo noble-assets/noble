@@ -19,6 +19,6 @@ message Validator {
   google.protobuf.Any pubkey = 3 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
   bool in_set = 4;
   bool is_accepted = 5;
-  google.protobuf.Timestamp jailed_timestamp = 6 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"jailed_timestamp\""];
+  bool jailed = 6;
   uint64 jail_count = 7;
 }
