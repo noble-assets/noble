@@ -462,6 +462,7 @@ func New(
 		capabilitytypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
+		poatypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		crisistypes.ModuleName,
@@ -480,6 +481,7 @@ func New(
 
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
+		poatypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
