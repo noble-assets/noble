@@ -53,26 +53,18 @@ func TestNobleChain(t *testing.T) {
 			},
 		},
 		EncodingConfig: NobleEncoding(),
-		PreGenesis: func(cc ibc.ChainConfig) error {
+		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
-			// _, _, err := val.ExecBin(ctx, "add-consumer-section")
-			// if err != nil {
-			// 	return err
-			// }
-			var err error
 			roles, err = noblePreGenesis(ctx, val)
-			if err != nil {
-				return err
-			}
-			return nil
+			return err
 		},
 		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 			return modifyGenesisNobleOwner(b, roles.Owner.Address)
 		},
 	}
 
-	nv := 1
-	nf := 0
+	nv := 2
+	nf := 1
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{

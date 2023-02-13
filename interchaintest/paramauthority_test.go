@@ -101,7 +101,6 @@ func TestNobleParamAuthority(t *testing.T) {
 		Denom:          "token",
 		Bech32Prefix:   "noble",
 		CoinType:       "118",
-		SkipGenTx:      true,
 		GasPrices:      "0.0token",
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
@@ -114,17 +113,10 @@ func TestNobleParamAuthority(t *testing.T) {
 			},
 		},
 		EncodingConfig: NobleEncoding(),
-		PreGenesis: func(cc ibc.ChainConfig) error {
+		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
-			_, _, err := val.ExecBin(ctx, "add-consumer-section")
-			if err != nil {
-				return err
-			}
 			roles, err = noblePreGenesis(ctx, val)
-			if err != nil {
-				return err
-			}
-			return nil
+			return err
 		},
 		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 			return modifyGenesisNobleOwner(b, roles.Owner.Address)

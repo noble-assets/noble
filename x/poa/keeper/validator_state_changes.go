@@ -48,12 +48,8 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 					if existingVal.PubKey.Compare(consKey) == 0 {
 						continue ValSetLoop
 					}
-					updates = append(updates, abci.ValidatorUpdate{
-						PubKey: consKey,
-						Power:  types.ValidatorActivePower,
-					})
 				}
-				// not yet in update
+				// not yet in updates
 				updates = append(updates, abci.ValidatorUpdate{
 					PubKey: consKey,
 					Power:  types.ValidatorActivePower,
