@@ -18,7 +18,7 @@ func TestKeeperUpdateValidatorSetFunctions(t *testing.T) {
 	// Create test validators
 	pubKeys := CreateTestPubKeys(2)
 	valPubKey1, valPubKey2 := pubKeys[0], pubKeys[1]
-	valAddr1, valAddr2 := sdk.ValAddress(valPubKey1.Address().Bytes()), sdk.ValAddress(valPubKey2.Address().Bytes())
+	valAddr1, valAddr2 := sdk.AccAddress(valPubKey1.Address().Bytes()), sdk.AccAddress(valPubKey2.Address().Bytes())
 
 	pubKeyAny1, err := cdctypes.NewAnyWithValue(valPubKey1)
 	require.NoError(t, err)
@@ -89,7 +89,7 @@ func TestKeeperCalculateValidatorVouchFunction(t *testing.T) {
 	// Create test validators
 	pubKeys := CreateTestPubKeys(2)
 	valPubKey1, valPubKey2 := pubKeys[0], pubKeys[1]
-	valAddr1, valAddr2 := sdk.ValAddress(valPubKey1.Address().Bytes()), sdk.ValAddress(valPubKey2.Address().Bytes())
+	valAddr1, valAddr2 := sdk.AccAddress(valPubKey1.Address().Bytes()), sdk.AccAddress(valPubKey2.Address().Bytes())
 
 	pubKeyAny1, err := cdctypes.NewAnyWithValue(valPubKey1)
 	require.NoError(t, err)

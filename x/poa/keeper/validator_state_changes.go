@@ -120,7 +120,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) ([]abci.Valid
 // CalculateValidatorVouch happens at the start of every block to ensure no malacious actors
 func (k Keeper) CalculateValidatorVouches(ctx sdk.Context) error {
 	qourum := k.GetParams(ctx).Quorum
-	acceptedValidators := k.GetAllAcceptedValidators(ctx)
+	acceptedValidators := len(k.GetAllAcceptedValidators(ctx))
 	validators := k.GetAllValidators(ctx)
 
 	// Query method
@@ -128,7 +128,7 @@ func (k Keeper) CalculateValidatorVouches(ctx sdk.Context) error {
 		vouches := k.GetAllVouchesForValidator(ctx, validator.Address)
 
 		// check the number of vouches are greater that the qourum needed
-		if canValidatorJoinConsensus(len(vouches), len(acceptedValidators), qourum) {
+		if canValidatorJoinConsensus(len(vouches), acceptedValidators, qourum) {
 			validator.IsAccepted = true
 			k.SaveValidator(ctx, validator)
 		} else {
@@ -151,5 +151,5 @@ func (k Keeper) CalculateValidatorVouches(ctx sdk.Context) error {
 
 // canValidatorJoinConsensus if this function returns true a validator can join consensus
 func canValidatorJoinConsensus(numberOfVouches int, numberOfValidators int, qourum uint32) bool {
-	return numberOfValidators > 0 && (float32(numberOfVouches) >= (float32(numberOfValidators))*(float32(qourum)/100))
+	return (float32(numberOfVouches) >= (float32(numberOfValidators))*(float32(qourum)/100))
 }

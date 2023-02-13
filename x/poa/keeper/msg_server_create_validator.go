@@ -30,6 +30,13 @@ func (k msgServer) CreateValidator(goCtx context.Context, msg *types.MsgCreateVa
 
 	k.SaveValidator(ctx, validator)
 
+	// Validators vouch for themselves
+	k.SetVouch(ctx, &types.Vouch{
+		VoucherAddress:   valAddr,
+		CandidateAddress: valAddr,
+		InFavor:          true,
+	})
+
 	// call the after-creation hook
 	k.AfterValidatorCreated(ctx, validator.GetOperator())
 
