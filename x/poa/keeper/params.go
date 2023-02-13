@@ -24,7 +24,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 // UnbondingTime
 func (k Keeper) UnbondingTime(ctx sdk.Context) (res time.Duration) {
-	k.paramspace.Get(ctx, types.KeyUnbondingTime, &res)
+	k.paramspace.Get(ctx, types.KeyUnbondingPeriod, &res)
 	return
 }
 

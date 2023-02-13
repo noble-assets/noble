@@ -24,7 +24,7 @@ const (
 	QuerierRoute = ModuleName
 
 	// TransientStoreKey defines the transient store key
-	TransientStoreKey = "transient_poa"
+	TransientStoreKey = "transient_" + ModuleName
 )
 
 // GetHistoricalInfoKey returns a key prefix for indexing HistoricalInfo objects.

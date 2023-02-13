@@ -35,7 +35,7 @@ const (
 var (
 	KeyQuorum            = []byte("Quorum")
 	KeyMaxValidators     = []byte("MaxValidators")
-	KeyUnbondingTime     = []byte("UnbondingTime")
+	KeyUnbondingPeriod   = []byte("UnbondingPeriod")
 	KeyHistoricalEntries = []byte("HistoricalEntries")
 	KeyPowerReduction    = []byte("PowerReduction")
 )
@@ -46,12 +46,12 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params object
-func NewParams(quorum, maxValidators, historicalEntries uint32, unbondingTime time.Duration) Params {
+func NewParams(quorum, maxValidators, historicalEntries uint32, unbondingPeriod time.Duration) Params {
 	return Params{
 		Quorum:            quorum,
 		MaxValidators:     maxValidators,
 		HistoricalEntries: historicalEntries,
-		UnbondingTime:     unbondingTime,
+		UnbondingPeriod:   unbondingPeriod,
 	}
 }
 
@@ -65,7 +65,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyQuorum, &p.Quorum, validateQuorum),
 		paramtypes.NewParamSetPair(KeyMaxValidators, &p.MaxValidators, validateMaxValidators),
-		paramtypes.NewParamSetPair(KeyUnbondingTime, &p.UnbondingTime, validateUnbondingTime),
+		paramtypes.NewParamSetPair(KeyUnbondingPeriod, &p.UnbondingPeriod, validateUnbondingPeriod),
 		paramtypes.NewParamSetPair(KeyHistoricalEntries, &p.HistoricalEntries, validateHistoricalEntries),
 	}
 }
@@ -82,7 +82,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateUnbondingTime(p.UnbondingTime); err != nil {
+	if err := validateUnbondingPeriod(p.UnbondingPeriod); err != nil {
 		return err
 	}
 
@@ -119,14 +119,14 @@ func validateMaxValidators(i interface{}) error {
 	return nil
 }
 
-func validateUnbondingTime(i interface{}) error {
+func validateUnbondingPeriod(i interface{}) error {
 	v, ok := i.(time.Duration)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	if v <= 0 {
-		return fmt.Errorf("unbonding time must be positive: %d", v)
+		return fmt.Errorf("unbonding period must be positive: %d", v)
 	}
 
 	return nil

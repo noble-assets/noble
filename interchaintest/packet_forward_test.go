@@ -213,7 +213,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		ibc.CosmosRly,
 		zaptest.NewLogger(t),
 		// TODO remove this line once default rly version includes https://github.com/cosmos/relayer/pull/1038
-		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-trusting_period_ics", rly.RlyDefaultUidGid),
+		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-poa", rly.RlyDefaultUidGid),
 	).Build(t, client, network)
 
 	const pathAB = "ab"
