@@ -38,12 +38,6 @@ func (k *Keeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom) {
 	return val
 }
 
-// RemoveMintingDenom removes mintingDenom from the store
-func (k Keeper) RemoveMintingDenom(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
-	store.Delete(types.KeyPrefix(types.MintingDenomKey))
-}
-
 // MintingDenomSet returns true if the MintingDenom is already set in the store, it returns false otherwise.
 func (k Keeper) MintingDenomSet(ctx sdk.Context) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))

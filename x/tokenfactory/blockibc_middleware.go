@@ -15,7 +15,7 @@ import (
 
 var _ porttypes.IBCModule = &IBCMiddleware{}
 
-// IBCMiddleware implements the tokenfactory keeper in order to check againset blacklisted addresses.
+// IBCMiddleware implements the tokenfactory keeper in order to check against blacklisted addresses.
 type IBCMiddleware struct {
 	app    porttypes.IBCModule
 	keeper *keeper.Keeper
@@ -81,9 +81,9 @@ func (im IBCMiddleware) OnChanCloseConfirm(ctx sdk.Context, portID, channelID st
 	return im.app.OnChanCloseConfirm(ctx, portID, channelID)
 }
 
-// OnRecvPacket intercepts the packet data and checks the the sender and receiver address against
+// OnRecvPacket intercepts the packet data and checks the sender and receiver address against
 // the blacklisted addresses held in the tokenfactory keeper. If the address is found in the blacklist, an
-// acknoledgmet error is returned.
+// acknowledgment error is returned.
 func (im IBCMiddleware) OnRecvPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,

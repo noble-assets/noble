@@ -28,11 +28,3 @@ func TestOwnerGet(t *testing.T) {
 		nullify.Fill(&rst),
 	)
 }
-
-func TestOwnerRemove(t *testing.T) {
-	keeper, ctx := keepertest.TokenfactoryKeeper(t)
-	createTestOwner(keeper, ctx)
-	keeper.RemoveOwner(ctx)
-	_, found := keeper.GetOwner(ctx)
-	require.False(t, found)
-}

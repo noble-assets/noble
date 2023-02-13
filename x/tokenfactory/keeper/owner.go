@@ -25,9 +25,3 @@ func (k Keeper) GetOwner(ctx sdk.Context) (val types.Owner, found bool) {
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
-
-// RemoveOwner removes owner from the store
-func (k Keeper) RemoveOwner(ctx sdk.Context) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.KeyPrefix(types.OwnerKey))
-}

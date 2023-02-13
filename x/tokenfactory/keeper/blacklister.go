@@ -25,9 +25,3 @@ func (k Keeper) GetBlacklister(ctx sdk.Context) (val types.Blacklister, found bo
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
-
-// RemoveBlacklister removes blacklister from the store
-func (k Keeper) RemoveBlacklister(ctx sdk.Context) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.KeyPrefix(types.BlacklisterKey))
-}

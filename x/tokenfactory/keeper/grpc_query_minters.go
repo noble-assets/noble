@@ -16,19 +16,19 @@ func (k Keeper) MintersAll(c context.Context, req *types.QueryAllMintersRequest)
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var minterss []types.Minters
+	var minters []types.Minters
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
 	mintersStore := prefix.NewStore(store, types.KeyPrefix(types.MintersKeyPrefix))
 
 	pageRes, err := query.Paginate(mintersStore, req.Pagination, func(key []byte, value []byte) error {
-		var minters types.Minters
-		if err := k.cdc.Unmarshal(value, &minters); err != nil {
+		var minter types.Minters
+		if err := k.cdc.Unmarshal(value, &minter); err != nil {
 			return err
 		}
 
-		minterss = append(minterss, minters)
+		minters = append(minters, minter)
 		return nil
 	})
 
@@ -36,7 +36,7 @@ func (k Keeper) MintersAll(c context.Context, req *types.QueryAllMintersRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllMintersResponse{Minters: minterss, Pagination: pageRes}, nil
+	return &types.QueryAllMintersResponse{Minters: minters, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Minters(c context.Context, req *types.QueryGetMintersRequest) (*types.QueryGetMintersResponse, error) {
