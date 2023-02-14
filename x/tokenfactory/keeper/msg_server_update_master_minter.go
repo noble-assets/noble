@@ -21,13 +21,19 @@ func (k msgServer) UpdateMasterMinter(goCtx context.Context, msg *types.MsgUpdat
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the owner")
 	}
 
+	// ensure that the specified address is not already assigned to a privileged role
+	err := k.ValidatePrivileges(ctx, msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
 	masterMinter := types.MasterMinter{
 		Address: msg.Address,
 	}
 
 	k.SetMasterMinter(ctx, masterMinter)
 
-	err := ctx.EventManager().EmitTypedEvent(msg)
+	err = ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgUpdateMasterMinterResponse{}, err
 }

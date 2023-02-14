@@ -73,28 +73,44 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
-	if gs.MasterMinter != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.MasterMinter.Address); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid master minter address (%s)", err)
-		}
+	if gs.Owner == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner cannot be nil")
 	}
 
-	if gs.Pauser != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.Pauser.Address); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid pauser address (%s)", err)
-		}
+	if gs.MasterMinter == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "master minter cannot be nil")
 	}
 
-	if gs.Blacklister != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.Blacklister.Address); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid black lister address (%s)", err)
-		}
+	if gs.Pauser == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "pauser cannot be nil")
 	}
 
-	if gs.Owner != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.Owner.Address); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-		}
+	if gs.Blacklister == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "black lister cannot be nil")
+	}
+
+	owner, err := sdk.AccAddressFromBech32(gs.Owner.Address)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+	}
+
+	masterMinter, err := sdk.AccAddressFromBech32(gs.MasterMinter.Address)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid master minter address (%s)", err)
+	}
+
+	pauser, err := sdk.AccAddressFromBech32(gs.Pauser.Address)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid pauser address (%s)", err)
+	}
+
+	blacklister, err := sdk.AccAddressFromBech32(gs.Blacklister.Address)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid black lister address (%s)", err)
+	}
+
+	if err := validatePrivileges(owner, masterMinter, pauser, blacklister); err != nil {
+		return err
 	}
 
 	if gs.MintingDenom != nil && gs.MintingDenom.Denom == "" {
@@ -104,4 +120,21 @@ func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()
+}
+
+// validatePrivileges ensures that the same address is not being assigned to more than one privileged role.
+func validatePrivileges(addresses ...sdk.AccAddress) error {
+	for i, current := range addresses {
+		for j, target := range addresses {
+			if i == j {
+				continue
+			}
+
+			if current.String() == target.String() {
+				return sdkerrors.Wrapf(ErrAlreadyPrivileged, "%s", current)
+			}
+		}
+	}
+
+	return nil
 }
