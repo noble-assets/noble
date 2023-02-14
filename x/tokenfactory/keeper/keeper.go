@@ -56,31 +56,23 @@ func (k Keeper) ValidatePrivileges(ctx sdk.Context, address string) error {
 	}
 
 	owner, found := k.GetOwner(ctx)
-	if found {
-		if owner.Address == acc.String() {
-			return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to owner role", acc.String())
-		}
+	if found && owner.Address == acc.String() {
+		return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to owner role", acc.String())
 	}
 
 	blacklister, found := k.GetBlacklister(ctx)
-	if found {
-		if blacklister.Address == acc.String() {
-			return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to black lister role", acc.String())
-		}
+	if found && blacklister.Address == acc.String() {
+		return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to black lister role", acc.String())
 	}
 
 	masterminter, found := k.GetMasterMinter(ctx)
-	if found {
-		if masterminter.Address == acc.String() {
-			return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to master minter role", acc.String())
-		}
+	if found && masterminter.Address == acc.String() {
+		return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to master minter role", acc.String())
 	}
 
 	pauser, found := k.GetPauser(ctx)
-	if found {
-		if pauser.Address == acc.String() {
-			return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to pauser role", acc.String())
-		}
+	if found && pauser.Address == acc.String() {
+		return sdkerrors.Wrapf(types.ErrAlreadyPrivileged, "cannot assign (%s) to pauser role", acc.String())
 	}
 
 	return nil
