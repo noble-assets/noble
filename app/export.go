@@ -2,18 +2,19 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	tmtypes "github.com/tendermint/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// ExportAppStateAndValidators implements the simapp app interface
-// by exporting the state of the application
+// ExportAppStateAndValidators exports the state of the application for a genesis
+// file.
 func (app *App) ExportAppStateAndValidators(
 	forZeroHeight bool, jailAllowedAddrs []string,
 ) (servertypes.ExportedApp, error) {
@@ -35,15 +36,14 @@ func (app *App) ExportAppStateAndValidators(
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := app.GetValidatorSet(ctx)
+	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
-
 	return servertypes.ExportedApp{
 		AppState:        appState,
-		Height:          height,
 		Validators:      validators,
+		Height:          height,
 		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
 	}, nil
 }
@@ -53,9 +53,27 @@ func (app *App) ExportAppStateAndValidators(
 //
 //	in favour of export at a block height
 func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
+	applyAllowedAddrs := false
+
+	// check if there is a allowed address list
+	if len(jailAllowedAddrs) > 0 {
+		applyAllowedAddrs = true
+	}
+
+	allowedAddrsMap := make(map[string]bool)
+
+	for _, addr := range jailAllowedAddrs {
+		_, err := sdk.ValAddressFromBech32(addr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		allowedAddrsMap[addr] = true
+	}
 
 	/* Just to be safe, assert the invariants on current state. */
 	app.CrisisKeeper.AssertInvariants(ctx)
+
+	/* Handle fee distribution state. */
 
 	// set context height to zero
 	height := ctx.BlockHeight()
@@ -63,6 +81,54 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 
 	// reset context height
 	ctx = ctx.WithBlockHeight(height)
+
+	/* Handle staking state. */
+
+	// iterate through redelegations, reset creation height
+	app.StakingKeeper.IterateRedelegations(ctx, func(_ int64, red stakingtypes.Redelegation) (stop bool) {
+		for i := range red.Entries {
+			red.Entries[i].CreationHeight = 0
+		}
+		app.StakingKeeper.SetRedelegation(ctx, red)
+		return false
+	})
+
+	// iterate through unbonding delegations, reset creation height
+	app.StakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd stakingtypes.UnbondingDelegation) (stop bool) {
+		for i := range ubd.Entries {
+			ubd.Entries[i].CreationHeight = 0
+		}
+		app.StakingKeeper.SetUnbondingDelegation(ctx, ubd)
+		return false
+	})
+
+	// Iterate through validators by power descending, reset bond heights, and
+	// update bond intra-tx counters.
+	store := ctx.KVStore(app.keys[stakingtypes.StoreKey])
+	iter := sdk.KVStoreReversePrefixIterator(store, stakingtypes.ValidatorsKey)
+	counter := int16(0)
+
+	for ; iter.Valid(); iter.Next() {
+		addr := sdk.ValAddress(iter.Key()[1:])
+		validator, found := app.StakingKeeper.GetValidator(ctx, addr)
+		if !found {
+			panic("expected validator, not found")
+		}
+
+		validator.UnbondingHeight = 0
+		if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
+			validator.Jailed = true
+		}
+
+		app.StakingKeeper.SetValidator(ctx, validator)
+		counter++
+	}
+
+	iter.Close()
+
+	if _, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
+		panic(err)
+	}
 
 	/* Handle slashing state. */
 
@@ -75,18 +141,4 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 			return false
 		},
 	)
-}
-
-// GetValidatorSet returns a slice of bonded validators.
-func (app *App) GetValidatorSet(ctx sdk.Context) ([]tmtypes.GenesisValidator, error) {
-	cVals := app.ConsumerKeeper.GetAllCCValidator(ctx)
-	if len(cVals) == 0 {
-		return nil, fmt.Errorf("empty validator set")
-	}
-
-	vals := []tmtypes.GenesisValidator{}
-	for _, v := range cVals {
-		vals = append(vals, tmtypes.GenesisValidator{Address: v.Address, Power: v.Power})
-	}
-	return vals, nil
 }

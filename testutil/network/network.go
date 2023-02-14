@@ -1,7 +1,6 @@
 package network
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -19,22 +18,16 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ccvconsumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
-	"github.com/strangelove-ventures/noble/testutil"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
-	types1 "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 type (
@@ -74,11 +67,6 @@ func DefaultConfig() network.Config {
 		InterfaceRegistry: encoding.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
 		AppConstructor: func(val network.Validator) servertypes.Application {
-			err := modifyConsumerGenesis(val)
-			if err != nil {
-				panic(err)
-			}
-
 			return app.New(
 				val.Ctx.Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.Ctx.Config.RootDir, 0,
 				encoding,
@@ -115,50 +103,4 @@ func DefaultConfig() network.Config {
 	cfg.GenesisState[upgradetypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(upgrade)
 
 	return cfg
-}
-
-func modifyConsumerGenesis(val network.Validator) error {
-	genFile := val.Ctx.Config.GenesisFile()
-	appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
-	if err != nil {
-		return sdkerrors.Wrap(err, "failed to read genesis from the file")
-	}
-
-	tmProtoPublicKey, err := cryptocodec.ToTmProtoPublicKey(val.PubKey)
-	if err != nil {
-		return sdkerrors.Wrap(err, "invalid public key")
-	}
-
-	initialValset := []types1.ValidatorUpdate{{PubKey: tmProtoPublicKey, Power: 100}}
-	vals, err := tmtypes.PB2TM.ValidatorUpdates(initialValset)
-	if err != nil {
-		return sdkerrors.Wrap(err, "could not convert val updates to validator set")
-	}
-
-	consumerGenesisState := testutil.CreateMinimalConsumerTestGenesis()
-	consumerGenesisState.InitialValSet = initialValset
-	consumerGenesisState.ProviderConsensusState.NextValidatorsHash = tmtypes.NewValidatorSet(vals).Hash()
-
-	if err := consumerGenesisState.Validate(); err != nil {
-		return sdkerrors.Wrap(err, "invalid consumer genesis")
-	}
-
-	consumerGenStateBz, err := val.ClientCtx.Codec.MarshalJSON(consumerGenesisState)
-	if err != nil {
-		return sdkerrors.Wrap(err, "failed to marshal consumer genesis state into JSON")
-	}
-
-	appState[ccvconsumertypes.ModuleName] = consumerGenStateBz
-	appStateJSON, err := json.Marshal(appState)
-	if err != nil {
-		return sdkerrors.Wrap(err, "failed to marshal application genesis state into JSON")
-	}
-
-	genDoc.AppState = appStateJSON
-	err = genutil.ExportGenesisFile(genDoc, genFile)
-	if err != nil {
-		return sdkerrors.Wrap(err, "failed to export genesis state")
-	}
-
-	return nil
 }

@@ -6,4 +6,4 @@ release/
 .DS_Store
 play_sh/
 /heighliner*
-
+bin/
