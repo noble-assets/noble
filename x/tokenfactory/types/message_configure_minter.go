@@ -57,9 +57,5 @@ func (msg *MsgConfigureMinter) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "allowance amount cannot be negative")
 	}
 
-	if msg.Allowance.IsZero() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "allowance amount cannot be zero")
-	}
-
 	return nil
 }
