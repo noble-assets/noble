@@ -23,6 +23,8 @@ func (k msgServer) AcceptOwner(goCtx context.Context, msg *types.MsgAcceptOwner)
 
 	k.SetOwner(ctx, owner)
 
+	k.DeletePendingOwner(ctx)
+
 	err := ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgAcceptOwnerResponse{}, err

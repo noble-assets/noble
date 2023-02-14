@@ -33,6 +33,12 @@ func (k Keeper) SetPendingOwner(ctx sdk.Context, owner types.Owner) {
 	store.Set(types.KeyPrefix(types.PendingOwnerKey), b)
 }
 
+// DeletePendingOwner deletes the pending owner in the store
+func (k Keeper) DeletePendingOwner(ctx sdk.Context) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyPrefix(types.PendingOwnerKey))
+}
+
 // GetPendingOwner returns pending owner
 func (k Keeper) GetPendingOwner(ctx sdk.Context) (val types.Owner, found bool) {
 	store := ctx.KVStore(k.storeKey)
