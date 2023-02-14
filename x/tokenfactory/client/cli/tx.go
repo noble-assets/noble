@@ -22,6 +22,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdUpdatePauser())
 	cmd.AddCommand(CmdUpdateBlacklister())
 	cmd.AddCommand(CmdUpdateOwner())
+	cmd.AddCommand(CmdAcceptOwner())
 	cmd.AddCommand(CmdConfigureMinter())
 	cmd.AddCommand(CmdRemoveMinter())
 	cmd.AddCommand(CmdMint())
