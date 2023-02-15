@@ -47,7 +47,7 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, bankKeeper types.BankKeeper,
 	if genState.MintingDenom != nil {
 		_, found := bankKeeper.GetDenomMetaData(ctx, genState.MintingDenom.Denom)
 		if !found {
-			panic(fmt.Errorf("tokenfactory denom %s is not registered in bank module denom_metadata", &genState.MintingDenom.Denom))
+			panic(fmt.Errorf("tokenfactory denom %s is not registered in bank module denom_metadata", genState.MintingDenom.Denom))
 		}
 		k.SetMintingDenom(ctx, *genState.MintingDenom)
 	}
