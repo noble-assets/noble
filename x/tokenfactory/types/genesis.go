@@ -73,43 +73,41 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
-	if gs.Owner == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner cannot be nil")
+	var addresses []sdk.AccAddress
+
+	if gs.Owner != nil {
+		owner, err := sdk.AccAddressFromBech32(gs.Owner.Address)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+		}
+		addresses = append(addresses, owner)
 	}
 
-	if gs.MasterMinter == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "master minter cannot be nil")
+	if gs.MasterMinter != nil {
+		masterMinter, err := sdk.AccAddressFromBech32(gs.MasterMinter.Address)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid master minter address (%s)", err)
+		}
+		addresses = append(addresses, masterMinter)
 	}
 
-	if gs.Pauser == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "pauser cannot be nil")
+	if gs.Pauser != nil {
+		pauser, err := sdk.AccAddressFromBech32(gs.Pauser.Address)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid pauser address (%s)", err)
+		}
+		addresses = append(addresses, pauser)
 	}
 
-	if gs.Blacklister == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "black lister cannot be nil")
+	if gs.Blacklister != nil {
+		blacklister, err := sdk.AccAddressFromBech32(gs.Blacklister.Address)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid black lister address (%s)", err)
+		}
+		addresses = append(addresses, blacklister)
 	}
 
-	owner, err := sdk.AccAddressFromBech32(gs.Owner.Address)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-	}
-
-	masterMinter, err := sdk.AccAddressFromBech32(gs.MasterMinter.Address)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid master minter address (%s)", err)
-	}
-
-	pauser, err := sdk.AccAddressFromBech32(gs.Pauser.Address)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid pauser address (%s)", err)
-	}
-
-	blacklister, err := sdk.AccAddressFromBech32(gs.Blacklister.Address)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid black lister address (%s)", err)
-	}
-
-	if err := validatePrivileges(owner, masterMinter, pauser, blacklister); err != nil {
+	if err := validatePrivileges(addresses); err != nil {
 		return err
 	}
 
@@ -123,7 +121,7 @@ func (gs GenesisState) Validate() error {
 }
 
 // validatePrivileges ensures that the same address is not being assigned to more than one privileged role.
-func validatePrivileges(addresses ...sdk.AccAddress) error {
+func validatePrivileges(addresses []sdk.AccAddress) error {
 	for i, current := range addresses {
 		for j, target := range addresses {
 			if i == j {
