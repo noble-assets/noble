@@ -18,4 +18,5 @@ var (
 	ErrMintingDenomSet    = sdkerrors.Register(ModuleName, 9, "the minting denom has already been set")
 	ErrUserBlacklisted    = sdkerrors.Register(ModuleName, 10, "user is already blacklisted")
 	ErrAlreadyPrivileged  = sdkerrors.Register(ModuleName, 11, "address is already assigned to privileged role")
+	ErrDenomNotRegistered = sdkerrors.Register(ModuleName, 12, "denom not registered in bank module")
 )
