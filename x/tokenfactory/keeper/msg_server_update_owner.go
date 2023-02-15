@@ -29,7 +29,7 @@ func (k msgServer) UpdateOwner(goCtx context.Context, msg *types.MsgUpdateOwner)
 
 	owner.Address = msg.Address
 
-	k.SetOwner(ctx, owner)
+	k.SetPendingOwner(ctx, owner)
 
 	err = ctx.EventManager().EmitTypedEvent(msg)
 

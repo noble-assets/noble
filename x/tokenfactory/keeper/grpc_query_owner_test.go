@@ -16,7 +16,8 @@ import (
 func TestOwnerQuery(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	item := createTestOwner(keeper, ctx)
+	owner := types.Owner{Address: "test"}
+	keeper.SetOwner(ctx, owner)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetOwnerRequest
@@ -26,7 +27,7 @@ func TestOwnerQuery(t *testing.T) {
 		{
 			desc:     "First",
 			request:  &types.QueryGetOwnerRequest{},
-			response: &types.QueryGetOwnerResponse{Owner: item},
+			response: &types.QueryGetOwnerResponse{Owner: owner},
 		},
 		{
 			desc: "InvalidRequest",
