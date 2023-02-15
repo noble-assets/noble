@@ -175,7 +175,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		{
 			Address: authority.Address,
 			Denom:   chainCfg.Denom,
-			Amount:  0,
+			Amount:  1000,
 		},
 		{
 			Address: owner.Address,
