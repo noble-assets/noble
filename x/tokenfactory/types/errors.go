@@ -14,4 +14,5 @@ var (
 	ErrSendCoinsToAccount = sdkerrors.Register(ModuleName, 5, "can't send tokens to account")
 	ErrBurn               = sdkerrors.Register(ModuleName, 6, "tokens can not be burned")
 	ErrPaused             = sdkerrors.Register(ModuleName, 7, "the chain is paused")
+	ErrDenomNotRegistered = sdkerrors.Register(ModuleName, 8, "denom not registered in bank module")
 )

@@ -1,8 +1,7 @@
 package tokenfactory
 
 import (
-	"fmt"
-
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
@@ -47,7 +46,7 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, bankKeeper types.BankKeeper,
 	if genState.MintingDenom != nil {
 		_, found := bankKeeper.GetDenomMetaData(ctx, genState.MintingDenom.Denom)
 		if !found {
-			panic(fmt.Errorf("tokenfactory denom %s is not registered in bank module denom_metadata", genState.MintingDenom.Denom))
+			panic(sdkerrors.Wrapf(types.ErrDenomNotRegistered, "tokenfactory minting denom %s is not registered in bank module denom_metadata", genState.MintingDenom.Denom))
 		}
 		k.SetMintingDenom(ctx, *genState.MintingDenom)
 	}
