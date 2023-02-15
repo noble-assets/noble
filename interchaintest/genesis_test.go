@@ -21,6 +21,7 @@ const (
 	authorityKeyName = "authority"
 
 	ownerKeyName            = "owner"
+	newOwnerKeyName         = "new_owner"
 	masterMinterKeyName     = "masterminter"
 	minterKeyName           = "minter"
 	minterControllerKeyName = "mintercontroller"
@@ -104,6 +105,7 @@ func NobleEncoding() *simappparams.EncodingConfig {
 type NobleRoles struct {
 	Authority        ibc.Wallet
 	Owner            ibc.Wallet
+	NewOwner         ibc.Wallet
 	MasterMinter     ibc.Wallet
 	MinterController ibc.Wallet
 	Minter           ibc.Wallet
@@ -124,6 +126,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	masterMinter := interchaintest.BuildWallet(kr, masterMinterKeyName, chainCfg)
 	minter := interchaintest.BuildWallet(kr, minterKeyName, chainCfg)
 	owner := interchaintest.BuildWallet(kr, ownerKeyName, chainCfg)
+	newOwner := interchaintest.BuildWallet(kr, newOwnerKeyName, chainCfg)
 	minterController := interchaintest.BuildWallet(kr, minterControllerKeyName, chainCfg)
 	blacklister := interchaintest.BuildWallet(kr, blacklisterKeyName, chainCfg)
 	pauser := interchaintest.BuildWallet(kr, pauserKeyName, chainCfg)
@@ -136,6 +139,10 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		return NobleRoles{}, err
 	}
 	err = val.RecoverKey(ctx, ownerKeyName, owner.Mnemonic)
+	if err != nil {
+		return NobleRoles{}, err
+	}
+	err = val.RecoverKey(ctx, newOwnerKeyName, newOwner.Mnemonic)
 	if err != nil {
 		return NobleRoles{}, err
 	}
@@ -179,6 +186,11 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		},
 		{
 			Address: owner.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  0,
+		},
+		{
+			Address: newOwner.Address,
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
@@ -233,6 +245,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	return NobleRoles{
 		Authority:        authority,
 		Owner:            owner,
+		NewOwner:         newOwner,
 		MasterMinter:     masterMinter,
 		MinterController: minterController,
 		Minter:           minter,

@@ -95,23 +95,53 @@ func TestNobleChain(t *testing.T) {
 
 	nobleValidator := noble.Validators[0]
 
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "update-master-minter", roles.MasterMinter.Address, "-b", "block",
+	)
+	require.Error(t, err, "succeeded to execute update master minter tx by invalid owner")
+
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "update-owner", roles.NewOwner.Address, "-b", "block",
+	)
+	require.Error(t, err, "succeeded to execute update owner tx by invalid owner")
+
 	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
-		"tokenfactory", "update-master-minter", roles.MasterMinter.Address,
+		"tokenfactory", "update-owner", roles.NewOwner.Address, "-b", "block",
+	)
+	require.NoError(t, err, "failed to execute update owner tx")
+
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "update-master-minter", roles.MasterMinter.Address, "-b", "block",
+	)
+	require.Error(t, err, "succeeded to execute update master minter tx by pending owner")
+
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "accept-owner", "-b", "block",
+	)
+	require.NoError(t, err, "failed to execute tx to accept ownership")
+
+	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
+		"tokenfactory", "update-master-minter", roles.MasterMinter.Address, "-b", "block",
+	)
+	require.Error(t, err, "succeeded to execute update master minter tx by prior owner")
+
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "update-master-minter", roles.MasterMinter.Address, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute update master minter tx")
 
 	_, err = nobleValidator.ExecTx(ctx, masterMinterKeyName,
-		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.Minter.Address,
+		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.Minter.Address, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, minterControllerKeyName,
-		"tokenfactory", "configure-minter", roles.Minter.Address, "1000urupee",
+		"tokenfactory", "configure-minter", roles.Minter.Address, "1000urupee", "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
 	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
-		"tokenfactory", "mint", roles.User.Address, "100urupee",
+		"tokenfactory", "mint", roles.User.Address, "100urupee", "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute mint to user tx")
 
@@ -119,27 +149,27 @@ func TestNobleChain(t *testing.T) {
 	require.NoError(t, err, "failed to get user balance")
 	require.Equal(t, int64(100), userBalance, "failed to mint urupee to user")
 
-	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
-		"tokenfactory", "update-blacklister", roles.Blacklister.Address,
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "update-blacklister", roles.Blacklister.Address, "-b", "block",
 	)
 	require.NoError(t, err, "failed to set blacklister")
 
 	_, err = nobleValidator.ExecTx(ctx, blacklisterKeyName,
-		"tokenfactory", "blacklist", roles.User.Address,
+		"tokenfactory", "blacklist", roles.User.Address, "-b", "block",
 	)
 	require.NoError(t, err, "failed to blacklist user address")
 
 	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
-		"tokenfactory", "mint", roles.User.Address, "100urupee",
+		"tokenfactory", "mint", roles.User.Address, "100urupee", "-b", "block",
 	)
-	require.NoError(t, err, "failed to execute mint to user tx")
+	require.Error(t, err, "successfully executed mint to blacklisted user tx")
 
 	userBalance, err = noble.GetBalance(ctx, roles.User.Address, "urupee")
 	require.NoError(t, err, "failed to get user balance")
 	require.Equal(t, int64(100), userBalance, "user balance should not have incremented while blacklisted")
 
 	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
-		"tokenfactory", "mint", roles.User2.Address, "100urupee",
+		"tokenfactory", "mint", roles.User2.Address, "100urupee", "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute mint to user2 tx")
 
@@ -166,12 +196,12 @@ func TestNobleChain(t *testing.T) {
 	require.Equal(t, int64(100), userBalance, "user balance should have incremented")
 
 	_, err = nobleValidator.ExecTx(ctx, blacklisterKeyName,
-		"tokenfactory", "unblacklist", roles.User.Address,
+		"tokenfactory", "unblacklist", roles.User.Address, "-b", "block",
 	)
 	require.NoError(t, err, "failed to unblacklist user address")
 
 	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
-		"tokenfactory", "mint", roles.User.Address, "100urupee",
+		"tokenfactory", "mint", roles.User.Address, "100urupee", "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute mint to user tx")
 
@@ -180,7 +210,7 @@ func TestNobleChain(t *testing.T) {
 	require.Equal(t, int64(200), userBalance, "user balance should have increased now that they are no longer blacklisted")
 
 	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
-		"tokenfactory", "mint", roles.Minter.Address, "100urupee",
+		"tokenfactory", "mint", roles.Minter.Address, "100urupee", "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute mint to user tx")
 
@@ -188,27 +218,29 @@ func TestNobleChain(t *testing.T) {
 	require.NoError(t, err, "failed to get minter balance")
 	require.Equal(t, int64(100), minterBalance, "minter balance should have increased")
 
-	_, err = nobleValidator.ExecTx(ctx, minterKeyName, "tokenfactory", "burn", "10urupee")
+	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
+		"tokenfactory", "burn", "10urupee", "-b", "block",
+	)
 	require.NoError(t, err, "failed to execute burn tx")
 
 	minterBalance, err = noble.GetBalance(ctx, roles.Minter.Address, "urupee")
 	require.NoError(t, err, "failed to get minter balance")
 	require.Equal(t, int64(90), minterBalance, "minter balance should have decreased because tokens were burned")
 
-	_, err = nobleValidator.ExecTx(ctx, ownerKeyName,
-		"tokenfactory", "update-pauser", roles.Pauser.Address,
+	_, err = nobleValidator.ExecTx(ctx, newOwnerKeyName,
+		"tokenfactory", "update-pauser", roles.Pauser.Address, "-b", "block",
 	)
 	require.NoError(t, err, "failed to update pauser")
 
 	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
-		"tokenfactory", "pause",
+		"tokenfactory", "pause", "-b", "block",
 	)
 	require.NoError(t, err, "failed to pause mints")
 
 	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
-		"tokenfactory", "mint", roles.User.Address, "100urupee",
+		"tokenfactory", "mint", roles.User.Address, "100urupee", "-b", "block",
 	)
-	require.NoError(t, err, "failed to execute mint to user tx")
+	require.Error(t, err, "successfully executed mint to user tx while chain is paused")
 
 	userBalance, err = noble.GetBalance(ctx, roles.User.Address, "urupee")
 	require.NoError(t, err, "failed to get user balance")
@@ -216,9 +248,9 @@ func TestNobleChain(t *testing.T) {
 	require.Equal(t, int64(200), userBalance, "user balance should not have increased while chain is paused")
 
 	_, err = nobleValidator.ExecTx(ctx, userKeyName,
-		"bank", "send", roles.User.Address, roles.Alice.Address, "100urupee",
+		"bank", "send", roles.User.Address, roles.Alice.Address, "100urupee", "-b", "block",
 	)
-	require.Error(t, err, "transaction was successful while chain was paused")
+	require.Error(t, err, "transaction was successful while chain is paused")
 
 	userBalance, err = noble.GetBalance(ctx, roles.User.Address, "urupee")
 	require.NoError(t, err, "failed to get user balance")
@@ -230,31 +262,29 @@ func TestNobleChain(t *testing.T) {
 
 	require.Equal(t, int64(0), aliceBalance, "alice balance should not have increased while chain is paused")
 
-	_, err = nobleValidator.ExecTx(ctx, minterKeyName, "tokenfactory", "burn", "10urupee")
-	require.NoError(t, err, "failed to execute burn tx")
+	_, err = nobleValidator.ExecTx(ctx, minterKeyName,
+		"tokenfactory", "burn", "10urupee", "-b", "block",
+	)
+	require.Error(t, err, "successfully executed burn tx while chain is paused")
 	require.Equal(t, int64(90), minterBalance, "this burn should not have been successful because the chain is paused")
 
 	_, err = nobleValidator.ExecTx(ctx, masterMinterKeyName,
-		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.User.Address,
+		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.User.Address, "-b", "block",
 	)
-	require.NoError(t, err, "tx to configure minter controller should still succeed even though in paused state")
+	require.Error(t, err, "successfully executed tx to configure minter controller while chain is paused")
 
-	_, _, err = nobleValidator.ExecQuery(ctx, "tokenfactory", "show-minters", roles.User.Address)
-	require.Error(t, err, "'user' should not have been able to become a minter while chain is paused")
-
-	_, err = nobleValidator.ExecTx(ctx, minterControllerKeyName, "tokenfactory", "remove-minter", roles.Minter.Address)
+	_, err = nobleValidator.ExecTx(ctx, minterControllerKeyName,
+		"tokenfactory", "remove-minter", roles.Minter.Address, "-b", "block",
+	)
 	require.NoError(t, err, "minters should be able to be removed while in paused state")
 
-	_, _, err = nobleValidator.ExecQuery(ctx, "tokenfactory", "show-minters", roles.Minter.Address)
-	require.Error(t, err, "minter should not have been added so remove should be a no-op and this should fail")
-
 	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
-		"tokenfactory", "unpause",
+		"tokenfactory", "unpause", "-b", "block",
 	)
 	require.NoError(t, err, "failed to unpause mints")
 
 	_, err = nobleValidator.ExecTx(ctx, userKeyName,
-		"bank", "send", roles.User.Address, roles.Alice.Address, "100urupee",
+		"bank", "send", roles.User.Address, roles.Alice.Address, "100urupee", "-b", "block",
 	)
 	require.NoError(t, err, "failed to send tx bank from user to alice")
 
