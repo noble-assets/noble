@@ -45,56 +45,76 @@ if ! mkdir -p $CHAINDIR/$CHAINID 2>/dev/null; then
 fi
 
 # Build genesis file incl account for passed address
-coins="1000$DENOM,0$BASEDENOM"
-coins0="1$DENOM"
+# ownerGenesis="1000000$DENOM,1000000$BASEDENOM"
+# valGenesis="0$DENOM,1$BASEDENOM"
+# valGenTx="1$BASEDENOM"
+# delegate="1$BASEDENOM"
+
+ownerGenesis="1000000$DENOM,1000000$BASEDENOM"
+valGenesis="1$DENOM,0$BASEDENOM"
+valGenTx="1$DENOM"
 delegate="1$DENOM"
+
 
 
 nobled --home $CHAINDIR/$CHAINID --chain-id $CHAINID init $CHAINID 
 sleep 1
+
+# Delete old keys if they exhist
+KEYS=("owner" "masterminter" "mintercontroller" "minter" "blacklister" "pauser" "user")
+for KEY in ${KEYS[@]}
+do 
+    if nobled --home $CHAINDIR/$CHAINID $KEYRING keys show  $KEY > /dev/null 2>&1; then
+        nobled --home $CHAINDIR/$CHAINID $KEYRING keys delete $KEY -y
+    else
+        continue
+    fi
+done 
+
+
 nobled --home $CHAINDIR/$CHAINID keys add validator1 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed1.json 2>&1
 sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add validator2 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed2.json 2>&1
-sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add validator3 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed3.json 2>&1
-sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add validator4 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed4.json 2>&1
-sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add validator5 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed5.json 2>&1
-sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add validator6 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed6.json 2>&1
+# nobled --home $CHAINDIR/$CHAINID keys add validator2 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed2.json 2>&1
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID keys add validator3 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed3.json 2>&1
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID keys add validator4 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed4.json 2>&1
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID keys add validator5 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed5.json 2>&1
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID keys add validator6 $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed6.json 2>&1
 sleep 1
 nobled --home $CHAINDIR/$CHAINID keys add owner $KEYRING --output json > $CHAINDIR/$CHAINID/owner_seed.json 2>&1
 sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show owner -a) $coins 
+nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show owner -a) $ownerGenesis 
 sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator1 -a) $coins0
+nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator1 -a) $valGenesis
 sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator2 -a) $coins0
-sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator3 -a) $coins0
-sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator4 -a) $coins0
-sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator5 -a) $coins0
-sleep 1
-nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator6 -a) $coins0
+# nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator2 -a) $valGenesis
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator3 -a) $valGenesis
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator4 -a) $valGenesis
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator5 -a) $valGenesis
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator6 -a) $valGenesis
 sleep 1
 
-mkdir $CHAINDIR/$CHAINID/gentx
+# mkdir $CHAINDIR/$CHAINID/config/gentx
 
-nobled --home $CHAINDIR/$CHAINID gentx validator1 $coins0 $KEYRING --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/gentx/gentx1.json
+nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator1 $valGenTx --chain-id $CHAINID
 sleep 1
-nobled --home $CHAINDIR/$CHAINID gentx validator2 $coins0 $KEYRING --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/gentx/gentx2.json
-sleep 1
-nobled --home $CHAINDIR/$CHAINID gentx validator3 $coins0 $KEYRING --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/gentx/gentx3.json
-sleep 1
-nobled --home $CHAINDIR/$CHAINID gentx validator4 $coins0 $KEYRING --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/gentx/gentx4.json
-sleep 1
-nobled --home $CHAINDIR/$CHAINID gentx validator5 $coins0 $KEYRING --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/gentx/gentx5.json
-sleep 1
-nobled --home $CHAINDIR/$CHAINID gentx validator6 $coins0 $KEYRING --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/gentx/gentx6.json
-sleep 1
+# nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator2 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/config/gentx/gentx2.json
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator3 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/config/gentx/gentx3.json
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator4 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/config/gentx/gentx4.json
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator5 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/config/gentx/gentx5.json
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator6 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $CHAINDIR/$CHAINID/config/gentx/gentx6.json
+# sleep 1
 
 nobled --home $CHAINDIR/$CHAINID collect-gentxs
 sleep 1
@@ -117,6 +137,7 @@ if [ $platform = 'linux' ]; then
   sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i 's/timeout_propose = "3s"/timeout_propose = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i 's/index_all_keys = false/index_all_keys = true/g' $CHAINDIR/$CHAINID/config/config.toml
+  sed -i 's/"bond_denom": "stake"/"bond_denom": "'"$DENOM"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
@@ -130,6 +151,7 @@ else
   sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i '' 's/timeout_propose = "3s"/timeout_propose = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i '' 's/index_all_keys = false/index_all_keys = true/g' $CHAINDIR/$CHAINID/config/config.toml
+  sed -i '' 's/"bond_denom": "stake"/"bond_denom": "'"$DENOM"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
@@ -138,25 +160,21 @@ else
 
 fi
 
-# Delete old keys if they exhist
-KEYS=("owner" "masterminter" "mintercontroller" "minter" "blacklister" "pauser" "user")
-for KEY in ${KEYS[@]}
-do 
-    if nobled keys show $KEY > /dev/null 2>&1; then
-        nobled keys delete $KEY -y
-    else
-        continue
-    fi
-done 
+echo "Starting node!!!"
 
-nobled --home $CHAINDIR/$CHAINID tx staking delegate $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator1 -a) $delegate --from owner
-sleep 1
-nobled --home $CHAINDIR/$CHAINID tx staking delegate $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator2 -a) $delegate --from owner
-sleep 1
-nobled --home $CHAINDIR/$CHAINID tx staking delegate $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator3 -a) $delegate --from owner
-sleep 1
-nobled --home $CHAINDIR/$CHAINID tx staking delegate $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator4 -a) $delegate --from owner
-sleep 1
-nobled --home $CHAINDIR/$CHAINID tx staking delegate $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator5 -a) $delegate --from owner
-sleep 1
-nobled --home $CHAINDIR/$CHAINID tx staking delegate $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator6 -a) $delegate --from owner
+nobled --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" > $CHAINDIR/$CHAINID.log 2>&1 &
+sleep 2
+
+echo "Started!!!"
+
+# nobled --home $CHAINDIR/$CHAINID tx staking delegate $KEYRING $(jq -r '.body.messages[].validator_address' $CHAINDIR/$CHAINID/config/gentx/gentx1.json) $delegate --from owner
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID tx staking delegate $KEYRING $(jq -r '.body.messages[].validator_address' $CHAINDIR/$CHAINID/config/gentx/gentx2.json) $delegate --from owner
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID tx staking delegate $KEYRING $(jq -r '.body.messages[].validator_address' $CHAINDIR/$CHAINID/config/gentx/gentx3.json) $delegate --from owner
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID tx staking delegate $KEYRING $(jq -r '.body.messages[].validator_address' $CHAINDIR/$CHAINID/config/gentx/gentx4.json) $delegate --from owner
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID tx staking delegate $KEYRING $(jq -r '.body.messages[].validator_address' $CHAINDIR/$CHAINID/config/gentx/gentx5.json) $delegate --from owner
+# sleep 1
+# nobled --home $CHAINDIR/$CHAINID tx staking delegate $KEYRING $(jq -r '.body.messages[].validator_address' $CHAINDIR/$CHAINID/config/gentx/gentx6.json) $delegate --from owner
