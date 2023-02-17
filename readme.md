@@ -31,8 +31,8 @@ The Access Control table below shows the functionality tied to each privileged a
 | **Unblacklist**                |           |            |                   |                       |            |        x        |                 x                |
 | **Burn**                       |           |      x     |                   |                       |            |                 |                                  |
 | **Mint**                       |           |      x     |                   |                       |            |                 |                                  |
-| **Configure Mint Controller**  |           |            |         x         |                       |            |                 |                 x                |
-| **Configure Minter allowance** |           |            |                   |           x           |            |                 |                 x                |
+| **Add Minter Controller**      |           |            |         x         |                       |            |                 |                                  |
+| **Add Minter with allowance**  |           |            |                   |           x           |            |                 |                                  |
 | **Pause**                      |           |            |                   |                       |      x     |                 |                 x                |
 | **Unpause**                    |           |            |                   |                       |      x     |                 |                 x                |
 | **Remove Minter Controller**   |           |            |         x         |                       |            |                 |                 x                |
