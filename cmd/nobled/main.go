@@ -11,10 +11,10 @@ import (
 
 func main() {
 	rootCmd, _ := cmd.NewRootCmd(
-		"noble",
+		app.Name,
 		app.AccountAddressPrefix,
 		app.DefaultNodeHome,
-		"noble-1",
+		app.ChainID,
 		app.ModuleBasics,
 		app.New,
 	)
