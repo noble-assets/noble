@@ -1,0 +1,857 @@
+{
+  "genesis_time": "2023-02-17T23:57:22.041798Z",
+  "chain_id": "noble-1",
+  "initial_height": "1",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "22020096",
+      "max_gas": "-1",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    },
+    "version": {}
+  },
+  "app_hash": "",
+  "app_state": {
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "noble1qqpe2z4jsmqkfwyprqm6wlg96hznkz6sy6pnr6",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "noble1r7et8pg6zz24vfthn4f39sqwckecsn7cnlasmd",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "noble1j7qr4nl47ll0hx5mcam6ynzkj0rnultmm3st4e",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "noble1q8nxd03vs73mk4tkndhty7qzws66j88agwyu6q",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "noble1epuds43g0n40a0tpnsthtfvkflx7myvy7jpzzh",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "noble1tkz95mv2v4skjc79zxx5mpkl259jhncel0ewas",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "ustake",
+                "amount": "1000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "32507807081"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "noble1w7z9guyxf3c2gpf8zxjqfyj23yfxz28e0mxqsw",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "ustake",
+                "amount": "1000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "32507807081"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "noble1j2g9wypqwlsrnlznwle8s6wmyfjjx9aw9mjacw",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "ustake",
+                "amount": "1000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "32507807081"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "noble1ta5mawsua77c26y7xt92qalfu84cn2u7mggyev",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "ustake",
+                "amount": "1000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "32507807081"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "noble1vsmgwaj93u4q8qlyk93xmew4n97rfjgexf8tmm",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "ustake",
+                "amount": "1000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "32507807081"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "noble1l82xv0hc046gyvhg3nnqravz6kkjff7z6kr7gs",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "ustake",
+                "amount": "1000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "32507807081"
+          }
+        }
+      ]
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "noble1qqpe2z4jsmqkfwyprqm6wlg96hznkz6sy6pnr6",
+          "coins": [
+            {
+              "denom": "stake",
+              "amount": "1000000000000"
+            },
+            {
+              "denom": "ustake",
+              "amount": "1000000000000"
+            }
+          ]
+        },
+        {
+          "address": "noble1q8nxd03vs73mk4tkndhty7qzws66j88agwyu6q",
+          "coins": []
+        },
+        {
+          "address": "noble1r7et8pg6zz24vfthn4f39sqwckecsn7cnlasmd",
+          "coins": []
+        },
+        {
+          "address": "noble1tkz95mv2v4skjc79zxx5mpkl259jhncel0ewas",
+          "coins": [
+            {
+              "denom": "ustake",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "noble1ta5mawsua77c26y7xt92qalfu84cn2u7mggyev",
+          "coins": [
+            {
+              "denom": "ustake",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "noble1vsmgwaj93u4q8qlyk93xmew4n97rfjgexf8tmm",
+          "coins": [
+            {
+              "denom": "ustake",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "noble1w7z9guyxf3c2gpf8zxjqfyj23yfxz28e0mxqsw",
+          "coins": [
+            {
+              "denom": "ustake",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "noble1j2g9wypqwlsrnlznwle8s6wmyfjjx9aw9mjacw",
+          "coins": [
+            {
+              "denom": "ustake",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "noble1j7qr4nl47ll0hx5mcam6ynzkj0rnultmm3st4e",
+          "coins": []
+        },
+        {
+          "address": "noble1epuds43g0n40a0tpnsthtfvkflx7myvy7jpzzh",
+          "coins": []
+        },
+        {
+          "address": "noble1l82xv0hc046gyvhg3nnqravz6kkjff7z6kr7gs",
+          "coins": [
+            {
+              "denom": "ustake",
+              "amount": "1000000"
+            }
+          ]
+        }
+      ],
+      "supply": [],
+      "denom_metadata": [
+        {
+          "display": "stake",
+          "base": "ustake",
+          "name": "stake",
+          "symbol": "stake",
+          "denom_units": [
+            {
+              "denom": "ustake",
+              "aliases": [
+                "microstake"
+              ],
+              "exponent": "0"
+            },
+            {
+              "denom": "mstake",
+              "aliases": [
+                "milistake"
+              ],
+              "exponent": "3"
+            },
+            {
+              "denom": "stake",
+              "aliases": null,
+              "exponent": "6"
+            }
+          ]
+        },
+        {
+          "display": "rupee",
+          "base": "urupee",
+          "name": "rupee",
+          "symbol": "rupee",
+          "denom_units": [
+            {
+              "denom": "urupee",
+              "aliases": [
+                "microrupee"
+              ],
+              "exponent": "0"
+            },
+            {
+              "denom": "mrupee",
+              "aliases": [
+                "milirupee"
+              ],
+              "exponent": "3"
+            },
+            {
+              "denom": "rupee",
+              "aliases": null,
+              "exponent": "6"
+            }
+          ]
+        }
+      ]
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "stake",
+        "amount": "1000"
+      }
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "genutil": {
+      "gen_txs": [
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "noble-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "noble1tkz95mv2v4skjc79zxx5mpkl259jhncel0ewas",
+                "validator_address": "noblevaloper1tkz95mv2v4skjc79zxx5mpkl259jhnce3l47tw",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "rBKsOSLA4Rm+FBJVp3a9DohR82htIPZ46rcP05U3xXM="
+                },
+                "value": {
+                  "denom": "ustake",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bbc7d66db2753a80cad60a47a23f83d0214c9e32@192.168.0.197:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AgNuvL3LyhhhKAtDnko/X21PDn9bVnnFMoelOgmWgNIY"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "qpzbAcvUxoC5wLAyOM3C++n4F3EOW+HbKJOnfIOAledveVYoiw50Dm1ooJoA/Mae7psygo/n1MwIf7cOQik5zQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "noble-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "noble1w7z9guyxf3c2gpf8zxjqfyj23yfxz28e0mxqsw",
+                "validator_address": "noblevaloper1w7z9guyxf3c2gpf8zxjqfyj23yfxz28ept2sxs",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "jXNalX3ZKag6kDg4PefS9GI86qepsFqG+uZrQ9zCBno="
+                },
+                "value": {
+                  "denom": "ustake",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bbc7d66db2753a80cad60a47a23f83d0214c9e32@192.168.0.197:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A43TtDtXTIaJGo1CuHrRRYFRuuPksshJraCXhWFCNs/B"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "Q2vfocSkjvlmIL+eszfmlXc1ZIMOYMNh9oq7o0LwOjh/F8V4/6TfyElVHeEaA40fXGU6ErRjCbC7J+9XEepbZA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "noble-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "noble1j2g9wypqwlsrnlznwle8s6wmyfjjx9aw9mjacw",
+                "validator_address": "noblevaloper1j2g9wypqwlsrnlznwle8s6wmyfjjx9awtt7dws",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "O+XQHdfMWCrpJUJQR7njjuLhfPOZCUPGeOgWYToYqgc="
+                },
+                "value": {
+                  "denom": "ustake",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bbc7d66db2753a80cad60a47a23f83d0214c9e32@192.168.0.197:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A3IOYM1wFLLmEjrrc1PSXCt07iHu3o5mFnUHNovl7Ork"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "4mK/G9dao0tmH1ppdkLfAmkykt04/rlD19CmCM+5tqoWlSCboHImPJlFhzQ36ApL9VJHouQyfDNidoF5jYKHPg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "noble-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "noble1ta5mawsua77c26y7xt92qalfu84cn2u7mggyev",
+                "validator_address": "noblevaloper1ta5mawsua77c26y7xt92qalfu84cn2u74cy50j",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "fi0PyoXKch5EctMmvMdYNKC81upfrC3/vnEYQDsZuiE="
+                },
+                "value": {
+                  "denom": "ustake",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bbc7d66db2753a80cad60a47a23f83d0214c9e32@192.168.0.197:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "Aw6433uwPkZQIhXSv++DV7VqK3Y9R4fuvl8X/ae0f4uT"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "Yy+e/6gxoGLKG5UGN7scCmI0GohR9KZDnZybhoI8Pe4ghgIhPJFYO9Wx6XlvbNMXJhyrANxNxccp/vbCpmyYcg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "noble-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "noble1vsmgwaj93u4q8qlyk93xmew4n97rfjgexf8tmm",
+                "validator_address": "noblevaloper1vsmgwaj93u4q8qlyk93xmew4n97rfjgegetmd9",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "FdJnxDxEmaTxBmOFCvFRjpxfD1NmSPfrdJbXIGAn47w="
+                },
+                "value": {
+                  "denom": "ustake",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bbc7d66db2753a80cad60a47a23f83d0214c9e32@192.168.0.197:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A1LTdwXZX9o4EEwSOwU60DxnV78flZHhWzPy5/ZTTuzC"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "fP7ZqnwF0VHjIpvkvjfx7ytzojJ3l8iJfi17p8sifjUVyl/OgLflWKagWwRAo016jtA6PBEUSLsMxmOwgi9IPg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "noble-1",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "noble1l82xv0hc046gyvhg3nnqravz6kkjff7z6kr7gs",
+                "validator_address": "noblevaloper1l82xv0hc046gyvhg3nnqravz6kkjff7z5x0w7w",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "iAer9H81lk8YPI3LKUEfcgzI083Lo2LsKJ7rozYQM2M="
+                },
+                "value": {
+                  "denom": "ustake",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bbc7d66db2753a80cad60a47a23f83d0214c9e32@192.168.0.197:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AkUK7sTYyn4mPkYElJUwnnple8Eknb0cyIa3RulkKEmi"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "Ao8ET6UDRUYH38UM2JMDRbDKDilKiXM4A8bPLhL9fk0F/5lF84+RdfOZPiG0R63GFbSkrEz6+LroAmkO6fTjDg=="
+          ]
+        }
+      ]
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      }
+    },
+    "interchainaccounts": {
+      "controller_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "ports": [],
+        "params": {
+          "controller_enabled": true
+        }
+      },
+      "host_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "port": "icahost",
+        "params": {
+          "host_enabled": true,
+          "allow_messages": []
+        }
+      }
+    },
+    "packetfowardmiddleware": {
+      "params": {
+        "fee_percentage": "0.000000000000000000"
+      },
+      "in_flight_packets": {}
+    },
+    "params": {
+      "params": {
+        "authority": "noble1qqpe2z4jsmqkfwyprqm6wlg96hznkz6sy6pnr6"
+      }
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 100,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "ustake"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": [],
+      "validators": [],
+      "delegations": [],
+      "unbonding_delegations": [],
+      "redelegations": [],
+      "exported": false
+    },
+    "tokenfactory": {
+      "params": {},
+      "blacklistedList": [],
+      "paused": {
+        "paused": false
+      },
+      "masterMinter": {
+        "address": "noble1j7qr4nl47ll0hx5mcam6ynzkj0rnultmm3st4e"
+      },
+      "mintersList": [],
+      "pauser": {
+        "address": "noble1q8nxd03vs73mk4tkndhty7qzws66j88agwyu6q"
+      },
+      "blacklister": {
+        "address": "noble1epuds43g0n40a0tpnsthtfvkflx7myvy7jpzzh"
+      },
+      "owner": {
+        "address": "noble1r7et8pg6zz24vfthn4f39sqwckecsn7cnlasmd"
+      },
+      "minterControllerList": [],
+      "mintingDenom": {
+        "denom": "urupee"
+      }
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      }
+    },
+    "upgrade": {
+      "params": {
+        "authority": "noble1qqpe2z4jsmqkfwyprqm6wlg96hznkz6sy6pnr6"
+      }
+    },
+    "vesting": {}
+  }
+}
