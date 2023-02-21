@@ -6,10 +6,10 @@
 #     - Adds/deletes noble keys
 #     
 
-# This script is meant for quick experimentation of the usdcfactory Module and Noble Chain functionality. 
+# This script is meant for quick experimentation of the rupeefactory Module and Noble Chain functionality. 
 #   - Starts Noble chain
-#   - Delagates and funds all privledged accounts relating to the usdcfactory Module
-#   - The "owner" account is both the usdcfactory Owner AND the Param Authority
+#   - Delagates and funds all privledged accounts relating to the rupeefactory Module
+#   - The "owner" account is both the rupeefactory Owner AND the Param Authority
 
 killall nobled
 [ -d "play_sh" ] && rm -r "play_sh"
@@ -27,7 +27,7 @@ BASEDENOM="ustake"
 
 HOME=$CHAINDIR/$CHAINID
 
-MINTING_BASEDENOM="uusdc"
+MINTING_BASEDENOM="urupee"
 
 KEYRING="--keyring-backend test"
 SILENT=1
@@ -55,17 +55,6 @@ ZERO="0$DENOM,0$BASEDENOM"
 nobled --home $HOME --chain-id $CHAINID init $CHAINID 
 sleep 1
 
-mkdir $HOME/temp_inits
-
-nobled --home $HOME/temp_inits/init2 --chain-id $CHAINID init init2
-sleep 1
-nobled --home $HOME/temp_inits/init3 --chain-id $CHAINID init init3
-sleep 1
-nobled --home $HOME/temp_inits/init4 --chain-id $CHAINID init init4
-sleep 1
-nobled --home $HOME/temp_inits/init5 --chain-id $CHAINID init init5
-sleep 1
-nobled --home $HOME/temp_inits/init6 --chain-id $CHAINID init init6
 
 nobled --home $HOME $KEYRING keys add paramAuth --output json > $HOME/paramAuth_seed.json 2>&1
 sleep 1
@@ -101,33 +90,33 @@ nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING 
 sleep 1
 nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show blacklister -a) $ZERO
 sleep 1
-nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator1 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator1 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 32507807081 # Normal val
 sleep 1
-nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator2 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator2 -a) "0$DENOM,1000000$BASEDENOM" --vesting-amount "0$DENOM,1000000$BASEDENOM"  --vesting-end-time 32507807081 
 sleep 1
-nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator3 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator3 -a) "0$DENOM,1000010$BASEDENOM" --vesting-amount "0$DENOM,1000000$BASEDENOM"  --vesting-end-time 32507807081
 sleep 1
-nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator4 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator4 -a) "0$DENOM,2000000$BASEDENOM" 
 sleep 1
-nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator5 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
-sleep 1
-nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator6 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
-sleep 1
+# nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator5 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 32507807081
+# sleep 1
+# nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator6 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 32507807081
+# sleep 1
 
 mkdir $HOME/config/gentx
 
 nobled --home $HOME $KEYRING gentx validator1 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $HOME/config/gentx/gentx1.json
 sleep 1
-nobled --home $HOME $KEYRING gentx validator2 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init2 tendermint show-validator) --output-document $HOME/config/gentx/gentx2.json
-sleep 1
-nobled --home $HOME $KEYRING gentx validator3 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init3 tendermint show-validator) --output-document $HOME/config/gentx/gentx3.json
-sleep 1
-nobled --home $HOME $KEYRING gentx validator4 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init4 tendermint show-validator) --output-document $HOME/config/gentx/gentx4.json
-sleep 1
-nobled --home $HOME $KEYRING gentx validator5 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init5 tendermint show-validator) --output-document $HOME/config/gentx/gentx5.json
-sleep 1
-nobled --home $HOME $KEYRING gentx validator6 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init6 tendermint show-validator) --output-document $HOME/config/gentx/gentx6.json
-sleep 1
+# nobled --home $HOME $KEYRING gentx validator2 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init2 tendermint show-validator) --output-document $HOME/config/gentx/gentx2.json
+# sleep 1
+# nobled --home $HOME $KEYRING gentx validator3 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init3 tendermint show-validator) --output-document $HOME/config/gentx/gentx3.json
+# sleep 1
+# nobled --home $HOME $KEYRING gentx validator4 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init4 tendermint show-validator) --output-document $HOME/config/gentx/gentx4.json
+# sleep 1
+# nobled --home $HOME $KEYRING gentx validator5 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init5 tendermint show-validator) --output-document $HOME/config/gentx/gentx5.json
+# sleep 1
+# nobled --home $HOME $KEYRING gentx validator6 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --pubkey $(nobled --home $HOME/temp_inits/init6 tendermint show-validator) --output-document $HOME/config/gentx/gentx6.json
+# sleep 1
 
 nobled --home $HOME collect-gentxs
 sleep 1
@@ -161,7 +150,7 @@ if [ $platform = 'linux' ]; then
   sed -i 's/blacklister": null/blacklister": { "address": '"$BLACKLISTER"' }/g' $HOME/config/genesis.json
   sed -i 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $HOME/config/genesis.json
   sed -i 's/paused": null/paused": { "paused": false }/g' $HOME/config/genesis.json
-  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "noble", "base": "unoble", "name": "noble", "symbol": "noble", "denom_units": [ { "denom": "unoble", "aliases": [ "micronoble" ], "exponent": "0" }, { "denom": "mnoble", "aliases": [ "milinoble" ], "exponent": "3" }, { "denom": "stake", "aliases": null, "exponent": "6" }]}, { "display": "stake", "base": "ustake", "name": "stake", "symbol": "stake", "denom_units": [ { "denom": "ustake", "aliases": [ "microstake" ], "exponent": "0" }, { "denom": "mstake", "aliases": [ "milistake" ], "exponent": "3" }, { "denom": "stake", "aliases": null, "exponent": "6" } ] }, { "display": "USDC", "base": "uusdc", "name": "usdc", "symbol": "usdc", "denom_units": [ { "denom": "uusdc", "aliases": [ "microusdc" ], "exponent": "0" }, { "denom": "musdc", "aliases": [ "miliusdc" ], "exponent": "3" }, { "denom": "usdc", "aliases": null, "exponent": "6" } ] } ]/g' $HOME/config/genesis.json
+  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "stake", "base": "ustake", "name": "stake", "symbol": "stake", "denom_units": [ { "denom": "ustake", "aliases": [ "microstake" ], "exponent": "0" }, { "denom": "mstake", "aliases": [ "milistake" ], "exponent": "3" }]}, { "denom": "stake", "aliases": null, "exponent": "6" } ] }, { "display": "rupee", "base": "urupee", "name": "rupee", "symbol": "rupee", "denom_units": [ { "denom": "urupee", "aliases": [ "microrupee" ], "exponent": "0" }, { "denom": "mrupee", "aliases": [ "milirupee" ], "exponent": "3" }, { "denom": "rupee", "aliases": null, "exponent": "6" } ] } ]/g' $HOME/config/genesis.json
   sed -i 's/"authority": ""/"authority": '"$PARAMAUTH"'/g' $HOME/config/genesis.json
 
 else
@@ -178,7 +167,7 @@ else
   sed -i '' 's/blacklister": null/blacklister": { "address": '"$BLACKLISTER"' }/g' $HOME/config/genesis.json
   sed -i '' 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $HOME/config/genesis.json
   sed -i '' 's/paused": null/paused": { "paused": false }/g' $HOME/config/genesis.json
-  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "noble", "base": "unoble", "name": "noble", "symbol": "noble", "denom_units": [ { "denom": "unoble", "aliases": [ "micronoble" ], "exponent": "0" }, { "denom": "mnoble", "aliases": [ "milinoble" ], "exponent": "3" }, { "denom": "stake", "aliases": null, "exponent": "6" }]}, { "display": "stake", "base": "ustake", "name": "stake", "symbol": "stake", "denom_units": [ { "denom": "ustake", "aliases": [ "microstake" ], "exponent": "0" }, { "denom": "mstake", "aliases": [ "milistake" ], "exponent": "3" }, { "denom": "stake", "aliases": null, "exponent": "6" } ] }, { "display": "USDC", "base": "uusdc", "name": "usdc", "symbol": "usdc", "denom_units": [ { "denom": "uusdc", "aliases": [ "microusdc" ], "exponent": "0" }, { "denom": "musdc", "aliases": [ "miliusdc" ], "exponent": "3" }, { "denom": "usdc", "aliases": null, "exponent": "6" } ] } ]/g' $HOME/config/genesis.json
+  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "stake", "base": "ustake", "name": "stake", "symbol": "stake", "denom_units": [ { "denom": "ustake", "aliases": [ "microstake" ], "exponent": "0" }, { "denom": "mstake", "aliases": [ "milistake" ], "exponent": "3" }]}, { "denom": "stake", "aliases": null, "exponent": "6" } ] }, { "display": "rupee", "base": "urupee", "name": "rupee", "symbol": "rupee", "denom_units": [ { "denom": "urupee", "aliases": [ "microrupee" ], "exponent": "0" }, { "denom": "mrupee", "aliases": [ "milirupee" ], "exponent": "3" }, { "denom": "rupee", "aliases": null, "exponent": "6" } ] } ]/g' $HOME/config/genesis.json
   sed -i '' 's/"authority": ""/"authority": '"$PARAMAUTH"'/g' $HOME/config/genesis.json
 
 fi
