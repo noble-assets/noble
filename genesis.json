@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2023-02-21T21:36:23.700647Z",
+  "genesis_time": "2023-02-22T15:52:49.81808Z",
   "chain_id": "noble-1",
   "initial_height": "1",
   "consensus_params": {
@@ -33,42 +33,42 @@
       "accounts": [
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "noble1vhswz440zyz2nqaepnz20mqvvezuwagpxwrq3u",
+          "address": "noble10uu75g7zl0gnzt0wz46htgqnl5ml27dnthcztx",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "noble1zhvpgyxgytjwclxv4gq6zpdt4l2eed27sf44t5",
+          "address": "noble1fl46fuxvghzmsmuphmkfgdeluse5u3xn9j8nr6",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "noble1nkst3ucw65gdv8u6vwhyuawvu677d0ett39gf4",
+          "address": "noble153eyy4uufmrak2swgrn4fjtyslg256ecdngyve",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "noble1xkp78vvruguxzu5lhgltxc2w96nl7uvr07ww30",
+          "address": "noble1x8rynykqla7cnc0tf2f3xn0wa822ztt70y39vn",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "noble1x8djqtxv7z84c2p2yzw2hg8d4f696rlkvhammk",
+          "address": "noble1g3v4qdc83h6m5wdz3x92vfu0tjtt7e6y48qqrz",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "noble1nl2vpjuzve7ewyxgccwdwvmq2aladyn3d09dxt",
+          "address": "noble159leclhhuhhcmedu2n8nfjjedxjyrtkee8l4v2",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
@@ -85,7 +85,7 @@
       },
       "balances": [
         {
-          "address": "noble1zhvpgyxgytjwclxv4gq6zpdt4l2eed27sf44t5",
+          "address": "noble1fl46fuxvghzmsmuphmkfgdeluse5u3xn9j8nr6",
           "coins": [
             {
               "denom": "unoble",
@@ -94,7 +94,7 @@
           ]
         },
         {
-          "address": "noble1vhswz440zyz2nqaepnz20mqvvezuwagpxwrq3u",
+          "address": "noble10uu75g7zl0gnzt0wz46htgqnl5ml27dnthcztx",
           "coins": [
             {
               "denom": "ustake",
@@ -124,6 +124,11 @@
                 "milinoble"
               ],
               "exponent": "3"
+            },
+            {
+              "denom": "noble",
+              "aliases": null,
+              "exponent": "6"
             }
           ]
         },
@@ -155,7 +160,7 @@
           ]
         },
         {
-          "display": "USDC",
+          "display": "uusdc",
           "base": "uusdc",
           "name": "usdc",
           "symbol": "usdc",
@@ -192,6 +197,25 @@
         "denom": "stake",
         "amount": "1000"
       }
+    },
+    "distribution": {
+      "params": {
+        "community_tax": "0.020000000000000000",
+        "base_proposer_reward": "0.010000000000000000",
+        "bonus_proposer_reward": "0.040000000000000000",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": []
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
     },
     "evidence": {
       "evidence": []
@@ -262,7 +286,7 @@
     },
     "params": {
       "params": {
-        "authority": "noble1vhswz440zyz2nqaepnz20mqvvezuwagpxwrq3u"
+        "authority": "noble10uu75g7zl0gnzt0wz46htgqnl5ml27dnthcztx"
       }
     },
     "slashing": {
@@ -299,17 +323,17 @@
         "paused": false
       },
       "masterMinter": {
-        "address": "noble1xkp78vvruguxzu5lhgltxc2w96nl7uvr07ww30"
+        "address": "noble1x8rynykqla7cnc0tf2f3xn0wa822ztt70y39vn"
       },
       "mintersList": [],
       "pauser": {
-        "address": "noble1x8djqtxv7z84c2p2yzw2hg8d4f696rlkvhammk"
+        "address": "noble1g3v4qdc83h6m5wdz3x92vfu0tjtt7e6y48qqrz"
       },
       "blacklister": {
-        "address": "noble1nl2vpjuzve7ewyxgccwdwvmq2aladyn3d09dxt"
+        "address": "noble159leclhhuhhcmedu2n8nfjjedxjyrtkee8l4v2"
       },
       "owner": {
-        "address": "noble1nkst3ucw65gdv8u6vwhyuawvu677d0ett39gf4"
+        "address": "noble153eyy4uufmrak2swgrn4fjtyslg256ecdngyve"
       },
       "minterControllerList": [],
       "mintingDenom": {
@@ -326,7 +350,7 @@
     },
     "upgrade": {
       "params": {
-        "authority": "noble1vhswz440zyz2nqaepnz20mqvvezuwagpxwrq3u"
+        "authority": "noble10uu75g7zl0gnzt0wz46htgqnl5ml27dnthcztx"
       }
     },
     "vesting": {}
