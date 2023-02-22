@@ -3,28 +3,35 @@ package keeper_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
 	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
-func createTestOwner(keeper *keeper.Keeper, ctx sdk.Context) types.Owner {
-	item := types.Owner{}
-	keeper.SetOwner(ctx, item)
-	return item
-}
-
 func TestOwnerGet(t *testing.T) {
+
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
-	item := createTestOwner(keeper, ctx)
+
+	owner := types.Owner{Address: "1"}
+	keeper.SetOwner(ctx, owner)
+
 	rst, found := keeper.GetOwner(ctx)
 	require.True(t, found)
 	require.Equal(t,
-		nullify.Fill(&item),
+		owner,
+		nullify.Fill(&rst),
+	)
+
+	newOwner := types.Owner{Address: "2"}
+
+	keeper.SetPendingOwner(ctx, newOwner)
+
+	rst, found = keeper.GetPendingOwner(ctx)
+	require.True(t, found)
+	require.Equal(t,
+		newOwner,
 		nullify.Fill(&rst),
 	)
 }

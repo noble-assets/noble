@@ -73,28 +73,42 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 
+	var addresses []sdk.AccAddress
+
+	if gs.Owner != nil {
+		owner, err := sdk.AccAddressFromBech32(gs.Owner.Address)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+		}
+		addresses = append(addresses, owner)
+	}
+
 	if gs.MasterMinter != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.MasterMinter.Address); err != nil {
+		masterMinter, err := sdk.AccAddressFromBech32(gs.MasterMinter.Address)
+		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid master minter address (%s)", err)
 		}
+		addresses = append(addresses, masterMinter)
 	}
 
 	if gs.Pauser != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.Pauser.Address); err != nil {
+		pauser, err := sdk.AccAddressFromBech32(gs.Pauser.Address)
+		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid pauser address (%s)", err)
 		}
+		addresses = append(addresses, pauser)
 	}
 
 	if gs.Blacklister != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.Blacklister.Address); err != nil {
+		blacklister, err := sdk.AccAddressFromBech32(gs.Blacklister.Address)
+		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid black lister address (%s)", err)
 		}
+		addresses = append(addresses, blacklister)
 	}
 
-	if gs.Owner != nil {
-		if _, err := sdk.AccAddressFromBech32(gs.Owner.Address); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-		}
+	if err := validatePrivileges(addresses); err != nil {
+		return err
 	}
 
 	if gs.MintingDenom != nil && gs.MintingDenom.Denom == "" {
@@ -104,4 +118,21 @@ func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()
+}
+
+// validatePrivileges ensures that the same address is not being assigned to more than one privileged role.
+func validatePrivileges(addresses []sdk.AccAddress) error {
+	for i, current := range addresses {
+		for j, target := range addresses {
+			if i == j {
+				continue
+			}
+
+			if current.String() == target.String() {
+				return sdkerrors.Wrapf(ErrAlreadyPrivileged, "%s", current)
+			}
+		}
+	}
+
+	return nil
 }

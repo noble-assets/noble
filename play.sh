@@ -27,7 +27,7 @@ BASEDENOM="unoble"
 
 MINTING_BASEDENOM="utoken"
 
-KEYRING=--keyring-backend="test"
+KEYRING="--keyring-backend test"
 SILENT=1
 
 redirect() {

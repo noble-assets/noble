@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var testAddress = sample.AccAddress()
+
 func TestGenesisState_Validate(t *testing.T) {
 	for _, tc := range []struct {
 		desc     string
@@ -74,6 +76,59 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "invalid privilege separation",
+			genState: &types.GenesisState{
+
+				BlacklistedList: []types.Blacklisted{
+					{
+						Pubkey: []byte("0"),
+					},
+					{
+						Pubkey: []byte("1"),
+					},
+				},
+				Paused: &types.Paused{
+					Paused: true,
+				},
+				MasterMinter: &types.MasterMinter{
+					Address: testAddress,
+				},
+				MintersList: []types.Minters{
+					{
+						Address:   sample.AccAddress(),
+						Allowance: sdk.NewCoin("test", sdk.NewInt(1)),
+					},
+					{
+						Address:   sample.AccAddress(),
+						Allowance: sdk.NewCoin("test", sdk.NewInt(1)),
+					},
+				},
+				Pauser: &types.Pauser{
+					Address: testAddress,
+				},
+				Blacklister: &types.Blacklister{
+					Address: testAddress,
+				},
+				Owner: &types.Owner{
+					Address: testAddress,
+				},
+				MinterControllerList: []types.MinterController{
+					{
+						Controller: sample.AccAddress(),
+						Minter:     sample.AccAddress(),
+					},
+					{
+						Controller: sample.AccAddress(),
+						Minter:     sample.AccAddress(),
+					},
+				},
+				MintingDenom: &types.MintingDenom{
+					Denom: "test",
+				},
+			},
+			valid: false,
 		},
 		{
 			desc: "duplicated blacklisted",

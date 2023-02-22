@@ -21,13 +21,19 @@ func (k msgServer) UpdatePauser(goCtx context.Context, msg *types.MsgUpdatePause
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the owner")
 	}
 
+	// ensure that the specified address is not already assigned to a privileged role
+	err := k.ValidatePrivileges(ctx, msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
 	pauser := types.Pauser{
 		Address: msg.Address,
 	}
 
 	k.SetPauser(ctx, pauser)
 
-	err := ctx.EventManager().EmitTypedEvent(msg)
+	err = ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgUpdatePauserResponse{}, err
 }

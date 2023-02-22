@@ -13,6 +13,7 @@ service Msg {
   rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
   rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
   rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
+  rpc AcceptOwner(MsgAcceptOwner) returns (MsgAcceptOwnerResponse);
   rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
   rpc RemoveMinter(MsgRemoveMinter) returns (MsgRemoveMinterResponse);
   rpc Mint(MsgMint) returns (MsgMintResponse);
@@ -56,6 +57,13 @@ message MsgUpdateOwner {
 }
 
 message MsgUpdateOwnerResponse {
+}
+
+message MsgAcceptOwner {
+  string from = 1;
+}
+
+message MsgAcceptOwnerResponse {
 }
 
 message MsgConfigureMinter {

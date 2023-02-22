@@ -1,6 +1,7 @@
 package tokenfactory
 
 import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.
-func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k *keeper.Keeper, bankKeeper types.BankKeeper, genState types.GenesisState) {
 	for _, elem := range genState.BlacklistedList {
 		k.SetBlacklisted(ctx, elem)
 	}
@@ -42,6 +43,10 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	}
 
 	if genState.MintingDenom != nil {
+		_, found := bankKeeper.GetDenomMetaData(ctx, genState.MintingDenom.Denom)
+		if !found {
+			panic(sdkerrors.Wrapf(types.ErrDenomNotRegistered, "tokenfactory minting denom %s is not registered in bank module denom_metadata", genState.MintingDenom.Denom))
+		}
 		k.SetMintingDenom(ctx, *genState.MintingDenom)
 	}
 	// this line is used by starport scaffolding # genesis/module/init

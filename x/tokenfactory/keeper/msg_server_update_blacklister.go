@@ -21,13 +21,19 @@ func (k msgServer) UpdateBlacklister(goCtx context.Context, msg *types.MsgUpdate
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the owner")
 	}
 
+	// ensure that the specified address is not already assigned to a privileged role
+	err := k.ValidatePrivileges(ctx, msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
 	blacklister := types.Blacklister{
 		Address: msg.Address,
 	}
 
 	k.SetBlacklister(ctx, blacklister)
 
-	err := ctx.EventManager().EmitTypedEvent(msg)
+	err = ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgUpdateBlacklisterResponse{}, err
 }
