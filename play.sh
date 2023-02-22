@@ -23,9 +23,13 @@ GRPCPORT="9090"
 DENOM="noble"
 BASEDENOM="unoble"
 
-MINTING_BASEDENOM="utoken"
-
 KEYRING="--keyring-backend test"
+
+# tokenfactory
+MINTING_DENOM='token'
+MINTING_BASEDENOM="u$MINTING_DENOM"
+
+
 SILENT=1
 
 redirect() {
@@ -83,7 +87,7 @@ if [ $platform = 'linux' ]; then
   sed -i 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
-  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "token", "base": "utoken", "name": "Token", "symbol": "Token", "denom_units": [ { "denom": "utoken", "aliases": [ "microtoken" ], "exponent": "0" }, { "denom": "mtoken", "aliases": [ "militoken" ], "exponent": "3" }, { "denom": "token", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_BASEDENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_BASEDENOM'", "aliases": [ "mili'$MINTING_BASEDENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 else
@@ -97,11 +101,10 @@ else
   sed -i '' 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
-  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "token", "base": "utoken", "name": "Token", "symbol": "Token", "denom_units": [ { "denom": "utoken", "aliases": [ "microtoken" ], "exponent": "0" }, { "denom": "mtoken", "aliases": [ "militoken" ], "exponent": "3" }, { "denom": "token", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_BASEDENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_BASEDENOM'", "aliases": [ "mili'$MINTING_BASEDENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 fi
-
 
 # Start
 nobled --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" > $CHAINDIR/$CHAINID.log 2>&1 &
@@ -111,18 +114,12 @@ OWNER_MN=$(echo $OWNER_MN | cut -d "\"" -f 2)
 
 # Create/recover keys
 sleep 2
-nobled --home $CHAINDIR/$CHAINID $KEYRING  keys add masterminter
-sleep 2
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add masterminter
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add mintercontroller
-sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add minter
-sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add blacklister
-sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add pauser
-sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add user
-sleep 2
 
 # Fund accounts
 nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show masterminter -a) 50noble -y
@@ -143,7 +140,7 @@ nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory update-master-minter $
 sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory configure-minter-controller $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show mintercontroller -a) $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show minter -a) --from masterminter -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory configure-minter $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show minter -a) 1000utoken --from mintercontroller -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory configure-minter $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show minter -a) 1000$MINTING_BASEDENOM --from mintercontroller -y
 sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory update-blacklister $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show blacklister -a) --from owner -y
 sleep 2
