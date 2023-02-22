@@ -87,7 +87,7 @@ if [ $platform = 'linux' ]; then
   sed -i 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
-  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_BASEDENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_BASEDENOM'", "aliases": [ "mili'$MINTING_BASEDENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_DENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_DENOM'", "aliases": [ "mili'$MINTING_DENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 else
@@ -101,7 +101,7 @@ else
   sed -i '' 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
-  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_BASEDENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_BASEDENOM'", "aliases": [ "mili'$MINTING_BASEDENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_DENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_DENOM'", "aliases": [ "mili'$MINTING_DENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 fi
