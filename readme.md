@@ -203,7 +203,7 @@ TODO
 
 ## Testing
 
-The `interchaintest` test suite has been imported into the noble repo. Tests can be ran and written [here](./interchaintest/) 
+The [`interchaintest`](https://github.com/strangelove-ventures/interchaintest) test suite has been imported into the noble repo. Tests can be ran and written [here](./interchaintest/) 
 
 
 To quickly spin up a standalone noble chain and setup all privileged accounts, run the [play.sh](play.sh) bash script.
