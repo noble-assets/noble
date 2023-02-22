@@ -112,7 +112,7 @@ nobled --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false
 OWNER_MN=$(jq .mnemonic $CHAINDIR/$CHAINID/key_seed.json)
 OWNER_MN=$(echo $OWNER_MN | cut -d "\"" -f 2)
 
-# Create/recover keys
+# Create keys
 sleep 2
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add masterminter
 nobled --home $CHAINDIR/$CHAINID $KEYRING keys add mintercontroller
