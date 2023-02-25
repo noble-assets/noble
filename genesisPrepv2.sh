@@ -69,8 +69,15 @@ nobled --home $HOME $KEYRING keys add pauser --output json > $HOME/pauser_seed.j
 sleep 1
 nobled --home $HOME $KEYRING keys add blacklister --output json > $HOME/blacklister_seed.json 2>&1
 sleep 1
+nobled --home $HOME $KEYRING keys add validator1 --output json > $HOME/validator_seed1.json 2>&1
+sleep 1
+nobled --home $HOME $KEYRING keys add mintercontroller --output json > $HOME/mintercontroller_seed1.json 2>&1
+sleep 1
+nobled --home $HOME $KEYRING keys add minter --output json > $HOME/minter_seed1.json 2>&1
+sleep 1
 
-
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show validator1 -a) $valGenesis --vesting-amount $valGenesis  --vesting-end-time 253380229199
+sleep 1
 
 nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show paramAuth -a) $AUTHGEN
 sleep 1
@@ -83,6 +90,18 @@ sleep 1
 nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show pauser -a) $ZERO
 sleep 1
 nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show blacklister -a) $ZERO
+sleep 1
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show mintercontroller -a) $ZERO
+sleep 1
+nobled --home $HOME $KEYRING add-genesis-account $(nobled --home $HOME $KEYRING keys show minter -a) $ZERO
+sleep 1
+
+mkdir $HOME/config/gentx
+
+nobled --home $HOME $KEYRING gentx validator1 $valGenTx --chain-id $CHAINID --min-self-delegation 1 --output-document $HOME/config/gentx/gentx1.json
+sleep 1
+
+nobled --home $HOME collect-gentxs
 sleep 1
 
 PARAMAUTH=$(jq '.address' $HOME/paramAuth_seed.json)
@@ -136,6 +155,6 @@ else
 
 fi
 
-nobled --home $HOME start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" > $HOME.log 2>&1 &
+# nobled --home $HOME start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" > $HOME.log 2>&1 &
 
 echo "Done!"
