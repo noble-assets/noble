@@ -101,7 +101,7 @@ In collaboration with StrangeLove, Noble intends to build an in-house team focus
 
 ## Media
 
-TWITTER: @noble_xy 
+TWITTER: @noble_xyz 
 
 COMING SOON: nobleassets.xyz 
 
