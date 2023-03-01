@@ -2,9 +2,7 @@
 
 # !! PLEASE ONLY RUN THIS SCRIPT IN A TESTING ENVIRONMENT !!
 #   THIS SCRIPT: 
-#     - Stops/starts noble binary
-#     - Adds/deletes noble keys
-#     
+#     - Stops/starts noble binary    
 
 # This script is meant for quick experimentation of the Tokenfactory Module and Noble Chain functionality. 
 #   - Starts Noble chain
@@ -25,9 +23,13 @@ GRPCPORT="9090"
 DENOM="noble"
 BASEDENOM="unoble"
 
-MINTING_BASEDENOM="utoken"
-
 KEYRING="--keyring-backend test"
+
+# tokenfactory
+MINTING_DENOM='token'
+MINTING_BASEDENOM="u$MINTING_DENOM"
+
+
 SILENT=1
 
 redirect() {
@@ -50,15 +52,15 @@ delegate="100000000000$DENOM"
 
 redirect nobled --home $CHAINDIR/$CHAINID --chain-id $CHAINID init $CHAINID 
 sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add validator $KEYRING --output json > $CHAINDIR/$CHAINID/validator_seed.json 2>&1
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add validator --output json > $CHAINDIR/$CHAINID/validator_seed.json 2>&1
 sleep 1
-nobled --home $CHAINDIR/$CHAINID keys add owner $KEYRING --output json > $CHAINDIR/$CHAINID/key_seed.json 2>&1
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add owner --output json > $CHAINDIR/$CHAINID/key_seed.json 2>&1
 sleep 1
-redirect nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show owner -a) $coins 
+redirect nobled --home $CHAINDIR/$CHAINID $KEYRING add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show owner -a) $coins 
 sleep 1
-redirect nobled --home $CHAINDIR/$CHAINID add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator -a) $coins 
+redirect nobled --home $CHAINDIR/$CHAINID $KEYRING add-genesis-account $(nobled --home $CHAINDIR/$CHAINID keys $KEYRING show validator -a) $coins 
 sleep 1
-redirect nobled --home $CHAINDIR/$CHAINID gentx validator $delegate $KEYRING --chain-id $CHAINID
+redirect nobled --home $CHAINDIR/$CHAINID $KEYRING gentx validator $delegate --chain-id $CHAINID
 sleep 1
 redirect nobled --home $CHAINDIR/$CHAINID collect-gentxs 
 sleep 1
@@ -81,10 +83,11 @@ if [ $platform = 'linux' ]; then
   sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i 's/timeout_propose = "3s"/timeout_propose = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i 's/index_all_keys = false/index_all_keys = true/g' $CHAINDIR/$CHAINID/config/config.toml
+  sed -i 's/"bond_denom": "stake"/"bond_denom": "'"$DENOM"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
-  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "token", "base": "utoken", "name": "Token", "symbol": "Token", "denom_units": [ { "denom": "utoken", "aliases": [ "microtoken" ], "exponent": "0" }, { "denom": "mtoken", "aliases": [ "militoken" ], "exponent": "3" }, { "denom": "token", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_DENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_DENOM'", "aliases": [ "mili'$MINTING_DENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 else
@@ -94,27 +97,14 @@ else
   sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i '' 's/timeout_propose = "3s"/timeout_propose = "1s"/g' $CHAINDIR/$CHAINID/config/config.toml
   sed -i '' 's/index_all_keys = false/index_all_keys = true/g' $CHAINDIR/$CHAINID/config/config.toml
+  sed -i '' 's/"bond_denom": "stake"/"bond_denom": "'"$DENOM"'"/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/owner": null/owner": { "address": '"$OWNER"' }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/mintingDenom": null/mintingDenom": { "denom": "'$MINTING_BASEDENOM'" }/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/paused": null/paused": { "paused": false }/g' $CHAINDIR/$CHAINID/config/genesis.json
-  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "token", "base": "utoken", "name": "Token", "symbol": "Token", "denom_units": [ { "denom": "utoken", "aliases": [ "microtoken" ], "exponent": "0" }, { "denom": "mtoken", "aliases": [ "militoken" ], "exponent": "3" }, { "denom": "token", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
+  sed -i '' 's/"denom_metadata": \[]/"denom_metadata": [ { "display": "'$MINTING_DENOM'", "base": "'$MINTING_BASEDENOM'", "name": "'$MINTING_DENOM'", "symbol": "'$MINTING_DENOM'", "denom_units": [ { "denom": "'$MINTING_DENOM'", "aliases": [ "micro'$MINTING_DENOM'" ], "exponent": "0" }, { "denom": "m'$MINTING_DENOM'", "aliases": [ "mili'$MINTING_DENOM'" ], "exponent": "3" }, { "denom": "'$MINTING_BASEDENOM'", "aliases": null, "exponent": "6" } ] } ]/g' $CHAINDIR/$CHAINID/config/genesis.json
   sed -i '' 's/"authority": ""/"authority": '"$OWNER"'/g' $CHAINDIR/$CHAINID/config/genesis.json
 
 fi
-
-# Test command that allows Noble to be run without Provider chain
-redirect nobled --home $CHAINDIR/$CHAINID add-consumer-section
-
-# Delete old keys if they exhist
-KEYS=("owner" "masterminter" "mintercontroller" "minter" "blacklister" "pauser" "user")
-for KEY in ${KEYS[@]}
-do 
-    if nobled keys show $KEY > /dev/null 2>&1; then
-        nobled keys delete $KEY -y
-    else
-        continue
-    fi
-done
 
 # Start
 nobled --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false --grpc.address="0.0.0.0:$GRPCPORT" > $CHAINDIR/$CHAINID.log 2>&1 &
@@ -122,43 +112,36 @@ nobled --home $CHAINDIR/$CHAINID start --pruning=nothing --grpc-web.enable=false
 OWNER_MN=$(jq .mnemonic $CHAINDIR/$CHAINID/key_seed.json)
 OWNER_MN=$(echo $OWNER_MN | cut -d "\"" -f 2)
 
-# Create/recover keys
-echo $OWNER_MN | nobled --home $CHAINDIR/$CHAINID keys add owner --recover 
+# Create keys
 sleep 2
-nobled --home $CHAINDIR/$CHAINID keys add masterminter
-sleep 2
-nobled --home $CHAINDIR/$CHAINID keys add mintercontroller
-sleep 2
-nobled --home $CHAINDIR/$CHAINID keys add minter
-sleep 2
-nobled --home $CHAINDIR/$CHAINID keys add blacklister
-sleep 2
-nobled --home $CHAINDIR/$CHAINID keys add pauser
-sleep 2
-nobled --home $CHAINDIR/$CHAINID keys add user
-sleep 2
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add masterminter
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add mintercontroller
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add minter
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add blacklister
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add pauser
+nobled --home $CHAINDIR/$CHAINID $KEYRING keys add user
 
 # Fund accounts
-nobled --home $CHAINDIR/$CHAINID tx bank send owner $(nobled keys show masterminter -a) 50noble -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show masterminter -a) 50noble -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx bank send owner $(nobled keys show mintercontroller -a) 50noble -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show mintercontroller -a) 50noble -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx bank send owner $(nobled keys show minter -a) 50noble -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show minter -a) 50noble -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx bank send owner $(nobled keys show blacklister -a) 50noble -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show blacklister -a) 50noble -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx bank send owner $(nobled keys show pauser -a) 50noble -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show pauser -a) 50noble -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx bank send owner $(nobled keys show user -a) 50noble -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx bank send owner $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show user -a) 50noble -y
 sleep 2
 
 # Delegate privledges
-nobled --home $CHAINDIR/$CHAINID tx tokenfactory update-master-minter $(nobled keys show masterminter -a) --from owner -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory update-master-minter $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show masterminter -a) --from owner -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx tokenfactory configure-minter-controller $(nobled keys show mintercontroller -a) $(nobled keys show minter -a) --from masterminter -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory configure-minter-controller $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show mintercontroller -a) $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show minter -a) --from masterminter -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx tokenfactory configure-minter $(nobled keys show minter -a) 1000utoken --from mintercontroller -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory configure-minter $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show minter -a) 1000$MINTING_BASEDENOM --from mintercontroller -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx tokenfactory update-blacklister $(nobled keys show blacklister -a) --from owner -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory update-blacklister $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show blacklister -a) --from owner -y
 sleep 2
-nobled --home $CHAINDIR/$CHAINID tx tokenfactory update-pauser $(nobled keys show pauser -a) --from owner -y
+nobled --home $CHAINDIR/$CHAINID $KEYRING tx tokenfactory update-pauser $(nobled --home $CHAINDIR/$CHAINID $KEYRING keys show pauser -a) --from owner -y

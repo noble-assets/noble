@@ -122,22 +122,88 @@ Come up with a moniker for your node, then run:
 nobled init $MONIKER
 ```
 
-## Launch with genesis file or run as standalone chain
+Prior to launch, some config settings are required by the `tokenfactory` module in the `genesis.json` file:
+- There must be a designated address for the "owner" role.
+- Other roles, such as `masterMinter`, `blacklister`, and `pauser` are optional at genesis.
+- `mintingDenom` must be filled out and the `denom` specified must be registered in `denom_metadata`
 
-To launch as a consumer chain, download and save shared genesis file to [TODO: Path to Genesis]. Additionally add peering information (`persistent_peers` or `seeds`) to `~/.noble/config/config.toml`
+`tokenfactory `Example:
+```json
+"tokenfactory": {
+      "params": {},
+      "blacklistedList": [],
+      "paused": {
+        "paused": false
+      },
+      "masterMinter": {
+        "address": "noble1x8rynykqla7cnc0tf2f3xn0wa822ztt70y39vn"
+      },
+      "mintersList": [],
+      "pauser": {
+        "address": "noble1g3v4qdc83h6m5wdz3x92vfu0tjtt7e6y48qqrz"
+      },
+      "blacklister": {
+        "address": "noble159leclhhuhhcmedu2n8nfjjedxjyrtkee8l4v2"
+      },
+      "owner": {
+        "address": "noble153eyy4uufmrak2swgrn4fjtyslg256ecdngyve"
+      },
+      "minterControllerList": [],
+      "mintingDenom": {
+        "denom": "urupee"
+      }
+    }
+```
 
+`denom_metadata` example:
+
+```json
+"denom_metadata": [
+        {
+          "display": "rupee",
+          "base": "urupee",
+          "name": "rupee",
+          "symbol": "rupee",
+          "denom_units": [
+            {
+              "denom": "urupee",
+              "aliases": [
+                "microrupee"
+              ],
+              "exponent": "0"
+            },
+            {
+              "denom": "mrupee",
+              "aliases": [
+                "milirupee"
+              ],
+              "exponent": "3"
+            },
+            {
+              "denom": "rupee",
+              "aliases": null,
+              "exponent": "6"
+            }
+          ]
+        },
+    ]
+```
 ## Launch node
 
 ```
 nobled start
 ```
 
+## Joining Noble Testnet
+
+TODO
+
+<!-- Download and save shared genesis file to [TODO: Path to Genesis]. Additionally add peering information (`persistent_peers` or `seeds`) to `~/.noble/config/config.toml` -->
+
+
 ## Testing
 
-Testing Noble as a standalone chain (without Provider) is possible by running the below command prior to starting node:
+The [`interchaintest`](https://github.com/strangelove-ventures/interchaintest) test suite has been imported into the noble repo. Tests can be ran and written [here](./interchaintest/) 
 
-```
-nobled add-consumer-section
-```
 
-To quickly spin up a standalone noble chain and setup all privileged accounts, refer to[ play.sh](play.sh)
+To quickly spin up a standalone noble chain and setup all privileged accounts, run the [play.sh](play.sh) bash script.
