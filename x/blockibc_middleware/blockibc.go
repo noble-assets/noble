@@ -1,4 +1,4 @@
-package tokenfactory
+package blockibc_middleware
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -112,7 +112,6 @@ func (im IBCMiddleware) OnRecvPacket(
 	if err != nil {
 		return channeltypes.NewErrorAcknowledgement(err.Error())
 	}
-
 	_, found := im.keeper.GetBlacklisted(ctx, pubBz)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
