@@ -108,22 +108,23 @@ func (im IBCMiddleware) OnRecvPacket(
 		return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
 	}
 
-	_, pubBz, err := bech32.DecodeAndConvert(data.Receiver)
+	_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
 	if err != nil {
 		return channeltypes.NewErrorAcknowledgement(err.Error())
 	}
-	_, found := im.keeper.GetBlacklisted(ctx, pubBz)
+
+	_, found := im.keeper.GetBlacklisted(ctx, addressBz)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
 		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
 	}
 
-	_, pubBz, err = bech32.DecodeAndConvert(data.Sender)
+	_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
 	if err != nil {
 		return channeltypes.NewErrorAcknowledgement(err.Error())
 	}
 
-	_, found = im.keeper.GetBlacklisted(ctx, pubBz)
+	_, found = im.keeper.GetBlacklisted(ctx, addressBz)
 	if found {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
 		return channeltypes.NewErrorAcknowledgement(ackErr.Error())

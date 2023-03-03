@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,21 +32,21 @@ func TestBlacklistedQuerySingle(t *testing.T) {
 		{
 			desc: "First",
 			request: &types.QueryGetBlacklistedRequest{
-				Pubkey: msgs[0].Pubkey,
+				Address: msgs[0].address,
 			},
-			response: &types.QueryGetBlacklistedResponse{Blacklisted: msgs[0]},
+			response: &types.QueryGetBlacklistedResponse{Blacklisted: msgs[0].bl},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryGetBlacklistedRequest{
-				Pubkey: msgs[1].Pubkey,
+				Address: msgs[1].address,
 			},
-			response: &types.QueryGetBlacklistedResponse{Blacklisted: msgs[1]},
+			response: &types.QueryGetBlacklistedResponse{Blacklisted: msgs[1].bl},
 		},
 		{
 			desc: "KeyNotFound",
 			request: &types.QueryGetBlacklistedRequest{
-				Pubkey: []byte(strconv.Itoa(100000)),
+				Address: sample.AccAddress(),
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -73,6 +74,10 @@ func TestBlacklistedQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNBlacklisted(keeper, ctx, 5)
+	blacklisted := make([]types.Blacklisted, len(msgs))
+	for i, msg := range msgs {
+		blacklisted[i] = msg.bl
+	}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllBlacklistedRequest {
 		return &types.QueryAllBlacklistedRequest{
@@ -86,12 +91,12 @@ func TestBlacklistedQueryPaginated(t *testing.T) {
 	}
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
-		for i := 0; i < len(msgs); i += step {
+		for i := 0; i < len(blacklisted); i += step {
 			resp, err := keeper.BlacklistedAll(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.Blacklisted), step)
 			require.Subset(t,
-				nullify.Fill(msgs),
+				nullify.Fill(blacklisted),
 				nullify.Fill(resp.Blacklisted),
 			)
 		}
@@ -99,12 +104,12 @@ func TestBlacklistedQueryPaginated(t *testing.T) {
 	t.Run("ByKey", func(t *testing.T) {
 		step := 2
 		var next []byte
-		for i := 0; i < len(msgs); i += step {
+		for i := 0; i < len(blacklisted); i += step {
 			resp, err := keeper.BlacklistedAll(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.Blacklisted), step)
 			require.Subset(t,
-				nullify.Fill(msgs),
+				nullify.Fill(blacklisted),
 				nullify.Fill(resp.Blacklisted),
 			)
 			next = resp.Pagination.NextKey
@@ -113,9 +118,9 @@ func TestBlacklistedQueryPaginated(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.BlacklistedAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(msgs), int(resp.Pagination.Total))
+		require.Equal(t, len(blacklisted), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
-			nullify.Fill(msgs),
+			nullify.Fill(blacklisted),
 			nullify.Fill(resp.Blacklisted),
 		)
 	})
