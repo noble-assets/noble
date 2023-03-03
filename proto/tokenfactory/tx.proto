@@ -102,7 +102,7 @@ message MsgBurnResponse {
 
 message MsgBlacklist {
   string from = 1;
-  bytes pubkey = 2;
+  string address = 2;
 }
 
 message MsgBlacklistResponse {
@@ -110,7 +110,7 @@ message MsgBlacklistResponse {
 
 message MsgUnblacklist {
   string from = 1;
-  bytes pubkey = 2;
+  string address = 2;
 }
 
 message MsgUnblacklistResponse {

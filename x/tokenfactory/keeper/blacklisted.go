@@ -10,14 +10,14 @@ import (
 func (k Keeper) SetBlacklisted(ctx sdk.Context, blacklisted types.Blacklisted) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlacklistedKeyPrefix))
 	b := k.cdc.MustMarshal(&blacklisted)
-	store.Set(types.BlacklistedKey(blacklisted.Pubkey), b)
+	store.Set(types.BlacklistedKey(blacklisted.AddressBz), b)
 }
 
 // GetBlacklisted returns a blacklisted from its index
-func (k Keeper) GetBlacklisted(ctx sdk.Context, pubkey []byte) (val types.Blacklisted, found bool) {
+func (k Keeper) GetBlacklisted(ctx sdk.Context, addressBz []byte) (val types.Blacklisted, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlacklistedKeyPrefix))
 
-	b := store.Get(types.BlacklistedKey(pubkey))
+	b := store.Get(types.BlacklistedKey(addressBz))
 	if b == nil {
 		return val, false
 	}
@@ -27,9 +27,9 @@ func (k Keeper) GetBlacklisted(ctx sdk.Context, pubkey []byte) (val types.Blackl
 }
 
 // RemoveBlacklisted removes a blacklisted from the store
-func (k Keeper) RemoveBlacklisted(ctx sdk.Context, pubkey []byte) {
+func (k Keeper) RemoveBlacklisted(ctx sdk.Context, addressBz []byte) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.BlacklistedKeyPrefix))
-	store.Delete(types.BlacklistedKey(pubkey))
+	store.Delete(types.BlacklistedKey(addressBz))
 }
 
 // GetAllBlacklisted returns all blacklisted
