@@ -2,6 +2,7 @@ package interchaintest_test
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"github.com/strangelove-ventures/interchaintest/v3"
@@ -9,6 +10,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	integration "github.com/strangelove-ventures/noble/interchaintest"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
@@ -232,6 +234,8 @@ func TestNobleChain(t *testing.T) {
 	)
 	require.NoError(t, err, "failed to update pauser")
 
+	// -- chain paused --
+
 	_, err = nobleValidator.ExecTx(ctx, pauserKeyName,
 		"tokenfactory", "pause", "-b", "block",
 	)
@@ -269,12 +273,26 @@ func TestNobleChain(t *testing.T) {
 	require.Equal(t, int64(90), minterBalance, "this burn should not have been successful because the chain is paused")
 
 	_, err = nobleValidator.ExecTx(ctx, masterMinterKeyName,
-		"tokenfactory", "configure-minter-controller", roles.MinterController.Address, roles.User.Address, "-b", "block",
-	)
-	require.Error(t, err, "successfully executed tx to configure minter controller while chain is paused")
+		"tokenfactory", "configure-minter-controller", roles.MinterController2.Address, roles.User.Address, "-b", "block")
 
-	_, err = nobleValidator.ExecTx(ctx, minterControllerKeyName,
-		"tokenfactory", "remove-minter", roles.Minter.Address, "-b", "block",
+	require.NoError(t, err, "failed to execute configure minter controller tx")
+
+	_, err = nobleValidator.ExecTx(ctx, minterController2KeyName,
+		"tokenfactory", "configure-minter", roles.User.Address, "1000urupee", "-b", "block")
+	require.NoError(t, err, "failed to execute configure minter tx")
+
+	res, _, err := nobleValidator.ExecQuery(ctx, "tokenfactory", "show-minter-controller", roles.MinterController2.Address, "-o", "json")
+	require.NoError(t, err, "failed to query minter controller")
+
+	var minterControllerType types.QueryGetMinterControllerResponse
+	json.Unmarshal(res, &minterControllerType)
+
+	// minter controller and minter should have been updated even while paused
+	require.Equal(t, roles.MinterController2.Address, minterControllerType.MinterController.Controller)
+	require.Equal(t, roles.User.Address, minterControllerType.MinterController.Minter)
+
+	_, err = nobleValidator.ExecTx(ctx, minterController2KeyName,
+		"tokenfactory", "remove-minter", roles.User.Address, "-b", "block",
 	)
 	require.NoError(t, err, "minters should be able to be removed while in paused state")
 
@@ -282,6 +300,8 @@ func TestNobleChain(t *testing.T) {
 		"tokenfactory", "unpause", "-b", "block",
 	)
 	require.NoError(t, err, "failed to unpause mints")
+
+	// -- chain unpaused --
 
 	_, err = nobleValidator.ExecTx(ctx, userKeyName,
 		"bank", "send", roles.User.Address, roles.Alice.Address, "100urupee", "-b", "block",
