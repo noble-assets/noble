@@ -1,4 +1,4 @@
-package blockibc_middleware
+package blockibc
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
