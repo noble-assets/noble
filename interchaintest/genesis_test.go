@@ -84,6 +84,10 @@ type TokenFactoryAddress struct {
 	Address string `json:"address"`
 }
 
+type ParamAuthAddress struct {
+	Address string `json:"address"`
+}
+
 type TokenFactoryPaused struct {
 	Paused bool `json:"paused"`
 }
@@ -272,12 +276,12 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 
 // Sets the minamum genesis modifications needed to start chain
 // Owner account is used for both tokenfactory owner and param authority
-func modifyGenesisNobleOwner(genbz []byte, ownerAddress string) ([]byte, error) {
+func modifyGenesisTokenFactory(genbz []byte, tokenfactoryName, ownerAddress string) ([]byte, error) {
 	g := make(map[string]interface{})
 	if err := json.Unmarshal(genbz, &g); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", "tokenfactory", "owner"); err != nil {
+	if err := dyno.Set(g, TokenFactoryAddress{ownerAddress}, "app_state", tokenfactoryName, "owner"); err != nil {
 		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
 	if err := dyno.Set(g, ownerAddress, "app_state", "params", "params", "authority"); err != nil {
@@ -286,10 +290,10 @@ func modifyGenesisNobleOwner(genbz []byte, ownerAddress string) ([]byte, error) 
 	if err := dyno.Set(g, ownerAddress, "app_state", "upgrade", "params", "authority"); err != nil {
 		return nil, fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", "tokenfactory", "paused"); err != nil {
+	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", tokenfactoryName, "paused"); err != nil {
 		return nil, fmt.Errorf("failed to set paused in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryDenom{mintingDenom}, "app_state", "tokenfactory", "mintingDenom"); err != nil {
+	if err := dyno.Set(g, TokenFactoryDenom{mintingDenom}, "app_state", tokenfactoryName, "mintingDenom"); err != nil {
 		return nil, fmt.Errorf("failed to set minting denom in genesis json: %w", err)
 	}
 	if err := dyno.Set(g, denomMetadata, "app_state", "bank", "denom_metadata"); err != nil {
@@ -301,6 +305,24 @@ func modifyGenesisNobleOwner(genbz []byte, ownerAddress string) ([]byte, error) 
 	}
 	return out, nil
 
+}
+
+func modifyGenesisParamAuthority(genbz []byte, authorityAddress string) ([]byte, error) {
+	g := make(map[string]interface{})
+	if err := json.Unmarshal(genbz, &g); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+	}
+	if err := dyno.Set(g, ParamAuthAddress{authorityAddress}, "app_state", authorityAddress, "owner"); err != nil {
+		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	}
+	if err := dyno.Set(g, authorityAddress, "app_state", "params", "params", "authority"); err != nil {
+		return nil, fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	}
+	out, err := json.Marshal(g)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+	}
+	return out, nil
 }
 
 // Sets the aurhority, owner, masterminter, blacklister and pauser to separate accounts in genesis.
