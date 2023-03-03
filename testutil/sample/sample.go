@@ -13,15 +13,18 @@ func AccAddress() string {
 	return sdk.AccAddress(addr).String()
 }
 
-// PubKeyBytes returns a sample pubkey as a slice of bytes.
-func PubKeyBytes() []byte {
-	return ed25519.GenPrivKey().PubKey().Bytes()
+// AddressBz returns a slice of base64 encoded bytes representing an address.
+func AddressBz() []byte {
+	pk := ed25519.GenPrivKey().PubKey()
+	address := sdk.AccAddress(pk.Address()).String()
+	_, bz, _ := bech32.DecodeAndConvert(address)
+	return bz
 }
 
 // Account represents a bech32 encoded address and the base64 encoded slice of bytes representing said address.
 type Account struct {
-	Address  string
-	PubKeyBz []byte
+	Address   string
+	AddressBz []byte
 }
 
 // TestAccount returns an Account representing a newly generated PubKey.
@@ -30,7 +33,7 @@ func TestAccount() Account {
 	address := sdk.AccAddress(pk.Address()).String()
 	_, bz, _ := bech32.DecodeAndConvert(address)
 	return Account{
-		Address:  address,
-		PubKeyBz: bz,
+		Address:   address,
+		AddressBz: bz,
 	}
 }

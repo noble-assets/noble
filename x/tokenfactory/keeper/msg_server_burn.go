@@ -18,12 +18,12 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "%v: you are not a minter", types.ErrUnauthorized)
 	}
 
-	_, pubBz, err := bech32.DecodeAndConvert(msg.From)
+	_, addressBz, err := bech32.DecodeAndConvert(msg.From)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrBurn, err.Error())
 	}
 
-	_, found = k.GetBlacklisted(ctx, pubBz)
+	_, found = k.GetBlacklisted(ctx, addressBz)
 	if found {
 		return nil, sdkerrors.Wrap(types.ErrBurn, "minter address is blacklisted")
 	}

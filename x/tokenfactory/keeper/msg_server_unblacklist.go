@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 	sdkerrors "cosmossdk.io/errors"
@@ -21,14 +22,19 @@ func (k msgServer) Unblacklist(goCtx context.Context, msg *types.MsgUnblacklist)
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the blacklister")
 	}
 
-	blacklisted, found := k.GetBlacklisted(ctx, msg.Pubkey)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "the specified pubkey is not blacklisted")
+	_, addressBz, err := bech32.DecodeAndConvert(msg.Address)
+	if err != nil {
+		return nil, err
 	}
 
-	k.RemoveBlacklisted(ctx, blacklisted.Pubkey)
+	blacklisted, found := k.GetBlacklisted(ctx, addressBz)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "the specified address is not blacklisted")
+	}
 
-	err := ctx.EventManager().EmitTypedEvent(msg)
+	k.RemoveBlacklisted(ctx, blacklisted.AddressBz)
+
+	err = ctx.EventManager().EmitTypedEvent(msg)
 
 	return &types.MsgUnblacklistResponse{}, err
 }
