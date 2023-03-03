@@ -19,22 +19,22 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a minter")
 	}
 
-	_, pubBz, err := bech32.DecodeAndConvert(msg.From)
+	_, addressBz, err := bech32.DecodeAndConvert(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	_, found = k.GetBlacklisted(ctx, pubBz)
+	_, found = k.GetBlacklisted(ctx, addressBz)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "minter address is blacklisted")
 	}
 
-	_, pubBz, err = bech32.DecodeAndConvert(msg.Address)
+	_, addressBz, err = bech32.DecodeAndConvert(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	_, found = k.GetBlacklisted(ctx, pubBz)
+	_, found = k.GetBlacklisted(ctx, addressBz)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrMint, "receiver address is blacklisted")
 	}

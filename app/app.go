@@ -90,6 +90,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
+	"github.com/strangelove-ventures/noble/x/blockibc"
 	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
@@ -433,7 +434,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = tokenfactorymodule.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()

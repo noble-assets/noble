@@ -29,10 +29,10 @@ func TestGenesisState_Validate(t *testing.T) {
 
 				BlacklistedList: []types.Blacklisted{
 					{
-						Pubkey: []byte("0"),
+						AddressBz: sample.AddressBz(),
 					},
 					{
-						Pubkey: []byte("1"),
+						AddressBz: sample.AddressBz(),
 					},
 				},
 				Paused: &types.Paused{
@@ -83,10 +83,10 @@ func TestGenesisState_Validate(t *testing.T) {
 
 				BlacklistedList: []types.Blacklisted{
 					{
-						Pubkey: []byte("0"),
+						AddressBz: sample.AddressBz(),
 					},
 					{
-						Pubkey: []byte("1"),
+						sample.AddressBz(),
 					},
 				},
 				Paused: &types.Paused{
@@ -135,10 +135,10 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				BlacklistedList: []types.Blacklisted{
 					{
-						Pubkey: []byte("0"),
+						AddressBz: []byte("0"),
 					},
 					{
-						Pubkey: []byte("0"),
+						AddressBz: []byte("0"),
 					},
 				},
 			},
