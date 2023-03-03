@@ -1,4 +1,4 @@
-package tokenfactory
+package blockibc
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
