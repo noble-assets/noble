@@ -11,21 +11,25 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	keeper_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1/keeper"
+	types_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1/types"
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}
 
 // IBCMiddleware implements the tokenfactory keeper in order to check against blacklisted addresses.
 type IBCMiddleware struct {
-	app    porttypes.IBCModule
-	keeper *keeper.Keeper
+	app      porttypes.IBCModule
+	keeper   *keeper.Keeper
+	keeper_1 *keeper_1.Keeper
 }
 
 // NewIBCMiddleware creates a new IBCMiddleware given the keeper and underlying application.
-func NewIBCMiddleware(app porttypes.IBCModule, k *keeper.Keeper) IBCMiddleware {
+func NewIBCMiddleware(app porttypes.IBCModule, k *keeper.Keeper, k_1 *keeper_1.Keeper) IBCMiddleware {
 	return IBCMiddleware{
-		app:    app,
-		keeper: k,
+		app:      app,
+		keeper:   k,
+		keeper_1: k_1,
 	}
 }
 
@@ -100,37 +104,70 @@ func (im IBCMiddleware) OnRecvPacket(
 	denomTrace := transfertypes.ParseDenomTrace(data.Denom)
 
 	mintingDenom := im.keeper.GetMintingDenom(ctx)
-	if denomTrace.BaseDenom != mintingDenom.Denom {
+	mintingDenom_1 := im.keeper_1.GetMintingDenom(ctx)
+
+	switch {
+	// denom is not tokenfactory denom
+	case denomTrace.BaseDenom != mintingDenom.Denom && denomTrace.BaseDenom != mintingDenom_1.Denom:
 		return im.app.OnRecvPacket(ctx, packet, relayer)
-	}
+	// denom is tokenfactory asset
+	case denomTrace.BaseDenom == mintingDenom.Denom:
+		if im.keeper.GetPaused(ctx).Paused {
+			return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
+		}
 
-	if im.keeper.GetPaused(ctx).Paused {
-		return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
-	}
+		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
 
-	_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
-	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
+		_, found := im.keeper.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
 
-	_, found := im.keeper.GetBlacklisted(ctx, addressBz)
-	if found {
-		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
-		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
-	}
+		_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
 
-	_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
-	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
+		_, found = im.keeper.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
+	// denom is tokenfactory_1 asset
+	case denomTrace.BaseDenom == mintingDenom_1.Denom:
+		if im.keeper_1.GetPaused(ctx).Paused {
+			return channeltypes.NewErrorAcknowledgement(types_1.ErrPaused.Error())
+		}
 
-	_, found = im.keeper.GetBlacklisted(ctx, addressBz)
-	if found {
-		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
-		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
-	}
+		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
 
+		_, found := im.keeper_1.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
+
+		_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
+
+		_, found = im.keeper_1.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
+
+	}
 	return im.app.OnRecvPacket(ctx, packet, relayer)
+
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface.
