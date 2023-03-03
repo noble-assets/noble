@@ -94,6 +94,9 @@ import (
 	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	tokenfactorymodule_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1"
+	tokenfactorymodulekeeper_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1/keeper"
+	tokenfactorymoduletypes_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1/types"
 )
 
 const (
@@ -130,6 +133,7 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		tokenfactorymodule.AppModuleBasic{},
+		tokenfactorymodule_1.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
 
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
@@ -137,13 +141,14 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:         nil,
-		distrtypes.ModuleName:              nil,
-		icatypes.ModuleName:                nil,
-		ibctransfertypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		tokenfactorymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
-		stakingtypes.BondedPoolName:        {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:     {authtypes.Burner, authtypes.Staking},
+		authtypes.FeeCollectorName:           nil,
+		distrtypes.ModuleName:                nil,
+		icatypes.ModuleName:                  nil,
+		ibctransfertypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		tokenfactorymoduletypes.ModuleName:   {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		tokenfactorymoduletypes_1.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		stakingtypes.BondedPoolName:          {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:       {authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -204,7 +209,8 @@ type App struct {
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
-	TokenFactoryKeeper *tokenfactorymodulekeeper.Keeper
+	TokenFactoryKeeper   *tokenfactorymodulekeeper.Keeper
+	TokenFactoryKeeper_1 *tokenfactorymodulekeeper_1.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -242,7 +248,7 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey, distrtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
-		tokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
+		tokenfactorymoduletypes.StoreKey, tokenfactorymoduletypes_1.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -425,6 +431,15 @@ func New(
 	)
 	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.TokenFactoryKeeper_1 = tokenfactorymodulekeeper_1.NewKeeper(
+		appCodec,
+		keys[tokenfactorymoduletypes_1.StoreKey],
+		app.GetSubspace(tokenfactorymoduletypes_1.ModuleName),
+
+		app.BankKeeper,
+	)
+	tokenfactoryModule_1 := tokenfactorymodule_1.NewAppModule(appCodec, app.TokenFactoryKeeper_1, app.AccountKeeper, app.BankKeeper)
+
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = packetforward.NewIBCMiddleware(
@@ -434,7 +449,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.TokenFactoryKeeper_1)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -474,6 +489,7 @@ func New(
 		transferModule,
 		icaModule,
 		tokenfactoryModule,
+		tokenfactoryModule_1,
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
@@ -504,6 +520,7 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
+		tokenfactorymoduletypes_1.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -527,6 +544,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
+		tokenfactorymoduletypes_1.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -555,6 +573,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
+		tokenfactorymoduletypes_1.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -778,6 +797,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
+	paramsKeeper.Subspace(tokenfactorymoduletypes_1.ModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
