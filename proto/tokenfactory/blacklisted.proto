@@ -4,7 +4,6 @@ package noble.tokenfactory;
 option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
 
 message Blacklisted {
-  bytes pubkey = 1;
-  
+  bytes addressBz = 1;
 }
 

@@ -27,7 +27,7 @@ service Query {
   }
   // Queries a Blacklisted by index.
 	rpc Blacklisted(QueryGetBlacklistedRequest) returns (QueryGetBlacklistedResponse) {
-		option (google.api.http).get = "/noble/tokenfactory/blacklisted/{pubkey}";
+		option (google.api.http).get = "/noble/tokenfactory/blacklisted/{address}";
 	}
 
 	// Queries a list of Blacklisted items.
@@ -92,8 +92,7 @@ message QueryParamsResponse {
 }
 
 message QueryGetBlacklistedRequest {
-	  bytes pubkey = 1;
-
+	  string address = 1;
 }
 
 message QueryGetBlacklistedResponse {

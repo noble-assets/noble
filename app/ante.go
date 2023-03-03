@@ -91,12 +91,12 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			}
 
 			for _, address := range addresses {
-				_, pubBz, err := bech32.DecodeAndConvert(address)
+				_, addressBz, err := bech32.DecodeAndConvert(address)
 				if err != nil {
 					return ctx, err
 				}
 
-				_, found := ad.tokenfactory.GetBlacklisted(ctx, pubBz)
+				_, found := ad.tokenfactory.GetBlacklisted(ctx, addressBz)
 				if found {
 					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}
