@@ -30,7 +30,7 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated index in blacklisted
 	blacklistedIndexMap := make(map[string]struct{})
 	for _, elem := range gs.BlacklistedList {
-		index := string(BlacklistedKey(elem.Pubkey))
+		index := string(BlacklistedKey(elem.AddressBz))
 		if _, ok := blacklistedIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for blacklisted")
 		}

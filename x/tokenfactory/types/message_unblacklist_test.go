@@ -17,24 +17,24 @@ func TestMsgUnblacklist_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid from",
 			msg: MsgUnblacklist{
-				From:   "invalid_address",
-				Pubkey: sample.PubKeyBytes(),
+				From:    "invalid_address",
+				Address: sample.AccAddress(),
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		{
-			name: "invalid pubkey",
+			name: "invalid block address",
 			msg: MsgUnblacklist{
-				From:   sample.AccAddress(),
-				Pubkey: []byte{},
+				From:    sample.AccAddress(),
+				Address: "",
 			},
-			err: ErrInvalidPubkey,
+			err: sdkerrors.ErrInvalidAddress,
 		},
 		{
-			name: "valid pubkey and from",
+			name: "valid block address and from",
 			msg: MsgUnblacklist{
-				From:   sample.AccAddress(),
-				Pubkey: sample.PubKeyBytes(),
+				From:    sample.AccAddress(),
+				Address: sample.AccAddress(),
 			},
 		},
 	}

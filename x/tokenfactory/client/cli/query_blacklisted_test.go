@@ -32,7 +32,7 @@ func networkWithBlacklistedObjects(t *testing.T, n int) (*network.Network, []typ
 	for i := 0; i < n; i++ {
 		account := sample.TestAccount()
 		blacklisted := types.Blacklisted{
-			Pubkey: account.PubKeyBz,
+			AddressBz: account.AddressBz,
 		}
 		state.BlacklistedList = append(state.BlacklistedList, blacklisted)
 		accounts[i] = account
@@ -90,8 +90,8 @@ func TestShowBlacklisted(t *testing.T) {
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.Blacklisted)
 				require.Equal(t,
-					nullify.Fill(&tc.obj.PubKeyBz),
-					nullify.Fill(&resp.Blacklisted.Pubkey),
+					nullify.Fill(&tc.obj.AddressBz),
+					nullify.Fill(&resp.Blacklisted.AddressBz),
 				)
 			}
 		})

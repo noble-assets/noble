@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"google.golang.org/grpc/codes"
@@ -45,7 +46,12 @@ func (k Keeper) Blacklisted(c context.Context, req *types.QueryGetBlacklistedReq
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetBlacklisted(ctx, req.Pubkey)
+	_, addressBz, err := bech32.DecodeAndConvert(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	val, found := k.GetBlacklisted(ctx, addressBz)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}

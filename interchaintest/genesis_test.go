@@ -20,16 +20,17 @@ import (
 const (
 	authorityKeyName = "authority"
 
-	ownerKeyName            = "owner"
-	newOwnerKeyName         = "new_owner"
-	masterMinterKeyName     = "masterminter"
-	minterKeyName           = "minter"
-	minterControllerKeyName = "mintercontroller"
-	blacklisterKeyName      = "blacklister"
-	pauserKeyName           = "pauser"
-	userKeyName             = "user"
-	user2KeyName            = "user2"
-	aliceKeyName            = "alice"
+	ownerKeyName             = "owner"
+	newOwnerKeyName          = "new_owner"
+	masterMinterKeyName      = "masterminter"
+	minterKeyName            = "minter"
+	minterControllerKeyName  = "mintercontroller"
+	minterController2KeyName = "mintercontroller2"
+	blacklisterKeyName       = "blacklister"
+	pauserKeyName            = "pauser"
+	userKeyName              = "user"
+	user2KeyName             = "user2"
+	aliceKeyName             = "alice"
 
 	mintingDenom = "urupee"
 )
@@ -103,17 +104,18 @@ func NobleEncoding() *simappparams.EncodingConfig {
 }
 
 type NobleRoles struct {
-	Authority        ibc.Wallet
-	Owner            ibc.Wallet
-	NewOwner         ibc.Wallet
-	MasterMinter     ibc.Wallet
-	MinterController ibc.Wallet
-	Minter           ibc.Wallet
-	Blacklister      ibc.Wallet
-	Pauser           ibc.Wallet
-	User             ibc.Wallet
-	User2            ibc.Wallet
-	Alice            ibc.Wallet
+	Authority         ibc.Wallet
+	Owner             ibc.Wallet
+	NewOwner          ibc.Wallet
+	MasterMinter      ibc.Wallet
+	MinterController  ibc.Wallet
+	MinterController2 ibc.Wallet
+	Minter            ibc.Wallet
+	Blacklister       ibc.Wallet
+	Pauser            ibc.Wallet
+	User              ibc.Wallet
+	User2             ibc.Wallet
+	Alice             ibc.Wallet
 }
 
 func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, error) {
@@ -128,6 +130,7 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 	owner := interchaintest.BuildWallet(kr, ownerKeyName, chainCfg)
 	newOwner := interchaintest.BuildWallet(kr, newOwnerKeyName, chainCfg)
 	minterController := interchaintest.BuildWallet(kr, minterControllerKeyName, chainCfg)
+	minterController2 := interchaintest.BuildWallet(kr, minterController2KeyName, chainCfg)
 	blacklister := interchaintest.BuildWallet(kr, blacklisterKeyName, chainCfg)
 	pauser := interchaintest.BuildWallet(kr, pauserKeyName, chainCfg)
 	user := interchaintest.BuildWallet(kr, userKeyName, chainCfg)
@@ -151,6 +154,10 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		return NobleRoles{}, err
 	}
 	err = val.RecoverKey(ctx, minterControllerKeyName, minterController.Mnemonic)
+	if err != nil {
+		return NobleRoles{}, err
+	}
+	err = val.RecoverKey(ctx, minterController2KeyName, minterController2.Mnemonic)
 	if err != nil {
 		return NobleRoles{}, err
 	}
@@ -210,6 +217,11 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 			Amount:  0,
 		},
 		{
+			Address: minterController2.Address,
+			Denom:   chainCfg.Denom,
+			Amount:  0,
+		},
+		{
 			Address: blacklister.Address,
 			Denom:   chainCfg.Denom,
 			Amount:  0,
@@ -243,17 +255,18 @@ func noblePreGenesis(ctx context.Context, val *cosmos.ChainNode) (NobleRoles, er
 		}
 	}
 	return NobleRoles{
-		Authority:        authority,
-		Owner:            owner,
-		NewOwner:         newOwner,
-		MasterMinter:     masterMinter,
-		MinterController: minterController,
-		Minter:           minter,
-		Blacklister:      blacklister,
-		Pauser:           pauser,
-		User:             user,
-		User2:            user2,
-		Alice:            alice,
+		Authority:         authority,
+		Owner:             owner,
+		NewOwner:          newOwner,
+		MasterMinter:      masterMinter,
+		MinterController:  minterController,
+		MinterController2: minterController2,
+		Minter:            minter,
+		Blacklister:       blacklister,
+		Pauser:            pauser,
+		User:              user,
+		User2:             user2,
+		Alice:             alice,
 	}, nil
 }
 
