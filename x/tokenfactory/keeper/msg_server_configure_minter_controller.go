@@ -12,10 +12,6 @@ import (
 func (k msgServer) ConfigureMinterController(goCtx context.Context, msg *types.MsgConfigureMinterController) (*types.MsgConfigureMinterControllerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if k.GetPaused(ctx).Paused {
-		return nil, sdkerrors.Wrap(types.ErrPaused, "minter controllers cannot be configured while the tokenfactory is paused")
-	}
-
 	masterMinter, found := k.GetMasterMinter(ctx)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "master minter is not set")
