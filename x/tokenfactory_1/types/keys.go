@@ -11,7 +11,7 @@ const (
 	RouterKey = ModuleName
 
 	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_tokenfactory"
+	MemStoreKey = "mem_tokenfactory_1"
 
 	PausedKey                 = "Paused/value/"
 	MasterMinterKey           = "MasterMinter/value/"
