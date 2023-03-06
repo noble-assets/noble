@@ -49,8 +49,6 @@ At launch, Noble will be a Proof of Authority chain with a trusted validator set
 
 While Noble's initial plans entailed leveraging the shared security model of the Cosmos Hub, the decision was made to monitor developments in shared security for an initial period of time as consumer chains begin to go live. Shared security remains an important item on Noble’s future roadmap and Noble is grateful to the Cosmos community for its ongoing work on this transformational ecosystem initiative.
 
-Noble intends to monitor developments in shared security across the blockchain ecosystem to ensure the optimality of the security model.
-
 ## Connecting to Noble
 
 App-chains are able to permissionlessly connect to Noble [via IBC](https://medium.com/the-interchain-foundation/eli5-what-is-ibc-def44d7b5b4c), a universal interoperability protocol that allows two different blockchains to communicate with one another, garaunteeing reliable, ordered, and authenticated communication.
