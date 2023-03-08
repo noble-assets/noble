@@ -45,11 +45,9 @@ The Access Control table below shows the functionality tied to each privileged a
 
 ## Security Guarantees in a Permissioned Validator Set (Proof of Authority) 
 
-The initial plans for Noble’s go-to-market entailed leveraging Replicated Security (also known as ["Interchain Security”](https://github.com/cosmos/interchain-security)) – the shared security model of the Cosmos Hub. This feature allows validators to secure app-chains using the value of ATOMs staked by Cosmos Hub delegators. Due to uncertainty around the design of replicated security (e.g., the removal of automated slashing packets), Noble has paused integration with Replicated Security. 
-
 At launch, Noble will be a Proof of Authority chain with a trusted validator set (a subset of Cosmos Hub validators). The validator set will be permissioned by equal shares of staking tokens placed in vesting accounts. The tokens will have no value. Economic security will derive from fees captured by the chain in USDC and other assets on a block-by-block basis. If a double sign is detected by the chain, the validator address will be “tombstoned,” meaning that their tokens and the address will no longer be usable for validation and resulting in the loss of all future fee revenue. The Proof of Authority model provides real economic cost to faulty validator behavior and thus provides economic security to the network that can be computed in real time based on past and projected fees.
 
-Noble intends to monitor developments in shared security across the blockchain ecosystem to ensure the optimality of the security model.
+While Noble's initial plans entailed leveraging the shared security model of the Cosmos Hub, the decision was made to monitor developments in shared security for an initial period of time as consumer chains begin to go live. Shared security remains an important item on Noble’s future roadmap and Noble is grateful to the Cosmos community for its ongoing work on this transformational ecosystem initiative.
 
 ## Connecting to Noble
 
