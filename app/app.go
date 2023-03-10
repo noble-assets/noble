@@ -600,6 +600,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		tokenfactoryModule,
+		usdctokenfactoryModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
