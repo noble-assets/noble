@@ -2,13 +2,13 @@ package types
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "usdctokenfactory"
+	ModuleName = "usdc-tokenfactory"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
 
 	// RouterKey defines the module's message routing key
-	RouterKey = ModuleName
+	RouterKey = "usdctokenfactory"
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_" + ModuleName
