@@ -137,6 +137,4 @@ replace (
 	// use informal system fork of tendermint
 	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.26
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
-	github.com/cosmos/cosmos-sdk v0.45.13 => /Users/dkwork/go/src/github.com/cosmos/cosmos-sdk
-
 )
