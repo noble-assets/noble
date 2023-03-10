@@ -11,8 +11,8 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
-	keeper_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1/keeper"
-	types_1 "github.com/strangelove-ventures/noble/x/tokenfactory_1/types"
+	keeper_1 "github.com/strangelove-ventures/noble/x/usdc_tokenfactory/keeper"
+	types_1 "github.com/strangelove-ventures/noble/x/usdc_tokenfactory/types"
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}
@@ -137,7 +137,7 @@ func (im IBCMiddleware) OnRecvPacket(
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
 			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
 		}
-	// denom is tokenfactory_1 asset
+	// denom is usdc_tokenfactory asset
 	case denomTrace.BaseDenom == mintingDenom_1.Denom:
 		if im.keeper_1.GetPaused(ctx).Paused {
 			return channeltypes.NewErrorAcknowledgement(types_1.ErrPaused.Error())

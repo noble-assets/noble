@@ -1,6 +1,0 @@
-syntax = "proto3";
-package noble.tokenfactory_1;
-
-option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory_1/types";
-
-message MasterMinter { string address = 1; }

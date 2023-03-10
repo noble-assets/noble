@@ -1,0 +1,6 @@
+syntax = "proto3";
+package noble.usdc_tokenfactory;
+
+option go_package = "github.com/strangelove-ventures/noble/x/usdc_tokenfactory/types";
+
+message Owner { string address = 1; }
