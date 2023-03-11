@@ -1,9 +1,0 @@
-syntax = "proto3";
-package noble.usdc_tokenfactory;
-
-import "gogoproto/gogo.proto";
-
-option go_package = "github.com/strangelove-ventures/noble/x/usdc_tokenfactory/types";
-
-// Params defines the parameters for the module.
-message Params { option (gogoproto.goproto_stringer) = false; }
