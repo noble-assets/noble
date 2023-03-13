@@ -1,3 +1,4 @@
+![Noble banner](https://raw.githubusercontent.com/strangelove-ventures/noble-networks/main/Twitter_Banner.png)
 # ✨✨ Noble ✨✨
 
 ## Overview
