@@ -111,44 +111,48 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.circletokenfactory) {
-						addresses = append(addresses, m.ToAddress, m.FromAddress)
+					addresses = append(addresses, m.ToAddress, m.FromAddress)
+					blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
+					if blacklisted {
+						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+					}
+					if err != nil {
+						return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 					}
 				}
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.circletokenfactory) {
-							addresses = append(addresses, i.Address)
+						addresses = append(addresses, i.Address)
+						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
+						if blacklisted {
+							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+						}
+						if err != nil {
+							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 						}
 					}
 				}
 				for _, o := range m.Outputs {
 					for _, c := range o.Coins {
-						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.circletokenfactory) {
-							addresses = append(addresses, o.Address)
+						addresses = append(addresses, o.Address)
+						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
+						if blacklisted {
+							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+						}
+						if err != nil {
+							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 						}
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				if checkIfMintedAsset(ctx, m.Token.Denom, ad.tokenfactory, ad.circletokenfactory) {
-					addresses = append(addresses, m.Sender, m.Receiver)
+				addresses = append(addresses, m.Sender, m.Receiver)
+				blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, m.Token, ad.tokenfactory, ad.circletokenfactory)
+				if blacklisted {
+					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}
-			}
-
-			for _, address := range addresses {
-				_, addressBz, err := bech32.DecodeAndConvert(address)
 				if err != nil {
-					return ctx, err
-				}
-
-				_, found := ad.tokenfactory.GetBlacklisted(ctx, addressBz)
-				if found {
-					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
-				}
-				_, found = ad.circletokenfactory.GetBlacklisted(ctx, addressBz)
-				if found {
-					return ctx, sdkerrors.Wrapf(circletokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
+					return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 				}
 			}
 		default:
@@ -158,16 +162,36 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	return next(ctx, tx, simulate)
 }
 
-func checkIfMintedAsset(ctx sdk.Context, denom string, tfk *tokenfactory.Keeper, ctfk *circletokenfactory.Keeper) bool {
-	tfMintingDenom := tfk.GetMintingDenom(ctx)
-	ctfMintingDenom := ctfk.GetMintingDenom(ctx)
-	mintingDenoms := [2]string{tfMintingDenom.Denom, ctfMintingDenom.Denom}
-	for _, v := range mintingDenoms {
-		if v == denom {
-			return true
+// checkForBlacklistedAddressByTokenFactory first checks if the denom being transacted is a mintable asset from a TokenFactory,
+// if it is, it checks if the addresses involved in the tx are blacklisted by that specific TokenFactory.
+func checkForBlacklistedAddressByTokenFactory(ctx sdk.Context, addresses []string, c sdk.Coin, tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) (blacklisted bool, blacklistedAddress string, err error) {
+	tfMintingDenom := tf.GetMintingDenom(ctx)
+	if c.Denom == tfMintingDenom.Denom {
+		for _, address := range addresses {
+			_, addressBz, err := bech32.DecodeAndConvert(address)
+			if err != nil {
+				return false, address, err
+			}
+			_, found := tf.GetBlacklisted(ctx, addressBz)
+			if found {
+				return true, address, tokenfactorytypes.ErrUnauthorized
+			}
 		}
 	}
-	return false
+	ctfMintingDenom := ctf.GetMintingDenom(ctx)
+	if c.Denom == ctfMintingDenom.Denom {
+		for _, address := range addresses {
+			_, addressBz, err := bech32.DecodeAndConvert(address)
+			if err != nil {
+				return false, address, err
+			}
+			_, found := ctf.GetBlacklisted(ctx, addressBz)
+			if found {
+				return true, address, circletokenfactorytypes.ErrUnauthorized
+			}
+		}
+	}
+	return false, "", nil
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
