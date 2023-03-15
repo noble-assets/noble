@@ -86,7 +86,7 @@ The NMM is a 5/7 multisig for passing a Noble Multisig proposal to fulfill the t
 
 - Noble (the organization): Canada 
 - Iqlusion: USA 
-- StrangelLove: USA 
+- StrangeLove: USA 
 - Figment: Canada
 - Binary Holdings: Switzerland 
 - Cosmostation: Korea  
@@ -102,7 +102,7 @@ In collaboration with StrangeLove, Noble intends to build an in-house team focus
 
 ## Media
 
-TWITTER: @noble_xy 
+TWITTER: @noble_xyz
 
 COMING SOON: nobleassets.xyz 
 
