@@ -19,19 +19,19 @@ import (
 type HandlerOptions struct {
 	ante.HandlerOptions
 	tokenFactoryKeeper       *tokenfactory.Keeper
-	circletokenFactoryKeeper *circletokenfactory.Keeper
+	circleTokenFactoryKeeper *circletokenfactory.Keeper
 	IBCKeeper                *ibckeeper.Keeper
 }
 
 type IsPausedDecorator struct {
-	tokenfactory       *tokenfactory.Keeper
-	circletokenfactory *circletokenfactory.Keeper
+	tokenFactory       *tokenfactory.Keeper
+	circleTokenFactory *circletokenfactory.Keeper
 }
 
 func NewIsPausedDecorator(tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) IsPausedDecorator {
 	return IsPausedDecorator{
-		tokenfactory:       tf,
-		circletokenfactory: ctf,
+		tokenFactory:       tf,
+		circleTokenFactory: ctf,
 	}
 }
 
@@ -43,7 +43,7 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					paused, err := checkPausedStatebyTokenfactory(ctx, c, ad.tokenfactory, ad.circletokenfactory)
+					paused, err := checkPausedStatebyTokenFactory(ctx, c, ad.tokenFactory, ad.circleTokenFactory)
 					if paused {
 						return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
 					}
@@ -51,14 +51,14 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						paused, err := checkPausedStatebyTokenfactory(ctx, c, ad.tokenfactory, ad.circletokenfactory)
+						paused, err := checkPausedStatebyTokenFactory(ctx, c, ad.tokenFactory, ad.circleTokenFactory)
 						if paused {
 							return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
 						}
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				paused, err := checkPausedStatebyTokenfactory(ctx, m.Token, ad.tokenfactory, ad.circletokenfactory)
+				paused, err := checkPausedStatebyTokenFactory(ctx, m.Token, ad.tokenFactory, ad.circleTokenFactory)
 				if paused {
 					return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
 				}
@@ -72,7 +72,7 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 	return next(ctx, tx, simulate)
 }
 
-func checkPausedStatebyTokenfactory(ctx sdk.Context, c sdk.Coin, tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) (bool, *sdkerrors.Error) {
+func checkPausedStatebyTokenFactory(ctx sdk.Context, c sdk.Coin, tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) (bool, *sdkerrors.Error) {
 	tfMintingDenom := tf.GetMintingDenom(ctx)
 	if c.Denom == tfMintingDenom.Denom {
 		paused := tf.GetPaused(ctx)
@@ -215,8 +215,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
-		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.circletokenFactoryKeeper),
-		NewIsPausedDecorator(options.tokenFactoryKeeper, options.circletokenFactoryKeeper),
+		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.circleTokenFactoryKeeper),
+		NewIsPausedDecorator(options.tokenFactoryKeeper, options.circleTokenFactoryKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

@@ -210,7 +210,7 @@ type App struct {
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
 	TokenFactoryKeeper       *tokenfactorymodulekeeper.Keeper
-	CircleTokenfactoryKeeper *circletokenfactorymodulekeeper.Keeper
+	CircleTokenFactoryKeeper *circletokenfactorymodulekeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -431,14 +431,14 @@ func New(
 	)
 	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.CircleTokenfactoryKeeper = circletokenfactorymodulekeeper.NewKeeper(
+	app.CircleTokenFactoryKeeper = circletokenfactorymodulekeeper.NewKeeper(
 		appCodec,
 		keys[circletokenfactorymoduletypes.StoreKey],
 		app.GetSubspace(circletokenfactorymoduletypes.ModuleName),
 
 		app.BankKeeper,
 	)
-	circletokenfactorymodule := circletokenfactorymodule.NewAppModule(appCodec, app.CircleTokenfactoryKeeper, app.AccountKeeper, app.BankKeeper)
+	circletokenfactorymodule := circletokenfactorymodule.NewAppModule(appCodec, app.CircleTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -449,7 +449,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.CircleTokenfactoryKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.CircleTokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -621,7 +621,7 @@ func New(
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			tokenFactoryKeeper:       app.TokenFactoryKeeper,
-			circletokenFactoryKeeper: app.CircleTokenfactoryKeeper,
+			circleTokenFactoryKeeper: app.CircleTokenFactoryKeeper,
 
 			IBCKeeper: app.IBCKeeper,
 		},
