@@ -2,6 +2,8 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	circletokenfactory "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
+	circletokenfactorytypes "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
@@ -16,28 +18,52 @@ import (
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	tokenFactoryKeeper *tokenfactory.Keeper
-	IBCKeeper          *ibckeeper.Keeper
+	tokenFactoryKeeper       *tokenfactory.Keeper
+	circleTokenFactoryKeeper *circletokenfactory.Keeper
+	IBCKeeper                *ibckeeper.Keeper
 }
 
 type IsPausedDecorator struct {
-	tokenfactory *tokenfactory.Keeper
+	tokenFactory       *tokenfactory.Keeper
+	circleTokenFactory *circletokenfactory.Keeper
 }
 
-func NewIsPausedDecorator(tk *tokenfactory.Keeper) IsPausedDecorator {
+func NewIsPausedDecorator(tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) IsPausedDecorator {
 	return IsPausedDecorator{
-		tokenfactory: tk,
+		tokenFactory:       tf,
+		circleTokenFactory: ctf,
 	}
 }
 
 func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	msgs := tx.GetMsgs()
 	for _, m := range msgs {
-		switch m.(type) {
+		switch m := m.(type) {
 		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
-			paused := ad.tokenfactory.GetPaused(ctx)
-			if paused.Paused {
-				return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrPaused, "can not perform token transfers")
+			switch m := m.(type) {
+			case *banktypes.MsgSend:
+				for _, c := range m.Amount {
+					paused, err := checkPausedStatebyTokenFactory(ctx, c, ad.tokenFactory, ad.circleTokenFactory)
+					if paused {
+						return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
+					}
+				}
+			case *banktypes.MsgMultiSend:
+				for _, i := range m.Inputs {
+					for _, c := range i.Coins {
+						paused, err := checkPausedStatebyTokenFactory(ctx, c, ad.tokenFactory, ad.circleTokenFactory)
+						if paused {
+							return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
+						}
+					}
+				}
+			case *transfertypes.MsgTransfer:
+				paused, err := checkPausedStatebyTokenFactory(ctx, m.Token, ad.tokenFactory, ad.circleTokenFactory)
+				if paused {
+					return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
+				}
+			default:
+				continue
 			}
 		default:
 			continue
@@ -46,13 +72,33 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 	return next(ctx, tx, simulate)
 }
 
-type IsBlacklistedDecorator struct {
-	tokenfactory *tokenfactory.Keeper
+func checkPausedStatebyTokenFactory(ctx sdk.Context, c sdk.Coin, tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) (bool, *sdkerrors.Error) {
+	tfMintingDenom := tf.GetMintingDenom(ctx)
+	if c.Denom == tfMintingDenom.Denom {
+		paused := tf.GetPaused(ctx)
+		if paused.Paused {
+			return true, tokenfactorytypes.ErrPaused
+		}
+	}
+	ctfMintingDenom := ctf.GetMintingDenom(ctx)
+	if c.Denom == ctfMintingDenom.Denom {
+		paused := ctf.GetPaused(ctx)
+		if paused.Paused {
+			return true, circletokenfactorytypes.ErrPaused
+		}
+	}
+	return false, nil
 }
 
-func NewIsBlacklistedDecorator(tk *tokenfactory.Keeper) IsBlacklistedDecorator {
+type IsBlacklistedDecorator struct {
+	tokenfactory       *tokenfactory.Keeper
+	circletokenfactory *circletokenfactory.Keeper
+}
+
+func NewIsBlacklistedDecorator(tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) IsBlacklistedDecorator {
 	return IsBlacklistedDecorator{
-		tokenfactory: tk,
+		tokenfactory:       tf,
+		circletokenfactory: ctf,
 	}
 }
 
@@ -61,44 +107,51 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	for _, m := range msgs {
 		switch m := m.(type) {
 		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
-			var addresses []string
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory) {
-						addresses = append(addresses, m.ToAddress, m.FromAddress)
+					addresses := []string{m.ToAddress, m.FromAddress}
+					blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
+					if blacklisted {
+						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+					}
+					if err != nil {
+						return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 					}
 				}
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory) {
-							addresses = append(addresses, i.Address)
+						addresses := []string{i.Address}
+						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
+						if blacklisted {
+							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+						}
+						if err != nil {
+							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 						}
 					}
 				}
 				for _, o := range m.Outputs {
 					for _, c := range o.Coins {
-						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory) {
-							addresses = append(addresses, o.Address)
+						addresses := []string{o.Address}
+						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
+						if blacklisted {
+							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+						}
+						if err != nil {
+							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 						}
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				if checkIfMintedAsset(ctx, m.Token.Denom, ad.tokenfactory) {
-					addresses = append(addresses, m.Sender, m.Receiver)
+				addresses := []string{m.Sender, m.Receiver}
+				blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, m.Token, ad.tokenfactory, ad.circletokenfactory)
+				if blacklisted {
+					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}
-			}
-
-			for _, address := range addresses {
-				_, addressBz, err := bech32.DecodeAndConvert(address)
 				if err != nil {
-					return ctx, err
-				}
-
-				_, found := ad.tokenfactory.GetBlacklisted(ctx, addressBz)
-				if found {
-					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
+					return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
 				}
 			}
 		default:
@@ -106,6 +159,38 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		}
 	}
 	return next(ctx, tx, simulate)
+}
+
+// checkForBlacklistedAddressByTokenFactory first checks if the denom being transacted is a mintable asset from a TokenFactory,
+// if it is, it checks if the addresses involved in the tx are blacklisted by that specific TokenFactory.
+func checkForBlacklistedAddressByTokenFactory(ctx sdk.Context, addresses []string, c sdk.Coin, tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) (blacklisted bool, blacklistedAddress string, err error) {
+	tfMintingDenom := tf.GetMintingDenom(ctx)
+	if c.Denom == tfMintingDenom.Denom {
+		for _, address := range addresses {
+			_, addressBz, err := bech32.DecodeAndConvert(address)
+			if err != nil {
+				return false, address, err
+			}
+			_, found := tf.GetBlacklisted(ctx, addressBz)
+			if found {
+				return true, address, tokenfactorytypes.ErrUnauthorized
+			}
+		}
+	}
+	ctfMintingDenom := ctf.GetMintingDenom(ctx)
+	if c.Denom == ctfMintingDenom.Denom {
+		for _, address := range addresses {
+			_, addressBz, err := bech32.DecodeAndConvert(address)
+			if err != nil {
+				return false, address, err
+			}
+			_, found := ctf.GetBlacklisted(ctx, addressBz)
+			if found {
+				return true, address, circletokenfactorytypes.ErrUnauthorized
+			}
+		}
+	}
+	return false, "", nil
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
@@ -129,8 +214,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
-		NewIsBlacklistedDecorator(options.tokenFactoryKeeper),
-		NewIsPausedDecorator(options.tokenFactoryKeeper),
+		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.circleTokenFactoryKeeper),
+		NewIsPausedDecorator(options.tokenFactoryKeeper, options.circleTokenFactoryKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
@@ -146,9 +231,4 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
 
-}
-
-func checkIfMintedAsset(ctx sdk.Context, denom string, k *tokenfactory.Keeper) bool {
-	mintingDenom := k.GetMintingDenom(ctx)
-	return mintingDenom.Denom == denom
 }

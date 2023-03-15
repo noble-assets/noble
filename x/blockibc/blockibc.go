@@ -9,6 +9,8 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
+	circleKeeper "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
+	circle_types "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
@@ -17,15 +19,17 @@ var _ porttypes.IBCModule = &IBCMiddleware{}
 
 // IBCMiddleware implements the tokenfactory keeper in order to check against blacklisted addresses.
 type IBCMiddleware struct {
-	app    porttypes.IBCModule
-	keeper *keeper.Keeper
+	app          porttypes.IBCModule
+	keeper       *keeper.Keeper
+	circleKeeper *circleKeeper.Keeper
 }
 
 // NewIBCMiddleware creates a new IBCMiddleware given the keeper and underlying application.
-func NewIBCMiddleware(app porttypes.IBCModule, k *keeper.Keeper) IBCMiddleware {
+func NewIBCMiddleware(app porttypes.IBCModule, k *keeper.Keeper, ck *circleKeeper.Keeper) IBCMiddleware {
 	return IBCMiddleware{
-		app:    app,
-		keeper: k,
+		app:          app,
+		keeper:       k,
+		circleKeeper: ck,
 	}
 }
 
@@ -99,38 +103,71 @@ func (im IBCMiddleware) OnRecvPacket(
 
 	denomTrace := transfertypes.ParseDenomTrace(data.Denom)
 
-	mintingDenom := im.keeper.GetMintingDenom(ctx)
-	if denomTrace.BaseDenom != mintingDenom.Denom {
+	tfMintingDenom := im.keeper.GetMintingDenom(ctx)
+	ctfMintingDenom := im.circleKeeper.GetMintingDenom(ctx)
+
+	switch {
+	// denom is not tokenfactory denom
+	case denomTrace.BaseDenom != tfMintingDenom.Denom && denomTrace.BaseDenom != ctfMintingDenom.Denom:
 		return im.app.OnRecvPacket(ctx, packet, relayer)
-	}
+	// denom is tokenfactory asset
+	case denomTrace.BaseDenom == tfMintingDenom.Denom:
+		if im.keeper.GetPaused(ctx).Paused {
+			return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
+		}
 
-	if im.keeper.GetPaused(ctx).Paused {
-		return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
-	}
+		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
 
-	_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
-	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
+		_, found := im.keeper.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
 
-	_, found := im.keeper.GetBlacklisted(ctx, addressBz)
-	if found {
-		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
-		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
-	}
+		_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
 
-	_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
-	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
-	}
+		_, found = im.keeper.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
+	// denom is circle-tokenfactory asset
+	case denomTrace.BaseDenom == ctfMintingDenom.Denom:
+		if im.circleKeeper.GetPaused(ctx).Paused {
+			return channeltypes.NewErrorAcknowledgement(circle_types.ErrPaused.Error())
+		}
 
-	_, found = im.keeper.GetBlacklisted(ctx, addressBz)
-	if found {
-		ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
-		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
-	}
+		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
 
+		_, found := im.circleKeeper.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
+
+		_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
+		if err != nil {
+			return channeltypes.NewErrorAcknowledgement(err.Error())
+		}
+
+		_, found = im.circleKeeper.GetBlacklisted(ctx, addressBz)
+		if found {
+			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
+			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		}
+
+	}
 	return im.app.OnRecvPacket(ctx, packet, relayer)
+
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface.
