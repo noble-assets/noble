@@ -620,8 +620,10 @@ func New(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			tokenFactoryKeeper: app.TokenFactoryKeeper,
-			IBCKeeper:          app.IBCKeeper,
+			tokenFactoryKeeper:   app.TokenFactoryKeeper,
+			tokenFactory_1Keeper: app.TokenFactory_1Keeper,
+
+			IBCKeeper: app.IBCKeeper,
 		},
 	)
 	if err != nil {
