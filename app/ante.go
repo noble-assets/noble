@@ -2,10 +2,10 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	circletokenfactory "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
+	circletokenfactorytypes "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
-	tokenfactory_1 "github.com/strangelove-ventures/noble/x/tokenfactory1/keeper"
-	tokenfactory_1types "github.com/strangelove-ventures/noble/x/tokenfactory1/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -18,20 +18,20 @@ import (
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	tokenFactoryKeeper   *tokenfactory.Keeper
-	tokenFactory_1Keeper *tokenfactory_1.Keeper
-	IBCKeeper            *ibckeeper.Keeper
+	tokenFactoryKeeper       *tokenfactory.Keeper
+	circletokenFactoryKeeper *circletokenfactory.Keeper
+	IBCKeeper                *ibckeeper.Keeper
 }
 
 type IsPausedDecorator struct {
-	tokenfactory   *tokenfactory.Keeper
-	tokenfactory_1 *tokenfactory_1.Keeper
+	tokenfactory       *tokenfactory.Keeper
+	circletokenfactory *circletokenfactory.Keeper
 }
 
-func NewIsPausedDecorator(tk *tokenfactory.Keeper, tk_1 *tokenfactory_1.Keeper) IsPausedDecorator {
+func NewIsPausedDecorator(tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) IsPausedDecorator {
 	return IsPausedDecorator{
-		tokenfactory:   tk,
-		tokenfactory_1: tk_1,
+		tokenfactory:       tf,
+		circletokenfactory: ctf,
 	}
 }
 
@@ -43,7 +43,7 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					paused, err := checkPausedStatebyTokenfactory(ctx, c, ad.tokenfactory, ad.tokenfactory_1)
+					paused, err := checkPausedStatebyTokenfactory(ctx, c, ad.tokenfactory, ad.circletokenfactory)
 					if paused {
 						return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
 					}
@@ -51,14 +51,14 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						paused, err := checkPausedStatebyTokenfactory(ctx, c, ad.tokenfactory, ad.tokenfactory_1)
+						paused, err := checkPausedStatebyTokenfactory(ctx, c, ad.tokenfactory, ad.circletokenfactory)
 						if paused {
 							return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
 						}
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				paused, err := checkPausedStatebyTokenfactory(ctx, m.Token, ad.tokenfactory, ad.tokenfactory_1)
+				paused, err := checkPausedStatebyTokenfactory(ctx, m.Token, ad.tokenfactory, ad.circletokenfactory)
 				if paused {
 					return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
 				}
@@ -72,33 +72,33 @@ func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool
 	return next(ctx, tx, simulate)
 }
 
-func checkPausedStatebyTokenfactory(ctx sdk.Context, c sdk.Coin, tk *tokenfactory.Keeper, tk_1 *tokenfactory_1.Keeper) (bool, *sdkerrors.Error) {
-	mintingDenom := tk.GetMintingDenom(ctx)
-	if c.Denom == mintingDenom.Denom {
-		paused := tk.GetPaused(ctx)
+func checkPausedStatebyTokenfactory(ctx sdk.Context, c sdk.Coin, tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) (bool, *sdkerrors.Error) {
+	tfMintingDenom := tf.GetMintingDenom(ctx)
+	if c.Denom == tfMintingDenom.Denom {
+		paused := tf.GetPaused(ctx)
 		if paused.Paused {
 			return true, tokenfactorytypes.ErrPaused
 		}
 	}
-	mintingDenom_1 := tk_1.GetMintingDenom(ctx)
-	if c.Denom == mintingDenom_1.Denom {
-		paused := tk_1.GetPaused(ctx)
+	ctfMintingDenom := ctf.GetMintingDenom(ctx)
+	if c.Denom == ctfMintingDenom.Denom {
+		paused := ctf.GetPaused(ctx)
 		if paused.Paused {
-			return true, tokenfactory_1types.ErrPaused
+			return true, circletokenfactorytypes.ErrPaused
 		}
 	}
 	return false, nil
 }
 
 type IsBlacklistedDecorator struct {
-	tokenfactory   *tokenfactory.Keeper
-	tokenfactory_1 *tokenfactory_1.Keeper
+	tokenfactory       *tokenfactory.Keeper
+	circletokenfactory *circletokenfactory.Keeper
 }
 
-func NewIsBlacklistedDecorator(tk *tokenfactory.Keeper, tk_1 *tokenfactory_1.Keeper) IsBlacklistedDecorator {
+func NewIsBlacklistedDecorator(tf *tokenfactory.Keeper, ctf *circletokenfactory.Keeper) IsBlacklistedDecorator {
 	return IsBlacklistedDecorator{
-		tokenfactory:   tk,
-		tokenfactory_1: tk_1,
+		tokenfactory:       tf,
+		circletokenfactory: ctf,
 	}
 }
 
@@ -111,27 +111,27 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.tokenfactory_1) {
+					if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.circletokenfactory) {
 						addresses = append(addresses, m.ToAddress, m.FromAddress)
 					}
 				}
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.tokenfactory_1) {
+						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.circletokenfactory) {
 							addresses = append(addresses, i.Address)
 						}
 					}
 				}
 				for _, o := range m.Outputs {
 					for _, c := range o.Coins {
-						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.tokenfactory_1) {
+						if checkIfMintedAsset(ctx, c.Denom, ad.tokenfactory, ad.circletokenfactory) {
 							addresses = append(addresses, o.Address)
 						}
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				if checkIfMintedAsset(ctx, m.Token.Denom, ad.tokenfactory, ad.tokenfactory_1) {
+				if checkIfMintedAsset(ctx, m.Token.Denom, ad.tokenfactory, ad.circletokenfactory) {
 					addresses = append(addresses, m.Sender, m.Receiver)
 				}
 			}
@@ -146,9 +146,9 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 				if found {
 					return ctx, sdkerrors.Wrapf(tokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}
-				_, found = ad.tokenfactory_1.GetBlacklisted(ctx, addressBz)
+				_, found = ad.circletokenfactory.GetBlacklisted(ctx, addressBz)
 				if found {
-					return ctx, sdkerrors.Wrapf(tokenfactory_1types.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
+					return ctx, sdkerrors.Wrapf(circletokenfactorytypes.ErrUnauthorized, "an address (%s) is blacklisted and can not send or receive tokens", address)
 				}
 			}
 		default:
@@ -158,10 +158,10 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	return next(ctx, tx, simulate)
 }
 
-func checkIfMintedAsset(ctx sdk.Context, denom string, k *tokenfactory.Keeper, k_1 *tokenfactory_1.Keeper) bool {
-	mintingDenom := k.GetMintingDenom(ctx)
-	mintingDenom_1 := k_1.GetMintingDenom(ctx)
-	mintingDenoms := [2]string{mintingDenom.Denom, mintingDenom_1.Denom}
+func checkIfMintedAsset(ctx sdk.Context, denom string, tfk *tokenfactory.Keeper, ctfk *circletokenfactory.Keeper) bool {
+	tfMintingDenom := tfk.GetMintingDenom(ctx)
+	ctfMintingDenom := ctfk.GetMintingDenom(ctx)
+	mintingDenoms := [2]string{tfMintingDenom.Denom, ctfMintingDenom.Denom}
 	for _, v := range mintingDenoms {
 		if v == denom {
 			return true
@@ -191,8 +191,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
-		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.tokenFactory_1Keeper),
-		NewIsPausedDecorator(options.tokenFactoryKeeper, options.tokenFactory_1Keeper),
+		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.circletokenFactoryKeeper),
+		NewIsPausedDecorator(options.tokenFactoryKeeper, options.circletokenFactoryKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

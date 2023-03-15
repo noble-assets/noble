@@ -105,7 +105,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "circle-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
 					if err != nil {
 						return nil, err
 					}
@@ -165,7 +165,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "circle-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
 					if err != nil {
 						return nil, err
 					}
@@ -225,7 +225,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "circle-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
 					if err != nil {
 						return nil, err
 					}
@@ -285,7 +285,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "circle-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
 					if err != nil {
 						return nil, err
 					}

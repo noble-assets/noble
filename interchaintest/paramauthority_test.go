@@ -141,7 +141,7 @@ func TestNobleParamAuthority(t *testing.T) {
 			if err != nil {
 				return nil, err
 			}
-			err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &roles, true)
+			err = modifyGenesisTokenfactory(g, "circle-tokenfactory", DenomMetadata_drachma, &roles, true)
 			if err != nil {
 				return nil, err
 			}

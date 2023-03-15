@@ -9,7 +9,7 @@ import "tokenfactory/master_minter.proto";
 import "tokenfactory/minters.proto";
 import "tokenfactory/pauser.proto";
 import "tokenfactory/blacklister.proto";
-import "tokenfactory/owner.proto";
+import "./owner.proto";
 import "tokenfactory/minter_controller.proto";
 import "tokenfactory/minting_denom.proto";
 // this line is used by starport scaffolding # genesis/proto/import

@@ -86,7 +86,7 @@ func TestNobleChain(t *testing.T) {
 			if err != nil {
 				return nil, err
 			}
-			err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &roles2, true)
+			err = modifyGenesisTokenfactory(g, "circle-tokenfactory", DenomMetadata_drachma, &roles2, true)
 			if err != nil {
 				return nil, err
 			}
@@ -137,9 +137,9 @@ func TestNobleChain(t *testing.T) {
 		nobleTokenfactory_e2e(t, ctx, "tokenfactory", DenomMetadata_rupee.Base, noble, roles, extraWallets)
 	})
 
-	t.Run("usdc-tokenfactory", func(t *testing.T) {
+	t.Run("circle-tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "tokenfactory-usdc", DenomMetadata_drachma.Base, noble, roles2, extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "circle-tokenfactory", DenomMetadata_drachma.Base, noble, roles2, extraWallets)
 	})
 }
 

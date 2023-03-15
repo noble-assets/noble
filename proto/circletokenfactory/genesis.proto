@@ -1,0 +1,33 @@
+syntax = "proto3";
+package noble.circletokenfactory;
+
+import "gogoproto/gogo.proto";
+import "circletokenfactory/params.proto";
+import "circletokenfactory/blacklisted.proto";
+import "circletokenfactory/paused.proto";
+import "circletokenfactory/master_minter.proto";
+import "circletokenfactory/minters.proto";
+import "circletokenfactory/pauser.proto";
+import "circletokenfactory/blacklister.proto";
+import "circletokenfactory/owner.proto";
+import "circletokenfactory/minter_controller.proto";
+import "circletokenfactory/minting_denom.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/strangelove-ventures/noble/x/circletokenfactory/types";
+
+// GenesisState defines the circletokenfactory module's genesis state.
+message GenesisState {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated Blacklisted blacklistedList = 2 [ (gogoproto.nullable) = false ];
+  Paused paused = 3;
+  MasterMinter masterMinter = 4;
+  repeated Minters mintersList = 5 [ (gogoproto.nullable) = false ];
+  Pauser pauser = 6;
+  Blacklister blacklister = 7;
+  Owner owner = 8;
+  repeated MinterController minterControllerList = 9
+      [ (gogoproto.nullable) = false ];
+  MintingDenom mintingDenom = 10;
+  // this line is used by starport scaffolding # genesis/proto/state
+}
