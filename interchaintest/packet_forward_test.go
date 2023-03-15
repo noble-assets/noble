@@ -3,6 +3,7 @@ package interchaintest_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -51,7 +52,8 @@ func TestPacketForwardMiddleware(t *testing.T) {
 	repo, version := integration.GetDockerImageInfo()
 
 	var chainA, chainB, chainC, chainD *cosmos.CosmosChain
-	var ownerA, ownerB, ownerC, ownerD string
+	var nobleRoles NobleRoles
+	var paramauthorityWallet Authority
 
 	nv := 1
 	nf := 0
@@ -83,15 +85,39 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainA.Validators[0]
-					roles, err := noblePreGenesis(ctx, val)
+					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					ownerA = roles.Owner.Address
-					return nil
+					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					if err != nil {
+						return err
+					}
+					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNobleOwner(b, ownerA)
+					g := make(map[string]interface{})
+					if err := json.Unmarshal(b, &g); err != nil {
+						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+					}
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
+					if err != nil {
+						return nil, err
+					}
+					out, err := json.Marshal(&g)
+					if err != nil {
+						return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+					}
+					return out, nil
 				},
 			}},
 		{
@@ -119,15 +145,39 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainB.Validators[0]
-					roles, err := noblePreGenesis(ctx, val)
+					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					ownerB = roles.Owner.Address
-					return nil
+					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					if err != nil {
+						return err
+					}
+					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNobleOwner(b, ownerB)
+					g := make(map[string]interface{})
+					if err := json.Unmarshal(b, &g); err != nil {
+						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+					}
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
+					if err != nil {
+						return nil, err
+					}
+					out, err := json.Marshal(&g)
+					if err != nil {
+						return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+					}
+					return out, nil
 				},
 			}},
 		{
@@ -155,15 +205,39 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainC.Validators[0]
-					roles, err := noblePreGenesis(ctx, val)
+					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					ownerC = roles.Owner.Address
-					return nil
+					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					if err != nil {
+						return err
+					}
+					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNobleOwner(b, ownerC)
+					g := make(map[string]interface{})
+					if err := json.Unmarshal(b, &g); err != nil {
+						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+					}
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
+					if err != nil {
+						return nil, err
+					}
+					out, err := json.Marshal(&g)
+					if err != nil {
+						return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+					}
+					return out, nil
 				},
 			}},
 		{
@@ -191,15 +265,39 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainD.Validators[0]
-					roles, err := noblePreGenesis(ctx, val)
+					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					ownerD = roles.Owner.Address
-					return nil
+					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					if err != nil {
+						return err
+					}
+					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-					return modifyGenesisNobleOwner(b, ownerD)
+					g := make(map[string]interface{})
+					if err := json.Unmarshal(b, &g); err != nil {
+						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+					}
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisTokenfactory(g, "tokenfactory-usdc", DenomMetadata_drachma, &nobleRoles, true)
+					if err != nil {
+						return nil, err
+					}
+					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
+					if err != nil {
+						return nil, err
+					}
+					out, err := json.Marshal(&g)
+					if err != nil {
+						return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+					}
+					return out, nil
 				},
 			}},
 	})

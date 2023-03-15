@@ -2,7 +2,6 @@ package interchaintest_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -18,57 +17,56 @@ import (
 )
 
 var (
-	denomMetadata = []DenomMetadata{
-		{
-			Display: "rupee",
-			Base:    "urupee",
-			Name:    "rupee",
-			Symbol:  "RUPEE",
-			DenomUnits: []DenomUnit{
-				{
-					Denom: "urupee",
-					Aliases: []string{
-						"microrupee",
-					},
-					Exponent: "0",
+	DenomMetadata_rupee = DenomMetadata{
+
+		Display: "rupee",
+		Base:    "urupee",
+		Name:    "rupee",
+		Symbol:  "RUPEE",
+		DenomUnits: []DenomUnit{
+			{
+				Denom: "urupee",
+				Aliases: []string{
+					"microrupee",
 				},
-				{
-					Denom: "mrupee",
-					Aliases: []string{
-						"millirupee",
-					},
-					Exponent: "3",
+				Exponent: "0",
+			},
+			{
+				Denom: "mrupee",
+				Aliases: []string{
+					"millirupee",
 				},
-				{
-					Denom:    "rupee",
-					Exponent: "6",
-				},
+				Exponent: "3",
+			},
+			{
+				Denom:    "rupee",
+				Exponent: "6",
 			},
 		},
-		{
-			Display: "drachma",
-			Base:    "udrachma",
-			Name:    "drachma",
-			Symbol:  "DRACHMA",
-			DenomUnits: []DenomUnit{
-				{
-					Denom: "udrachma",
-					Aliases: []string{
-						"microdrachma",
-					},
-					Exponent: "0",
+	}
+	DenomMetadata_drachma = DenomMetadata{
+		Display: "drachma",
+		Base:    "udrachma",
+		Name:    "drachma",
+		Symbol:  "DRACHMA",
+		DenomUnits: []DenomUnit{
+			{
+				Denom: "udrachma",
+				Aliases: []string{
+					"microdrachma",
 				},
-				{
-					Denom: "mdrachma",
-					Aliases: []string{
-						"millidrachma",
-					},
-					Exponent: "3",
+				Exponent: "0",
+			},
+			{
+				Denom: "mdrachma",
+				Aliases: []string{
+					"millidrachma",
 				},
-				{
-					Denom:    "drachma",
-					Exponent: "6",
-				},
+				Exponent: "3",
+			},
+			{
+				Denom:    "drachma",
+				Exponent: "6",
 			},
 		},
 	}
@@ -138,24 +136,37 @@ type NobleRoles struct {
 
 // Creates tokenfactory wallets. Meant to run pre-genesis.
 // It then recovers the key on the specified validator.
-func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, val *cosmos.ChainNode) error {
+func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomMetadata DenomMetadata, val *cosmos.ChainNode, minSetup bool) error {
 	chainCfg := val.Chain.Config()
 
 	kr := keyring.NewInMemory()
 
-	nobleRoles.Owner = interchaintest.BuildWallet(kr, "owner", chainCfg)
-	nobleRoles.Owner2 = interchaintest.BuildWallet(kr, "owner2", chainCfg)
-	nobleRoles.MasterMinter = interchaintest.BuildWallet(kr, "masterminter", chainCfg)
-	nobleRoles.MinterController = interchaintest.BuildWallet(kr, "mintercontroller", chainCfg)
-	nobleRoles.MinterController2 = interchaintest.BuildWallet(kr, "mintercontroller2", chainCfg)
-	nobleRoles.Minter = interchaintest.BuildWallet(kr, "minter", chainCfg)
-	nobleRoles.Blacklister = interchaintest.BuildWallet(kr, "blacklister", chainCfg)
-	nobleRoles.Pauser = interchaintest.BuildWallet(kr, "pauser", chainCfg)
-
+	nobleRoles.Owner = interchaintest.BuildWallet(kr, "owner-"+denomMetadata.Base, chainCfg)
 	err := val.RecoverKey(ctx, nobleRoles.Owner.KeyName, nobleRoles.Owner.Mnemonic)
 	if err != nil {
 		return err
 	}
+	genesisWallet := ibc.WalletAmount{
+		Address: nobleRoles.Owner.Address,
+		Denom:   chainCfg.Denom,
+		Amount:  0,
+	}
+	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []types.Coin{types.NewCoin(genesisWallet.Denom, types.NewIntFromUint64(uint64(genesisWallet.Amount)))})
+	if err != nil {
+		return err
+	}
+	if minSetup {
+		return nil
+	}
+
+	nobleRoles.Owner2 = interchaintest.BuildWallet(kr, "owner2-"+denomMetadata.Base, chainCfg)
+	nobleRoles.MasterMinter = interchaintest.BuildWallet(kr, "masterminter-"+denomMetadata.Base, chainCfg)
+	nobleRoles.MinterController = interchaintest.BuildWallet(kr, "mintercontroller-"+denomMetadata.Base, chainCfg)
+	nobleRoles.MinterController2 = interchaintest.BuildWallet(kr, "mintercontroller2-"+denomMetadata.Base, chainCfg)
+	nobleRoles.Minter = interchaintest.BuildWallet(kr, "minter-"+denomMetadata.Base, chainCfg)
+	nobleRoles.Blacklister = interchaintest.BuildWallet(kr, "blacklister-"+denomMetadata.Base, chainCfg)
+	nobleRoles.Pauser = interchaintest.BuildWallet(kr, "pauser-"+denomMetadata.Base, chainCfg)
+
 	err = val.RecoverKey(ctx, nobleRoles.Owner2.KeyName, nobleRoles.Owner2.Mnemonic)
 	if err != nil {
 		return err
@@ -186,11 +197,6 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, val *c
 	}
 
 	genesisWallets := []ibc.WalletAmount{
-		{
-			Address: nobleRoles.Owner.Address,
-			Denom:   chainCfg.Denom,
-			Amount:  0,
-		},
 		{
 			Address: nobleRoles.Owner2.Address,
 			Denom:   chainCfg.Denom,
@@ -322,73 +328,40 @@ func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Ex
 // Modifies tokenfactory genesis accounts.
 // If minSetup = true, only the owner address, paused state, and denom is setup in genesis.
 // These are minimum requirements to start the chain. Otherwise all tokenfactory accounts are created.
-func modifyGenesisTokenfactory(genbz []byte, tokenfactory string, roles *NobleRoles, minSetup bool) ([]byte, error) {
-	g := make(map[string]interface{})
-	if err := json.Unmarshal(genbz, &g); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+func modifyGenesisTokenfactory(g map[string]interface{}, tokenfactoryModName string, denomMetadata DenomMetadata, roles *NobleRoles, minSetup bool) error {
+	if err := dyno.Set(g, TokenFactoryAddress{roles.Owner.Address}, "app_state", tokenfactoryModName, "owner"); err != nil {
+		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{roles.Owner.Address}, "app_state", tokenfactory, "owner"); err != nil {
-		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", tokenfactoryModName, "paused"); err != nil {
+		return fmt.Errorf("failed to set paused in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", tokenfactory, "paused"); err != nil {
-		return nil, fmt.Errorf("failed to set paused in genesis json: %w", err)
+	if err := dyno.Set(g, TokenFactoryDenom{denomMetadata.Base}, "app_state", tokenfactoryModName, "mintingDenom"); err != nil {
+		return fmt.Errorf("failed to set minting denom in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryDenom{denomMetadata[0].Base}, "app_state", tokenfactory, "mintingDenom"); err != nil {
-		return nil, fmt.Errorf("failed to set minting denom in genesis json: %w", err)
+	if err := dyno.Append(g, denomMetadata, "app_state", "bank", "denom_metadata"); err != nil {
+		return fmt.Errorf("failed to set denom metadata in genesis json: %w", err)
 	}
 	if minSetup {
-		out, err := json.Marshal(g)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-		}
-		return out, nil
+		return nil
 	}
-
-	if err := dyno.Set(g, TokenFactoryAddress{roles.MasterMinter.Address}, "app_state", tokenfactory, "masterMinter"); err != nil {
-		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	if err := dyno.Set(g, TokenFactoryAddress{roles.MasterMinter.Address}, "app_state", tokenfactoryModName, "masterMinter"); err != nil {
+		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{roles.Blacklister.Address}, "app_state", tokenfactory, "blacklister"); err != nil {
-		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	if err := dyno.Set(g, TokenFactoryAddress{roles.Blacklister.Address}, "app_state", tokenfactoryModName, "blacklister"); err != nil {
+		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{roles.Pauser.Address}, "app_state", tokenfactory, "pauser"); err != nil {
-		return nil, fmt.Errorf("failed to set owner address in genesis json: %w", err)
+	if err := dyno.Set(g, TokenFactoryAddress{roles.Pauser.Address}, "app_state", tokenfactoryModName, "pauser"); err != nil {
+		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	out, err := json.Marshal(g)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-	}
-	return out, nil
+	return nil
 }
 
-func modifyGenesisParamAuthority(genbz []byte, authorityAddress string) ([]byte, error) {
-	g := make(map[string]interface{})
-	if err := json.Unmarshal(genbz, &g); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+func modifyGenesisParamAuthority(genbz map[string]interface{}, authorityAddress string) error {
+	if err := dyno.Set(genbz, authorityAddress, "app_state", "params", "params", "authority"); err != nil {
+		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, authorityAddress, "app_state", "params", "params", "authority"); err != nil {
-		return nil, fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	if err := dyno.Set(genbz, authorityAddress, "app_state", "upgrade", "params", "authority"); err != nil {
+		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, authorityAddress, "app_state", "upgrade", "params", "authority"); err != nil {
-		return nil, fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
-	}
-	out, err := json.Marshal(g)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-	}
-	return out, nil
-}
-
-func modifyGenesisDenommetadata(genbz []byte) ([]byte, error) {
-	g := make(map[string]interface{})
-	if err := json.Unmarshal(genbz, &g); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
-	}
-	if err := dyno.Set(g, denomMetadata, "app_state", "bank", "denom_metadata"); err != nil {
-		return nil, fmt.Errorf("failed to set denom metadata in genesis json: %w", err)
-	}
-	out, err := json.Marshal(g)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-	}
-	return out, nil
+	return nil
 }
