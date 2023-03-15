@@ -107,11 +107,10 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	for _, m := range msgs {
 		switch m := m.(type) {
 		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
-			var addresses []string
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					addresses = append(addresses, m.ToAddress, m.FromAddress)
+					addresses := []string{m.ToAddress, m.FromAddress}
 					blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
 					if blacklisted {
 						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
@@ -123,7 +122,7 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						addresses = append(addresses, i.Address)
+						addresses := []string{i.Address}
 						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
 						if blacklisted {
 							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
@@ -135,7 +134,7 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 				}
 				for _, o := range m.Outputs {
 					for _, c := range o.Coins {
-						addresses = append(addresses, o.Address)
+						addresses := []string{o.Address}
 						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.circletokenfactory)
 						if blacklisted {
 							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
@@ -146,7 +145,7 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				addresses = append(addresses, m.Sender, m.Receiver)
+				addresses := []string{m.Sender, m.Receiver}
 				blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, m.Token, ad.tokenfactory, ad.circletokenfactory)
 				if blacklisted {
 					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
