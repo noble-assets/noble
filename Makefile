@@ -111,6 +111,9 @@ ictest-packet-forward:
 ictest-paramauthority:
 	cd interchaintest && go test -race -v -run TestNobleParamAuthority .
 
+ictest-paramauthorityChainUpgrade:
+	cd interchaintest && go test -race -v -run TestNobleChainUpgrade .
+
 ###############################################################################
 ###                                Build Image                              ###
 ###############################################################################
