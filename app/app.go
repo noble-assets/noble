@@ -88,6 +88,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
@@ -634,6 +635,7 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+	app.setupUpgradeHandlers()
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -805,6 +807,39 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
+}
+
+func (app *App) setupUpgradeHandlers() {
+	// neon upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		neon.UpgradeName,
+		neon.CreateNeonUpgradeHandler(
+			app.mm,
+			app.configurator,
+			*app.CircleTokenFactoryKeeper,
+			app.BankKeeper))
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	var stroreUpgrades *storetypes.StoreUpgrades
+
+	switch upgradeInfo.Name {
+	case neon.UpgradeName:
+		stroreUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{circletokenfactorymoduletypes.StoreKey},
+		}
+	}
+
+	if stroreUpgrades != nil {
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, stroreUpgrades))
+	}
 }
 
 // SimulationManager implements the SimulationApp interface
