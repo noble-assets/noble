@@ -41,14 +41,16 @@ func TestNobleChainUpgrade(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	_, version := integration.GetDockerImageInfo()
+	repo, version := integration.GetDockerImageInfo()
 
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
 	var paramauthorityWallet Authority
 
 	const (
-		upgradeName = "neon"
+		upgradeName       = "neon"
+		preUpgradeRepo    = "ghcr.io/strangelove-ventures/noble"
+		preUpgradeVersion = "v0.3.0"
 	)
 
 	chainCfg := ibc.ChainConfig{
@@ -65,8 +67,8 @@ func TestNobleChainUpgrade(t *testing.T) {
 		NoHostMount:    false,
 		Images: []ibc.DockerImage{
 			{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				Version:    "v0.3.0",
+				Repository: preUpgradeRepo,
+				Version:    preUpgradeVersion,
 				UidGid:     "1025:1025",
 			},
 		},
@@ -193,7 +195,9 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "error stopping node(s)")
 
 	// upgrade version and repo on all nodes
-	// TODO: fix local testing
+	for _, n := range noble.Nodes() {
+		n.Image.Repository = repo
+	}
 	noble.UpgradeVersion(ctx, client, version)
 
 	// start all nodes back up.
