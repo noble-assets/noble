@@ -216,4 +216,5 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "error fetching height after upgrade")
 
 	require.GreaterOrEqual(t, height, haltHeight+blocksAfterUpgrade, "height did not increment enough after upgrade")
+
 }
