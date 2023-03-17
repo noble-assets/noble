@@ -41,7 +41,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	repo, version := integration.GetDockerImageInfo()
+	_, version := integration.GetDockerImageInfo()
 
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
@@ -193,11 +193,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "error stopping node(s)")
 
 	// upgrade version and repo on all nodes
-	// upgrade version and repo on all nodes
-	for _, n := range noble.Nodes() {
-		n.Image.Repository = repo
-		n.Image.Version = version
-	}
+	noble.UpgradeVersion(ctx, client, version)
 
 	// start all nodes back up.
 	// validators reach consensus on first block after upgrade height
