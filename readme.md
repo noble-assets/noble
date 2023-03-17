@@ -26,23 +26,25 @@ The Access Control table below shows the functionality tied to each privileged a
 
 ## Access Control
 
-|                                | **Owner** | **Minter** | **Master Minter** | **Minter Controller** | **Pauser** | **Blacklister** | **Is Paused<br>(Actions Allowed)** |
-|--------------------------------|:---------:|:----------:|:-----------------:|:---------------------:|:----------:|:---------------:|:--------------------------------:|
-| **Blacklist**                  |           |            |                   |                       |            |        x        |                 x                |
-| **Unblacklist**                |           |            |                   |                       |            |        x        |                 x                |
-| **Burn**                       |           |      x     |                   |                       |            |                 |                                  |
-| **Mint**                       |           |      x     |                   |                       |            |                 |                                  |
-| **Add Minter Controller**      |           |            |         x         |                       |            |                 |                 x                |
-| **Add Minter with allowance**  |           |            |                   |           x           |            |                 |                 x                |
-| **Pause**                      |           |            |                   |                       |      x     |                 |                 x                |
-| **Unpause**                    |           |            |                   |                       |      x     |                 |                 x                |
-| **Remove Minter Controller**   |           |            |         x         |                       |            |                 |                 x                |
-| **Remove Minter**              |           |            |                   |           x           |            |                 |                 x                |
-| **Update Blacklister**         |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Master Minter**       |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Owner**               |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Pauser**              |     x     |            |                   |                       |            |                 |                 x                |
-| **Transer Tokens**             |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
+|                                             | **Owner** | **Minter** | **Master Minter** | **Minter Controller** | **Pauser** | **Blacklister** | **Is Paused<br>(Actions Allowed)** |
+|---------------------------------------------|:---------:|:----------:|:-----------------:|:---------------------:|:----------:|:---------------:|:--------------------------------:|
+| **Blacklist**                               |           |            |                   |                       |            |        x        |                 x                |
+| **Unblacklist**                             |           |            |                   |                       |            |        x        |                 x                |
+| **Burn**                                    |           |      x     |                   |                       |            |                 |                                  |
+| **Mint**                                    |           |      x     |                   |                       |            |                 |                                  |
+| **Add Minter Controller**                   |           |            |         x         |                       |            |                 |                 x                |
+| **Add Minter with allowance**               |           |            |                   |           x           |            |                 |                 x                |
+| **Pause**                                   |           |            |                   |                       |      x     |                 |                 x                |
+| **Unpause**                                 |           |            |                   |                       |      x     |                 |                 x                |
+| **Remove Minter Controller**                |           |            |         x         |                       |            |                 |                 x                |
+| **Remove Minter**                           |           |            |                   |           x           |            |                 |                 x                |
+| **Update Blacklister**                      |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Master Minter**                    |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Owner**                            |     x     |            |                   |                       |            |                 |                 x                |
+| **Update Pauser**                           |     x     |            |                   |                       |            |                 |                 x                |
+| **Transer Tokens (tokenfactory asset)**     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
+| **Transer Tokens (non-tokenfactory asset)** |     x     |      x     |         x         |           x           |      x     |        x        |                 x                |
+
 
 ## Security Guarantees in a Permissioned Validator Set (Proof of Authority) 
 
