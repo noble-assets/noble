@@ -1,6 +1,0 @@
-syntax = "proto3";
-package noble.circletokenfactory;
-
-option go_package = "github.com/strangelove-ventures/noble/x/circletokenfactory/types";
-
-message Blacklister { string address = 1; }

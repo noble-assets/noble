@@ -92,9 +92,9 @@ import (
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
-	circletokenfactorymodule "github.com/strangelove-ventures/noble/x/circletokenfactory"
-	circletokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
-	circletokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
+	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
+	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
@@ -134,7 +134,7 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		tokenfactorymodule.AppModuleBasic{},
-		circletokenfactorymodule.AppModuleBasic{},
+		fiattokenfactorymodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
 
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
@@ -142,14 +142,14 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:               nil,
-		distrtypes.ModuleName:                    nil,
-		icatypes.ModuleName:                      nil,
-		ibctransfertypes.ModuleName:              {authtypes.Minter, authtypes.Burner},
-		tokenfactorymoduletypes.ModuleName:       {authtypes.Minter, authtypes.Burner, authtypes.Staking},
-		circletokenfactorymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
-		stakingtypes.BondedPoolName:              {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:           {authtypes.Burner, authtypes.Staking},
+		authtypes.FeeCollectorName:             nil,
+		distrtypes.ModuleName:                  nil,
+		icatypes.ModuleName:                    nil,
+		ibctransfertypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
+		tokenfactorymoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		fiattokenfactorymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		stakingtypes.BondedPoolName:            {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:         {authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -210,8 +210,8 @@ type App struct {
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
-	TokenFactoryKeeper       *tokenfactorymodulekeeper.Keeper
-	CircleTokenFactoryKeeper *circletokenfactorymodulekeeper.Keeper
+	TokenFactoryKeeper     *tokenfactorymodulekeeper.Keeper
+	FiatTokenFactoryKeeper *fiattokenfactorymodulekeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -249,7 +249,7 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey, distrtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
-		tokenfactorymoduletypes.StoreKey, circletokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
+		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -432,14 +432,14 @@ func New(
 	)
 	tokenfactoryModule := tokenfactorymodule.NewAppModule(appCodec, app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.CircleTokenFactoryKeeper = circletokenfactorymodulekeeper.NewKeeper(
+	app.FiatTokenFactoryKeeper = fiattokenfactorymodulekeeper.NewKeeper(
 		appCodec,
-		keys[circletokenfactorymoduletypes.StoreKey],
-		app.GetSubspace(circletokenfactorymoduletypes.ModuleName),
+		keys[fiattokenfactorymoduletypes.StoreKey],
+		app.GetSubspace(fiattokenfactorymoduletypes.ModuleName),
 
 		app.BankKeeper,
 	)
-	circletokenfactorymodule := circletokenfactorymodule.NewAppModule(appCodec, app.CircleTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
+	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -450,7 +450,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.CircleTokenFactoryKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.FiatTokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -490,7 +490,7 @@ func New(
 		transferModule,
 		icaModule,
 		tokenfactoryModule,
-		circletokenfactorymodule,
+		fiattokenfactorymodule,
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
@@ -521,7 +521,7 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
-		circletokenfactorymoduletypes.ModuleName,
+		fiattokenfactorymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -545,7 +545,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
-		circletokenfactorymoduletypes.ModuleName,
+		fiattokenfactorymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -574,7 +574,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
-		circletokenfactorymoduletypes.ModuleName,
+		fiattokenfactorymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -601,7 +601,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		tokenfactoryModule,
-		circletokenfactorymodule,
+		fiattokenfactorymodule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -621,8 +621,8 @@ func New(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			tokenFactoryKeeper:       app.TokenFactoryKeeper,
-			circleTokenFactoryKeeper: app.CircleTokenFactoryKeeper,
+			tokenFactoryKeeper:     app.TokenFactoryKeeper,
+			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
 
 			IBCKeeper: app.IBCKeeper,
 		},
@@ -802,7 +802,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
-	paramsKeeper.Subspace(circletokenfactorymoduletypes.ModuleName)
+	paramsKeeper.Subspace(fiattokenfactorymoduletypes.ModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
@@ -816,7 +816,7 @@ func (app *App) setupUpgradeHandlers() {
 		neon.CreateNeonUpgradeHandler(
 			app.mm,
 			app.configurator,
-			*app.CircleTokenFactoryKeeper,
+			*app.FiatTokenFactoryKeeper,
 			app.BankKeeper,
 			app.AccountKeeper))
 
@@ -833,7 +833,7 @@ func (app *App) setupUpgradeHandlers() {
 	switch upgradeInfo.Name {
 	case neon.UpgradeName:
 		stroreUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{circletokenfactorymoduletypes.StoreKey},
+			Added: []string{fiattokenfactorymoduletypes.StoreKey},
 		}
 	}
 

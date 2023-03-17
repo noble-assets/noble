@@ -9,8 +9,8 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
-	circleKeeper "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
-	circle_types "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
+	fiatKeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	fiat_types "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
@@ -19,17 +19,17 @@ var _ porttypes.IBCModule = &IBCMiddleware{}
 
 // IBCMiddleware implements the tokenfactory keeper in order to check against blacklisted addresses.
 type IBCMiddleware struct {
-	app          porttypes.IBCModule
-	keeper       *keeper.Keeper
-	circleKeeper *circleKeeper.Keeper
+	app        porttypes.IBCModule
+	keeper     *keeper.Keeper
+	fiatKeeper *fiatKeeper.Keeper
 }
 
 // NewIBCMiddleware creates a new IBCMiddleware given the keeper and underlying application.
-func NewIBCMiddleware(app porttypes.IBCModule, k *keeper.Keeper, ck *circleKeeper.Keeper) IBCMiddleware {
+func NewIBCMiddleware(app porttypes.IBCModule, k *keeper.Keeper, ck *fiatKeeper.Keeper) IBCMiddleware {
 	return IBCMiddleware{
-		app:          app,
-		keeper:       k,
-		circleKeeper: ck,
+		app:        app,
+		keeper:     k,
+		fiatKeeper: ck,
 	}
 }
 
@@ -104,7 +104,7 @@ func (im IBCMiddleware) OnRecvPacket(
 	denomTrace := transfertypes.ParseDenomTrace(data.Denom)
 
 	tfMintingDenom := im.keeper.GetMintingDenom(ctx)
-	ctfMintingDenom := im.circleKeeper.GetMintingDenom(ctx)
+	ctfMintingDenom := im.fiatKeeper.GetMintingDenom(ctx)
 
 	switch {
 	// denom is not tokenfactory denom
@@ -137,10 +137,10 @@ func (im IBCMiddleware) OnRecvPacket(
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
 			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
 		}
-	// denom is circle-tokenfactory asset
+	// denom is fiat-tokenfactory asset
 	case denomTrace.BaseDenom == ctfMintingDenom.Denom:
-		if im.circleKeeper.GetPaused(ctx).Paused {
-			return channeltypes.NewErrorAcknowledgement(circle_types.ErrPaused.Error())
+		if im.fiatKeeper.GetPaused(ctx).Paused {
+			return channeltypes.NewErrorAcknowledgement(fiat_types.ErrPaused.Error())
 		}
 
 		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
@@ -148,7 +148,7 @@ func (im IBCMiddleware) OnRecvPacket(
 			return channeltypes.NewErrorAcknowledgement(err.Error())
 		}
 
-		_, found := im.circleKeeper.GetBlacklisted(ctx, addressBz)
+		_, found := im.fiatKeeper.GetBlacklisted(ctx, addressBz)
 		if found {
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
 			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
@@ -159,7 +159,7 @@ func (im IBCMiddleware) OnRecvPacket(
 			return channeltypes.NewErrorAcknowledgement(err.Error())
 		}
 
-		_, found = im.circleKeeper.GetBlacklisted(ctx, addressBz)
+		_, found = im.fiatKeeper.GetBlacklisted(ctx, addressBz)
 		if found {
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
 			return channeltypes.NewErrorAcknowledgement(ackErr.Error())

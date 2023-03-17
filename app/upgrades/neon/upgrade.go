@@ -9,31 +9,31 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	"github.com/strangelove-ventures/noble/x/circletokenfactory"
-	circletokenfactorykeeper "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
-	circletokenfactorytypes "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/fiattokenfactory"
+	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 )
 
-func initialCircleTokenFactoryState() circletokenfactorytypes.GenesisState {
-	s := circletokenfactorytypes.DefaultGenesis()
+func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
+	s := fiattokenfactorytypes.DefaultGenesis()
 
-	s.Owner = &circletokenfactorytypes.Owner{
+	s.Owner = &fiattokenfactorytypes.Owner{
 		Address: "noble10908tarhjl6zzlm4k6u9hkax48qeutk28tj4sp",
 	}
 
-	s.MasterMinter = &circletokenfactorytypes.MasterMinter{
+	s.MasterMinter = &fiattokenfactorytypes.MasterMinter{
 		Address: "noble1fknmpexguqlwu0pvgjgcktw525yy0r5r504mnp",
 	}
 
-	s.Blacklister = &circletokenfactorytypes.Blacklister{
+	s.Blacklister = &fiattokenfactorytypes.Blacklister{
 		Address: "noble1nklvu0y324jult8h3ymtn3lg5064k8jdwmzgd0",
 	}
 
-	s.Pauser = &circletokenfactorytypes.Pauser{
+	s.Pauser = &fiattokenfactorytypes.Pauser{
 		Address: "noble1dug3wwc995jvmhjrx9k34tvfrzprvfuedu49y5",
 	}
 
-	s.MinterControllerList = []circletokenfactorytypes.MinterController{
+	s.MinterControllerList = []fiattokenfactorytypes.MinterController{
 		{
 			Controller: "noble1rq6m2g3hqflk6zm3pmf6h49ufjm9w9r9ue32yr",
 			Minter:     "noble1n35s7ytfyqrmhkjjwd06ltztjgxyyrutwlrncc",
@@ -52,7 +52,7 @@ func initialCircleTokenFactoryState() circletokenfactorytypes.GenesisState {
 		},
 	}
 
-	s.MintingDenom = &circletokenfactorytypes.MintingDenom{
+	s.MintingDenom = &fiattokenfactorytypes.MintingDenom{
 		Denom: "uusdc",
 	}
 
@@ -84,7 +84,7 @@ var (
 func CreateNeonUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
-	circleTFKeeper circletokenfactorykeeper.Keeper,
+	fiatTFKeeper fiattokenfactorykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	accountKeeper authkeeper.AccountKeeper,
 
@@ -96,23 +96,23 @@ func CreateNeonUpgradeHandler(
 		logger.Debug("adding usdc to bank denom metadata")
 		bankKeeper.SetDenomMetaData(ctx, denomMetadataUsdc)
 
-		logger.Debug("setting circle-tokenfactory params")
-		circleTokenFactoryParams := initialCircleTokenFactoryState()
-		circletokenfactory.InitGenesis(ctx, &circleTFKeeper, bankKeeper, circleTokenFactoryParams)
+		logger.Debug("setting fiat-tokenfactory params")
+		fiatTokenFactoryParams := initialFiatTokenFactoryState()
+		fiattokenfactory.InitGenesis(ctx, &fiatTFKeeper, bankKeeper, fiatTokenFactoryParams)
 
-		logger.Debug("adding circle-tokenfactory accounts to account keeper")
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.Owner.Address)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MasterMinter.Address)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.Blacklister.Address)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.Pauser.Address)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[0].Controller)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[0].Minter)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[1].Controller)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[1].Minter)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[2].Controller)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[2].Minter)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[3].Controller)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[3].Minter)))
+		logger.Debug("adding fiat-tokenfactory accounts to account keeper")
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.Owner.Address)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MasterMinter.Address)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.Blacklister.Address)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.Pauser.Address)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[0].Controller)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[0].Minter)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[1].Controller)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[1].Minter)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[2].Controller)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[2].Minter)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[3].Controller)))
+		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(fiatTokenFactoryParams.MinterControllerList[3].Minter)))
 
 		return mm.RunMigrations(ctx, cfg, vm)
 	}
