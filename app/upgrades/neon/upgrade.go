@@ -9,24 +9,31 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"github.com/strangelove-ventures/noble/x/circletokenfactory"
 	circletokenfactorykeeper "github.com/strangelove-ventures/noble/x/circletokenfactory/keeper"
 	circletokenfactorytypes "github.com/strangelove-ventures/noble/x/circletokenfactory/types"
 )
 
-var circleTokenFactoryParams = circletokenfactorytypes.GenesisState{
-	Owner: &circletokenfactorytypes.Owner{
+func initialCircleTokenFactoryState() circletokenfactorytypes.GenesisState {
+	s := circletokenfactorytypes.DefaultGenesis()
+
+	s.Owner = &circletokenfactorytypes.Owner{
 		Address: "noble10908tarhjl6zzlm4k6u9hkax48qeutk28tj4sp",
-	},
-	MasterMinter: &circletokenfactorytypes.MasterMinter{
+	}
+
+	s.MasterMinter = &circletokenfactorytypes.MasterMinter{
 		Address: "noble1fknmpexguqlwu0pvgjgcktw525yy0r5r504mnp",
-	},
-	Blacklister: &circletokenfactorytypes.Blacklister{
+	}
+
+	s.Blacklister = &circletokenfactorytypes.Blacklister{
 		Address: "noble1nklvu0y324jult8h3ymtn3lg5064k8jdwmzgd0",
-	},
-	Pauser: &circletokenfactorytypes.Pauser{
+	}
+
+	s.Pauser = &circletokenfactorytypes.Pauser{
 		Address: "noble1dug3wwc995jvmhjrx9k34tvfrzprvfuedu49y5",
-	},
-	MinterControllerList: []circletokenfactorytypes.MinterController{
+	}
+
+	s.MinterControllerList = []circletokenfactorytypes.MinterController{
 		{
 			Controller: "noble1rq6m2g3hqflk6zm3pmf6h49ufjm9w9r9ue32yr",
 			Minter:     "noble1n35s7ytfyqrmhkjjwd06ltztjgxyyrutwlrncc",
@@ -43,10 +50,13 @@ var circleTokenFactoryParams = circletokenfactorytypes.GenesisState{
 			Controller: "noble1hftnfd8tp6zn4marfvvkhldyk0jpr2ynzp4xey",
 			Minter:     "noble1yjlapww37ryydskg5x6tpfugp0n8wasnzshlyq",
 		},
-	},
-	MintingDenom: &circletokenfactorytypes.MintingDenom{
+	}
+
+	s.MintingDenom = &circletokenfactorytypes.MintingDenom{
 		Denom: "uusdc",
-	},
+	}
+
+	return *s
 }
 
 var (
@@ -87,9 +97,8 @@ func CreateNeonUpgradeHandler(
 		bankKeeper.SetDenomMetaData(ctx, denomMetadataUsdc)
 
 		logger.Debug("setting circle-tokenfactory params")
-		circleTFKeeper.SetParams(ctx, circletokenfactorytypes.DefaultParams())
-		circleTFKeeper.SetOwner(ctx, *circleTokenFactoryParams.Owner)
-		circleTFKeeper.SetMintingDenom(ctx, *circleTokenFactoryParams.MintingDenom)
+		circleTokenFactoryParams := initialCircleTokenFactoryState()
+		circletokenfactory.InitGenesis(ctx, &circleTFKeeper, bankKeeper, circleTokenFactoryParams)
 
 		logger.Debug("adding circle-tokenfactory accounts to account keeper")
 		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.Owner.Address)))
