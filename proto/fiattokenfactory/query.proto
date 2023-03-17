@@ -49,8 +49,7 @@ service Query {
   }
   // Queries a Minters by index.
   rpc Minters(QueryGetMintersRequest) returns (QueryGetMintersResponse) {
-    option (google.api.http).get =
-        "/noble/fiattokenfactory/minters/{address}";
+    option (google.api.http).get = "/noble/fiattokenfactory/minters/{address}";
   }
 
   // Queries a list of Minters items.
@@ -81,8 +80,7 @@ service Query {
   // Queries a list of MinterController items.
   rpc MinterControllerAll(QueryAllMinterControllerRequest)
       returns (QueryAllMinterControllerResponse) {
-    option (google.api.http).get =
-        "/noble/fiattokenfactory/minter_controller";
+    option (google.api.http).get = "/noble/fiattokenfactory/minter_controller";
   }
 
   // Queries a MintingDenom by index.
