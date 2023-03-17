@@ -7,12 +7,16 @@ import (
 	"testing"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkupgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
+	"github.com/strangelove-ventures/noble/cmd"
 	integration "github.com/strangelove-ventures/noble/interchaintest"
+	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest"
@@ -43,12 +47,10 @@ func TestNobleChainUpgrade(t *testing.T) {
 	var roles NobleRoles
 	var paramauthorityWallet Authority
 
-	const upgradeName = "neon"
-
-	// TODO update these once there is an upgrade handler and the pre-upgrade version has the upgrade CLI methods
-	var (
+	const (
+		upgradeName       = "neon"
 		preUpgradeRepo    = "ghcr.io/strangelove-ventures/noble"
-		preUpgradeVersion = "andrew-upgrade_cli"
+		preUpgradeVersion = "v0.3.0"
 	)
 
 	chainCfg := ibc.ChainConfig{
@@ -102,7 +104,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	}
 
 	nv := 2
-	nf := 1
+	nf := 0
 
 	logger := zaptest.NewLogger(t)
 
@@ -139,11 +141,32 @@ func TestNobleChainUpgrade(t *testing.T) {
 
 	haltHeight := height + haltHeightDelta
 
-	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.Authority.KeyName, "upgrade",
-		"software-upgrade", upgradeName,
-		"--upgrade-height", fmt.Sprint(haltHeight),
-		"--upgrade-info", "Noble software upgrade",
-		"-b", "block",
+	cmd.SetPrefixes(chainCfg.Bech32Prefix)
+
+	broadcaster := cosmos.NewBroadcaster(t, noble)
+
+	upgradePlan := sdkupgradetypes.Plan{
+		Name:   upgradeName,
+		Height: int64(haltHeight),
+		Info:   upgradeName + " chain upgrade",
+	}
+
+	decoded := sdk.MustAccAddressFromBech32(paramauthorityWallet.Authority.Address)
+	wallet := &ibc.Wallet{
+		Address:  string(decoded),
+		Mnemonic: paramauthorityWallet.Authority.Mnemonic,
+		KeyName:  paramauthorityWallet.Authority.KeyName,
+		CoinType: paramauthorityWallet.Authority.CoinType,
+	}
+
+	_, err = cosmos.BroadcastTx(
+		ctx,
+		broadcaster,
+		wallet,
+		&upgradetypes.MsgSoftwareUpgrade{
+			Authority: paramauthorityWallet.Authority.Address,
+			Plan:      upgradePlan,
+		},
 	)
 	require.NoError(t, err, "error submitting software upgrade tx")
 
