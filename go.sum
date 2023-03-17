@@ -822,8 +822,8 @@ github.com/spf13/viper v1.14.0/go.mod h1:WT//axPky3FdvXHzGw33dNdXXXfFQqmEalje+eg
 github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4/go.mod h1:RZLeN1LMWmRsyYjvAu+I6Dm9QmlDaIIt+Y+4Kd7Tp+Q=
 github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.4 h1:YCm9tIMOwbjGL6U0ygIgh5+1FEiofgN3Y/D7Ia0BB18=
 github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.4/go.mod h1:ncgsf5rykh36HkM16BNcKKx1XzVRdWXt+4pph1syDHE=
-github.com/strangelove-ventures/paramauthority v0.1.1-0.20230120184403-39a8bf5f845d h1:jH4xK8y5uxG8fV2Onc1/fcBnsfDpGKHcb0g13tftuJk=
-github.com/strangelove-ventures/paramauthority v0.1.1-0.20230120184403-39a8bf5f845d/go.mod h1:PHq/b8q6YfBDJpo34RlnWw+cL5m5Bids2prBUWzsoEM=
+github.com/strangelove-ventures/paramauthority v0.1.1 h1:rvAnF+dTRMG+rHmD9LL8OWbxu1uFgo0Zi+JZ6cQ+I60=
+github.com/strangelove-ventures/paramauthority v0.1.1/go.mod h1:PHq/b8q6YfBDJpo34RlnWw+cL5m5Bids2prBUWzsoEM=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
