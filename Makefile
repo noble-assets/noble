@@ -103,16 +103,16 @@ test:
 	go test -v -race ./...
 
 ictest-tkn-factory:
-	cd interchaintest && go test -race -v -run ^TestNobleChain$ .
+	cd interchaintest && go test -race -v -run "^TestNobleChain$" .
 
 ictest-packet-forward:
-	cd interchaintest && go test -race -v -run ^TestPacketForwardMiddleware$ .
+	cd interchaintest && go test -race -v -run "^TestPacketForwardMiddleware$" .
 
 ictest-paramauthority:
-	cd interchaintest && go test -race -v -run ^TestNobleParamAuthority$ .
+	cd interchaintest && go test -race -v -run "^TestNobleParamAuthority$" .
 
 ictest-paramauthorityChainUpgrade:
-	cd interchaintest && go test -race -v -run ^TestNobleChainUpgrade$ .
+	cd interchaintest && go test -race -v -run "^TestNobleChainUpgrade"$ .
 
 ###############################################################################
 ###                                Build Image                              ###
