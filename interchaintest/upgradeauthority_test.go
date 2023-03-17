@@ -193,6 +193,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "error stopping node(s)")
 
 	// upgrade version and repo on all nodes
+	// TODO: fix local testing
 	noble.UpgradeVersion(ctx, client, version)
 
 	// start all nodes back up.
