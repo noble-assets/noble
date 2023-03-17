@@ -104,8 +104,6 @@ func CreateNeonUpgradeHandler(
 		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[2].Minter)))
 		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[3].Controller)))
 		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[3].Minter)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[4].Controller)))
-		accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, sdk.MustAccAddressFromBech32(circleTokenFactoryParams.MinterControllerList[4].Minter)))
 
 		return mm.RunMigrations(ctx, cfg, vm)
 	}
