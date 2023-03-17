@@ -817,7 +817,8 @@ func (app *App) setupUpgradeHandlers() {
 			app.mm,
 			app.configurator,
 			*app.CircleTokenFactoryKeeper,
-			app.BankKeeper))
+			app.BankKeeper,
+			app.AccountKeeper))
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
