@@ -119,6 +119,6 @@ jobs:
       - name: checkout chain
         uses: actions/checkout@v2
         
-      - run: make paramauthorityChainUpgrade
+      - run: make ictest-paramauthorityChainUpgrade
         env:
           BRANCH_CI: ${{needs.build-and-push-image.outputs.branchTag}}
