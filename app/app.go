@@ -95,6 +95,7 @@ import (
 	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
 	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/globalfee"
 	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
@@ -624,7 +625,8 @@ func New(
 			tokenFactoryKeeper:     app.TokenFactoryKeeper,
 			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
 
-			IBCKeeper: app.IBCKeeper,
+			IBCKeeper:         app.IBCKeeper,
+			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 		},
 	)
 	if err != nil {
