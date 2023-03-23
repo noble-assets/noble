@@ -3,7 +3,7 @@
 
 ## Overview
 
-Noble is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers onthe Noble blockchain.
+[Noble](https://nobleassets.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers onthe Noble blockchain.
 
 ## Noble App-Chain Design 
 
@@ -104,9 +104,9 @@ In collaboration with StrangeLove, Noble intends to build an in-house team focus
 
 ## Media
 
-TWITTER: @noble_xyz
+TWITTER: [@noble_xyz](https://twitter.com/noble_xyz/)
 
-COMING SOON: nobleassets.xyz 
+WEB: [nobleassets.xyz](https://nobleassets.xyz/)
 
  
 ## Build and install to go bin path
