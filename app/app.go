@@ -627,6 +627,7 @@ func New(
 
 			IBCKeeper:         app.IBCKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 		},
 	)
 	if err != nil {
