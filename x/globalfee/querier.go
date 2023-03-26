@@ -24,14 +24,21 @@ func NewGrpcQuerier(paramSource ParamSource) GrpcQuerier {
 	return GrpcQuerier{paramSource: paramSource}
 }
 
-// MinimumGasPrices return minimum gas prices
-func (g GrpcQuerier) MinimumGasPrices(stdCtx context.Context, _ *types.QueryMinimumGasPricesRequest) (*types.QueryMinimumGasPricesResponse, error) {
-	var minGasPrices sdk.DecCoins
+// Params returns the total set of global fee parameters.
+func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest) (*types.Params, error) {
+	var (
+		minGasPrices         sdk.DecCoins
+		bypassMinFeeMsgTypes []string
+	)
 	ctx := sdk.UnwrapSDKContext(stdCtx)
 	if g.paramSource.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		g.paramSource.Get(ctx, types.ParamStoreKeyMinGasPrices, &minGasPrices)
 	}
-	return &types.QueryMinimumGasPricesResponse{
-		MinimumGasPrices: minGasPrices,
+	if g.paramSource.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
+		g.paramSource.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMinFeeMsgTypes)
+	}
+	return &types.Params{
+		MinimumGasPrices:     minGasPrices,
+		BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
 	}, nil
 }

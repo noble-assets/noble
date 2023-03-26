@@ -1,4 +1,4 @@
-# Gaia Fees and Fees Checks
+# Noble Fees and Fees Checks
 
 ## Fee Parameters
 Noble allows managing fees using 3 parameters:
@@ -54,28 +54,18 @@ Bypass messages are messages that are exempt from paying fees. The above global 
 - The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`. Note: the current `MaxTotalBypassMinFeeMsgGasUsage` is set to `1,000,000`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
-Node operators can configure `bypass-min-fee-msg-types` in `config/app.toml`.
+The list of these messages is stored in module parameters and can be updated via governance proposals or the maintenence multisig. The following are default:
 
-- Nodes created using Gaiad `v7.0.2` or `v9.0.x` use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults. 
-- Nodes created using Gaiad `v10.0.x` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]` as defaults. 
-- Node Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
-- Nodes created using Gaiad `v7.0.1` and `v7.0.0` do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using same default values as in `v7.0.2`. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
-
-An example of `bypass-min-fee-msg-types` in `app.toml`:
-
-```shell
-
-###############################################################################
-###                        Custom Gaia Configuration                        ###
-###############################################################################
-# bypass-min-fee-msg-types defines custom message types the operator may set that
-# will bypass minimum fee checks during CheckTx.
-#
-# Example:
-# ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
-bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]
+```go
+defaultBypassMinFeeMsgTypes := []string{
+  "/ibc.core.client.v1.MsgUpdateClient",
+  "/ibc.core.channel.v1.MsgRecvPacket",
+  "/ibc.core.channel.v1.MsgAcknowledgement",
+  "/ibc.applications.transfer.v1.MsgTransfer",
+  "/ibc.core.channel.v1.MsgTimeout",
+  "/ibc.core.channel.v1.MsgTimeoutOnClose",
+}
 ```
-
 
 ## Fee AnteHandler Behaviour
 
@@ -88,9 +78,10 @@ If the denoms of the transaction fees are a subset of the merged fees and at lea
 CLI queries can be used to retrieve the global fee value:
 
 ```shell
-gaiad q globalfee minimum-gas-prices
+nobled q globalfee params
 # or
-gaiad q params subspace globalfee MinimumGasPricesParam
+nobled q params subspace globalfee MinimumGasPricesParam
+nobled q params subspace globalfee BypassMinFeeMsgTypesParam
 ```
 
 If the global fee is not set, the query returns an empty global fees list: `minimum_gas_prices: []`. In this case the Cosmos Hub will use `0uatom` as global fee in this case (the default fee denom).

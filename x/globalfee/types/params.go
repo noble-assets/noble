@@ -9,11 +9,24 @@ import (
 )
 
 // ParamStoreKeyMinGasPrices store key
-var ParamStoreKeyMinGasPrices = []byte("MinimumGasPricesParam")
+var (
+	ParamStoreKeyMinGasPrices         = []byte("MinimumGasPricesParam")
+	ParamStoreKeyBypassMinFeeMsgTypes = []byte("BypassMinFeeMsgTypesParam")
+)
 
 // DefaultParams returns default parameters
 func DefaultParams() Params {
-	return Params{MinimumGasPrices: sdk.DecCoins{}}
+	return Params{
+		MinimumGasPrices: sdk.DecCoins{},
+		BypassMinFeeMsgTypes: []string{
+			"/ibc.core.client.v1.MsgUpdateClient",
+			"/ibc.core.channel.v1.MsgRecvPacket",
+			"/ibc.core.channel.v1.MsgAcknowledgement",
+			"/ibc.applications.transfer.v1.MsgTransfer",
+			"/ibc.core.channel.v1.MsgTimeout",
+			"/ibc.core.channel.v1.MsgTimeoutOnClose",
+		},
+	}
 }
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -31,6 +44,9 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(
 			ParamStoreKeyMinGasPrices, &p.MinimumGasPrices, validateMinimumGasPrices,
 		),
+		paramtypes.NewParamSetPair(
+			ParamStoreKeyBypassMinFeeMsgTypes, &p.BypassMinFeeMsgTypes, validateBypassMinFeeMsgTypes,
+		),
 	}
 }
 
@@ -43,6 +59,16 @@ func validateMinimumGasPrices(i interface{}) error {
 
 	dec := DecCoins(v)
 	return dec.Validate()
+}
+
+// requires string array
+func validateBypassMinFeeMsgTypes(i interface{}) error {
+	if _, ok := i.([]string); !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected []string", i)
+	}
+
+	// todo: validate msg types are valid proto msg types?
+	return nil
 }
 
 // Validate checks that the DecCoins are sorted, have nonnegtive amount, with a valid and unique
