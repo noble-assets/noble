@@ -11,6 +11,9 @@ The following steps assume the following:
     - Minter -> minter
 - Each wallet being used (except Owner and Alice) are pre-funded (making them known to the network) or included in genesis.
 
+
+---
+
 1. The `owner` account is set at genesis. Use this `owner` account to select a `Master Minter`.
 
 ```
