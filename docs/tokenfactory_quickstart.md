@@ -1,9 +1,9 @@
-# Tokenfactory Quickstart
+# Tokenfactory Quick Start
 
 ### The goal of this document is to run through the necessary commands to mint a tokenfactory asset.
 
-The following steps assume the following:
-- Just the "owner" account was set at genesis
+The steps below assume the following:
+- Just the "owner" account was set at genesis (This is a mandatory step to start the chain).
 - The keys are named as follows (this is relevant for the `--from` flag):
     - Owner -> owner
     - Master Minter -> masterminter
@@ -17,10 +17,10 @@ The following steps assume the following:
 1. The `owner` account is set at genesis. Use this `owner` account to select a `Master Minter`.
 
 ```
-nobled tx tokenfactory update-master-minter <MASTER-MINTNER's ADDRESS> --from owner
+nobled tx tokenfactory update-master-minter <MASTER-MINTERS's ADDRESS> --from owner
 ```
 
-2. Use the `Master Minter` account to assign a `Minter Conroller` to a `Minter`.
+2. Use the `Master Minter` account to assign a `Minter Controller` to a `Minter`.
 
 ```
 nobled tx tokenfactory configure-minter-controller <MINTER-CONTROLLER ADDRESS> <MINTER ADDRESS> --from masterminter
