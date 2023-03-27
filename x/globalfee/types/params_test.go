@@ -11,6 +11,7 @@ func TestDefaultParams(t *testing.T) {
 	p := DefaultParams()
 	require.EqualValues(t, p.MinimumGasPrices, sdk.DecCoins{})
 	require.EqualValues(t, p.BypassMinFeeMsgTypes, []string{
+		"/ibc.core.client.v1.MsgUpdateClient",
 		"/ibc.core.channel.v1.MsgRecvPacket",
 		"/ibc.core.channel.v1.MsgAcknowledgement",
 		"/ibc.applications.transfer.v1.MsgTransfer",
