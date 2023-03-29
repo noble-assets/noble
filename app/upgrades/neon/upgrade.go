@@ -18,37 +18,37 @@ func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
 	s := fiattokenfactorytypes.DefaultGenesis()
 
 	s.Owner = &fiattokenfactorytypes.Owner{
-		Address: "noble10908tarhjl6zzlm4k6u9hkax48qeutk28tj4sp",
+		Address: "noble1ljd4ywg3a5rrnxgq2c98pzcjq99f4kl764tmjv",
 	}
 
 	s.MasterMinter = &fiattokenfactorytypes.MasterMinter{
-		Address: "noble1fknmpexguqlwu0pvgjgcktw525yy0r5r504mnp",
+		Address: "noble1qty27zcvl2sgzzklz9syl0jc978ufm2e8mpufq",
 	}
 
 	s.Blacklister = &fiattokenfactorytypes.Blacklister{
-		Address: "noble1nklvu0y324jult8h3ymtn3lg5064k8jdwmzgd0",
+		Address: "noble1jvx5x7pnjsaw80uc6j2fmv0he4kymg4dva0gfx",
 	}
 
 	s.Pauser = &fiattokenfactorytypes.Pauser{
-		Address: "noble1dug3wwc995jvmhjrx9k34tvfrzprvfuedu49y5",
+		Address: "noble1szdzqxvq99vrpdys66nlp3q3794yuvvkp45mxj",
 	}
 
 	s.MinterControllerList = []fiattokenfactorytypes.MinterController{
 		{
-			Controller: "noble1rq6m2g3hqflk6zm3pmf6h49ufjm9w9r9ue32yr",
-			Minter:     "noble1n35s7ytfyqrmhkjjwd06ltztjgxyyrutwlrncc",
+			Controller: "noble1xjz2j7y62us6famtq7fyfnenwv0k5yzhmsgaqt",
+			Minter:     "noble18hn9z6wggf665vnqnvjs084tj84ysjjhq0y555",
 		},
 		{
-			Controller: "noble1f7ylpwvyf4cuy9t026jr56gnfykmgeau0rger2",
-			Minter:     "noble1gezp6maa6wjle5weqqjfy9s58gce4m3arzgjty",
+			Controller: "noble1fetue2t0t6qxj579986425n4m2rhpp6hxtm7pq",
+			Minter:     "noble10yyx9vs73gg6v46lcxl4hp2cgw95j4tjr9dk9w",
 		},
 		{
-			Controller: "noble1rn99mk9fxvqmsmfwe3y4spzmgd9v4ae2k79vup",
-			Minter:     "noble1r9w4c9nws79krvdqx58k9jpt8sng68rhqmdtqx",
+			Controller: "noble1v4t7awfpx6vw4mf9lyalu8qjf3sm8nfutl090f",
+			Minter:     "noble1aq82vs8vwt0yqxljqcv36x5e6gvk775dcgs22u",
 		},
 		{
-			Controller: "noble1hftnfd8tp6zn4marfvvkhldyk0jpr2ynzp4xey",
-			Minter:     "noble1yjlapww37ryydskg5x6tpfugp0n8wasnzshlyq",
+			Controller: "noble1uxckxfngckvg8jkjfk3yl9dwknvgkvsdtututz",
+			Minter:     "noble1asdm30ncj4yzmgxdpfcuq0m4mxukx7xde9nuuy",
 		},
 	}
 
