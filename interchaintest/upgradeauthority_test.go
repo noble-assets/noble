@@ -48,9 +48,9 @@ func TestNobleChainUpgrade(t *testing.T) {
 	var paramauthorityWallet Authority
 
 	const (
-		upgradeName       = "v0.4.1"
+		upgradeName       = "neon"
 		preUpgradeRepo    = "ghcr.io/strangelove-ventures/noble"
-		preUpgradeVersion = "v0.3.0"
+		preUpgradeVersion = "v1.0.0"
 	)
 
 	chainCfg := ibc.ChainConfig{
