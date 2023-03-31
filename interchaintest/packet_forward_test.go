@@ -12,8 +12,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	"github.com/strangelove-ventures/interchaintest/v3/relayer"
-	"github.com/strangelove-ventures/interchaintest/v3/relayer/rly"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
 	integration "github.com/strangelove-ventures/noble/interchaintest"
@@ -40,24 +38,23 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		t.Skip("skipping in short mode")
 	}
 
-	client, network := interchaintest.DockerSetup(t)
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
-	ctx := context.Background()
-
-	chainID_A, chainID_B, chainID_C, chainID_D := "chain-a", "chain-b", "chain-c", "chain-d"
-
-	repo, version := integration.GetDockerImageInfo()
-
-	var chainA, chainB, chainC, chainD *cosmos.CosmosChain
-	var nobleRoles NobleRoles
-	var paramauthorityWallet Authority
-
-	nv := 1
-	nf := 0
-	coinType := "118"
+	var (
+		ctx                                        = context.Background()
+		client, network                            = interchaintest.DockerSetup(t)
+		rep                                        = testreporter.NewNopReporter()
+		eRep                                       = rep.RelayerExecReporter(t)
+		chainID_A, chainID_B, chainID_C, chainID_D = "chain-a", "chain-b", "chain-c", "chain-d"
+		repo, version                              = integration.GetDockerImageInfo()
+		chainA, chainB, chainC, chainD             *cosmos.CosmosChain
+		nv                                         = 1
+		nf                                         = 0
+		coinType                                   = "118"
+		nobleRoles1                                NobleRoles
+		nobleRoles2                                NobleRoles
+		nobleRoles3                                NobleRoles
+		nobleRoles4                                NobleRoles
+		paramauthorityWallet                       Authority
+	)
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
@@ -85,11 +82,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainA.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles1, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles1, DenomMetadata_drachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -101,11 +98,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles1, true)
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles1, true)
 					if err != nil {
 						return nil, err
 					}
@@ -119,7 +116,8 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					}
 					return out, nil
 				},
-			}},
+			},
+		},
 		{
 			NumValidators: &nv,
 			NumFullNodes:  &nf,
@@ -145,11 +143,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainB.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles2, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles2, DenomMetadata_drachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -161,11 +159,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles2, true)
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles2, true)
 					if err != nil {
 						return nil, err
 					}
@@ -179,7 +177,8 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					}
 					return out, nil
 				},
-			}},
+			},
+		},
 		{
 			NumValidators: &nv,
 			NumFullNodes:  &nf,
@@ -205,11 +204,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainC.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles3, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles3, DenomMetadata_drachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -221,11 +220,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles3, true)
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles3, true)
 					if err != nil {
 						return nil, err
 					}
@@ -239,7 +238,8 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					}
 					return out, nil
 				},
-			}},
+			},
+		},
 		{
 			NumValidators: &nv,
 			NumFullNodes:  &nf,
@@ -265,11 +265,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainD.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles4, DenomMetadata_rupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles4, DenomMetadata_drachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -281,11 +281,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles, true)
+					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles4, true)
 					if err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles, true)
+					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles4, true)
 					if err != nil {
 						return nil, err
 					}
@@ -299,7 +299,8 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					}
 					return out, nil
 				},
-			}},
+			},
+		},
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -310,8 +311,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 	r := interchaintest.NewBuiltinRelayerFactory(
 		ibc.CosmosRly,
 		zaptest.NewLogger(t),
-		// TODO remove this line once default rly version includes https://github.com/cosmos/relayer/pull/1038
-		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "andrew-poa", rly.RlyDefaultUidGid),
 	).Build(t, client, network)
 
 	const pathAB = "ab"
