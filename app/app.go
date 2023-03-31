@@ -88,7 +88,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/strangelove-ventures/noble/app/upgrades/neon"
+	neon "github.com/strangelove-ventures/noble/app/upgrades/neon"
+	radon "github.com/strangelove-ventures/noble/app/upgrades/radon"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
@@ -96,6 +97,7 @@ import (
 	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/globalfee"
+	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
 	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
@@ -831,6 +833,15 @@ func (app *App) setupUpgradeHandlers() {
 			app.BankKeeper,
 			app.AccountKeeper))
 
+	// radon upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		radon.UpgradeName,
+		radon.CreateRadonUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.ParamsKeeper.Keeper,
+		))
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -845,6 +856,10 @@ func (app *App) setupUpgradeHandlers() {
 	case neon.UpgradeName:
 		stroreUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{fiattokenfactorymoduletypes.StoreKey},
+		}
+	case radon.UpgradeName:
+		stroreUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{globalfeetypes.ModuleName},
 		}
 	}
 
