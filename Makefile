@@ -113,6 +113,9 @@ ictest-paramauthority:
 
 ictest-paramauthorityChainUpgrade:
 	cd interchaintest && go test -race -v -run ^TestNobleChainUpgrade$$ .
+
+ictest-globalFee:
+	cd interchaintest && go test -race -v -run ^TestGlobalFee$$ .
 	
 
 ###############################################################################
