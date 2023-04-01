@@ -143,7 +143,7 @@ func TestGlobalFee(t *testing.T) {
 	amount0 := fmt.Sprintf("0%s", chainCfg.Denom)
 	amount2 := fmt.Sprintf("2.0%s", chainCfg.Denom)
 
-	// send tx with zero fees with the default MinimumGasPricesParam of 0 (null)
+	// send tx with zero fees with the default MinimumGasPricesParam of 0 (null) - tx should succeed
 	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.KeyName, extraWallets.Alice.Address, amount100, "--fees", amount0)
 	require.NoError(t, err, "failed sending transaction")
 
@@ -179,10 +179,11 @@ func TestGlobalFee(t *testing.T) {
 	require.NoError(t, err, "failed to broadcast tx")
 	require.Equal(t, uint32(0), tx.Code, "tx proposal failed")
 
-	// send tx with zero fees with the default MinimumGasPricesParam of 0 (null)
+	// send tx with zero fees while the default MinimumGasPricesParam requires fees - tx should fail
 	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.Address, extraWallets.Alice.Address, amount100, "--fees", amount0)
 	require.Error(t, err, "tx should not have succeeded with zero fees")
 
+	// send tx with enough fees to satisfy the MinimumGasPricesParam - tx should succeed
 	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.Address, extraWallets.Alice.Address, amount100, "--fees", amount2)
 	require.NoError(t, err, "tx should have succeeded")
 
