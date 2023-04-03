@@ -122,6 +122,16 @@ Here are a few examples to clarify the relationship between global fees, minimum
 This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
 In the following examples, zero-coin fees are removed from the transaction fees.
 
+
+`globalfee` = in `genesis.json` ->  `globalfee.params.minimum_gas_prices`
+
+`minimum-gas-prices` = in `app.toml` -> `minimum-gas-prices`
+
+`gas` = a uniuqe amount deteremend by chain per transaction
+
+`paidfee` = (`--gas` flag in `tx bank send`, `--gas-prices` flag in `tx bank send`, if tx will pass/fail)
+
+
 ### Case 1
 
 **Setting:** globalfee=[], minimum-gas-prices=0.1uatom, gas=2000000. 
