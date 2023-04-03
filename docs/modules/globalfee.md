@@ -123,13 +123,13 @@ This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent,
 In the following examples, zero-coin fees are removed from the transaction fees.
 
 
-`globalfee` = in `genesis.json` ->  `globalfee.params.minimum_gas_prices`
+`globalfee`: in `genesis.json` ->  `globalfee.params.minimum_gas_prices`
 
-`minimum-gas-prices` = in `app.toml` -> `minimum-gas-prices`
+`minimum-gas-prices`: in `app.toml` -> `minimum-gas-prices`
 
-`gas` = a uniuqe amount deteremend by chain per transaction
+`gas`: a uniuqe amount deteremend by chain per transaction
 
-`paidfee` = (`--gas` flag in `tx bank send`, `--gas-prices` flag in `tx bank send`, if tx will pass/fail)
+`paidfee`: (`--gas` flag in `tx bank send` * `--gas-prices` flag in `tx bank send`)
 
 
 ### Case 1
