@@ -32,20 +32,36 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
-	if p.Share.LT(sdk.NewDec(0)) || p.Share.GT(sdk.NewDec(1)) {
+	if p.Share.LT(sdk.ZeroDec()) || p.Share.GT(sdk.OneDec()) {
 		return fmt.Errorf("share is outside of the range of 0 to 100%%: %s", p.Share.String())
 	}
 
-	i := sdk.NewDec(0)
+	i := sdk.ZeroDec()
 	for _, d := range p.DistributionEntities {
-		if d.Share.LT(sdk.NewDec(0)) || d.Share.GT(sdk.NewDec(1)) {
+		_, err := sdk.AccAddressFromBech32(d.Address)
+		if err != nil {
+			return fmt.Errorf("failed to parse bech32 address: %s", d.Address)
+		}
+
+		if d.Share.LT(sdk.ZeroDec()) || d.Share.GT(sdk.OneDec()) {
 			return fmt.Errorf("distribution entity share is outside of the range of 0 to 100%%: %s", d.Share.String())
 		}
-		i.Add(d.Share)
+
+		i = i.Add(d.Share)
 	}
-	if !i.Equal(sdk.NewDec(1)) {
+
+	if len(p.DistributionEntities) > 0 && !i.Equal(sdk.OneDec()) {
 		return fmt.Errorf("sum of distribution entity shares don't equal 100%%: %s", i.String())
 	}
+
+	if p.TransferFeeBps.LT(sdk.ZeroInt()) || p.TransferFeeBps.GT(sdk.NewInt(10000)) {
+		return fmt.Errorf("ibc transfer basis points fee is outside of the range of 0 to 10000: %s", p.TransferFeeBps.String())
+	}
+
+	if p.TransferFeeMax.LT(sdk.ZeroInt()) {
+		return fmt.Errorf("ibc transfer max fee is less than 0: %s", p.TransferFeeMax.String())
+	}
+
 	return nil
 }
 

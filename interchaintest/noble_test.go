@@ -82,16 +82,16 @@ func TestNobleChain(t *testing.T) {
 			if err := json.Unmarshal(b, &g); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 			}
-			err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, true)
-			if err != nil {
+			if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, true); err != nil {
 				return nil, err
 			}
-			err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &roles2, true)
-			if err != nil {
+			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &roles2, true); err != nil {
 				return nil, err
 			}
-			err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
-			if err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
+				return nil, err
+			}
+			if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -143,7 +143,7 @@ func TestNobleChain(t *testing.T) {
 	})
 }
 
-func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModName, mintingDenom string, noble *cosmos.CosmosChain, roles NobleRoles, extraWallets ExtraWallets) error {
+func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModName, mintingDenom string, noble *cosmos.CosmosChain, roles NobleRoles, extraWallets ExtraWallets) {
 	nobleValidator := noble.Validators[0]
 
 	_, err := nobleValidator.ExecTx(ctx, roles.Owner2.KeyName,
@@ -360,6 +360,4 @@ func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModNam
 	aliceBalance, err = noble.GetBalance(ctx, extraWallets.Alice.Address, mintingDenom)
 	require.NoError(t, err, "failed to get alice balance")
 	require.Equal(t, int64(100), aliceBalance, "alice balance should not have increased while chain is paused")
-	return nil
-
 }

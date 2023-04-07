@@ -19,7 +19,26 @@ message Params {
   
   // % of tx fees or rewards allocated to a set of global distribution entities
   // these shares must add up to 1
-  repeated DistributionEntity distribution_entities = 2;
+  repeated DistributionEntity distribution_entities = 2 [
+    (gogoproto.moretags)   = "yaml:\"distribution_entities\"",
+    (gogoproto.nullable)   = false
+  ];
+
+  string transfer_fee_bps = 3 [
+    (gogoproto.moretags)   = "yaml:\"transfer_fee_bps\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+
+  string transfer_fee_max = 4 [
+    (gogoproto.moretags)   = "yaml:\"transfer_fee_max\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+
+  string transfer_fee_denom = 5 [
+    (gogoproto.moretags)   = "yaml:\"transfer_fee_denom\""
+  ];
 }
 
 // DistributionEntity defines a distribution entity

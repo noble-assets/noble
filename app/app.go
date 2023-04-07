@@ -92,6 +92,8 @@ import (
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
+	feecollector "github.com/strangelove-ventures/noble/x/feecollector"
+	feecollectorkeeper "github.com/strangelove-ventures/noble/x/feecollector/keeper"
 	feecollectortypes "github.com/strangelove-ventures/noble/x/feecollector/types"
 	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
 	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
@@ -137,6 +139,7 @@ var (
 		tokenfactorymodule.AppModuleBasic{},
 		fiattokenfactorymodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
+		feecollector.AppModuleBasic{},
 
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -213,6 +216,7 @@ type App struct {
 
 	TokenFactoryKeeper     *tokenfactorymodulekeeper.Keeper
 	FiatTokenFactoryKeeper *fiattokenfactorymodulekeeper.Keeper
+	FeeCollectorKeeper     feecollectorkeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -319,6 +323,7 @@ func New(
 		app.BankKeeper,
 		app.GetSubspace(stakingtypes.ModuleName),
 	)
+
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		app.keys[distrtypes.StoreKey],
@@ -382,6 +387,14 @@ func New(
 		app.IBCKeeper.ChannelKeeper,
 		app.DistrKeeper,
 		app.BankKeeper,
+		app.FeeCollectorKeeper,
+	)
+
+	app.FeeCollectorKeeper = feecollectorkeeper.NewKeeper(
+		app.GetSubspace(feecollectortypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
 		app.IBCKeeper.ChannelKeeper,
 	)
 
@@ -494,7 +507,7 @@ func New(
 		fiattokenfactorymodule,
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-		// this line is used by starport scaffolding # stargate/app/appModule
+		feecollector.NewAppModule(appCodec, app.FeeCollectorKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -524,7 +537,6 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
-		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -548,7 +560,7 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
-		// this line is used by starport scaffolding # stargate/app/endBlockers
+		feecollectortypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -562,6 +574,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
+		feecollectortypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		crisistypes.ModuleName,
@@ -604,7 +617,6 @@ func New(
 		transferModule,
 		tokenfactoryModule,
 		fiattokenfactorymodule,
-		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -796,6 +808,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
+	paramsKeeper.Subspace(feecollectortypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
