@@ -11,6 +11,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
+	"github.com/strangelove-ventures/interchaintest/v3/relayer"
+	"github.com/strangelove-ventures/interchaintest/v3/relayer/rly"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
@@ -76,6 +78,8 @@ var (
 	defaultTransferBPSFee          = "1"
 	defaultTransferMaxFee          = "5000000"
 	defaultTransferFeeDenom        = DenomMetadata_drachma.Base
+
+	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.3.0", rly.RlyDefaultUidGid)
 )
 
 type DenomMetadata struct {
