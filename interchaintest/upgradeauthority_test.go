@@ -87,12 +87,10 @@ func TestNobleChainUpgrade(t *testing.T) {
 			if err := json.Unmarshal(b, &g); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 			}
-			err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, true)
-			if err != nil {
+			if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, true); err != nil {
 				return nil, err
 			}
-			err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
-			if err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)

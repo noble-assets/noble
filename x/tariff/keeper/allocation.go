@@ -5,30 +5,29 @@ import (
 )
 
 func (k Keeper) AllocateTokens(ctx sdk.Context) {
-	// fetch and clear the collected fees for distribution, since this is
-	// called in BeginBlock, collected fees will be from the previous block
-	// (and distributed to the previous proposer)
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
-	// calculate fraction allocated to validators
 	params := k.GetParams(ctx)
 	feesToDistribute := feesCollected.MulDecTruncate(params.Share)
 
 	for _, d := range params.DistributionEntities {
 		entityShare := feesToDistribute.MulDecTruncate(d.Share)
-		// entityShareInt := sdk.NewDecCoinFromDec()
-		x := sdk.NewCoin(entityShare)
+
+		var coins sdk.Coins
+
+		for _, s := range entityShare {
+			truncated, _ := s.TruncateDecimal()
+			coins = append(coins, truncated)
+		}
 
 		acc := sdk.MustAccAddressFromBech32(d.Address)
 
-		// transfer collected fees to the distribution module account
-		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.feeCollectorName, acc, entityShare)
+		// transfer collected fees to the distribution entity account
+		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.feeCollectorName, acc, coins)
 		if err != nil {
 			panic(err)
 		}
-
 	}
-
 }

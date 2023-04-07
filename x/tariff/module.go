@@ -1,4 +1,4 @@
-package feecollector
+package tariff
 
 import (
 	"encoding/json"
@@ -15,8 +15,8 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/strangelove-ventures/noble/x/feecollector/keeper"
-	"github.com/strangelove-ventures/noble/x/feecollector/types"
+	"github.com/strangelove-ventures/noble/x/tariff/keeper"
+	"github.com/strangelove-ventures/noble/x/tariff/types"
 )
 
 var (
@@ -87,14 +87,14 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        *keeper.Keeper
+	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
 }
 
 func NewAppModule(
 	cdc codec.Codec,
-	keeper *keeper.Keeper,
+	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 ) AppModule {

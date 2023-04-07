@@ -12,6 +12,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
+	"github.com/strangelove-ventures/interchaintest/v3/relayer"
+	"github.com/strangelove-ventures/interchaintest/v3/relayer/rly"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
 	integration "github.com/strangelove-ventures/noble/interchaintest"
@@ -53,7 +55,10 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		nobleRoles2                                NobleRoles
 		nobleRoles3                                NobleRoles
 		nobleRoles4                                NobleRoles
-		paramauthorityWallet                       Authority
+		paramauthorityWallet1                      Authority
+		paramauthorityWallet2                      Authority
+		paramauthorityWallet3                      Authority
+		paramauthorityWallet4                      Authority
 	)
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
@@ -90,7 +95,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return err
 					}
-					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					paramauthorityWallet1, err = createParamAuthAtGenesis(ctx, val)
 					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -98,16 +103,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles1, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles1, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles1, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles1, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
-					if err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet1.Authority.Address); err != nil {
+						return nil, err
+					}
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet1.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -151,7 +156,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return err
 					}
-					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					paramauthorityWallet2, err = createParamAuthAtGenesis(ctx, val)
 					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -159,16 +164,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles2, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles2, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles2, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles2, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
-					if err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet2.Authority.Address); err != nil {
+						return nil, err
+					}
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet2.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -212,7 +217,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return err
 					}
-					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					paramauthorityWallet3, err = createParamAuthAtGenesis(ctx, val)
 					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -220,16 +225,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles3, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles3, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles3, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles3, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
-					if err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet3.Authority.Address); err != nil {
+						return nil, err
+					}
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet3.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -273,7 +278,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err != nil {
 						return err
 					}
-					paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
+					paramauthorityWallet4, err = createParamAuthAtGenesis(ctx, val)
 					return err
 				},
 				ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
@@ -281,16 +286,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles4, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles4, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles4, true)
-					if err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles4, true); err != nil {
 						return nil, err
 					}
-					err = modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address)
-					if err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet4.Authority.Address); err != nil {
+						return nil, err
+					}
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet4.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -311,6 +316,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 	r := interchaintest.NewBuiltinRelayerFactory(
 		ibc.CosmosRly,
 		zaptest.NewLogger(t),
+		relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "main", rly.RlyDefaultUidGid),
 	).Build(t, client, network)
 
 	const pathAB = "ab"
