@@ -75,7 +75,7 @@ var (
 	defaultDistributionEntityShare = "1.0"
 	defaultTransferBPSFee          = "1"
 	defaultTransferMaxFee          = "5000000"
-	defaultTransferFeeDenom        = "udrachma"
+	defaultTransferFeeDenom        = DenomMetadata_drachma.Base
 )
 
 type DenomMetadata struct {

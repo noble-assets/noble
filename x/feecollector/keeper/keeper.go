@@ -3,8 +3,6 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/strangelove-ventures/noble/x/feecollector/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -12,6 +10,7 @@ import (
 	chantypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v3/modules/core/exported"
+	"github.com/strangelove-ventures/noble/x/feecollector/types"
 )
 
 var _ porttypes.ICS4Wrapper = Keeper{}
@@ -79,11 +78,6 @@ func (k Keeper) SendPacket(
 		return fmt.Errorf("failed to parse packet amount to sdk.Int %s", data.Amount)
 	}
 
-	sender, err := sdk.AccAddressFromBech32(data.Sender)
-	if err != nil {
-		return fmt.Errorf("failed to parse packet sender %s: %w", data.Sender, err)
-	}
-
 	feeDec := fullAmount.ToDec().Mul(sdk.NewDecWithPrec(1, 4)).MulInt(bpsFee)
 	feeInt := feeDec.TruncateInt()
 
@@ -96,10 +90,10 @@ func (k Keeper) SendPacket(
 		feeInt = maxFee
 	}
 
-	// collect fees
+	// all of the packet funds have been escrowed. Collect fees from the escrow account.
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(
 		ctx,
-		sender,
+		transfertypes.GetEscrowAddress(chanPacket.SourcePort, chanPacket.SourceChannel),
 		k.feeCollectorName,
 		sdk.NewCoins(sdk.NewCoin(data.Denom, feeInt)),
 	); err != nil {
@@ -118,7 +112,6 @@ func (k Keeper) SendPacket(
 	chanPacket.Data = newData
 
 	return k.ics4Wrapper.SendPacket(ctx, chanCap, chanPacket)
-	// take basis points as fees up to maximum from data.Sender and send the rest
 }
 
 // WriteAcknowledgement implements the ICS4Wrapper interface.
