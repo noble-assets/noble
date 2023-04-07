@@ -1,8 +1,8 @@
-package feecollector
+package tariff
 
 import (
-	"github.com/strangelove-ventures/noble/x/feecollector/keeper"
-	"github.com/strangelove-ventures/noble/x/feecollector/types"
+	"github.com/strangelove-ventures/noble/x/tariff/keeper"
+	"github.com/strangelove-ventures/noble/x/tariff/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

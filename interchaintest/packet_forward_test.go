@@ -112,7 +112,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := modifyGenesisParamAuthority(g, paramauthorityWallet1.Authority.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet1.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet1.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -173,7 +173,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := modifyGenesisParamAuthority(g, paramauthorityWallet2.Authority.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet2.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet2.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -234,7 +234,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := modifyGenesisParamAuthority(g, paramauthorityWallet3.Authority.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet3.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet3.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -295,7 +295,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := modifyGenesisParamAuthority(g, paramauthorityWallet4.Authority.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet4.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet4.Authority.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)

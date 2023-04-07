@@ -91,7 +91,7 @@ func TestNobleChain(t *testing.T) {
 			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)

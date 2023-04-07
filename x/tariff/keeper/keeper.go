@@ -10,7 +10,7 @@ import (
 	chantypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v3/modules/core/exported"
-	"github.com/strangelove-ventures/noble/x/feecollector/types"
+	"github.com/strangelove-ventures/noble/x/tariff/types"
 )
 
 var _ porttypes.ICS4Wrapper = Keeper{}

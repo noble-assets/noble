@@ -93,7 +93,7 @@ func TestICS20BPSFees(t *testing.T) {
 			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisFeeCollectorDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -209,10 +209,12 @@ func TestICS20BPSFees(t *testing.T) {
 	denomTrace := transfertypes.ParseDenomTrace(prefixedDenom)
 	ibcDenom := denomTrace.IBCDenom()
 
+	// 100000000 (Transfer Amount) * .0001 (1 BPS) = 10000 taken as fees
 	receiverBalance, err := gaia.GetBalance(ctx, gaiaReceiver, ibcDenom)
 	require.NoError(t, err, "failed to get receiver balance")
 	require.Equal(t, int64(99990000), receiverBalance, "receiver balance incorrect")
 
+	// of the 10000 taken as fees, 80% goes to distribution entity (8000)
 	distributionEntityBalance, err := noble.GetBalance(ctx, paramauthorityWallet.Authority.Address, DenomMetadata_drachma.Base)
 	require.NoError(t, err, "failed to get distribution entity balance")
 	require.Equal(t, int64(8000), distributionEntityBalance, "distribution entity balance incorrect")
@@ -228,14 +230,18 @@ func TestICS20BPSFees(t *testing.T) {
 	_, err = testutil.PollForAck(ctx, noble, height, height+10, tx.Packet)
 	require.NoError(t, err, "failed to find ack for ibc transfer")
 
+	// 999900000000 user balance from prior test, now subtract 100000000000 = 899900000000
 	userBalance, err = noble.GetBalance(ctx, extraWallets.User.Address, DenomMetadata_drachma.Base)
 	require.NoError(t, err, "failed to get user balance")
 	require.Equal(t, int64(899900000000), userBalance, "user balance is incorrect")
 
+	// fees will max, 5000000 is taken off of transfer amount
+	// prior receiver balance 99990000. add 100000000000 transfer amount but subtracted 5000000 in bps fees (max) = 100094990000
 	receiverBalance, err = gaia.GetBalance(ctx, gaiaReceiver, ibcDenom)
 	require.NoError(t, err, "failed to get receiver balance")
 	require.Equal(t, int64(100094990000), receiverBalance, "receiver balance incorrect")
 
+	// prior balance 8000, add 80% of the 5000000 fee (4000000) = 4008000
 	distributionEntityBalance, err = noble.GetBalance(ctx, paramauthorityWallet.Authority.Address, DenomMetadata_drachma.Base)
 	require.NoError(t, err, "failed to get distribution entity balance")
 	require.Equal(t, int64(4008000), distributionEntityBalance, "distribution entity balance incorrect")

@@ -377,15 +377,15 @@ func modifyGenesisParamAuthority(genbz map[string]interface{}, authorityAddress 
 	return nil
 }
 
-func modifyGenesisFeeCollectorDefaults(
+func modifyGenesisTariffDefaults(
 	genbz map[string]interface{},
 	distributionEntity string,
 ) error {
-	return modifyGenesisFeeCollector(genbz, defaultShare, distributionEntity,
+	return modifyGenesisTariff(genbz, defaultShare, distributionEntity,
 		defaultDistributionEntityShare, defaultTransferBPSFee, defaultTransferMaxFee, defaultTransferFeeDenom)
 }
 
-func modifyGenesisFeeCollector(
+func modifyGenesisTariff(
 	genbz map[string]interface{},
 	share string,
 	distributionEntity string,
@@ -394,7 +394,7 @@ func modifyGenesisFeeCollector(
 	transferMaxFee string,
 	transferDenom string,
 ) error {
-	if err := dyno.Set(genbz, share, "app_state", "feecollector", "params", "share"); err != nil {
+	if err := dyno.Set(genbz, share, "app_state", "tariff", "params", "share"); err != nil {
 		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
 	distributionEntities := []DistributionEntity{
@@ -403,16 +403,16 @@ func modifyGenesisFeeCollector(
 			Share:   distributionEntityShare,
 		},
 	}
-	if err := dyno.Set(genbz, distributionEntities, "app_state", "feecollector", "params", "distribution_entities"); err != nil {
+	if err := dyno.Set(genbz, distributionEntities, "app_state", "tariff", "params", "distribution_entities"); err != nil {
 		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
-	if err := dyno.Set(genbz, transferBPSFee, "app_state", "feecollector", "params", "transfer_fee_bps"); err != nil {
+	if err := dyno.Set(genbz, transferBPSFee, "app_state", "tariff", "params", "transfer_fee_bps"); err != nil {
 		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
-	if err := dyno.Set(genbz, transferMaxFee, "app_state", "feecollector", "params", "transfer_fee_max"); err != nil {
+	if err := dyno.Set(genbz, transferMaxFee, "app_state", "tariff", "params", "transfer_fee_max"); err != nil {
 		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
-	if err := dyno.Set(genbz, transferDenom, "app_state", "feecollector", "params", "transfer_fee_denom"); err != nil {
+	if err := dyno.Set(genbz, transferDenom, "app_state", "tariff", "params", "transfer_fee_denom"); err != nil {
 		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
 	return nil
