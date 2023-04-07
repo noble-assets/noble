@@ -851,7 +851,8 @@ func (app *App) setupUpgradeHandlers() {
 		radon.CreateRadonUpgradeHandler(
 			app.mm,
 			app.configurator,
-			app.ParamsKeeper.Keeper,
+			app.ParamsKeeper,
+			app.FiatTokenFactoryKeeper,
 		))
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()

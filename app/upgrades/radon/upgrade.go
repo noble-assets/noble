@@ -6,16 +6,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
+
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
 )
 
 func CreateRadonUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
-	paramsKeeper paramskeeper.Keeper,
+	paramauthoritykeeper paramauthoritykeeper.Keeper,
+	fiatTFKeeper *fiattokenfactorykeeper.Keeper,
 
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -25,18 +28,6 @@ func CreateRadonUpgradeHandler(
 		// becasuse RunMigrations runs `InitGenesis` on the new module`.
 		logger.Info(fmt.Sprintf("pre migrate version map: %v", vm))
 
-		distributionParamSubspace, ok := paramsKeeper.GetSubspace(distrtypes.ModuleName)
-		if !ok {
-			panic("distribution params subspace not found")
-		}
-
-		logger.Info("setting distribution params...")
-		distributionParamSubspace.Set(ctx, distrtypes.ParamStoreKeyCommunityTax, sdk.NewDec(0))
-		distributionParamSubspace.Set(ctx, distrtypes.ParamStoreKeyBaseProposerReward, sdk.NewDec(0))
-		distributionParamSubspace.Set(ctx, distrtypes.ParamStoreKeyBonusProposerReward, sdk.NewDec(0))
-		distributionParamSubspace.Set(ctx, distrtypes.ParamStoreKeyWithdrawAddrEnabled, true)
-		logger.Info("distribution params set")
-
 		versionMap, err := mm.RunMigrations(ctx, cfg, vm)
 
 		logger.Info(fmt.Sprintf("post migrate version map: %v", versionMap))
@@ -44,12 +35,33 @@ func CreateRadonUpgradeHandler(
 		minGasPrices := sdk.DecCoins{
 			sdk.NewDecCoinFromDec("uusdc", sdk.NewDecWithPrec(1, 2)),
 		}
-		globlaFeeParamSubspace, ok := paramsKeeper.GetSubspace(globalfeetypes.ModuleName)
+		globlaFeeParamsSubspace, ok := paramauthoritykeeper.GetSubspace(globalfeetypes.ModuleName)
 		if !ok {
 			panic("global fee params subspace not found")
 		}
+		globlaFeeParamsSubspace.Set(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, minGasPrices)
 
-		globlaFeeParamSubspace.Set(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, minGasPrices)
+		tariffParamsSubspace, ok := paramauthoritykeeper.GetSubspace(tarifftypes.ModuleName)
+		if !ok {
+			panic("tariff params subspace not found")
+		}
+		paramAuth := paramauthoritykeeper.GetAuthority(ctx)
+
+		distributionEntities := []tarifftypes.DistributionEntity{
+			{
+				Address: paramAuth,
+				Share:   sdk.NewDec(1),
+			},
+		}
+		feeDenom := fiatTFKeeper.GetMintingDenom(ctx)
+		tariffParams := tarifftypes.Params{
+			Share:                sdk.NewDecWithPrec(8, 1),
+			DistributionEntities: distributionEntities,
+			TransferFeeBps:       sdk.NewInt(1),
+			TransferFeeMax:       sdk.NewInt(5000000),
+			TransferFeeDenom:     feeDenom.Denom,
+		}
+		tariffParamsSubspace.SetParamSet(ctx, &tariffParams)
 
 		return versionMap, err
 	}

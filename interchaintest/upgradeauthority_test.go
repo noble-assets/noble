@@ -196,7 +196,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	for _, n := range noble.Nodes() {
 		n.Image.Repository = repo
 	}
-	noble.UpgradeVersion(ctx, client, version)
+	noble.UpgradeVersion(ctx, client, version) // go to v2
 
 	// start all nodes back up.
 	// validators reach consensus on first block after upgrade height
