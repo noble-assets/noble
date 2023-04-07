@@ -140,13 +140,13 @@ func TestGlobalFee(t *testing.T) {
 	nobleValidator := noble.Validators[0]
 
 	sendAmount100 := fmt.Sprintf("100%s", chainCfg.Denom)
-	minGasPrice := "0.00001"
+	minGasPriceAmount := "0.00001"
 
-	// fee0 := fmt.Sprintf("0%s", chainCfg.Denom)
-	feeMinGas := minGasPrice + chainCfg.Denom
+	minGasPrice := minGasPriceAmount + chainCfg.Denom
+	zeroGasPrice := "0.0" + chainCfg.Denom
 
 	// send tx with zero fees with the default MinimumGasPricesParam of 0 (null) - tx should succeed
-	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.KeyName, extraWallets.Alice.Address, sendAmount100)
+	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.KeyName, extraWallets.Alice.Address, sendAmount100, "--gas-prices", zeroGasPrice)
 	require.NoError(t, err, "failed sending transaction")
 
 	msgUpdateParams := proposaltypes.MsgUpdateParams{
@@ -157,7 +157,7 @@ func TestGlobalFee(t *testing.T) {
 				{
 					Subspace: "globalfee",
 					Key:      "MinimumGasPricesParam",
-					Value:    fmt.Sprintf(`[{"denom":"%s", "amount":"%s"}]`, chainCfg.Denom, minGasPrice),
+					Value:    fmt.Sprintf(`[{"denom":"%s", "amount":"%s"}]`, chainCfg.Denom, minGasPriceAmount),
 				},
 			}),
 		Authority: paramauthorityWallet.Authority.Address,
@@ -182,11 +182,11 @@ func TestGlobalFee(t *testing.T) {
 	require.Equal(t, uint32(0), tx.Code, "tx proposal failed")
 
 	// send tx with zero fees while the default MinimumGasPricesParam requires fees - tx should fail
-	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.Address, extraWallets.Alice.Address, sendAmount100, "--gas-adjustment", "1.98")
+	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.Address, extraWallets.Alice.Address, sendAmount100, "--gas-prices", zeroGasPrice)
 	require.Error(t, err, "tx should not have succeeded with zero fees")
 
 	// send tx with the gas price set by MinimumGasPricesParam - tx should succeed
-	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.Address, extraWallets.Alice.Address, sendAmount100, "--gas-prices", feeMinGas)
+	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.Address, extraWallets.Alice.Address, sendAmount100, "--gas-prices", minGasPrice)
 	require.NoError(t, err, "tx should have succeeded")
 
 }
