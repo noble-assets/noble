@@ -95,6 +95,7 @@ import (
 	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
 	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/globalfee"
 	tariff "github.com/strangelove-ventures/noble/x/tariff"
 	tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
 	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
@@ -139,9 +140,8 @@ var (
 		tokenfactorymodule.AppModuleBasic{},
 		fiattokenfactorymodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
+		globalfee.AppModuleBasic{},
 		tariff.AppModuleBasic{},
-
-		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
 	// module account permissions
@@ -507,6 +507,7 @@ func New(
 		fiattokenfactorymodule,
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
@@ -537,6 +538,7 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
+		globalfee.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -560,6 +562,7 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
+		globalfee.ModuleName,
 		tarifftypes.ModuleName,
 	)
 
@@ -590,6 +593,8 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
+		globalfee.ModuleName,
+
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -638,7 +643,9 @@ func New(
 			tokenFactoryKeeper:     app.TokenFactoryKeeper,
 			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
 
-			IBCKeeper: app.IBCKeeper,
+			IBCKeeper:         app.IBCKeeper,
+			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 		},
 	)
 	if err != nil {
@@ -819,6 +826,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
 	paramsKeeper.Subspace(fiattokenfactorymoduletypes.ModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
+	paramsKeeper.Subspace(globalfee.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
