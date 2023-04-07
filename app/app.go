@@ -379,6 +379,14 @@ func New(
 		scopedIBCKeeper,
 	)
 
+	app.FeeCollectorKeeper = feecollectorkeeper.NewKeeper(
+		app.GetSubspace(feecollectortypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+		app.IBCKeeper.ChannelKeeper,
+	)
+
 	app.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		keys[packetforwardtypes.StoreKey],
@@ -388,14 +396,6 @@ func New(
 		app.DistrKeeper,
 		app.BankKeeper,
 		app.FeeCollectorKeeper,
-	)
-
-	app.FeeCollectorKeeper = feecollectorkeeper.NewKeeper(
-		app.GetSubspace(feecollectortypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		authtypes.FeeCollectorName,
-		app.IBCKeeper.ChannelKeeper,
 	)
 
 	// Create Transfer Keepers
