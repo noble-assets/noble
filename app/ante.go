@@ -11,9 +11,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+
+	feeante "github.com/strangelove-ventures/noble/x/globalfee/ante"
 )
 
 type HandlerOptions struct {
@@ -21,6 +24,9 @@ type HandlerOptions struct {
 	tokenFactoryKeeper     *tokenfactory.Keeper
 	fiatTokenFactoryKeeper *fiattokenfactory.Keeper
 	IBCKeeper              *ibckeeper.Keeper
+	BypassMinFeeMsgTypes   []string
+	GlobalFeeSubspace      paramtypes.Subspace
+	StakingSubspace        paramtypes.Subspace
 }
 
 type IsPausedDecorator struct {
@@ -193,6 +199,13 @@ func checkForBlacklistedAddressByTokenFactory(ctx sdk.Context, addresses []strin
 	return false, "", nil
 }
 
+// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
+// for all the bypass msgs in a transactions.
+// A transaction that contains only bypass message types and the gas usage does not
+// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
+// For details, see gaiafeeante.NewFeeDecorator()
+var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
+
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
 // numbers, checks signatures & account numbers, and deducts fees from the first
 // signer
@@ -221,6 +234,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
+		feeante.NewFeeDecorator(options.BypassMinFeeMsgTypes, options.GlobalFeeSubspace, options.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
+
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
