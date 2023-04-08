@@ -853,7 +853,6 @@ func (app *App) setupUpgradeHandlers() {
 			app.configurator,
 			app.ParamsKeeper,
 			app.FiatTokenFactoryKeeper,
-			// app.TariffKeeper,
 		))
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
