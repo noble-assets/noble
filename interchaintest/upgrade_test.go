@@ -56,9 +56,9 @@ func TestNobleChainUpgrade(t *testing.T) {
 	var paramauthorityWallet Authority
 
 	var (
-		upgradeName       = "neon"
+		upgradeName       = "v0.4.1"
 		preUpgradeRepo    = "ghcr.io/strangelove-ventures/noble"
-		preUpgradeVersion = "v1.0.0"
+		preUpgradeVersion = "v0.3.0"
 	)
 
 	chainCfg := ibc.ChainConfig{
@@ -200,7 +200,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	err = noble.StopAllNodes(ctx)
 	require.NoError(t, err, "error stopping node(s)")
 
-	noble.UpgradeVersion(ctx, client, "v2.0.0")
+	noble.UpgradeVersion(ctx, client, "v0.4.2")
 
 	// start all nodes back up.
 	// validators reach consensus on first block after upgrade height
@@ -298,7 +298,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "failed to unmarshall globalfee params")
 
 	expectedMinGasPrices := sdk.DecCoins{
-		sdk.NewDecCoinFromDec("uusdc", sdk.NewDecWithPrec(1, 2)),
+		sdk.NewDecCoinFromDec("udrachma", sdk.NewDecWithPrec(1, 2)),
 	}
 	require.Equal(t, expectedMinGasPrices, globalFeeParams.MinimumGasPrices, "global fee min gas prices are not as expected")
 

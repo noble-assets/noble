@@ -28,7 +28,7 @@ func CreateRadonUpgradeHandler(
 
 		// -- globalfee params --
 		minGasPrices := sdk.DecCoins{
-			sdk.NewDecCoinFromDec("uusdc", sdk.NewDecWithPrec(1, 2)),
+			sdk.NewDecCoinFromDec("udrachma", sdk.NewDecWithPrec(1, 2)),
 		}
 		globlaFeeParamsSubspace, ok := paramauthoritykeeper.GetSubspace(globalfeetypes.ModuleName)
 		if !ok {
