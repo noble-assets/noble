@@ -853,6 +853,7 @@ func (app *App) setupUpgradeHandlers() {
 			app.configurator,
 			app.ParamsKeeper,
 			app.FiatTokenFactoryKeeper,
+			// app.TariffKeeper,
 		))
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
@@ -872,7 +873,7 @@ func (app *App) setupUpgradeHandlers() {
 		}
 	case radon.UpgradeName:
 		stroreUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{globalfeetypes.ModuleName},
+			Added: []string{globalfeetypes.ModuleName, tarifftypes.ModuleName},
 		}
 	}
 

@@ -11,6 +11,8 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+
+	// tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
 	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
 )
 
@@ -19,6 +21,7 @@ func CreateRadonUpgradeHandler(
 	cfg module.Configurator,
 	paramauthoritykeeper paramauthoritykeeper.Keeper,
 	fiatTFKeeper *fiattokenfactorykeeper.Keeper,
+	// tariffKeeper tariffkeeper.Keeper,
 
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -57,11 +60,20 @@ func CreateRadonUpgradeHandler(
 		tariffParams := tarifftypes.Params{
 			Share:                sdk.NewDecWithPrec(8, 1),
 			DistributionEntities: distributionEntities,
-			TransferFeeBps:       sdk.NewInt(1),
+			TransferFeeBps:       sdk.OneInt(),
 			TransferFeeMax:       sdk.NewInt(5000000),
 			TransferFeeDenom:     feeDenom.Denom,
 		}
-		tariffParamsSubspace.SetParamSet(ctx, &tariffParams)
+
+		logger.Info("setting tariff params...", tariffParams.Share)
+
+		// tariffKeeper.SetParams(ctx, tariffParams)
+
+		tariffParamsSubspace.Set(ctx, tarifftypes.KeyShare, tariffParams.Share)
+		tariffParamsSubspace.Set(ctx, tarifftypes.KeyDistributionEntities, tariffParams.DistributionEntities)
+		tariffParamsSubspace.Set(ctx, tarifftypes.KeyTransferFeeBPS, tariffParams.TransferFeeBps)
+		tariffParamsSubspace.Set(ctx, tarifftypes.KeyTransferFeeMax, tariffParams.TransferFeeMax)
+		tariffParamsSubspace.Set(ctx, tarifftypes.KeyTransferFeeDenom, tariffParams.TransferFeeDenom)
 
 		return versionMap, err
 	}
