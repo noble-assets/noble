@@ -111,7 +111,7 @@ ictest-packet-forward:
 ictest-paramauthority:
 	cd interchaintest && go test -race -v -run ^TestNobleParamAuthority$$ .
 
-ictest-paramauthorityChainUpgrade:
+ictest-chain-upgrade:
 	cd interchaintest && go test -race -v -run ^TestNobleChainUpgrade$$ .
 
 ictest-globalFee:

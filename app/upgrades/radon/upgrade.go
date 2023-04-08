@@ -28,13 +28,12 @@ func CreateRadonUpgradeHandler(
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
 		// New modules run AFTER the migrations, so to set the correct params after the default
-		// becasuse RunMigrations runs `InitGenesis` on the new module`.
+		// becasuse RunMigrations runs `InitGenesis` on new modules`.
 		logger.Info(fmt.Sprintf("pre migrate version map: %v", vm))
-
 		versionMap, err := mm.RunMigrations(ctx, cfg, vm)
-
 		logger.Info(fmt.Sprintf("post migrate version map: %v", versionMap))
 
+		// -- globalfee params --
 		minGasPrices := sdk.DecCoins{
 			sdk.NewDecCoinFromDec("uusdc", sdk.NewDecWithPrec(1, 2)),
 		}
@@ -42,14 +41,17 @@ func CreateRadonUpgradeHandler(
 		if !ok {
 			panic("global fee params subspace not found")
 		}
+		logger.Info("setting global fee params...")
 		globlaFeeParamsSubspace.Set(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, minGasPrices)
+		logger.Info("global fee params set")
+		// -- --
 
+		// -- tariff params --
 		tariffParamsSubspace, ok := paramauthoritykeeper.GetSubspace(tarifftypes.ModuleName)
 		if !ok {
 			panic("tariff params subspace not found")
 		}
 		paramAuth := paramauthoritykeeper.GetAuthority(ctx)
-
 		distributionEntities := []tarifftypes.DistributionEntity{
 			{
 				Address: paramAuth,
@@ -64,16 +66,10 @@ func CreateRadonUpgradeHandler(
 			TransferFeeMax:       sdk.NewInt(5000000),
 			TransferFeeDenom:     feeDenom.Denom,
 		}
-
-		logger.Info("setting tariff params...", tariffParams.Share)
-
-		// tariffKeeper.SetParams(ctx, tariffParams)
-
-		tariffParamsSubspace.Set(ctx, tarifftypes.KeyShare, tariffParams.Share)
-		tariffParamsSubspace.Set(ctx, tarifftypes.KeyDistributionEntities, tariffParams.DistributionEntities)
-		tariffParamsSubspace.Set(ctx, tarifftypes.KeyTransferFeeBPS, tariffParams.TransferFeeBps)
-		tariffParamsSubspace.Set(ctx, tarifftypes.KeyTransferFeeMax, tariffParams.TransferFeeMax)
-		tariffParamsSubspace.Set(ctx, tarifftypes.KeyTransferFeeDenom, tariffParams.TransferFeeDenom)
+		logger.Info("setting tariff params...")
+		tariffParamsSubspace.SetParamSet(ctx, &tariffParams)
+		logger.Info("tariff params set")
+		// -- --
 
 		return versionMap, err
 	}

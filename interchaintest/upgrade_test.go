@@ -29,6 +29,12 @@ const (
 	blocksAfterUpgrade = uint64(10)
 )
 
+type ParamsQueryResponse struct {
+	Subspace string `json:"subspace"`
+	Key      string `json:"key"`
+	Value    string `json:"value"`
+}
+
 func TestNobleChainUpgrade(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -299,25 +305,23 @@ func TestNobleChainUpgrade(t *testing.T) {
 	expectedDefaultMsgTypes := globalfeetypes.DefaultParams().BypassMinFeeMsgTypes
 	require.Equal(t, expectedDefaultMsgTypes, globalFeeParams.BypassMinFeeMsgTypes, "global fee bypass message types are not as expected")
 
-	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "share")
-	t.Log("HERE!!! SHARE", string(queryResult))
-	require.NoError(t, err, "error querying tariff 'share' param")
+	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "Share")
+	require.NoError(t, err, "error querying tariff 'Share' param")
 
 	var tariffParamShare ParamsQueryResponse
 
 	err = json.Unmarshal(queryResult, &tariffParamShare)
 	require.NoError(t, err, "failed to unmarshall tariff share param")
 
-	require.Equal(t, sdk.NewDecWithPrec(8, 1).String(), tariffParamShare.Value)
+	require.Equal(t, `"`+sdk.NewDecWithPrec(8, 1).String()+`"`, tariffParamShare.Value)
 
-	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "distribution_entities")
-	t.Log("HERE!!! dist ent", string(queryResult))
-	require.NoError(t, err, "error querying tariff 'distribution_entities' param")
+	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "DistributionEntities")
+	require.NoError(t, err, "error querying tariff 'DistributionEntities' param")
 
 	var tariffParamDistributionentities ParamsQueryResponse
 
 	err = json.Unmarshal(queryResult, &tariffParamDistributionentities)
-	require.NoError(t, err, "failed to unmarshall tariff distribution_entities param")
+	require.NoError(t, err, "failed to unmarshall tariff DistributionEntities param")
 
 	var distributionEntities []DistributionEntity
 
@@ -326,30 +330,30 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.Len(t, distributionEntities, 1)
 	require.Equal(t, paramauthorityWallet.Authority.Address, distributionEntities[0].Address)
 	require.Equal(t, sdk.OneDec().String(), distributionEntities[0].Share)
-	require.Equal(t, sdk.NewDecWithPrec(8, 1).String(), tariffParamShare.Value)
+	require.Equal(t, `"`+sdk.NewDecWithPrec(8, 1).String()+`"`, tariffParamShare.Value)
 
-	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "transfer_fee_bps")
-	require.NoError(t, err, "failed to unmarshall tariff transfer_fee_bps param")
+	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "TransferFeeBPS")
+	require.NoError(t, err, "failed to unmarshall tariff TransferFeeBPS param")
 
 	var tariffParamTransferFeeBPS ParamsQueryResponse
 
 	err = json.Unmarshal(queryResult, &tariffParamTransferFeeBPS)
 	require.NoError(t, err, "failed to unmarshall tariff transfer fee BPS param")
 
-	require.Equal(t, sdk.OneInt().String(), tariffParamTransferFeeBPS.Value)
+	require.Equal(t, `"`+sdk.OneInt().String()+`"`, tariffParamTransferFeeBPS.Value)
 
-	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "transfer_fee_max")
-	require.NoError(t, err, "failed to unmarshall tariff transfer_fee_max param")
+	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "TransferFeeMax")
+	require.NoError(t, err, "failed to unmarshall tariff TransferFeeMax param")
 
 	var tariffParamTransferFeeMax ParamsQueryResponse
 
 	err = json.Unmarshal(queryResult, &tariffParamTransferFeeMax)
 	require.NoError(t, err, "failed to unmarshall tariff transfer fee BPS param")
 
-	require.Equal(t, sdk.NewInt(5000000).String(), tariffParamTransferFeeMax.Value)
+	require.Equal(t, `"`+sdk.NewInt(5000000).String()+`"`, tariffParamTransferFeeMax.Value)
 
-	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "transfer_fee_denom")
-	require.NoError(t, err, "failed to unmarshall tariff transfer_fee_denom param")
+	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "TransferFeeDenom")
+	require.NoError(t, err, "failed to unmarshall tariff TransferFeeDenom param")
 
 	var tariffParamTransferFeeDenom ParamsQueryResponse
 
@@ -358,25 +362,10 @@ func TestNobleChainUpgrade(t *testing.T) {
 
 	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "fiat-tokenfactory", "show-minting-denom")
 	require.NoError(t, err, "failed to query minting denom")
-
-	var mintingDenom fiattokenfactorytypes.MintingDenom
+	var mintingDenom fiattokenfactorytypes.QueryGetMintingDenomResponse
 
 	err = json.Unmarshal(queryResult, &mintingDenom)
 	require.NoError(t, err, "failed to unmarshall minting denom")
 
-	require.Equal(t, mintingDenom.Denom, tariffParamTransferFeeDenom.Value)
-
-	// remove radon test file
-
-	// once in main --  cherry pick upgrade hander commit into release/v0.5.x
-	// update versions in this test and make sure passing -- denom string
-
-	// cherrpick changes ontop of release/v0.5.x
-
-}
-
-type ParamsQueryResponse struct {
-	Subspace string `json:"subspace"`
-	Key      string `json:"key"`
-	Value    string `json:"value"`
+	require.Equal(t, `"`+mintingDenom.MintingDenom.Denom+`"`, tariffParamTransferFeeDenom.Value)
 }
