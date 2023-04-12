@@ -4,6 +4,7 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
@@ -27,9 +28,15 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	return requiredFees.Sort()
 }
 
-func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
+	var bypassMinFeeMsgTypes []string
+	if mfd.GlobalMinFee.Has(ctx, globalfeetypes.ParamStoreKeyBypassMinFeeMsgTypes) {
+		mfd.GlobalMinFee.Get(ctx, globalfeetypes.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMinFeeMsgTypes)
+	} else {
+		bypassMinFeeMsgTypes = globalfeetypes.DefaultParams().BypassMinFeeMsgTypes
+	}
 	for _, msg := range msgs {
-		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
+		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), bypassMinFeeMsgTypes) {
 			continue
 		}
 		return false
