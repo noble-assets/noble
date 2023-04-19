@@ -26,13 +26,12 @@ import (
 var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
-	BypassMinFeeMsgTypes            []string
 	GlobalMinFee                    globalfee.ParamSource
 	StakingSubspace                 paramtypes.Subspace
 	MaxTotalBypassMinFeeMsgGasUsage uint64
 }
 
-func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
+func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
@@ -42,7 +41,6 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 	}
 
 	return FeeDecorator{
-		BypassMinFeeMsgTypes:            bypassMsgTypes,
 		GlobalMinFee:                    globalfeeSubspace,
 		StakingSubspace:                 stakingSubspace,
 		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
@@ -66,7 +64,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//	i.e., totalGas <= MaxTotalBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(ctx, msgs) && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
 	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
