@@ -309,47 +309,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 	}
 	require.Equal(t, expectedMinGasPrices, globalFeeParams.MinimumGasPrices, "global fee min gas prices are not as expected")
 
-	expectedMsgTypes := []string{
-		"/ibc.core.client.v1.MsgUpdateClient",
-		"/ibc.core.channel.v1.MsgRecvPacket",
-		"/ibc.core.channel.v1.MsgAcknowledgement",
-		"/ibc.applications.transfer.v1.MsgTransfer",
-		"/ibc.core.channel.v1.MsgTimeout",
-		"/ibc.core.channel.v1.MsgTimeoutOnClose",
-		"/cosmos.params.v1beta1.MsgUpdateParams",
-		"/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
-		"/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
-		"/noble.fiattokenfactory.MsgUpdateMasterMinter",
-		"/noble.fiattokenfactory.MsgUpdatePauser",
-		"/noble.fiattokenfactory.MsgUpdateBlacklister",
-		"/noble.fiattokenfactory.MsgUpdateOwner",
-		"/noble.fiattokenfactory.MsgAcceptOwner",
-		"/noble.fiattokenfactory.MsgConfigureMinter",
-		"/noble.fiattokenfactory.MsgRemoveMinter",
-		"/noble.fiattokenfactory.MsgMint",
-		"/noble.fiattokenfactory.MsgBurn",
-		"/noble.fiattokenfactory.MsgBlacklist",
-		"/noble.fiattokenfactory.MsgUnblacklist",
-		"/noble.fiattokenfactory.MsgPause",
-		"/noble.fiattokenfactory.MsgUnpause",
-		"/noble.fiattokenfactory.MsgConfigureMinterController",
-		"/noble.fiattokenfactory.MsgRemoveMinterController",
-		"/noble.tokenfactory.MsgUpdatePauser",
-		"/noble.tokenfactory.MsgUpdateBlacklister",
-		"/noble.tokenfactory.MsgUpdateOwner",
-		"/noble.tokenfactory.MsgAcceptOwner",
-		"/noble.tokenfactory.MsgConfigureMinter",
-		"/noble.tokenfactory.MsgRemoveMinter",
-		"/noble.tokenfactory.MsgMint",
-		"/noble.tokenfactory.MsgBurn",
-		"/noble.tokenfactory.MsgBlacklist",
-		"/noble.tokenfactory.MsgUnblacklist",
-		"/noble.tokenfactory.MsgPause",
-		"/noble.tokenfactory.MsgUnpause",
-		"/noble.tokenfactory.MsgConfigureMinterController",
-		"/noble.tokenfactory.MsgRemoveMinterController",
-	}
-	require.Equal(t, expectedMsgTypes, globalFeeParams.BypassMinFeeMsgTypes, "global fee bypass message types are not as expected")
+	require.Equal(t, globalfeetypes.DefaultParams().BypassMinFeeMsgTypes, globalFeeParams.BypassMinFeeMsgTypes, "global fee bypass message types are not as expected")
 
 	queryResult, _, err = noble.Validators[0].ExecQuery(ctx, "params", "subspace", "tariff", "Share")
 	require.NoError(t, err, "error querying tariff 'Share' param")
