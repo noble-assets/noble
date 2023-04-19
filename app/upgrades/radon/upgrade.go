@@ -29,14 +29,14 @@ func CreateRadonUpgradeHandler(
 		feeDenom := fiatTFKeeper.GetMintingDenom(ctx)
 
 		// -- globalfee params --
-		gloabalFeeMinGas := sdk.DecCoins{
+		globalFeeMinGas := sdk.DecCoins{
 			sdk.NewDecCoinFromDec(feeDenom.Denom, sdk.NewDec(0)),
 		}
 		globalFeeParamsSubspace, ok := paramauthoritykeeper.GetSubspace(globalfeetypes.ModuleName)
 		if !ok {
 			panic("global fee params subspace not found")
 		}
-		globalFeeParamsSubspace.Set(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, gloabalFeeMinGas)
+		globalFeeParamsSubspace.Set(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, globalFeeMinGas)
 		// -- --
 
 		// -- tariff params --
