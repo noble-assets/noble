@@ -2,7 +2,6 @@
 
 The tariff module is meant to sit before the distribution module. This module collects a percentage of a specified asset and distributes it among entities.
 
-There are several customizable parameters below:
 
 ## Parameters:
 
@@ -16,11 +15,13 @@ There are several customizable parameters below:
 
 - `TransferFeeDenom`: The denom, if transacted, that will be distributed between `DistributionEntities`.
 
+---
 
-Example:
+## Example
+
 `Share`: 0.8
 
-`DistributionEntities`: [("Jim", 0.3),("Mary", 0.7)]
+`DistributionEntities`: "Jim" has a  30% share, "Mary" has a 70%
 
 `TransferFeeBps`: 1
 
@@ -36,6 +37,8 @@ Since the `Share` percentage is 0.8, 80% of that 0.01stake will be divided among
 Jim will get 30% making his share 0.000024stake. Mary will get 70% making her share 0.000056stake.
 
 
---
+---
+
 Todo:
+
 How/what will be handed off to the distribution model? 
