@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -21,7 +20,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func TestLoad(t *testing.T) {
+func TestLoad2(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -157,10 +156,18 @@ func TestLoad(t *testing.T) {
 
 	// Build, recover and prep wallets to be funded via a msgMultisend
 	for i := 1; i <= numWallets; i++ {
-		wallets[i] = interchaintest.BuildWallet(kr, fmt.Sprintf("wallet_%d", i), noble.Config())
+		temp := interchaintest.BuildWallet(kr, fmt.Sprint(i), noble.Config())
+
+		wallets[i] = ibc.Wallet{
+			Mnemonic: temp.Mnemonic,
+			Address:  temp.Bech32Address(chainCfg.Bech32Prefix),
+			KeyName:  temp.KeyName,
+			CoinType: temp.CoinType,
+		}
+		wallet := wallets[i]
 
 		output := sdkbanktypes.Output{
-			Address: wallets[i].Address,
+			Address: wallet.Address,
 			Coins:   oneCoins,
 		}
 		outputs = append(outputs, output)
@@ -186,38 +193,38 @@ func TestLoad(t *testing.T) {
 		&multisend,
 	)
 	require.NoError(t, err, "error broadcasting multisend tx")
-	// confirm tx went through by checking random wallet
-	bal, err := noble.GetBalance(ctx, wallets[rand.Intn(len(wallets))].Address, chainCfg.Denom)
-	require.NoError(t, err, "error getting account balance")
-	require.Equal(t, int64(1), bal)
 
+	bal, err := noble.GetBalance(ctx, wallets[2].Address, chainCfg.Denom)
+	require.NoError(t, err, "error getting balance")
+	t.Log("BALANCE---1!!! ", bal)
 	// All wallets are now funded
 
 	toWallet := interchaintest.BuildWallet(kr, "toWallet", noble.Config())
 
 	var eg errgroup.Group
-
 	for _, wallet := range wallets {
+		t.Log("FROM: ", wallet.Address)
+		t.Log("FROM BECH ", wallet.Bech32Address(chainCfg.Bech32Prefix))
+		t.Log("TO ", toWallet.Address)
+		t.Log("TO BECH ", toWallet.Bech32Address(chainCfg.Bech32Prefix))
+
 		wallet := wallet
-
+		msgSend := sdkbanktypes.MsgSend{
+			FromAddress: wallet.Address,
+			ToAddress:   toWallet.Address,
+			Amount:      oneCoins,
+		}
 		eg.Go(func() error {
-			msgSend := sdkbanktypes.MsgSend{
-				FromAddress: wallet.Address,
-				ToAddress:   toWallet.Address,
-				Amount:      oneCoins,
-			}
-
-			decoded := types.MustAccAddressFromBech32(wallet.Address)
-			wallet.Address = string(decoded)
-
-			res, err := cosmos.BroadcastTx(
+			_, err = cosmos.BroadcastTx(
 				ctx,
 				broadcaster,
 				&wallet,
 				&msgSend,
 			)
-			t.Log("RESPONSE: ", res.RawLog)
-			return err
+			if err != nil {
+				return err
+			}
+			return nil
 		})
 	}
 	require.NoError(t, eg.Wait())

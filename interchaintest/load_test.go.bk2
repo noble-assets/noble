@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -18,7 +17,6 @@ import (
 	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
-	"golang.org/x/sync/errgroup"
 )
 
 func TestLoad(t *testing.T) {
@@ -131,8 +129,14 @@ func TestLoad(t *testing.T) {
 
 	kr := keyring.NewInMemory()
 
-	fundedWallets := interchaintest.GetAndFundTestUsers(t, ctx, "broadcaster", 500000000000, noble)
-	broadcasterWallet := fundedWallets[0]
+	// send funds from faucet to a "broadcaster" wallet
+	broadcasterWallet := interchaintest.BuildWallet(kr, "broadcaster", noble.Config())
+	require.NoError(t, noble.SendFunds(ctx, "faucet", ibc.WalletAmount{
+		Address: broadcasterWallet.Address,
+		Denom:   noble.Config().Denom,
+		Amount:  500000000000,
+	}), "failed to send funds from faucet account")
+
 	// number of wallets to create
 	// this should ultimately but the amount of transcaction used the "load test"
 	numWallets := 5
@@ -152,25 +156,31 @@ func TestLoad(t *testing.T) {
 		Amount: types.NewInt(int64(numWallets)),
 	})
 
+	var msgs []sdkbanktypes.MsgSend
+
+	sdkbanktypes.
+		sdkbanktype
+
 	var inputs []sdkbanktypes.Input
 	var outputs []sdkbanktypes.Output
 
-	// Build, recover and prep wallets to be funded via a msgMultisend
+	// Build, recover and ultimately prep wallets to be funded via a msgMultisend
 	for i := 1; i <= numWallets; i++ {
-		wallets[i] = interchaintest.BuildWallet(kr, fmt.Sprintf("wallet_%d", i), noble.Config())
+		wallets[i] = interchaintest.BuildWallet(kr, fmt.Sprint(i), noble.Config())
+		noble.RecoverKey(ctx, wallets[i].KeyName, wallets[i].Mnemonic)
 
-		output := sdkbanktypes.Output{
+		input := sdkbanktypes.Input{
 			Address: wallets[i].Address,
 			Coins:   oneCoins,
 		}
-		outputs = append(outputs, output)
+		inputs = append(inputs, input)
 	}
 
-	input := sdkbanktypes.Output{
-		Address: broadcasterWallet.Bech32Address(chainCfg.Bech32Prefix),
+	output := sdkbanktypes.Output{
+		Address: broadcasterWallet.Address,
 		Coins:   coins,
 	}
-	inputs = append(inputs, sdkbanktypes.Input(input))
+	outputs = append(outputs, output)
 
 	multisend := sdkbanktypes.MsgMultiSend{
 		Inputs:  inputs,
@@ -179,61 +189,41 @@ func TestLoad(t *testing.T) {
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
+	decoded := types.MustAccAddressFromBech32(broadcasterWallet.Address)
+	wallet := &ibc.Wallet{
+		Address:  string(decoded),
+		Mnemonic: broadcasterWallet.Mnemonic,
+		KeyName:  broadcasterWallet.KeyName,
+		CoinType: broadcasterWallet.CoinType,
+	}
+
 	_, err = cosmos.BroadcastTx(
 		ctx,
 		broadcaster,
-		broadcasterWallet,
-		&multisend,
+		wallet,
+		&msgs,
 	)
 	require.NoError(t, err, "error broadcasting multisend tx")
-	// confirm tx went through by checking random wallet
-	bal, err := noble.GetBalance(ctx, wallets[rand.Intn(len(wallets))].Address, chainCfg.Denom)
-	require.NoError(t, err, "error getting account balance")
-	require.Equal(t, int64(1), bal)
 
-	// All wallets are now funded
-
-	toWallet := interchaintest.BuildWallet(kr, "toWallet", noble.Config())
-
-	var eg errgroup.Group
-
-	for _, wallet := range wallets {
-		wallet := wallet
-
-		eg.Go(func() error {
-			msgSend := sdkbanktypes.MsgSend{
-				FromAddress: wallet.Address,
-				ToAddress:   toWallet.Address,
-				Amount:      oneCoins,
-			}
-
-			decoded := types.MustAccAddressFromBech32(wallet.Address)
-			wallet.Address = string(decoded)
-
-			res, err := cosmos.BroadcastTx(
-				ctx,
-				broadcaster,
-				&wallet,
-				&msgSend,
-			)
-			t.Log("RESPONSE: ", res.RawLog)
-			return err
-		})
-	}
-	require.NoError(t, eg.Wait())
-
-	bal, err = noble.GetBalance(ctx, toWallet.Address, chainCfg.Denom)
-	require.NoError(t, err, "failed to get balance")
+	bal, err := noble.GetBalance(ctx, wallets[2].Address, noble.Config().Denom)
+	require.NoError(t, err, "error getting balance")
 	t.Log("BALANCE!!! ", bal)
 
-	// emptyWallets := interchaintest.GetAndFundTestUsers(t, ctx, "new", 0, noble)
-	// emptyWallet := emptyWallets[0]
+	// require.NoError(t, noble.CreateKey(ctx, "newWallet"), "error creating key")
+	// addressBytes, err := noble.GetAddress(ctx, "newWallet")
+	// require.NoError(t, err, "error getting wallet address")
+	// address, err := types.Bech32ifyAddressBytes(noble.Config().Bech32Prefix, addressBytes)
+	// require.NoError(t, err, "error converting address")
 
-	// send amount
+	// bal, err := noble.GetBalance(ctx, string(extraWallets.User2.Address), noble.Config().Denom)
+	// require.NoError(t, err, "error getting balance")
+	// t.Log("BALANCE of USER 2: ", bal)
+
+	// // send amount
 	// send := ibc.WalletAmount{
-	// 	Address: emptyWallet.Address,
+	// 	Address: string(address),
 	// 	Denom:   noble.Config().Denom,
-	// 	Amount:  1,
+	// 	Amount:  10,
 	// }
 
 	// duration := 5 * time.Second
@@ -261,3 +251,16 @@ func TestLoad(t *testing.T) {
 	// t.Log("Final Balance: ", bal)
 
 }
+
+// func threadedFunc(x int, y func()) {
+// 	var wg sync.WaitGroup
+// 	wg.Add(x)
+// 	for i := 0; i < x; i++ {
+// 		go func() {
+// 			defer wg.Done()
+// 			y()
+// 		}()
+// 	}
+
+// 	wg.Wait()
+// }
