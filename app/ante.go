@@ -24,7 +24,6 @@ type HandlerOptions struct {
 	tokenFactoryKeeper     *tokenfactory.Keeper
 	fiatTokenFactoryKeeper *fiattokenfactory.Keeper
 	IBCKeeper              *ibckeeper.Keeper
-	BypassMinFeeMsgTypes   []string
 	GlobalFeeSubspace      paramtypes.Subspace
 	StakingSubspace        paramtypes.Subspace
 }
@@ -234,7 +233,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		feeante.NewFeeDecorator(options.BypassMinFeeMsgTypes, options.GlobalFeeSubspace, options.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
+		feeante.NewFeeDecorator(options.GlobalFeeSubspace, options.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
 
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
