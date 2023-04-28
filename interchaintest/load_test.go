@@ -157,7 +157,8 @@ func TestLoad(t *testing.T) {
 
 	// Build, recover and prep wallets to be funded via a msgMultisend
 	for i := 1; i <= numWallets; i++ {
-		wallets[i] = interchaintest.BuildWallet(kr, fmt.Sprintf("wallet_%d", i), noble.Config())
+		wallets[i] = interchaintest.BuildWallet(kr, fmt.Sprint(i), noble.Config())
+		require.NoError(t, noble.RecoverKey(ctx, fmt.Sprint(i), wallets[i].Mnemonic), "failed to recover key")
 
 		output := sdkbanktypes.Output{
 			Address: wallets[i].Address,
@@ -212,7 +213,7 @@ func TestLoad(t *testing.T) {
 
 			res, err := cosmos.BroadcastTx(
 				ctx,
-				broadcaster,
+				cosmos.NewBroadcaster(t, noble),
 				&wallet,
 				&msgSend,
 			)
