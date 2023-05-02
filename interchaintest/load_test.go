@@ -2,11 +2,16 @@ package interchaintest_test
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"testing"
+	"time"
 
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/types"
 	sdkbanktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -14,11 +19,14 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v3/testutil"
+
 	"github.com/strangelove-ventures/noble/cmd"
 	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 	"golang.org/x/sync/errgroup"
+	_ "modernc.org/sqlite"
 )
 
 func TestLoad(t *testing.T) {
@@ -42,18 +50,36 @@ func TestLoad(t *testing.T) {
 	var roles2 NobleRoles
 	var paramauthorityWallet Authority
 
+	configTomlOverrides := make(testutil.Toml)
+
+	consensus := make(testutil.Toml)
+	// blockTime := reset to chain defaults (not interchain test defaults)
+	consensus["timeout_commit"] = (time.Duration(5) * time.Second).String()
+	consensus["timeout_propose"] = (time.Duration(3) * time.Second).String()
+
+	configTomlOverrides["consensus"] = consensus
+
+	rpc := make(testutil.Toml)
+	rpc["max_subscription_clients"] = "500"
+
+	configTomlOverrides["rpc"] = rpc
+
+	configFileOverrides := make(map[string]any)
+	configFileOverrides["config/config.toml"] = configTomlOverrides
+
 	chainCfg := ibc.ChainConfig{
-		Type:           "cosmos",
-		Name:           "noble",
-		ChainID:        "noble-1",
-		Bin:            "nobled",
-		Denom:          "utoken",
-		Bech32Prefix:   "noble",
-		CoinType:       "118",
-		GasPrices:      "0.0token",
-		GasAdjustment:  1.1,
-		TrustingPeriod: "504h",
-		NoHostMount:    false,
+		Type:                "cosmos",
+		Name:                "noble",
+		ChainID:             "noble-1",
+		Bin:                 "nobled",
+		Denom:               "utoken",
+		Bech32Prefix:        "noble",
+		CoinType:            "118",
+		GasPrices:           "0.0token",
+		GasAdjustment:       1.1,
+		TrustingPeriod:      "504h",
+		NoHostMount:         false,
+		ConfigFileOverrides: configFileOverrides,
 		Images: []ibc.DockerImage{
 			{
 				Repository: repo,
@@ -97,8 +123,8 @@ func TestLoad(t *testing.T) {
 		},
 	}
 
-	nv := 2
-	nf := 0
+	nv := 2 // Number of validators
+	nf := 0 // Number of full nodes
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
@@ -118,10 +144,19 @@ func TestLoad(t *testing.T) {
 	ic := interchaintest.NewInterchain().
 		AddChain(noble)
 
+	cwd, err := os.Getwd()
+	require.NoError(t, err, "error getting cwd")
+
+	dbFileName := "block.db"
+	dbFolder := filepath.Join(cwd, "ictest_db")
+	dbFileFullPath := filepath.Join(dbFolder, dbFileName)
+	require.NoError(t, os.RemoveAll(dbFolder))
+
 	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
+		TestName:          t.Name(),
+		Client:            client,
+		NetworkID:         network,
+		BlockDatabaseFile: dbFileFullPath,
 
 		SkipPathCreation: false,
 	}))
@@ -131,25 +166,40 @@ func TestLoad(t *testing.T) {
 
 	kr := keyring.NewInMemory()
 
-	fundedWallets := interchaintest.GetAndFundTestUsers(t, ctx, "broadcaster", 500000000000, noble)
-	broadcasterWallet := fundedWallets[0]
+	// ---- PARAMETERS ---
+
 	// number of wallets to create
-	// this should ultimately but the amount of transcaction used the "load test"
-	numWallets := 5
+	numWallets := 500
+	// amount of times to loop through each wallet
+	loop := 5
+	// total amount needed to fund all wallets
+	// assumes we send 1 unit to each wallet during loop
+	fundAmount := numWallets * loop
+
+	// --- ---
+
+	fundedWallets := interchaintest.GetAndFundTestUsers(t, ctx, "broadcaster", int64(fundAmount), noble)
+	broadcasterWallet := fundedWallets[0]
 
 	wallets := make(map[int]ibc.Wallet, numWallets)
 
+	var totalAmountNeededToFundAllWallets types.Coins
+	var amountToFundEachWallet types.Coins
 	var oneCoins types.Coins
-	var coins types.Coins
 
 	oneCoins = append(oneCoins, types.Coin{
 		Denom:  noble.Config().Denom,
 		Amount: types.OneInt(),
 	})
 
-	coins = append(coins, types.Coin{
+	amountToFundEachWallet = append(amountToFundEachWallet, types.Coin{
 		Denom:  noble.Config().Denom,
-		Amount: types.NewInt(int64(numWallets)),
+		Amount: types.NewInt(int64(loop)),
+	})
+
+	totalAmountNeededToFundAllWallets = append(totalAmountNeededToFundAllWallets, types.Coin{
+		Denom:  noble.Config().Denom,
+		Amount: types.NewInt(int64(fundAmount)),
 	})
 
 	var inputs []sdkbanktypes.Input
@@ -162,14 +212,14 @@ func TestLoad(t *testing.T) {
 
 		output := sdkbanktypes.Output{
 			Address: wallets[i].Address,
-			Coins:   oneCoins,
+			Coins:   amountToFundEachWallet,
 		}
 		outputs = append(outputs, output)
 	}
 
 	input := sdkbanktypes.Output{
 		Address: broadcasterWallet.Bech32Address(chainCfg.Bech32Prefix),
-		Coins:   coins,
+		Coins:   totalAmountNeededToFundAllWallets,
 	}
 	inputs = append(inputs, sdkbanktypes.Input(input))
 
@@ -179,6 +229,11 @@ func TestLoad(t *testing.T) {
 	}
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
+	f, err := broadcaster.GetFactory(ctx, broadcasterWallet)
+	require.NoError(t, err, "error getting broadcaster factory")
+	broadcaster.ConfigureFactoryOptions(func(factory tx.Factory) tx.Factory {
+		return f.WithSimulateAndExecute(true)
+	})
 
 	_, err = cosmos.BroadcastTx(
 		ctx,
@@ -190,75 +245,134 @@ func TestLoad(t *testing.T) {
 	// confirm tx went through by checking random wallet
 	bal, err := noble.GetBalance(ctx, wallets[rand.Intn(len(wallets))].Address, chainCfg.Denom)
 	require.NoError(t, err, "error getting account balance")
-	require.Equal(t, int64(1), bal)
+	require.Equal(t, int64(loop), bal)
 
 	// All wallets are now funded
 
+	// this is the wallet to send all transactions to during loop below
 	toWallet := interchaintest.BuildWallet(kr, "toWallet", noble.Config())
 
 	var eg errgroup.Group
 
-	for _, wallet := range wallets {
-		wallet := wallet
+	broadcaster.ConfigureFactoryOptions(func(factory tx.Factory) tx.Factory {
+		return f.WithSimulateAndExecute(false)
+	})
 
-		eg.Go(func() error {
-			msgSend := sdkbanktypes.MsgSend{
-				FromAddress: wallet.Address,
-				ToAddress:   toWallet.Address,
-				Amount:      oneCoins,
-			}
+	startTimer := time.Now()
 
-			decoded := types.MustAccAddressFromBech32(wallet.Address)
-			wallet.Address = string(decoded)
+	for i := 1; i <= loop; i++ {
+		t.Logf("starting loop: %d...", i)
+		for _, wallet := range wallets {
+			wallet := wallet
 
-			res, err := cosmos.BroadcastTx(
-				ctx,
-				cosmos.NewBroadcaster(t, noble),
-				&wallet,
-				&msgSend,
-			)
-			t.Log("RESPONSE: ", res.RawLog)
-			return err
-		})
+			eg.Go(func() error {
+				msgSend := sdkbanktypes.MsgSend{
+					FromAddress: wallet.Address,
+					ToAddress:   toWallet.Address,
+					Amount:      oneCoins,
+				}
+
+				decoded := types.MustAccAddressFromBech32(wallet.Address)
+				wallet.Address = string(decoded)
+
+				_, err := cosmos.BroadcastTx(
+					ctx,
+					cosmos.NewBroadcaster(t, noble),
+					&wallet,
+					&msgSend,
+				)
+				return err
+			})
+		}
 	}
 	require.NoError(t, eg.Wait())
 
+	testutil.WaitForBlocks(ctx, 2, noble)
+
+	duration := time.Since(startTimer)
+
 	bal, err = noble.GetBalance(ctx, toWallet.Address, chainCfg.Denom)
 	require.NoError(t, err, "failed to get balance")
-	t.Log("BALANCE!!! ", bal)
 
-	// emptyWallets := interchaintest.GetAndFundTestUsers(t, ctx, "new", 0, noble)
-	// emptyWallet := emptyWallets[0]
+	db, err := sql.Open("sqlite", dbFileFullPath)
+	require.NoError(t, err, "error opening sql db")
 
-	// send amount
-	// send := ibc.WalletAmount{
-	// 	Address: emptyWallet.Address,
-	// 	Denom:   noble.Config().Denom,
-	// 	Amount:  1,
-	// }
+	var sqlMsg CosmosMessageResult
 
-	// duration := 5 * time.Second
-	// startTime := time.Now()
-	// endTime := startTime.Add(duration)
+	row := db.QueryRow("SELECT block_height FROM v_cosmos_messages where type=?", "/cosmos.bank.v1beta1.MsgMultiSend")
+	require.NoError(t, row.Scan(&sqlMsg.Height), "failed to get height")
 
-	// var counter int
+	// after the multi send, we start rapid firing tx's
+	// for the accuracy of the averages computed below, lets only consider
+	// blocks where we are broadcasting for the full block time.
+	heightRangeStart := sqlMsg.Height + 2
 
-	// for time.Now().Before(endTime) {
-	// 	counter++
-	// 	require.NoError(t, noble.SendFunds(ctx, extraWallets.User2.KeyName, send))
-	// }
+	row = db.QueryRow("SELECT block_height FROM v_cosmos_messages ORDER BY block_height DESC")
+	require.NoError(t, row.Scan(&sqlMsg.Height), "failed to get height")
 
-	// t.Log("Counter: ", counter)
-	// testutil.WaitForBlocks(ctx, 5, noble)
+	// for the accuracy of the averages computed below, lets only consider
+	// blocks where we are broadcasting for the full block time.
+	heightRangeEnd := sqlMsg.Height - 1
 
-	// threadedFunc(30, func() {
-	// 	require.NoError(t, noble.SendFunds(ctx, extraWallets.User2.KeyName, send))
-	// })
+	var count int
+	var txsPerBlock []int
+	for i := heightRangeStart; i <= heightRangeEnd; i++ {
+		row = db.QueryRow("SELECT COUNT(block_height) FROM v_cosmos_messages WHERE block_height = ?", i)
+		require.NoErrorf(t, row.Scan(&count), "error counting on block %d", i)
+		txsPerBlock = append(txsPerBlock, count)
+	}
 
-	// t.Log("BALANCE of new wallet after tx's!!!! ", bal)
+	var sum int
+	for i := 0; i < len(txsPerBlock); i++ {
+		sum += txsPerBlock[i]
+	}
+	averageTxPerBlock := float32(sum) / float32(len(txsPerBlock))
 
-	// bal, err = noble.GetBalance(ctx, string(address), noble.Config().Denom)
-	// require.NoError(t, err, "error getting balance")
-	// t.Log("Final Balance: ", bal)
+	rows, err := db.Query("SELECT created_at FROM block")
+	require.NoError(t, err, "failed to get block times from sql db")
 
+	var createdAtTimes []time.Time
+	for rows.Next() {
+		var createdAt string
+		require.NoError(t, rows.Scan(&createdAt), "error querying created_at from sql")
+		timeParse, err := time.Parse(time.RFC3339, createdAt)
+		require.NoError(t, err, "error parsing time string")
+		createdAtTimes = append(createdAtTimes, timeParse)
+	}
+	var blocktimes []float64
+	for i := 0; i < len(createdAtTimes)-1; i++ {
+		timeSub := createdAtTimes[i+1].Sub(createdAtTimes[i])
+		blocktimes = append(blocktimes, timeSub.Seconds())
+	}
+	var sumBlockTimes float64
+	for i := 0; i < len(blocktimes); i++ {
+		sumBlockTimes += blocktimes[i]
+	}
+	avgBlockTime := float32(sumBlockTimes) / float32(len(blocktimes)-1)
+
+	t.Logf("%d TRANSACTIONS BROADCASTED IN %v", bal, duration)
+	t.Logf("AVG TRANSACTIONS PER SECOND: %f", float64(bal)/float64(duration.Seconds()))
+	t.Logf("AVG TRANSACTIONS PER BLOCK %f", averageTxPerBlock)
+	t.Logf("AVG BLOCKTIME: %f", avgBlockTime)
+
+}
+
+type CosmosMessageResult struct {
+	Height int64
+	Index  int
+	Type   string // URI for proto definition, e.g. /ibc.core.client.v1.MsgCreateClient
+
+	ClientChainID sql.NullString
+
+	ClientID             sql.NullString
+	CounterpartyClientID sql.NullString
+
+	ConnID             sql.NullString
+	CounterpartyConnID sql.NullString
+
+	PortID             sql.NullString
+	CounterpartyPortID sql.NullString
+
+	ChannelID             sql.NullString
+	CounterpartyChannelID sql.NullString
 }
