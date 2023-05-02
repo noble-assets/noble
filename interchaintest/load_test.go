@@ -287,9 +287,9 @@ func TestLoad(t *testing.T) {
 	}
 	require.NoError(t, eg.Wait())
 
-	testutil.WaitForBlocks(ctx, 2, noble)
-
 	duration := time.Since(startTimer)
+
+	// testutil.WaitForBlocks(ctx, 2, noble)
 
 	bal, err = noble.GetBalance(ctx, toWallet.Address, chainCfg.Denom)
 	require.NoError(t, err, "failed to get balance")
@@ -340,7 +340,7 @@ func TestLoad(t *testing.T) {
 		createdAtTimes = append(createdAtTimes, timeParse)
 	}
 	var blocktimes []float64
-	for i := 0; i < len(createdAtTimes)-1; i++ {
+	for i := heightRangeStart; i < heightRangeEnd-1; i++ {
 		timeSub := createdAtTimes[i+1].Sub(createdAtTimes[i])
 		blocktimes = append(blocktimes, timeSub.Seconds())
 	}
@@ -348,7 +348,7 @@ func TestLoad(t *testing.T) {
 	for i := 0; i < len(blocktimes); i++ {
 		sumBlockTimes += blocktimes[i]
 	}
-	avgBlockTime := float32(sumBlockTimes) / float32(len(blocktimes)-1)
+	avgBlockTime := float32(sumBlockTimes) / float32(len(blocktimes))
 
 	t.Logf("%d TRANSACTIONS BROADCASTED IN %v", bal, duration)
 	t.Logf("AVG TRANSACTIONS PER SECOND: %f", float64(bal)/float64(duration.Seconds()))
