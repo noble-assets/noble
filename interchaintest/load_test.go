@@ -284,8 +284,8 @@ func TestLoad(t *testing.T) {
 				return err
 			})
 		}
+		require.NoError(t, eg.Wait())
 	}
-	require.NoError(t, eg.Wait())
 
 	duration := time.Since(startTimer)
 
