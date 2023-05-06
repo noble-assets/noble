@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/types"
@@ -30,7 +29,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func TestLoad(t *testing.T) {
+func TestLoad2(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -124,8 +123,24 @@ func TestLoad(t *testing.T) {
 		},
 	}
 
-	nv := 4 // Number of validators
-	nf := 2 // Number of full nodes
+	// ---- PARAMETERS ---
+	// Number of validators
+	nv := 3
+	// Number of full nodes
+	nf := 3
+	// number of wallets for each full node
+	numWallets := 100
+	// amount of times to loop through each wallet
+	loop := 3
+	// Channel buffer size per nf -- Amount of tx's to broadcast synchronously PER full node
+	// So the total amount of synchronous broadcasts is (chnlBuff * nf)
+	chnlBuff := 100
+	// --- ---
+
+	// total number of wallets
+	totalWallets := numWallets * nf
+	// total amount needed to fund all wallets - assumes we send 1 unit to each wallet during loop
+	fundAmount := totalWallets * loop
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		{
@@ -165,33 +180,11 @@ func TestLoad(t *testing.T) {
 		_ = ic.Close()
 	})
 
-	kr := keyring.NewInMemory()
-
-	// ---- PARAMETERS ---
-
-	// number of wallets to create
-	numWallets := 250
-	// amount of times to loop through each wallet
-	loop := 3
-	// total amount needed to fund all wallets
-	// assumes we send 1 unit to each wallet during loop
-	fundAmount := numWallets * loop
-
-	// --- ---
-
 	fundedWallets := interchaintest.GetAndFundTestUsers(t, ctx, "broadcaster", int64(fundAmount), noble)
 	broadcasterWallet := fundedWallets[0]
 
-	wallets := make(map[int]ibc.Wallet, numWallets)
-
 	var totalAmountNeededToFundAllWallets types.Coins
 	var amountToFundEachWallet types.Coins
-	var oneCoins types.Coins
-
-	oneCoins = append(oneCoins, types.Coin{
-		Denom:  noble.Config().Denom,
-		Amount: types.OneInt(),
-	})
 
 	amountToFundEachWallet = append(amountToFundEachWallet, types.Coin{
 		Denom:  noble.Config().Denom,
@@ -203,22 +196,42 @@ func TestLoad(t *testing.T) {
 		Amount: types.NewInt(int64(fundAmount)),
 	})
 
-	var inputs []sdkbanktypes.Input
-	var outputs []sdkbanktypes.Output
+	var inputs = make([]sdkbanktypes.Input, 0, 1)
+	var outputs = make([]sdkbanktypes.Output, 0, totalWallets)
 
-	// Build, recover and prep wallets to be funded via a msgMultisend
-	for i := 1; i <= numWallets; i++ {
-		wallets[i] = interchaintest.BuildWallet(kr, fmt.Sprint(i), noble.Config())
-		require.NoError(t, noble.RecoverKey(ctx, fmt.Sprint(i), wallets[i].Mnemonic), "failed to recover key")
+	var sliceOfOutputs = make([][]sdkbanktypes.Output, nf)
 
-		output := sdkbanktypes.Output{
-			Address: wallets[i].Address,
-			Coins:   amountToFundEachWallet,
-		}
-		outputs = append(outputs, output)
+	var eg, eg2, eg3 errgroup.Group
+
+	// creates wallets on each val and preps multiSend tx with addresses
+	for n := 0; n < nf; n++ {
+		n := n
+		eg.Go(func() error {
+			for i := 1; i <= numWallets; i++ {
+				err := noble.FullNodes[n].CreateKey(ctx, fmt.Sprint(i))
+				if err != nil {
+					return err
+				}
+				add, err := noble.FullNodes[n].KeyBech32(ctx, fmt.Sprint(i), "")
+				if err != nil {
+					return err
+				}
+				output := sdkbanktypes.Output{
+					Address: add,
+					Coins:   amountToFundEachWallet,
+				}
+				sliceOfOutputs[n] = append(sliceOfOutputs[n], output)
+			}
+			return err
+		})
+	}
+	require.NoError(t, eg.Wait())
+
+	for i := 0; i < len(sliceOfOutputs); i++ {
+		outputs = append(outputs, sliceOfOutputs[i]...)
 	}
 
-	input := sdkbanktypes.Output{
+	input := sdkbanktypes.Input{
 		Address: broadcasterWallet.Bech32Address(chainCfg.Bech32Prefix),
 		Coins:   totalAmountNeededToFundAllWallets,
 	}
@@ -243,62 +256,66 @@ func TestLoad(t *testing.T) {
 		&multisend,
 	)
 	require.NoError(t, err, "error broadcasting multisend tx")
-	// confirm tx went through by checking random wallet
-	bal, err := noble.GetBalance(ctx, wallets[rand.Intn(len(wallets))].Address, chainCfg.Denom)
-	require.NoError(t, err, "error getting account balance")
-	require.Equal(t, int64(loop), bal)
+
+	// confirm tx went through by checking random wallet from each full node
+	for n := 0; n < nf; n++ {
+		rando := rand.Intn(numWallets)
+		addr, err := noble.FullNodes[n].KeyBech32(ctx, fmt.Sprint(rando+1), "")
+		require.NoError(t, err, "error getting key address")
+		bal, err := noble.GetBalance(ctx, addr, chainCfg.Denom)
+		require.NoError(t, err, "error getting balance")
+		require.Equal(t, int64(loop), bal)
+	}
 
 	// All wallets are now funded
 
+	kr := keyring.NewInMemory()
+
 	// this is the wallet to send all transactions to during loop below
 	toWallet := interchaintest.BuildWallet(kr, "toWallet", noble.Config())
-
-	var eg errgroup.Group
-
-	broadcaster.ConfigureFactoryOptions(func(factory tx.Factory) tx.Factory {
-		return f.WithSimulateAndExecute(false)
-	})
-	cliContext, err := broadcaster.GetClientContext(ctx, broadcasterWallet)
-	require.NoError(t, err, "error getting broadcaster client context")
-	broadcaster.ConfigureClientContextOptions(func(clientContext sdkclient.Context) sdkclient.Context {
-		return cliContext.WithBroadcastMode("async")
-	})
+	amount := fmt.Sprintf("1%s", noble.Config().Denom)
 
 	startTimer := time.Now()
 
-	for i := 1; i <= loop; i++ {
-		t.Logf("starting loop: %d...", i)
-		for _, wallet := range wallets {
-			wallet := wallet
-
-			eg.Go(func() error {
-				msgSend := sdkbanktypes.MsgSend{
-					FromAddress: wallet.Address,
-					ToAddress:   toWallet.Address,
-					Amount:      oneCoins,
-				}
-
-				decoded := types.MustAccAddressFromBech32(wallet.Address)
-				wallet.Address = string(decoded)
-
-				_, err := cosmos.BroadcastTx(
-					ctx,
-					cosmos.NewBroadcaster(t, noble),
-					&wallet,
-					&msgSend,
-				)
-				return err
-			})
-		}
-		require.NoError(t, eg.Wait())
+	sems := make([]chan struct{}, nf)
+	for i := range sems {
+		sems[i] = make(chan struct{}, chnlBuff) // create a buffered channel of size 2 for each nf
 	}
 
-	duration := time.Since(startTimer)
+	for n := 0; n < nf; n++ {
+		n := n
+		eg2.Go(func() error {
+			for l := 1; l <= loop; l++ {
+				t.Logf("\n\nSTATUS LOG ---> FN: %d - LOOP:%d/%d\n\n", n, l, loop)
+				for i := 1; i <= numWallets; i++ {
+					i := i
+					sem := sems[n]
+					sem <- struct{}{}
+					eg3.Go(func() error {
+						defer func() { <-sem }()
+						_, _, err := noble.FullNodes[n].ExecBin(ctx, "tx", "bank", "send", fmt.Sprint(i), toWallet.Address, amount, "--keyring-backend", "test", "--node", fmt.Sprintf("tcp://%s:26657", noble.FullNodes[n].HostName()), "-b", "async", "-y")
+						return err
+					})
+				}
+			}
+			return nil
+		})
+	}
+	require.NoError(t, eg2.Wait())
+	require.NoError(t, eg3.Wait())
 
-	// testutil.WaitForBlocks(ctx, 2, noble)
+	duration1 := time.Since(startTimer)
 
-	bal, err = noble.GetBalance(ctx, toWallet.Address, chainCfg.Denom)
-	require.NoError(t, err, "failed to get balance")
+	// waits until all transactions have finalized
+	bal, err := noble.GetBalance(ctx, toWallet.Address, chainCfg.Denom)
+	for bal != int64(fundAmount) {
+		t.Logf("Current Balance: %d Waiting for tx's to finalize...", bal)
+		bal, err = noble.GetBalance(ctx, toWallet.Address, chainCfg.Denom)
+		require.NoError(t, err, "failed to get balance")
+		require.NoError(t, testutil.WaitForBlocks(ctx, 1, noble))
+	}
+
+	duration2 := time.Since(startTimer)
 
 	db, err := sql.Open("sqlite", dbFileFullPath)
 	require.NoError(t, err, "error opening sql db")
@@ -356,29 +373,11 @@ func TestLoad(t *testing.T) {
 	}
 	avgBlockTime := float32(sumBlockTimes) / float32(len(blocktimes))
 
-	t.Logf("%d TRANSACTIONS BROADCASTED IN %v", bal, duration)
-	t.Logf("AVG TRANSACTIONS PER SECOND: %f", float64(bal)/float64(duration.Seconds()))
+	t.Log("\n\n --------- \n\n")
+	t.Logf("%d TRANSACTIONS BROADCASTED IN %v", bal, duration1)
+	t.Logf("TRANSACTIONS BROADCASTED AND FINALIZED IN %v", duration2)
+	t.Logf("AVG TRANSACTIONS PER SECOND: %f", float64(bal)/float64(duration1.Seconds()))
 	t.Logf("AVG TRANSACTIONS PER BLOCK %f", averageTxPerBlock)
 	t.Logf("AVG BLOCKTIME: %f", avgBlockTime)
 
-}
-
-type CosmosMessageResult struct {
-	Height int64
-	Index  int
-	Type   string // URI for proto definition, e.g. /ibc.core.client.v1.MsgCreateClient
-
-	ClientChainID sql.NullString
-
-	ClientID             sql.NullString
-	CounterpartyClientID sql.NullString
-
-	ConnID             sql.NullString
-	CounterpartyConnID sql.NullString
-
-	PortID             sql.NullString
-	CounterpartyPortID sql.NullString
-
-	ChannelID             sql.NullString
-	CounterpartyChannelID sql.NullString
 }
