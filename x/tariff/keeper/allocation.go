@@ -19,7 +19,13 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 
 		for _, s := range entityShare {
 			truncated, _ := s.TruncateDecimal()
-			coins = append(coins, truncated)
+			if truncated.Amount.GT(sdk.ZeroInt()) {
+				coins = append(coins, truncated)
+			}
+		}
+
+		if len(coins) == 0 {
+			continue
 		}
 
 		acc := sdk.MustAccAddressFromBech32(d.Address)
