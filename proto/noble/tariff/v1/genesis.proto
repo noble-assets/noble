@@ -8,5 +8,5 @@ option go_package = "github.com/strangelove-ventures/noble/x/tariff/types";
 
 // GenesisState defines the tariff module's genesis state.
 message GenesisState {
-  Params params = 1 [ (gogoproto.nullable) = false ];
+  Params params = 1 [(gogoproto.nullable) = false];
 }

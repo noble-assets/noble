@@ -1,20 +1,20 @@
 syntax = "proto3";
 package noble.tokenfactory.v1;
 
-import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "noble/tokenfactory/v1/params.proto";
-import "noble/tokenfactory/v1/blacklisted.proto";
-import "noble/tokenfactory/v1/paused.proto";
-import "noble/tokenfactory/v1/master_minter.proto";
-import "noble/tokenfactory/v1/minters.proto";
-import "noble/tokenfactory/v1/pauser.proto";
-import "noble/tokenfactory/v1/blacklister.proto";
-import "noble/tokenfactory/v1/owner.proto";
-import "noble/tokenfactory/v1/minter_controller.proto";
-import "noble/tokenfactory/v1/minting_denom.proto";
 // this line is used by starport scaffolding # 1
 import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "noble/tokenfactory/v1/blacklisted.proto";
+import "noble/tokenfactory/v1/blacklister.proto";
+import "noble/tokenfactory/v1/master_minter.proto";
+import "noble/tokenfactory/v1/minter_controller.proto";
+import "noble/tokenfactory/v1/minters.proto";
+import "noble/tokenfactory/v1/minting_denom.proto";
+import "noble/tokenfactory/v1/owner.proto";
+import "noble/tokenfactory/v1/params.proto";
+import "noble/tokenfactory/v1/paused.proto";
+import "noble/tokenfactory/v1/pauser.proto";
 
 option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
 
@@ -25,14 +25,12 @@ service Query {
     option (google.api.http).get = "/noble/tokenfactory/params";
   }
   // Queries a Blacklisted by index.
-  rpc Blacklisted(QueryGetBlacklistedRequest)
-      returns (QueryGetBlacklistedResponse) {
+  rpc Blacklisted(QueryGetBlacklistedRequest) returns (QueryGetBlacklistedResponse) {
     option (google.api.http).get = "/noble/tokenfactory/blacklisted/{address}";
   }
 
   // Queries a list of Blacklisted items.
-  rpc BlacklistedAll(QueryAllBlacklistedRequest)
-      returns (QueryAllBlacklistedResponse) {
+  rpc BlacklistedAll(QueryAllBlacklistedRequest) returns (QueryAllBlacklistedResponse) {
     option (google.api.http).get = "/noble/tokenfactory/blacklisted";
   }
 
@@ -41,8 +39,7 @@ service Query {
     option (google.api.http).get = "/noble/tokenfactory/paused";
   }
   // Queries a MasterMinter by index.
-  rpc MasterMinter(QueryGetMasterMinterRequest)
-      returns (QueryGetMasterMinterResponse) {
+  rpc MasterMinter(QueryGetMasterMinterRequest) returns (QueryGetMasterMinterResponse) {
     option (google.api.http).get = "/noble/tokenfactory/master_minter";
   }
   // Queries a Minters by index.
@@ -60,8 +57,7 @@ service Query {
     option (google.api.http).get = "/noble/tokenfactory/pauser";
   }
   // Queries a Blacklister by index.
-  rpc Blacklister(QueryGetBlacklisterRequest)
-      returns (QueryGetBlacklisterResponse) {
+  rpc Blacklister(QueryGetBlacklisterRequest) returns (QueryGetBlacklisterResponse) {
     option (google.api.http).get = "/noble/tokenfactory/blacklister";
   }
   // Queries a Owner by index.
@@ -69,21 +65,17 @@ service Query {
     option (google.api.http).get = "/noble/tokenfactory/owner";
   }
   // Queries a MinterController by index.
-  rpc MinterController(QueryGetMinterControllerRequest)
-      returns (QueryGetMinterControllerResponse) {
-    option (google.api.http).get =
-        "/noble/tokenfactory/minter_controller/{controller_address}";
+  rpc MinterController(QueryGetMinterControllerRequest) returns (QueryGetMinterControllerResponse) {
+    option (google.api.http).get = "/noble/tokenfactory/minter_controller/{controller_address}";
   }
 
   // Queries a list of MinterController items.
-  rpc MinterControllerAll(QueryAllMinterControllerRequest)
-      returns (QueryAllMinterControllerResponse) {
+  rpc MinterControllerAll(QueryAllMinterControllerRequest) returns (QueryAllMinterControllerResponse) {
     option (google.api.http).get = "/noble/tokenfactory/minter_controller";
   }
 
   // Queries a MintingDenom by index.
-  rpc MintingDenom(QueryGetMintingDenomRequest)
-      returns (QueryGetMintingDenomResponse) {
+  rpc MintingDenom(QueryGetMintingDenomRequest) returns (QueryGetMintingDenomResponse) {
     option (google.api.http).get = "/noble/tokenfactory/minting_denom";
   }
   // this line is used by starport scaffolding # 2
@@ -95,13 +87,15 @@ message QueryParamsRequest {}
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
   // params holds all the parameters of this module.
-  Params params = 1 [ (gogoproto.nullable) = false ];
+  Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryGetBlacklistedRequest { string address = 1; }
+message QueryGetBlacklistedRequest {
+  string address = 1;
+}
 
 message QueryGetBlacklistedResponse {
-  Blacklisted blacklisted = 1 [ (gogoproto.nullable) = false ];
+  Blacklisted blacklisted = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllBlacklistedRequest {
@@ -109,24 +103,26 @@ message QueryAllBlacklistedRequest {
 }
 
 message QueryAllBlacklistedResponse {
-  repeated Blacklisted blacklisted = 1 [ (gogoproto.nullable) = false ];
+  repeated Blacklisted blacklisted = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetPausedRequest {}
 
 message QueryGetPausedResponse {
-  Paused paused = 1 [ (gogoproto.nullable) = false ];
+  Paused paused = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetMasterMinterRequest {}
 
 message QueryGetMasterMinterResponse {
-  MasterMinter master_minter = 1 [ (gogoproto.nullable) = false ];
+  MasterMinter master_minter = 1 [(gogoproto.nullable) = false];
 }
-message QueryGetMintersRequest { string address = 1; }
+message QueryGetMintersRequest {
+  string address = 1;
+}
 
 message QueryGetMintersResponse {
-  Minters minters = 1 [ (gogoproto.nullable) = false ];
+  Minters minters = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllMintersRequest {
@@ -134,30 +130,32 @@ message QueryAllMintersRequest {
 }
 
 message QueryAllMintersResponse {
-  repeated Minters minters = 1 [ (gogoproto.nullable) = false ];
+  repeated Minters minters = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetPauserRequest {}
 
 message QueryGetPauserResponse {
-  Pauser pauser = 1 [ (gogoproto.nullable) = false ];
+  Pauser pauser = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetBlacklisterRequest {}
 
 message QueryGetBlacklisterResponse {
-  Blacklister blacklister = 1 [ (gogoproto.nullable) = false ];
+  Blacklister blacklister = 1 [(gogoproto.nullable) = false];
 }
 message QueryGetOwnerRequest {}
 
 message QueryGetOwnerResponse {
-  Owner owner = 1 [ (gogoproto.nullable) = false ];
+  Owner owner = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryGetMinterControllerRequest { string controller_address = 1; }
+message QueryGetMinterControllerRequest {
+  string controller_address = 1;
+}
 
 message QueryGetMinterControllerResponse {
-  MinterController minter_controller = 1 [ (gogoproto.nullable) = false ];
+  MinterController minter_controller = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllMinterControllerRequest {
@@ -165,14 +163,13 @@ message QueryAllMinterControllerRequest {
 }
 
 message QueryAllMinterControllerResponse {
-  repeated MinterController minter_controller = 1
-      [ (gogoproto.nullable) = false ];
+  repeated MinterController minter_controller = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetMintingDenomRequest {}
 
 message QueryGetMintingDenomResponse {
-  MintingDenom minting_denom = 1 [ (gogoproto.nullable) = false ];
+  MintingDenom minting_denom = 1 [(gogoproto.nullable) = false];
 }
 // this line is used by starport scaffolding # 3

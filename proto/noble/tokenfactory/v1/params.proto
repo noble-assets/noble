@@ -6,4 +6,6 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
 
 // Params defines the parameters for the module.
-message Params { option (gogoproto.goproto_stringer) = false; }
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+}

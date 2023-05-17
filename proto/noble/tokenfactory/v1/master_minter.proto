@@ -3,4 +3,6 @@ package noble.tokenfactory.v1;
 
 option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
 
-message MasterMinter { string address = 1; }
+message MasterMinter {
+  string address = 1;
+}

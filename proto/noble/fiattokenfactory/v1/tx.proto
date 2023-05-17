@@ -9,11 +9,9 @@ option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/ty
 
 // Msg defines the Msg service.
 service Msg {
-  rpc UpdateMasterMinter(MsgUpdateMasterMinter)
-      returns (MsgUpdateMasterMinterResponse);
+  rpc UpdateMasterMinter(MsgUpdateMasterMinter) returns (MsgUpdateMasterMinterResponse);
   rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
-  rpc UpdateBlacklister(MsgUpdateBlacklister)
-      returns (MsgUpdateBlacklisterResponse);
+  rpc UpdateBlacklister(MsgUpdateBlacklister) returns (MsgUpdateBlacklisterResponse);
   rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
   rpc AcceptOwner(MsgAcceptOwner) returns (MsgAcceptOwnerResponse);
   rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
@@ -24,10 +22,8 @@ service Msg {
   rpc Unblacklist(MsgUnblacklist) returns (MsgUnblacklistResponse);
   rpc Pause(MsgPause) returns (MsgPauseResponse);
   rpc Unpause(MsgUnpause) returns (MsgUnpauseResponse);
-  rpc ConfigureMinterController(MsgConfigureMinterController)
-      returns (MsgConfigureMinterControllerResponse);
-  rpc RemoveMinterController(MsgRemoveMinterController)
-      returns (MsgRemoveMinterControllerResponse);
+  rpc ConfigureMinterController(MsgConfigureMinterController) returns (MsgConfigureMinterControllerResponse);
+  rpc RemoveMinterController(MsgRemoveMinterController) returns (MsgRemoveMinterControllerResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -59,14 +55,16 @@ message MsgUpdateOwner {
 
 message MsgUpdateOwnerResponse {}
 
-message MsgAcceptOwner { string from = 1; }
+message MsgAcceptOwner {
+  string from = 1;
+}
 
 message MsgAcceptOwnerResponse {}
 
 message MsgConfigureMinter {
   string from = 1;
   string address = 2;
-  cosmos.base.v1beta1.Coin allowance = 3 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin allowance = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgConfigureMinterResponse {}
@@ -81,14 +79,14 @@ message MsgRemoveMinterResponse {}
 message MsgMint {
   string from = 1;
   string address = 2;
-  cosmos.base.v1beta1.Coin amount = 3 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgMintResponse {}
 
 message MsgBurn {
   string from = 1;
-  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
 }
 
 message MsgBurnResponse {}
@@ -107,11 +105,15 @@ message MsgUnblacklist {
 
 message MsgUnblacklistResponse {}
 
-message MsgPause { string from = 1; }
+message MsgPause {
+  string from = 1;
+}
 
 message MsgPauseResponse {}
 
-message MsgUnpause { string from = 1; }
+message MsgUnpause {
+  string from = 1;
+}
 
 message MsgUnpauseResponse {}
 

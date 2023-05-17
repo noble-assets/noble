@@ -2,32 +2,31 @@ syntax = "proto3";
 package noble.tokenfactory.v1;
 
 import "gogoproto/gogo.proto";
-import "noble/tokenfactory/v1/params.proto";
 import "noble/tokenfactory/v1/blacklisted.proto";
-import "noble/tokenfactory/v1/paused.proto";
-import "noble/tokenfactory/v1/master_minter.proto";
-import "noble/tokenfactory/v1/minters.proto";
-import "noble/tokenfactory/v1/pauser.proto";
 import "noble/tokenfactory/v1/blacklister.proto";
-import "noble/tokenfactory/v1/owner.proto";
+import "noble/tokenfactory/v1/master_minter.proto";
 import "noble/tokenfactory/v1/minter_controller.proto";
+import "noble/tokenfactory/v1/minters.proto";
 import "noble/tokenfactory/v1/minting_denom.proto";
+import "noble/tokenfactory/v1/owner.proto";
+import "noble/tokenfactory/v1/params.proto";
+import "noble/tokenfactory/v1/paused.proto";
+import "noble/tokenfactory/v1/pauser.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
 
 // GenesisState defines the tokenfactory module's genesis state.
 message GenesisState {
-  Params params = 1 [ (gogoproto.nullable) = false ];
-  repeated Blacklisted blacklisted_list = 2 [ (gogoproto.nullable) = false ];
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Blacklisted blacklisted_list = 2 [(gogoproto.nullable) = false];
   Paused paused = 3;
   MasterMinter master_minter = 4;
-  repeated Minters minters_list = 5 [ (gogoproto.nullable) = false ];
+  repeated Minters minters_list = 5 [(gogoproto.nullable) = false];
   Pauser pauser = 6;
   Blacklister blacklister = 7;
   Owner owner = 8;
-  repeated MinterController minter_controller_list = 9
-      [ (gogoproto.nullable) = false ];
+  repeated MinterController minter_controller_list = 9 [(gogoproto.nullable) = false];
   MintingDenom minting_denom = 10;
   // this line is used by starport scaffolding # genesis/proto/state
 }
