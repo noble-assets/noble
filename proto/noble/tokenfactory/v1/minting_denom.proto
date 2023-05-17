@@ -1,0 +1,6 @@
+syntax = "proto3";
+package noble.tokenfactory.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
+
+message MintingDenom { string denom = 1; }

@@ -1,0 +1,46 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Noble Chain - REST API",
+    "description": "REST interface for query services",
+    "version": "1.0.0"
+  },
+  "apis": [
+    {
+      "url": "./tmp-swagger-gen/noble/fiattokenfactory/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "FiatTokenFactoryParams",
+          "BlacklistedAll": "FiatBlacklistedAll",
+          "Blacklisted": "FiatBlacklisted",
+          "Blacklister": "FiatBlacklister",
+          "MasterMinter": "FiatMasterMinter",
+          "MinterControllerAll": "FiatMinterControllerAll",
+          "MinterController": "FiatMinterController",
+          "MintersAll": "FiatMintersAll",
+          "Minters": "FiatMinters",
+          "MintingDenom": "FiatMintingDenom",
+          "Owner": "FiatOwner",
+          "Paused": "FiatPaused",
+          "Pauser": "FiatPauser"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/noble/globalfee/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "GlobalFeeParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/noble/tokenfactory/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "TokenFactoryParams"
+        }
+      }
+    }
+  ]
+}

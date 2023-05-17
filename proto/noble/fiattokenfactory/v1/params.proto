@@ -1,0 +1,9 @@
+syntax = "proto3";
+package noble.fiattokenfactory.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
+
+// Params defines the parameters for the module.
+message Params { option (gogoproto.goproto_stringer) = false; }

@@ -1,0 +1,133 @@
+syntax = "proto3";
+package noble.tokenfactory.v1;
+
+// this line is used by starport scaffolding # proto/tx/import
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc UpdateMasterMinter(MsgUpdateMasterMinter)
+      returns (MsgUpdateMasterMinterResponse);
+  rpc UpdatePauser(MsgUpdatePauser) returns (MsgUpdatePauserResponse);
+  rpc UpdateBlacklister(MsgUpdateBlacklister)
+      returns (MsgUpdateBlacklisterResponse);
+  rpc UpdateOwner(MsgUpdateOwner) returns (MsgUpdateOwnerResponse);
+  rpc AcceptOwner(MsgAcceptOwner) returns (MsgAcceptOwnerResponse);
+  rpc ConfigureMinter(MsgConfigureMinter) returns (MsgConfigureMinterResponse);
+  rpc RemoveMinter(MsgRemoveMinter) returns (MsgRemoveMinterResponse);
+  rpc Mint(MsgMint) returns (MsgMintResponse);
+  rpc Burn(MsgBurn) returns (MsgBurnResponse);
+  rpc Blacklist(MsgBlacklist) returns (MsgBlacklistResponse);
+  rpc Unblacklist(MsgUnblacklist) returns (MsgUnblacklistResponse);
+  rpc Pause(MsgPause) returns (MsgPauseResponse);
+  rpc Unpause(MsgUnpause) returns (MsgUnpauseResponse);
+  rpc ConfigureMinterController(MsgConfigureMinterController)
+      returns (MsgConfigureMinterControllerResponse);
+  rpc RemoveMinterController(MsgRemoveMinterController)
+      returns (MsgRemoveMinterControllerResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgUpdateMasterMinter {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdateMasterMinterResponse {}
+
+message MsgUpdatePauser {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdatePauserResponse {}
+
+message MsgUpdateBlacklister {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdateBlacklisterResponse {}
+
+message MsgUpdateOwner {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUpdateOwnerResponse {}
+
+message MsgAcceptOwner { string from = 1; }
+
+message MsgAcceptOwnerResponse {}
+
+message MsgConfigureMinter {
+  string from = 1;
+  string address = 2;
+  cosmos.base.v1beta1.Coin allowance = 3 [ (gogoproto.nullable) = false ];
+}
+
+message MsgConfigureMinterResponse {}
+
+message MsgRemoveMinter {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgRemoveMinterResponse {}
+
+message MsgMint {
+  string from = 1;
+  string address = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [ (gogoproto.nullable) = false ];
+}
+
+message MsgMintResponse {}
+
+message MsgBurn {
+  string from = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message MsgBurnResponse {}
+
+message MsgBlacklist {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgBlacklistResponse {}
+
+message MsgUnblacklist {
+  string from = 1;
+  string address = 2;
+}
+
+message MsgUnblacklistResponse {}
+
+message MsgPause { string from = 1; }
+
+message MsgPauseResponse {}
+
+message MsgUnpause { string from = 1; }
+
+message MsgUnpauseResponse {}
+
+message MsgConfigureMinterController {
+  string from = 1;
+  string controller = 2;
+  string minter = 3;
+}
+
+message MsgConfigureMinterControllerResponse {}
+
+message MsgRemoveMinterController {
+  string from = 1;
+  string controller = 2;
+}
+
+message MsgRemoveMinterControllerResponse {}
+
+// this line is used by starport scaffolding # proto/tx/message
