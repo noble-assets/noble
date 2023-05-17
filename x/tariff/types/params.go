@@ -51,10 +51,14 @@ func validateDistributionEntityParams(i interface{}) error {
 		if err != nil {
 			return fmt.Errorf("failed to parse bech32 address: %s", d.Address)
 		}
+		count := 0
 		for _, dd := range distributionEntities {
 			if dd.Address == adr.String() {
-				return fmt.Errorf("address is already added as a distribution entity: %s", adr)
+				count++
 			}
+		}
+		if count > 1 {
+			return fmt.Errorf("address is already added as a distribution entity: %s", adr)
 		}
 
 		if d.Share.LTE(sdk.ZeroDec()) || d.Share.GT(sdk.OneDec()) {
