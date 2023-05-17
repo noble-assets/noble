@@ -47,13 +47,18 @@ func validateDistributionEntityParams(i interface{}) error {
 	// ensure each denom is only registered one time.
 	sum := sdk.ZeroDec()
 	for _, d := range distributionEntities {
-		_, err := sdk.AccAddressFromBech32(d.Address)
+		adr, err := sdk.AccAddressFromBech32(d.Address)
 		if err != nil {
 			return fmt.Errorf("failed to parse bech32 address: %s", d.Address)
 		}
+		for _, dd := range distributionEntities {
+			if dd.Address == adr.String() {
+				return fmt.Errorf("address is already added as a distribution entity: %s", adr)
+			}
+		}
 
-		if d.Share.LT(sdk.ZeroDec()) || d.Share.GT(sdk.OneDec()) {
-			return fmt.Errorf("distribution entity share is outside of the range of 0 to 100%%: %s", d.Share.String())
+		if d.Share.LTE(sdk.ZeroDec()) || d.Share.GT(sdk.OneDec()) {
+			return fmt.Errorf("distribution entity share must be greater than 0 and less than or equal to 100%%: %s", d.Share.String())
 		}
 
 		sum = sum.Add(d.Share)
