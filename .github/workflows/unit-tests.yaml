@@ -1,11 +1,7 @@
 name: Unit Tests
 
 on:
-  push:
-    tags:
-    - '**'
-    branches:
-    - '**'
+  pull_request:
 
 jobs:
   unit-tests:
