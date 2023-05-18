@@ -11,7 +11,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 
 	params := k.GetParams(ctx)
 	feesToDistribute := feesCollected.MulDecTruncate(params.Share)
-	if feesToDistribute.AmountOf(params.TransferFeeDenom).IsZero() {
+	if params.TransferFeeDenom == "" || feesToDistribute.AmountOf(params.TransferFeeDenom).IsZero() {
 		return
 	}
 
