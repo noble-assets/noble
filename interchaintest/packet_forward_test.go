@@ -23,6 +23,10 @@ type PacketMetadata struct {
 	Forward *ForwardMetadata `json:"forward"`
 }
 
+type PacketMetadataTimeoutString struct {
+	Forward *ForwardMetadataTimeoutString `json:"forward"`
+}
+
 type ForwardMetadata struct {
 	Receiver       string        `json:"receiver"`
 	Port           string        `json:"port"`
@@ -31,6 +35,16 @@ type ForwardMetadata struct {
 	Retries        *uint8        `json:"retries,omitempty"`
 	Next           *string       `json:"next,omitempty"`
 	RefundSequence *uint64       `json:"refund_sequence,omitempty"`
+}
+
+type ForwardMetadataTimeoutString struct {
+	Receiver       string  `json:"receiver"`
+	Port           string  `json:"port"`
+	Channel        string  `json:"channel"`
+	Timeout        string  `json:"timeout"`
+	Retries        *uint8  `json:"retries,omitempty"`
+	Next           *string `json:"next,omitempty"`
+	RefundSequence *uint64 `json:"refund_sequence,omitempty"`
 }
 
 func TestPacketForwardMiddleware(t *testing.T) {
@@ -631,6 +645,62 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				Port:     bcChan.PortID,
 				Retries:  &retries,
 				Timeout:  1 * time.Second,
+			},
+		}
+
+		memo, err := json.Marshal(metadata)
+		require.NoError(t, err)
+
+		chainAHeight, err := chainA.Height(ctx)
+		require.NoError(t, err)
+
+		transferTx, err := chainA.SendIBCTransfer(ctx, abChan.ChannelID, userA.KeyName, transfer, ibc.TransferOptions{Memo: string(memo)})
+		require.NoError(t, err)
+		_, err = testutil.PollForAck(ctx, chainA, chainAHeight, chainAHeight+25, transferTx.Packet)
+		require.NoError(t, err)
+		err = testutil.WaitForBlocks(ctx, 1, chainA)
+		require.NoError(t, err)
+
+		// assert balances for user controlled wallets
+		chainABalance, err := chainA.GetBalance(ctx, userA.Bech32Address(chainA.Config().Bech32Prefix), chainA.Config().Denom)
+		require.NoError(t, err)
+
+		chainBBalance, err := chainB.GetBalance(ctx, userB.Bech32Address(chainB.Config().Bech32Prefix), firstHopIBCDenom)
+		require.NoError(t, err)
+
+		chainCBalance, err := chainC.GetBalance(ctx, userC.Bech32Address(chainC.Config().Bech32Prefix), secondHopIBCDenom)
+		require.NoError(t, err)
+
+		require.Equal(t, userFunds, chainABalance)
+		require.Equal(t, int64(0), chainBBalance)
+		require.Equal(t, int64(0), chainCBalance)
+
+		firstHopEscrowBalance, err := chainA.GetBalance(ctx, firstHopEscrowAccount, chainA.Config().Denom)
+		require.NoError(t, err)
+
+		secondHopEscrowBalance, err := chainB.GetBalance(ctx, secondHopEscrowAccount, firstHopIBCDenom)
+		require.NoError(t, err)
+
+		require.Equal(t, int64(0), firstHopEscrowBalance)
+		require.Equal(t, int64(0), secondHopEscrowBalance)
+	})
+
+	t.Run("forward timeout refund with String", func(t *testing.T) {
+		// Send packet from Chain A->Chain B->Chain C with the timeout so low for B->C transfer that it can not make it from B to C, which should result in a refund from B to A after two retries.
+		transfer := ibc.WalletAmount{
+			Address: userB.Bech32Address(chainB.Config().Bech32Prefix),
+			Denom:   chainA.Config().Denom,
+			Amount:  transferAmount,
+		}
+
+		retries := uint8(2)
+		metadata := &PacketMetadataTimeoutString{
+			Forward: &ForwardMetadataTimeoutString{
+				Receiver: userC.Bech32Address(chainC.Config().Bech32Prefix),
+				Channel:  bcChan.ChannelID,
+				Port:     bcChan.PortID,
+				Retries:  &retries,
+				Timeout:  "1s",
 			},
 		}
 
