@@ -33,7 +33,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 		// transfer collected fees to the distribution entity account
 		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.feeCollectorName, acc, coins)
 		if err != nil {
-			panic(err)
+			ctx.Logger().Error("Error allocating tokens to distribution entity: %s "+err.Error(), d.Address)
 		}
 	}
 }
