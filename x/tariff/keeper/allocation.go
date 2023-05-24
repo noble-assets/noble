@@ -22,7 +22,13 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 
 		for _, s := range entityShare {
 			truncated, _ := s.TruncateDecimal()
-			coins = append(coins, truncated)
+			if truncated.Amount.GT(sdk.ZeroInt()) {
+				coins = append(coins, truncated)
+			}
+		}
+
+		if len(coins) == 0 {
+			continue
 		}
 
 		acc := sdk.MustAccAddressFromBech32(d.Address)
@@ -30,7 +36,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 		// transfer collected fees to the distribution entity account
 		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.feeCollectorName, acc, coins)
 		if err != nil {
-			panic(err)
+			ctx.Logger().Error("Error allocating tokens to distribution entity: %s "+err.Error(), d.Address)
 		}
 	}
 }
