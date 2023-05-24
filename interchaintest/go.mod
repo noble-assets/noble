@@ -4,12 +4,12 @@ go 1.19
 
 require (
 	github.com/cosmos/cosmos-sdk v0.45.15
-	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/ibc-go/v4 v4.4.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230407184020-2e49efbc1d9f
+	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20230508170700-5b7cf4fd016b
 	github.com/strangelove-ventures/noble v0.0.0-00010101000000-000000000000
 	github.com/strangelove-ventures/paramauthority v0.1.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	go.uber.org/zap v1.23.0
 )
 
@@ -33,25 +33,25 @@ require (
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
-	github.com/btcsuite/btcd v0.22.2 // indirect
+	github.com/btcsuite/btcd v0.23.0 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/centrifuge/go-substrate-rpc-client/v4 v4.0.4 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cockroachdb/errors v1.9.1 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
 	github.com/cockroachdb/pebble v0.0.0-20220817183557-09c6e030a677 // indirect
 	github.com/cockroachdb/redact v1.1.3 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
-	github.com/cometbft/cometbft-db v0.7.0 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-db v0.0.0-20221226095112-f3c38ecb5e32 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-beta.1 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.5 // indirect
+	github.com/cosmos/interchain-security v1.0.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.2 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
@@ -102,7 +102,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.0.0-20220222234857-c00d1f31bab3 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/ipfs/go-cid v0.0.7 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
@@ -158,13 +158,12 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.6.1 // indirect
+	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.14.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220614013038-64ee5596c38a // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tendermint/tendermint v0.34.27 // indirect
 	github.com/tendermint/tm-db v0.6.7 // indirect
@@ -176,16 +175,16 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/exp v0.0.0-20221019170559-20944726eadf // indirect
-	golang.org/x/mod v0.7.0 // indirect
+	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
+	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	golang.org/x/tools v0.4.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa // indirect
-	google.golang.org/grpc v1.52.3 // indirect
+	google.golang.org/grpc v1.53.0 // indirect
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
@@ -209,13 +208,22 @@ replace (
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 	github.com/ChainSafe/go-schnorrkel/1 => github.com/ChainSafe/go-schnorrkel v1.0.0
 
+	// specify the version of btcd used so we don't get the btcec issue
+	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2
+
+	// use cosmos-sdk with ics support
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.14-ics
+
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	// For this nested module, you always want to replace the parent reference with the current worktree.
 	github.com/strangelove-ventures/noble => ../
 
+	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.26
+
 	// cometbft
-	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
+	// github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
 
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
+
 )

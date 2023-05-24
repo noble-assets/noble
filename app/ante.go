@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
 	feeante "github.com/strangelove-ventures/noble/x/globalfee/ante"
 )

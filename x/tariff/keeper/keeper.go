@@ -6,10 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	chantypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	"github.com/cosmos/ibc-go/v3/modules/core/exported"
+	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	chantypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v4/modules/core/exported"
 	"github.com/strangelove-ventures/noble/x/tariff/types"
 )
 
@@ -122,4 +122,12 @@ func (k Keeper) WriteAcknowledgement(
 	ack exported.Acknowledgement,
 ) error {
 	return k.ics4Wrapper.WriteAcknowledgement(ctx, chanCap, packet, ack)
+}
+
+func (k Keeper) GetAppVersion(
+	ctx sdk.Context,
+	portID,
+	channelID string,
+) (string, bool) {
+	return k.ics4Wrapper.GetAppVersion(ctx, portID, channelID)
 }

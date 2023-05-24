@@ -5,7 +5,7 @@ go 1.19
 require (
 	cosmossdk.io/errors v1.0.0-beta.7
 	github.com/cosmos/cosmos-sdk v0.45.15
-	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/ibc-go/v4 v4.4.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
@@ -13,7 +13,7 @@ require (
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5
+	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.6
 	github.com/strangelove-ventures/paramauthority v0.1.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.27
