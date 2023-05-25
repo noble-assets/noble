@@ -144,6 +144,9 @@ require (
 )
 
 replace (
+	// use noble flavoured cosmos/ibc-go
+	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.0.0-20230525172500-f70ea5423677
+
 	// use cosmos-flavored protocol buffers
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
