@@ -144,6 +144,9 @@ require (
 )
 
 replace (
+	// huckleberry patch for ibc-go v3
+	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry
+
 	// use cosmos-flavored protocol buffers
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
