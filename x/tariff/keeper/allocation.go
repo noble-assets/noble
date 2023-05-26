@@ -22,7 +22,17 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 
 	params := k.GetParams(ctx)
 	feesToDistribute := feesCollected.MulDecTruncate(params.Share)
-	if feesToDistribute.AmountOf(params.TransferFeeDenom).IsZero() {
+
+	foundAmountGreaterThanZero = false
+	for _, coin := range feesToDistribute {
+		truncated, _ := coin.TruncateDecimal()
+		if truncated.Amount.GT(sdk.ZeroInt()) {
+			foundAmountGreaterThanZero = true
+			break
+		}
+	}
+	if !foundAmountGreaterThanZero {
+		// no fees to distribute
 		return
 	}
 
