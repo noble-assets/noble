@@ -7,10 +7,34 @@ import (
 func (k Keeper) AllocateTokens(ctx sdk.Context) {
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
+	foundAmountGreaterThanZero := false
+	for _, coin := range feesCollectedInt {
+		if coin.Amount.GT(sdk.ZeroInt()) {
+			foundAmountGreaterThanZero = true
+			break
+		}
+	}
+	if !foundAmountGreaterThanZero {
+		// no fees to distribute
+		return
+	}
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
 	params := k.GetParams(ctx)
 	feesToDistribute := feesCollected.MulDecTruncate(params.Share)
+
+	foundAmountGreaterThanZero = false
+	for _, coin := range feesToDistribute {
+		truncated, _ := coin.TruncateDecimal()
+		if truncated.Amount.GT(sdk.ZeroInt()) {
+			foundAmountGreaterThanZero = true
+			break
+		}
+	}
+	if !foundAmountGreaterThanZero {
+		// no fees to distribute
+		return
+	}
 
 	for _, d := range params.DistributionEntities {
 		entityShare := feesToDistribute.MulDecTruncate(d.Share)
