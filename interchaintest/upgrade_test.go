@@ -109,7 +109,7 @@ func TestNobleChainUpgrade(t *testing.T) {
 		},
 	}
 
-	nv := 2
+	nv := 4
 	nf := 0
 
 	logger := zaptest.NewLogger(t)
@@ -268,10 +268,8 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "error stopping node(s)")
 
 	// upgrade version and repo on all nodes
-	for _, n := range noble.Nodes() {
-		n.Image.Repository = repo
-	}
-	noble.UpgradeVersion(ctx, client, version)
+	// testnet actually upgraded to v0.5.0, but that required a hack to fix the consensus min fee. v0.5.1 fixes that.
+	noble.UpgradeVersion(ctx, client, "v0.5.1")
 
 	// start all nodes back up.
 	// validators reach consensus on first block after upgrade height
@@ -374,4 +372,50 @@ func TestNobleChainUpgrade(t *testing.T) {
 	require.NoError(t, err, "failed to unmarshall minting denom")
 
 	require.Equal(t, `"`+mintingDenom.MintingDenom.Denom+`"`, tariffParamTransferFeeDenom.Value)
+
+	// stage new version
+	for _, n := range noble.Nodes() {
+		n.Image.Repository = repo
+	}
+	noble.UpgradeVersion(ctx, client, version)
+
+	// do rolling update on half the vals
+	for i, n := range noble.Validators {
+		if i%2 == 0 {
+			continue
+		}
+		// shutdown
+		require.NoError(t, n.StopContainer(ctx))
+		require.NoError(t, n.RemoveContainer(ctx))
+
+		// startup
+		require.NoError(t, n.CreateNodeContainer(ctx))
+		require.NoError(t, n.StartContainer(ctx))
+
+		timeoutCtx, timeoutCtxCancel = context.WithTimeout(ctx, time.Second*45)
+		defer timeoutCtxCancel()
+
+		require.NoError(t, testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble))
+	}
+
+	// blocks should still be produced after rolling update
+	timeoutCtx, timeoutCtxCancel = context.WithTimeout(ctx, time.Second*45)
+	defer timeoutCtxCancel()
+
+	err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
+	require.NoError(t, err, "chain did not produce blocks after upgrade")
+
+	// stop all nodes to bring rest of vals up to date
+	err = noble.StopAllNodes(ctx)
+	require.NoError(t, err, "error stopping node(s)")
+
+	err = noble.StartAllNodes(ctx)
+	require.NoError(t, err, "error starting upgraded node(s)")
+
+	timeoutCtx, timeoutCtxCancel = context.WithTimeout(ctx, time.Second*45)
+	defer timeoutCtxCancel()
+
+	err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
+	require.NoError(t, err, "chain did not produce blocks after upgrade")
+
 }
