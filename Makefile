@@ -7,7 +7,7 @@ DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bu
 
 # don't override user values
 ifeq (,$(VERSION))
-  VERSION := $(shell git describe --exact-match 2>/dev/null)
+  VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
   # if VERSION is empty, then populate it with branch's name and raw commit hash
   ifeq (,$(VERSION))
     VERSION := $(BRANCH)-$(COMMIT)
