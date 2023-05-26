@@ -24,7 +24,11 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 
 	var grand1Upgrades = []chainUpgrade{
 		{
-			upgradeName: "neon",
+			// The upgrade was registered on-chain with name "v0.4.1" accidentally,
+			// when "neon" was the upgrade name in the v0.4.1 code.
+			// As such, v0.4.2 was required to complete the upgrade, which changed the upgrade
+			// name in the code to "v0.4.1" as a workaround.
+			upgradeName: "v0.4.1",
 			image: ibc.DockerImage{
 				Repository: "ghcr.io/strangelove-ventures/noble",
 				Version:    "v0.4.2",
