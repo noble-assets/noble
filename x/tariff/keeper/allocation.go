@@ -7,6 +7,17 @@ import (
 func (k Keeper) AllocateTokens(ctx sdk.Context) {
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
+	foundAmountGreaterThanZero := false
+	for _, coin := range feesCollectedInt {
+		if coin.Amount.GT(sdk.ZeroInt()) {
+			foundAmountGreaterThanZero = true
+			break
+		}
+	}
+	if !foundAmountGreaterThanZero {
+		// no fees to distribute
+		return
+	}
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
 	params := k.GetParams(ctx)
