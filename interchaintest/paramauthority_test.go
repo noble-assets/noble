@@ -92,7 +92,7 @@ func TestNobleParamAuthority(t *testing.T) {
 
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
-	var paramauthorityWallet Authority
+	var paramauthorityWallet ibc.Wallet
 	var extraWallets ExtraWallets
 
 	chainCfg := ibc.ChainConfig{
@@ -117,11 +117,11 @@ func TestNobleParamAuthority(t *testing.T) {
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) error {
 			val := noble.Validators[0]
-			err := createTokenfactoryRoles(ctx, &roles, DenomMetadata_rupee, val, true)
+			err := createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, true)
 			if err != nil {
 				return err
 			}
-			err = createTokenfactoryRoles(ctx, &roles, DenomMetadata_drachma, val, true)
+			err = createTokenfactoryRoles(ctx, &roles, denomMetadataDrachma, val, true)
 			if err != nil {
 				return err
 			}
@@ -137,16 +137,16 @@ func TestNobleParamAuthority(t *testing.T) {
 			if err := json.Unmarshal(b, &g); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &roles, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &roles, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Address); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -204,32 +204,32 @@ func TestNobleParamAuthority(t *testing.T) {
 			title:         "change authority to alice from correct signer but incorrect msg authority",
 			description:   "change params and upgrade authority to alice's address",
 			newAuthority:  extraWallets.Alice.Address,
-			msgAuthority:  extraWallets.User.Address,      // this is not the params authority.
-			signer:        paramauthorityWallet.Authority, // this is the params authority, but does not match msgAuthority
+			msgAuthority:  extraWallets.User.Address, // this is not the params authority.
+			signer:        paramauthorityWallet,      // this is the params authority, but does not match msgAuthority
 			shouldSucceed: false,
 		},
 		{
 			title:         "change authority to alice from correct msg authority but incorrect signer",
 			description:   "change params and upgrade authority to alice's address",
 			newAuthority:  extraWallets.Alice.Address,
-			msgAuthority:  paramauthorityWallet.Authority.Address, // this is the params authority.
-			signer:        extraWallets.User,                      // this is not the params authority.
+			msgAuthority:  paramauthorityWallet.Address, // this is the params authority.
+			signer:        extraWallets.User,            // this is not the params authority.
 			shouldSucceed: false,
 		},
 		{
 			title:         "change authority to alice from correct signer and msg authority",
 			description:   "change params and upgrade authority to alice's address",
 			newAuthority:  extraWallets.Alice.Address,
-			msgAuthority:  paramauthorityWallet.Authority.Address, // this is the params authority.
-			signer:        paramauthorityWallet.Authority,         // this is the params authority.
+			msgAuthority:  paramauthorityWallet.Address, // this is the params authority.
+			signer:        paramauthorityWallet,         // this is the params authority.
 			shouldSucceed: true,
 		},
 		{
 			title:         "change authority to user2 from prior authority",
 			description:   "change params and upgrade authority to user2's address",
 			newAuthority:  extraWallets.User2.Address,
-			msgAuthority:  paramauthorityWallet.Authority.Address, // this account is no longer the params authority.
-			signer:        paramauthorityWallet.Authority,         // this account is no longer the params authority.
+			msgAuthority:  paramauthorityWallet.Address, // this account is no longer the params authority.
+			signer:        paramauthorityWallet,         // this account is no longer the params authority.
 			shouldSucceed: false,
 		},
 		{

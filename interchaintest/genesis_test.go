@@ -19,8 +19,34 @@ import (
 )
 
 var (
-	DenomMetadata_rupee = DenomMetadata{
+	denomMetadataFrienzies = DenomMetadata{
+		Display: "ufrienzies",
+		Base:    "ufrienzies",
+		Name:    "frienzies",
+		Symbol:  "FRNZ",
+		DenomUnits: []DenomUnit{
+			{
+				Denom: "ufrienzies",
+				Aliases: []string{
+					"microfrienzies",
+				},
+				Exponent: "0",
+			},
+			{
+				Denom: "mfrienzies",
+				Aliases: []string{
+					"millifrienzies",
+				},
+				Exponent: "3",
+			},
+			{
+				Denom:    "frienzies",
+				Exponent: "6",
+			},
+		},
+	}
 
+	denomMetadataRupee = DenomMetadata{
 		Display: "rupee",
 		Base:    "urupee",
 		Name:    "rupee",
@@ -46,7 +72,8 @@ var (
 			},
 		},
 	}
-	DenomMetadata_drachma = DenomMetadata{
+
+	denomMetadataDrachma = DenomMetadata{
 		Display: "drachma",
 		Base:    "udrachma",
 		Name:    "drachma",
@@ -77,7 +104,7 @@ var (
 	defaultDistributionEntityShare = "1.0"
 	defaultTransferBPSFee          = "1"
 	defaultTransferMaxFee          = "5000000"
-	defaultTransferFeeDenom        = DenomMetadata_drachma.Base
+	defaultTransferFeeDenom        = denomMetadataDrachma.Base
 
 	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.3.1", rly.RlyDefaultUidGid)
 )
@@ -126,10 +153,6 @@ func NobleEncoding() *simappparams.EncodingConfig {
 	upgradetypes.RegisterInterfaces(cfg.InterfaceRegistry)
 
 	return &cfg
-}
-
-type Authority struct {
-	Authority ibc.Wallet
 }
 
 type ExtraWallets struct {
@@ -260,31 +283,29 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 
 // Creates extra wallets used for testing. Meant to run pre-genesis.
 // It then recovers the key on the specified validator.
-func createParamAuthAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Authority, error) {
+func createParamAuthAtGenesis(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet, error) {
 	chainCfg := val.Chain.Config()
 
 	kr := keyring.NewInMemory()
 
-	authority := &Authority{}
+	wallet := interchaintest.BuildWallet(kr, "authority", chainCfg)
 
-	authority.Authority = interchaintest.BuildWallet(kr, "authority", chainCfg)
-
-	err := val.RecoverKey(ctx, authority.Authority.KeyName, authority.Authority.Mnemonic)
+	err := val.RecoverKey(ctx, wallet.KeyName, wallet.Mnemonic)
 	if err != nil {
-		return Authority{}, err
+		return ibc.Wallet{}, err
 	}
 
 	genesisWallet := ibc.WalletAmount{
-		Address: authority.Authority.Address,
+		Address: wallet.Address,
 		Denom:   chainCfg.Denom,
 		Amount:  0,
 	}
 
 	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []types.Coin{types.NewCoin(genesisWallet.Denom, types.NewIntFromUint64(uint64(genesisWallet.Amount)))})
 	if err != nil {
-		return Authority{}, err
+		return ibc.Wallet{}, err
 	}
-	return *authority, nil
+	return wallet, nil
 }
 
 // Creates extra wallets used for testing. Meant to run pre-genesis.
