@@ -27,6 +27,14 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			upgradeName: "neon",
 			image: ibc.DockerImage{
 				Repository: "ghcr.io/strangelove-ventures/noble",
+				Version:    "v2.0.0",
+				UidGid:     containerUidGid,
+			},
+		},
+		{
+			// omitting upgradeName due to huckleberry patch
+			image: ibc.DockerImage{
+				Repository: "ghcr.io/strangelove-ventures/noble",
 				Version:    "v2.0.1",
 				UidGid:     containerUidGid,
 			},
