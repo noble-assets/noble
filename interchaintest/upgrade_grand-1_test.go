@@ -11,7 +11,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 	repo, version := integration.GetDockerImageInfo()
 
 	const (
-		grand1ChainID = "noble-1"
+		grand1ChainID = "grand-1"
 		numVals       = 4
 		numFullNodes  = 0
 	)
