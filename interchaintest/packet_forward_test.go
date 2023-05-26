@@ -53,10 +53,10 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		nobleRoles2                                NobleRoles
 		nobleRoles3                                NobleRoles
 		nobleRoles4                                NobleRoles
-		paramauthorityWallet1                      Authority
-		paramauthorityWallet2                      Authority
-		paramauthorityWallet3                      Authority
-		paramauthorityWallet4                      Authority
+		paramauthorityWallet1                      ibc.Wallet
+		paramauthorityWallet2                      ibc.Wallet
+		paramauthorityWallet3                      ibc.Wallet
+		paramauthorityWallet4                      ibc.Wallet
 	)
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
@@ -85,11 +85,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainA.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles1, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles1, denomMetadataRupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles1, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles1, denomMetadataDrachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -101,16 +101,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles1, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &nobleRoles1, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles1, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &nobleRoles1, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisParamAuthority(g, paramauthorityWallet1.Authority.Address); err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet1.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet1.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet1.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -146,11 +146,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainB.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles2, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles2, denomMetadataRupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles2, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles2, denomMetadataDrachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -162,16 +162,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles2, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &nobleRoles2, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles2, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &nobleRoles2, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisParamAuthority(g, paramauthorityWallet2.Authority.Address); err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet2.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet2.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet2.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -207,11 +207,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainC.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles3, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles3, denomMetadataRupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles3, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles3, denomMetadataDrachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -223,16 +223,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles3, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &nobleRoles3, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles3, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &nobleRoles3, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisParamAuthority(g, paramauthorityWallet3.Authority.Address); err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet3.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet3.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet3.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)
@@ -268,11 +268,11 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainD.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles4, DenomMetadata_rupee, val, true)
+					err := createTokenfactoryRoles(ctx, &nobleRoles4, denomMetadataRupee, val, true)
 					if err != nil {
 						return err
 					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles4, DenomMetadata_drachma, val, true)
+					err = createTokenfactoryRoles(ctx, &nobleRoles4, denomMetadataDrachma, val, true)
 					if err != nil {
 						return err
 					}
@@ -284,16 +284,16 @@ func TestPacketForwardMiddleware(t *testing.T) {
 					if err := json.Unmarshal(b, &g); err != nil {
 						return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 					}
-					if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &nobleRoles4, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &nobleRoles4, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &nobleRoles4, true); err != nil {
+					if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &nobleRoles4, true); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisParamAuthority(g, paramauthorityWallet4.Authority.Address); err != nil {
+					if err := modifyGenesisParamAuthority(g, paramauthorityWallet4.Address); err != nil {
 						return nil, err
 					}
-					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet4.Authority.Address); err != nil {
+					if err := modifyGenesisTariffDefaults(g, paramauthorityWallet4.Address); err != nil {
 						return nil, err
 					}
 					out, err := json.Marshal(&g)

@@ -37,7 +37,7 @@ func TestNobleChain(t *testing.T) {
 		roles                NobleRoles
 		roles2               NobleRoles
 		extraWallets         ExtraWallets
-		paramauthorityWallet Authority
+		paramauthorityWallet ibc.Wallet
 	)
 
 	chainCfg := ibc.ChainConfig{
@@ -62,11 +62,11 @@ func TestNobleChain(t *testing.T) {
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
-			err = createTokenfactoryRoles(ctx, &roles, DenomMetadata_rupee, val, false)
+			err = createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, false)
 			if err != nil {
 				return err
 			}
-			err = createTokenfactoryRoles(ctx, &roles2, DenomMetadata_drachma, val, false)
+			err = createTokenfactoryRoles(ctx, &roles2, denomMetadataDrachma, val, false)
 			if err != nil {
 				return err
 			}
@@ -82,16 +82,16 @@ func TestNobleChain(t *testing.T) {
 			if err := json.Unmarshal(b, &g); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &roles, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &roles2, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Address); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -134,12 +134,12 @@ func TestNobleChain(t *testing.T) {
 
 	t.Run("tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "tokenfactory", DenomMetadata_rupee.Base, noble, roles, extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataRupee.Base, noble, roles, extraWallets)
 	})
 
 	t.Run("fiat-tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", DenomMetadata_drachma.Base, noble, roles2, extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataDrachma.Base, noble, roles2, extraWallets)
 	})
 }
 

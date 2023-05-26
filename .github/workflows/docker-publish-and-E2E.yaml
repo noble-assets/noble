@@ -106,7 +106,7 @@ jobs:
         env:
           BRANCH_CI: ${{needs.build-and-push-image.outputs.branchTag}}
 
-  test-chain-upgrade-authority:
+  test-chain-upgrade-noble-1:
     runs-on: ubuntu-latest
     needs: build-and-push-image
     steps:
@@ -119,7 +119,24 @@ jobs:
       - name: checkout chain
         uses: actions/checkout@v2
         
-      - run: make ictest-chain-upgrade
+      - run: make ictest-chain-upgrade-noble-1
+        env:
+          BRANCH_CI: ${{needs.build-and-push-image.outputs.branchTag}}
+
+  test-chain-upgrade-grand-1:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    steps:
+      - name: Set up Go 1.19
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+        id: go
+              
+      - name: checkout chain
+        uses: actions/checkout@v2
+        
+      - run: make ictest-chain-upgrade-grand-1
         env:
           BRANCH_CI: ${{needs.build-and-push-image.outputs.branchTag}}
 
