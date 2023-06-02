@@ -33,9 +33,9 @@ jobs:
       - name: Set Environment Variable
         run: |
           if [ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]; then
-            echo "::set-env name=IMAGE_NAME:: ${{ github.triggering_actor }}/${{ github.event.repository.name }}"
+            echo "IMAGE_NAME=${{ github.triggering_actor }}/${{ github.event.repository.name }}" >> $GITHUB_ENV
           else
-            echo "::set-env name=IMAGE_NAME::${{ github.repository }}"
+            echo "IMAGE_NAME=${{ github.repository }}" >> $GITHUB_ENV
           fi
 
       - name: Log in to the Container registry
