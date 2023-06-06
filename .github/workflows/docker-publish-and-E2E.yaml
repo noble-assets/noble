@@ -73,7 +73,7 @@ jobs:
 
   test-tkn-factory:
     runs-on: ubuntu-latest
-    needs: [build-and-push-image, check_forked_pr]
+    needs: [check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
