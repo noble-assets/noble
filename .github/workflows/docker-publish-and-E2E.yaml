@@ -36,7 +36,6 @@ jobs:
       contents: read
       packages: write
 
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -74,7 +73,7 @@ jobs:
 
   test-tkn-factory:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
@@ -91,7 +90,7 @@ jobs:
 
   test-packet-forward:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
@@ -108,7 +107,7 @@ jobs:
 
   test-param-authority:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
@@ -125,7 +124,7 @@ jobs:
 
   test-chain-upgrade-authority:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
@@ -142,7 +141,7 @@ jobs:
 
   test-globalfee-module:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
@@ -159,7 +158,7 @@ jobs:
 
   test-ics20-bps-fees:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_forked_pr]
     steps:
       - name: Set up Go 1.19
         uses: actions/setup-go@v3
