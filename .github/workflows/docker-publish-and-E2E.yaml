@@ -4,20 +4,38 @@ on:
   pull_request:
   push:
     tags:
+    - 'v**'
+    branches:
     - '**'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  check_forked_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR is from a fork
+        id: check_forked
+        run: echo ::set-output name=is_fork::${{ github.event.pull_request.head.repo.fork }}
+
+
   build-and-push-image:
     runs-on: ubuntu-latest
+    needs: check_forked_pr
+    if: ${{ needs.check_forked_pr.outputs.is_fork == 'false' }}
     outputs:
       branchTag: ${{ steps.meta.outputs.version }}
     permissions:
       contents: read
       packages: write
+
 
     steps:
       - name: Checkout repository
@@ -33,8 +51,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.CI_ACTOR }}
-          password: ${{ secrets.CI_TOKEN }}
+          username: ${{ github.ACTOR }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
