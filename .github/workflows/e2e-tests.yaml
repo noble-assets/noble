@@ -17,10 +17,20 @@ jobs:
             go-version: 1.19
                 
         - name: checkout chain
-          uses: actions/checkout@v2
+          uses: actions/checkout@v3
 
-        - name: build binary
-          run: make local-image
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v2
+
+        - name: Build and push Docker image
+          uses: docker/build-push-action@v3
+          with:
+            context: .
+            platforms: linux/amd64
+            tags: local
+            labels: e2e_CI
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
             
         - name: run test
           run: make ictest-tkn-factory
