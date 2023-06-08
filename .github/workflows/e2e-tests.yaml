@@ -8,8 +8,11 @@ concurrency:
     cancel-in-progress: true
 
 jobs:    
-    test-tkn-factory:
+    e2e-interchaintest:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
         steps:
         - name: Set up Go 1.19
           uses: actions/setup-go@v3
@@ -22,7 +25,7 @@ jobs:
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v2
 
-        - name: Build and push Docker image
+        - name: Build Docker image
           uses: docker/build-push-action@v3
           with:
             context: .
@@ -31,12 +34,9 @@ jobs:
             load: true
             cache-from: type=gha
             cache-to: type=gha,mode=max
-
-        - name: list images
-          run: docker image ls    
             
         - name: run test
-          run: make ictest-tkn-factory
+          run: make ${{ matrix.test }}
     
 
     
