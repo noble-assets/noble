@@ -30,6 +30,9 @@ jobs:
             tags: noble:local
             cache-from: type=gha
             cache-to: type=gha,mode=max
+
+        - name: list images
+          run: docker image ls    
             
         - name: run test
           run: make ictest-tkn-factory
