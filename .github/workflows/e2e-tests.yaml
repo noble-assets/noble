@@ -51,6 +51,14 @@ jobs:
             matrix:
                 test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
         steps:
+            - name: Set up Go 1.19
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.19
+                    
+            - name: checkout chain
+              uses: actions/checkout@v3
+              
             - name: Download Artifact
               uses: actions/download-artifact@v3
               with:
