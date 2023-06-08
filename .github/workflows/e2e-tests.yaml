@@ -45,6 +45,7 @@ jobs:
                 path: ${{ env.TAR_PATH }}
 
     e2e-tests:
+        needs: build-docker
         runs-on: ubuntu-latest
         strategy:
             matrix:
