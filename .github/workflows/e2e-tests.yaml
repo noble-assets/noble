@@ -3,40 +3,96 @@ name: End to End Tests
 on:
     pull_request:
 
+env:
+    TAR_PATH: ./noble_docker.tar
+
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
-jobs:    
-    e2e-interchaintest:
+jobs:
+    build-docker:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up Go 1.19
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.19
+                    
+            - name: checkout chain
+              uses: actions/checkout@v3
+    
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+    
+            - name: Build Docker image
+              uses: docker/build-push-action@v3
+              with:
+                context: .
+                platforms: linux/amd64
+                tags: noble:local
+                load: true
+                cache-from: type=gha
+                cache-to: type=gha,mode=max
+            
+            - name: Save Docker Tarball
+              run: docker image save noble:local -o ${{ env.TAR_PATH }}
+
+            - name: Publish as Artifact
+              uses: actions/upload-artifact@v3
+              with:
+                name: noble-docker-image
+                path: ${{ env.TAR_PATH }}
+
+    e2e-tests:
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
         steps:
-        - name: Set up Go 1.19
-          uses: actions/setup-go@v3
-          with:
-            go-version: 1.19
+            - name: Download Artifact
+              uses: actions/download-artifact@v3
+              with:
+                name: noble-docker-image
+
+            - name: Load Docker Image
+              run: docker load ${{ env.TAR_PATH }}
+
+            - name: run test
+              run: make ${{ matrix.test }}
+
+
+
+
+    # e2e-interchaintest:
+    #     runs-on: ubuntu-latest
+    #     strategy:
+    #         matrix:
+    #             test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
+    #     steps:
+    #     - name: Set up Go 1.19
+    #       uses: actions/setup-go@v3
+    #       with:
+    #         go-version: 1.19
                 
-        - name: checkout chain
-          uses: actions/checkout@v3
+    #     - name: checkout chain
+    #       uses: actions/checkout@v3
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v2
+    #     - name: Set up Docker Buildx
+    #       uses: docker/setup-buildx-action@v2
 
-        - name: Build Docker image
-          uses: docker/build-push-action@v3
-          with:
-            context: .
-            platforms: linux/amd64
-            tags: noble:local
-            load: true
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
+    #     - name: Build Docker image
+    #       uses: docker/build-push-action@v3
+    #       with:
+    #         context: .
+    #         platforms: linux/amd64
+    #         tags: noble:local
+    #         load: true
+    #         cache-from: type=gha
+    #         cache-to: type=gha,mode=max
             
-        - name: run test
-          run: make ${{ matrix.test }}
+    #     - name: run test
+    #       run: make ${{ matrix.test }}
     
 
     
