@@ -12,7 +12,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
@@ -31,7 +30,11 @@ func TestICS20BPSFees(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	repo, version := integration.GetDockerImageInfo()
+	var (
+		// run `make local-image`to rebuild updated binary before running test
+		repo    = "noble"
+		version = "local"
+	)
 
 	var (
 		noble, gaia          *cosmos.CosmosChain

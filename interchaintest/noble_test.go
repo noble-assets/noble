@@ -10,7 +10,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -30,7 +29,11 @@ func TestNobleChain(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	repo, version := integration.GetDockerImageInfo()
+	var (
+		// run `make local-image`to rebuild updated binary before running test
+		repo    = "noble"
+		version = "local"
+	)
 
 	var (
 		noble                *cosmos.CosmosChain

@@ -4,11 +4,14 @@ import (
 	"testing"
 
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 )
 
 func TestNoble1ChainUpgrade(t *testing.T) {
-	repo, version := integration.GetDockerImageInfo()
+	var (
+		// run `make local-image`to rebuild updated binary before running test
+		repo    = "noble"
+		version = "local"
+	)
 
 	const (
 		noble1ChainID = "noble-1"

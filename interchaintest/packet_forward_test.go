@@ -14,7 +14,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
@@ -44,7 +43,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		rep                                        = testreporter.NewNopReporter()
 		eRep                                       = rep.RelayerExecReporter(t)
 		chainID_A, chainID_B, chainID_C, chainID_D = "chain-a", "chain-b", "chain-c", "chain-d"
-		repo, version                              = integration.GetDockerImageInfo()
+		repo, version                              = "noble", "local"
 		chainA, chainB, chainC, chainD             *cosmos.CosmosChain
 		nv                                         = 1
 		nf                                         = 0

@@ -14,7 +14,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/noble/cmd"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -88,7 +87,11 @@ func TestNobleParamAuthority(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	repo, version := integration.GetDockerImageInfo()
+	var (
+		// run `make local-image`to rebuild updated binary before running test
+		repo    = "noble"
+		version = "local"
+	)
 
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
