@@ -4,7 +4,7 @@ on:
     pull_request:
 
 env:
-    TAR_PATH: ./noble_docker.tar
+    TAR_PATH: ./binary_docker.tar
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -32,13 +32,14 @@ jobs:
                 platforms: linux/amd64
                 tags: noble:local
                 load: true
+                outputs: type=tar,path=${{ env.TAR_PATH }}
                 cache-from: type=gha
                 cache-to: type=gha,mode=max
             
-            - name: Save Docker Tarball
-              run: docker image save noble:local -o ${{ env.TAR_PATH }}
+            # - name: Save Docker Tarball
+            #   run: docker image save noble:local -o ${{ env.TAR_PATH }}
 
-            - name: Publish as Artifact
+            - name: Publish Tarball as Artifact
               uses: actions/upload-artifact@v3
               with:
                 name: noble-docker-image
@@ -50,6 +51,8 @@ jobs:
         strategy:
             matrix:
                 test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
+            fail-fast: false
+
         steps:
             - name: Set up Go 1.19
               uses: actions/setup-go@v3
@@ -59,7 +62,7 @@ jobs:
             - name: checkout chain
               uses: actions/checkout@v3
 
-            - name: Download Artifact
+            - name: Download Tarball Artifact
               uses: actions/download-artifact@v3
               with:
                 name: noble-docker-image
@@ -69,43 +72,3 @@ jobs:
 
             - name: run test
               run: make ${{ matrix.test }}
-
-
-
-
-    # e2e-interchaintest:
-    #     runs-on: ubuntu-latest
-    #     strategy:
-    #         matrix:
-    #             test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
-    #     steps:
-    #     - name: Set up Go 1.19
-    #       uses: actions/setup-go@v3
-    #       with:
-    #         go-version: 1.19
-                
-    #     - name: checkout chain
-    #       uses: actions/checkout@v3
-
-    #     - name: Set up Docker Buildx
-    #       uses: docker/setup-buildx-action@v2
-
-    #     - name: Build Docker image
-    #       uses: docker/build-push-action@v3
-    #       with:
-    #         context: .
-    #         platforms: linux/amd64
-    #         tags: noble:local
-    #         load: true
-    #         cache-from: type=gha
-    #         cache-to: type=gha,mode=max
-            
-    #     - name: run test
-    #       run: make ${{ matrix.test }}
-    
-
-    
-
-    
-
-
