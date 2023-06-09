@@ -4,7 +4,7 @@ on:
     pull_request:
 
 env:
-    TAR_PATH: ./binary_docker.tar
+    TAR_PATH: ./binary_docker
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
