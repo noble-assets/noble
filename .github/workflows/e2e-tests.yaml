@@ -32,7 +32,7 @@ jobs:
                 platforms: linux/amd64
                 tags: noble:local
                 # load: true
-                outputs: type=local,dest=${{ env.TAR_PATH }}
+                outputs: type=docker,dest=${{ env.TAR_PATH }}
                 cache-from: type=gha
                 cache-to: type=gha,mode=max
             
