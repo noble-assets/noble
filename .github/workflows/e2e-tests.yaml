@@ -31,7 +31,7 @@ jobs:
                 context: .
                 platforms: linux/amd64
                 tags: noble:local
-                load: true
+                # load: true
                 outputs: type=tar,path=${{ env.TAR_PATH }}
                 cache-from: type=gha
                 cache-to: type=gha,mode=max
