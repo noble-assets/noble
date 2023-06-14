@@ -28,6 +28,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	paramauthorityparamscli "github.com/strangelove-ventures/paramauthority/x/params/client/cli"
 	paramauthorityupgradecli "github.com/strangelove-ventures/paramauthority/x/upgrade/client/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
@@ -293,6 +294,7 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
 		paramauthorityupgradecli.GetTxCmd(),
+		paramauthorityparamscli.GetTxCmd(),
 	)
 
 	moduleBasics.AddTxCommands(cmd)
