@@ -88,10 +88,10 @@ func TestICS20BPSFees(t *testing.T) {
 			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, false); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Address); err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.FormattedAddress()); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.FormattedAddress()); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -155,22 +155,22 @@ func TestICS20BPSFees(t *testing.T) {
 
 	nobleValidator := noble.Validators[0]
 
-	_, err = nobleValidator.ExecTx(ctx, roles2.MasterMinter.KeyName,
-		"fiat-tokenfactory", "configure-minter-controller", roles2.MinterController.Address, roles2.Minter.Address, "-b", "block",
+	_, err = nobleValidator.ExecTx(ctx, roles2.MasterMinter.KeyName(),
+		"fiat-tokenfactory", "configure-minter-controller", roles2.MinterController.FormattedAddress(), roles2.Minter.FormattedAddress(), "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
-	_, err = nobleValidator.ExecTx(ctx, roles2.MinterController.KeyName,
-		"fiat-tokenfactory", "configure-minter", roles2.Minter.Address, "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
+	_, err = nobleValidator.ExecTx(ctx, roles2.MinterController.KeyName(),
+		"fiat-tokenfactory", "configure-minter", roles2.Minter.FormattedAddress(), "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
-	_, err = nobleValidator.ExecTx(ctx, roles2.Minter.KeyName,
-		"fiat-tokenfactory", "mint", extraWallets.User.Address, "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
+	_, err = nobleValidator.ExecTx(ctx, roles2.Minter.KeyName(),
+		"fiat-tokenfactory", "mint", extraWallets.User.FormattedAddress(), "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute mint to user tx")
 
-	userBalance, err := noble.GetBalance(ctx, extraWallets.User.Address, denomMetadataDrachma.Base)
+	userBalance, err := noble.GetBalance(ctx, extraWallets.User.FormattedAddress(), denomMetadataDrachma.Base)
 	require.NoError(t, err, "failed to get user balance")
 	require.Equalf(t, int64(1000000000000), userBalance, "failed to mint %s to user", denomMetadataDrachma.Base)
 
@@ -189,7 +189,7 @@ func TestICS20BPSFees(t *testing.T) {
 	require.NoError(t, err, "failed to get noble height")
 
 	// First, test BPS below max fees
-	tx, err := noble.SendIBCTransfer(ctx, nobleChan.ChannelID, extraWallets.User.KeyName, ibc.WalletAmount{
+	tx, err := noble.SendIBCTransfer(ctx, nobleChan.ChannelID, extraWallets.User.KeyName(), ibc.WalletAmount{
 		Address: gaiaReceiver,
 		Denom:   denomMetadataDrachma.Base,
 		Amount:  100000000,
@@ -199,7 +199,7 @@ func TestICS20BPSFees(t *testing.T) {
 	_, err = testutil.PollForAck(ctx, noble, height, height+10, tx.Packet)
 	require.NoError(t, err, "failed to find ack for ibc transfer")
 
-	userBalance, err = noble.GetBalance(ctx, extraWallets.User.Address, denomMetadataDrachma.Base)
+	userBalance, err = noble.GetBalance(ctx, extraWallets.User.FormattedAddress(), denomMetadataDrachma.Base)
 	require.NoError(t, err, "failed to get user balance")
 	require.Equal(t, int64(999900000000), userBalance, "user balance is incorrect")
 
@@ -213,12 +213,12 @@ func TestICS20BPSFees(t *testing.T) {
 	require.Equal(t, int64(99990000), receiverBalance, "receiver balance incorrect")
 
 	// of the 10000 taken as fees, 80% goes to distribution entity (8000)
-	distributionEntityBalance, err := noble.GetBalance(ctx, paramauthorityWallet.Address, denomMetadataDrachma.Base)
+	distributionEntityBalance, err := noble.GetBalance(ctx, paramauthorityWallet.FormattedAddress(), denomMetadataDrachma.Base)
 	require.NoError(t, err, "failed to get distribution entity balance")
 	require.Equal(t, int64(8000), distributionEntityBalance, "distribution entity balance incorrect")
 
 	// Now test max fee
-	tx, err = noble.SendIBCTransfer(ctx, nobleChan.ChannelID, extraWallets.User.KeyName, ibc.WalletAmount{
+	tx, err = noble.SendIBCTransfer(ctx, nobleChan.ChannelID, extraWallets.User.FormattedAddress(), ibc.WalletAmount{
 		Address: gaiaReceiver,
 		Denom:   denomMetadataDrachma.Base,
 		Amount:  100000000000,
@@ -229,7 +229,7 @@ func TestICS20BPSFees(t *testing.T) {
 	require.NoError(t, err, "failed to find ack for ibc transfer")
 
 	// 999900000000 user balance from prior test, now subtract 100000000000 = 899900000000
-	userBalance, err = noble.GetBalance(ctx, extraWallets.User.Address, denomMetadataDrachma.Base)
+	userBalance, err = noble.GetBalance(ctx, extraWallets.User.FormattedAddress(), denomMetadataDrachma.Base)
 	require.NoError(t, err, "failed to get user balance")
 	require.Equal(t, int64(899900000000), userBalance, "user balance is incorrect")
 
@@ -240,7 +240,7 @@ func TestICS20BPSFees(t *testing.T) {
 	require.Equal(t, int64(100094990000), receiverBalance, "receiver balance incorrect")
 
 	// prior balance 8000, add 80% of the 5000000 fee (4000000) = 4008000
-	distributionEntityBalance, err = noble.GetBalance(ctx, paramauthorityWallet.Address, denomMetadataDrachma.Base)
+	distributionEntityBalance, err = noble.GetBalance(ctx, paramauthorityWallet.FormattedAddress(), denomMetadataDrachma.Base)
 	require.NoError(t, err, "failed to get distribution entity balance")
 	require.Equal(t, int64(4008000), distributionEntityBalance, "distribution entity balance incorrect")
 

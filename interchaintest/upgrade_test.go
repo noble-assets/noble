@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkupgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
@@ -98,7 +97,7 @@ func testNobleChainUpgrade(
 			if err := modifyGenesisTokenfactory(g, "tokenfactory", genesisTokenFactoryDenomMetadata, &roles, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisParamAuthority(g, paramAuthority.Address); err != nil {
+			if err := modifyGenesisParamAuthority(g, paramAuthority.FormattedAddress()); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -153,7 +152,7 @@ func testNobleChainUpgrade(
 			for _, n := range noble.Nodes() {
 				n.Image = upgrade.image
 			}
-			noble.UpgradeVersion(ctx, client, upgrade.image.Version)
+			noble.UpgradeVersion(ctx, client, upgrade.image.Repository, upgrade.image.Version)
 
 			// do rolling update on half the vals
 			for i, n := range noble.Validators {
@@ -208,20 +207,19 @@ func testNobleChainUpgrade(
 				Info:   upgrade.upgradeName + " chain upgrade",
 			}
 
-			decoded := sdk.MustAccAddressFromBech32(paramAuthority.Address)
-			wallet := &ibc.Wallet{
-				Address:  string(decoded),
-				Mnemonic: paramAuthority.Mnemonic,
-				KeyName:  paramAuthority.KeyName,
-				CoinType: paramAuthority.CoinType,
-			}
+			wallet := cosmos.NewWallet(
+				paramAuthority.KeyName(),
+				paramAuthority.Address(),
+				paramAuthority.Mnemonic(),
+				chainCfg,
+			)
 
 			_, err = cosmos.BroadcastTx(
 				ctx,
 				broadcaster,
 				wallet,
 				&upgradetypes.MsgSoftwareUpgrade{
-					Authority: paramAuthority.Address,
+					Authority: paramAuthority.FormattedAddress(),
 					Plan:      upgradePlan,
 				},
 			)
@@ -255,7 +253,7 @@ func testNobleChainUpgrade(
 			for _, n := range noble.Nodes() {
 				n.Image = upgrade.image
 			}
-			noble.UpgradeVersion(ctx, client, upgrade.image.Version)
+			noble.UpgradeVersion(ctx, client, upgrade.image.Repository, upgrade.image.Version)
 
 			// start all nodes back up.
 			// validators reach consensus on first block after upgrade height
