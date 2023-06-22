@@ -7,6 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/circlefin/noble-cctp/x/cctp"
+	cctpKeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
+	cctpTypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -148,6 +151,7 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
+		// TODO: Add CCTP as Minter/Burner?
 		authtypes.FeeCollectorName:             nil,
 		distrtypes.ModuleName:                  nil,
 		icatypes.ModuleName:                    nil,
@@ -216,9 +220,10 @@ type App struct {
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
-	TokenFactoryKeeper     *tokenfactorymodulekeeper.Keeper
+	CCTPKeeper             *cctpKeeper.Keeper
 	FiatTokenFactoryKeeper *fiattokenfactorymodulekeeper.Keeper
 	TariffKeeper           tariffkeeper.Keeper
+	TokenFactoryKeeper     *tokenfactorymodulekeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -257,6 +262,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
+		cctpTypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -457,6 +463,12 @@ func New(
 	)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.CCTPKeeper = cctpKeeper.NewKeeper(
+		appCodec,
+		keys[cctpTypes.StoreKey],
+		app.GetSubspace(cctpTypes.ModuleName),
+	)
+
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = packetforward.NewIBCMiddleware(
@@ -511,6 +523,7 @@ func New(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
+		cctp.NewAppModule(appCodec, app.CCTPKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -540,6 +553,7 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
+		cctpTypes.ModuleName,
 		globalfee.ModuleName,
 	)
 
@@ -564,6 +578,7 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
+		cctpTypes.ModuleName,
 		globalfee.ModuleName,
 		tarifftypes.ModuleName,
 	)
@@ -595,6 +610,7 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
+		cctpTypes.ModuleName,
 		globalfee.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
@@ -624,6 +640,7 @@ func New(
 		transferModule,
 		tokenfactoryModule,
 		fiattokenfactorymodule,
+		// TODO: CCTP
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -827,6 +844,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
 	paramsKeeper.Subspace(fiattokenfactorymoduletypes.ModuleName)
+	paramsKeeper.Subspace(cctpTypes.ModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
