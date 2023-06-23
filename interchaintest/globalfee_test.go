@@ -13,12 +13,12 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/noble/cmd"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
 
+// run `make local-image`to rebuild updated binary before running test
 func TestGlobalFee(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -32,8 +32,6 @@ func TestGlobalFee(t *testing.T) {
 	eRep := rep.RelayerExecReporter(t)
 
 	client, network := interchaintest.DockerSetup(t)
-
-	repo, version := integration.GetDockerImageInfo()
 
 	var (
 		noble                *cosmos.CosmosChain
@@ -55,13 +53,7 @@ func TestGlobalFee(t *testing.T) {
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
 		NoHostMount:    false,
-		Images: []ibc.DockerImage{
-			{
-				Repository: repo,
-				Version:    version,
-				UidGid:     "1025:1025",
-			},
-		},
+		Images:         nobleImageInfo,
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
