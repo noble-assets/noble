@@ -73,6 +73,7 @@ func testParamsCase(t *testing.T, ctx context.Context, broadcaster *cosmos.Broad
 	}
 }
 
+// run `make local-image`to rebuild updated binary before running test
 func TestNobleParamAuthority(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -86,12 +87,6 @@ func TestNobleParamAuthority(t *testing.T) {
 	eRep := rep.RelayerExecReporter(t)
 
 	client, network := interchaintest.DockerSetup(t)
-
-	var (
-		// run `make local-image`to rebuild updated binary before running test
-		repo    = "noble"
-		version = "local"
-	)
 
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
@@ -110,13 +105,7 @@ func TestNobleParamAuthority(t *testing.T) {
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
 		NoHostMount:    false,
-		Images: []ibc.DockerImage{
-			{
-				Repository: repo,
-				Version:    version,
-				UidGid:     "1025:1025",
-			},
-		},
+		Images:         nobleImageInfo,
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) error {
 			val := noble.Validators[0]
