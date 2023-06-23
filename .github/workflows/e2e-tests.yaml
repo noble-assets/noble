@@ -17,9 +17,13 @@ jobs:
       - name: Build Docker image
         uses: strangelove-ventures/heighliner-build-action@v0.0.3
         with:
-          tar-export-path: ${{ env.TAR_PATH }}
+          registry: # empty registry, image only shared for e2e testing
+          tag: local # emulate local environment for consistency in interchaintest cases
+          tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
-          git-ref: ${{ github.base_ref }}
+          git-ref: ${{ github.base_ref }} # source code ref
+
+          # Heighliner chains.yaml config
           chain: noble
           dockerfile: cosmos
           build-target: make install
