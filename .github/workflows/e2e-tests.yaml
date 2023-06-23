@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-  TAR_PATH: ./binary_docker
+  TAR_PATH: heighliner.tar
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,6 +19,7 @@ jobs:
         with:
           tar-export-path: ${{ env.TAR_PATH }}
           platform: linux/amd64 # test runner architecture only
+          git-ref: ${{ github.base_ref }}
           chain: noble
           dockerfile: cosmos
           build-target: make install
