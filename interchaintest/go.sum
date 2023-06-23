@@ -1058,8 +1058,8 @@ github.com/strangelove-ventures/go-subkey v1.0.7 h1:cOP/Lajg3uxV/tvspu0m6+0Cu+DJ
 github.com/strangelove-ventures/go-subkey v1.0.7/go.mod h1:E34izOIEm+sZ1YmYawYRquqBQWeZBjVB4pF7bMuhc1c=
 github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230407184020-2e49efbc1d9f h1:cInJJWlELz81uSW/imxRLH6G5lJFva6A2tGSFJACcUY=
 github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230407184020-2e49efbc1d9f/go.mod h1:+OxlR7bg1H9THOEe7Wtkb2R2eu6FEUEPLLz0enHfJeE=
-github.com/strangelove-ventures/paramauthority v0.1.1 h1:rvAnF+dTRMG+rHmD9LL8OWbxu1uFgo0Zi+JZ6cQ+I60=
-github.com/strangelove-ventures/paramauthority v0.1.1/go.mod h1:PHq/b8q6YfBDJpo34RlnWw+cL5m5Bids2prBUWzsoEM=
+github.com/strangelove-ventures/paramauthority v0.1.2 h1:PnbztiGi4ZhFqgcYXC86tQX2bLML17gsqC0EKZEhxg0=
+github.com/strangelove-ventures/paramauthority v0.1.2/go.mod h1:PHq/b8q6YfBDJpo34RlnWw+cL5m5Bids2prBUWzsoEM=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
