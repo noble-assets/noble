@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 )
 
+// run `make local-image`to rebuild updated binary before running test
 func TestGrand1ChainUpgrade(t *testing.T) {
-	repo, version := integration.GetDockerImageInfo()
 
 	const (
 		grand1ChainID = "grand-1"
@@ -47,11 +46,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		},
 		{
 			// post radon patch upgrade (will be applied as rolling upgrade due to lack of upgradeName)
-			image: ibc.DockerImage{
-				Repository: repo,
-				Version:    version,
-				UidGid:     containerUidGid,
-			},
+			image: nobleImageInfo[0],
 		},
 	}
 

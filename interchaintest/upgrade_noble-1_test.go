@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 )
 
+// run `make local-image`to rebuild updated binary before running test
 func TestNoble1ChainUpgrade(t *testing.T) {
-	repo, version := integration.GetDockerImageInfo()
 
 	const (
 		noble1ChainID = "noble-1"
@@ -41,11 +40,7 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		},
 		{
 			upgradeName: "radon",
-			image: ibc.DockerImage{
-				Repository: repo,
-				Version:    version,
-				UidGid:     containerUidGid,
-			},
+			image:       nobleImageInfo[0],
 			postUpgrade: testPostRadonUpgrade,
 		},
 	}
