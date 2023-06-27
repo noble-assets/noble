@@ -184,7 +184,7 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 	}
 
 	genesisWallet := ibc.WalletAmount{
-		Address: string(nobleRoles.Owner.FormattedAddress()),
+		Address: nobleRoles.Owner.FormattedAddress(),
 		Denom:   chainCfg.Denom,
 		Amount:  0,
 	}
