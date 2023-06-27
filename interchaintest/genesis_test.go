@@ -17,6 +17,16 @@ import (
 )
 
 var (
+	nobleImageInfo = []ibc.DockerImage{
+		{
+			Repository: "noble",
+			Version:    "local",
+			UidGid:     "1025:1025",
+		},
+	}
+)
+
+var (
 	denomMetadataFrienzies = DenomMetadata{
 		Display: "ufrienzies",
 		Base:    "ufrienzies",
