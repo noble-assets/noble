@@ -104,9 +104,9 @@ In collaboration with StrangeLove, Noble intends to build an in-house team focus
 
 ## Media
 
-TWITTER: [@noble_xyz](https://twitter.com/noble_xyz/)
-
-WEB: [nobleassets.xyz](https://nobleassets.xyz/)
+- TWITTER: [@noble_xyz](https://twitter.com/noble_xyz/)
+- WEB: [nobleassets.xyz](https://nobleassets.xyz/)
+- Logos: <https://github.com/cosmos/chain-registry/tree/master/noble/images>
 
  
 ## Build and install to go bin path
