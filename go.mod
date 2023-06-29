@@ -13,7 +13,7 @@ require (
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.4
+	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5
 	github.com/strangelove-ventures/paramauthority v0.1.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.27
@@ -144,6 +144,9 @@ require (
 )
 
 replace (
+	// huckleberry patch for ibc-go v3
+	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry
+
 	// use cosmos-flavored protocol buffers
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 

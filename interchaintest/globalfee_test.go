@@ -13,12 +13,12 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/noble/cmd"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
 
+// run `make local-image`to rebuild updated binary before running test
 func TestGlobalFee(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -33,14 +33,12 @@ func TestGlobalFee(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	repo, version := integration.GetDockerImageInfo()
-
 	var (
 		noble                *cosmos.CosmosChain
 		roles                NobleRoles
 		roles2               NobleRoles
 		extraWallets         ExtraWallets
-		paramauthorityWallet Authority
+		paramauthorityWallet ibc.Wallet
 	)
 
 	chainCfg := ibc.ChainConfig{
@@ -55,21 +53,15 @@ func TestGlobalFee(t *testing.T) {
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
 		NoHostMount:    false,
-		Images: []ibc.DockerImage{
-			{
-				Repository: repo,
-				Version:    version,
-				UidGid:     "1025:1025",
-			},
-		},
+		Images:         nobleImageInfo,
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
-			err = createTokenfactoryRoles(ctx, &roles, DenomMetadata_rupee, val, false)
+			err = createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, false)
 			if err != nil {
 				return err
 			}
-			err = createTokenfactoryRoles(ctx, &roles2, DenomMetadata_drachma, val, true)
+			err = createTokenfactoryRoles(ctx, &roles2, denomMetadataDrachma, val, true)
 			if err != nil {
 				return err
 			}
@@ -85,16 +77,16 @@ func TestGlobalFee(t *testing.T) {
 			if err := json.Unmarshal(b, &g); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", DenomMetadata_rupee, &roles, false); err != nil {
+			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &roles, false); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", DenomMetadata_drachma, &roles2, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Address); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Authority.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Address); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -160,17 +152,17 @@ func TestGlobalFee(t *testing.T) {
 					Value:    fmt.Sprintf(`[{"denom":"%s", "amount":"%s"}]`, chainCfg.Denom, minGasPriceAmount),
 				},
 			}),
-		Authority: paramauthorityWallet.Authority.Address,
+		Authority: paramauthorityWallet.Address,
 	}
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
-	decoded := sdk.MustAccAddressFromBech32(paramauthorityWallet.Authority.Address)
+	decoded := sdk.MustAccAddressFromBech32(paramauthorityWallet.Address)
 	wallet := &ibc.Wallet{
 		Address:  string(decoded),
-		Mnemonic: paramauthorityWallet.Authority.Mnemonic,
-		KeyName:  paramauthorityWallet.Authority.KeyName,
-		CoinType: paramauthorityWallet.Authority.CoinType,
+		Mnemonic: paramauthorityWallet.Mnemonic,
+		KeyName:  paramauthorityWallet.KeyName,
+		CoinType: paramauthorityWallet.CoinType,
 	}
 	tx, err := cosmos.BroadcastTx(
 		ctx,
