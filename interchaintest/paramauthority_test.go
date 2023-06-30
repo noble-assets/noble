@@ -47,14 +47,6 @@ func testParamsCase(t *testing.T, ctx context.Context, broadcaster *cosmos.Broad
 		Authority: testCase.msgAuthority,
 	}
 
-	// decoded := sdk.MustAccAddressFromBech32(testCase.signer.Address)
-	// wallet := &ibc.Wallet{
-	// 	Address:  string(decoded),
-	// 	Mnemonic: testCase.signer.Mnemonic,
-	// 	KeyName:  testCase.signer.KeyName,
-	// 	CoinType: testCase.signer.CoinType,
-	// }
-
 	wallet := cosmos.NewWallet(
 		testCase.signer.KeyName(),
 		testCase.signer.Address(),

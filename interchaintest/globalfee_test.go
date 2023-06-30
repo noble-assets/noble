@@ -156,8 +156,6 @@ func TestGlobalFee(t *testing.T) {
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
-	// decoded := sdk.MustAccAddressFromBech32(paramauthorityWallet.FormattedAddress())
-
 	wallet := cosmos.NewWallet(
 		paramauthorityWallet.KeyName(),
 		paramauthorityWallet.Address(),
