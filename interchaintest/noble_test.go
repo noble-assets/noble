@@ -324,9 +324,13 @@ func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModNam
 	var minterControllerType types.QueryGetMinterControllerResponse
 	json.Unmarshal(res, &minterControllerType)
 
-	// minter controller and minter should have been updated even while paused
-	require.Equal(t, roles.MinterController2.Address, minterControllerType.MinterController.Controller)
-	require.Equal(t, extraWallets.User.Address, minterControllerType.MinterController.Minter)
+	// minter controller should have been updated even while paused
+	minterController2Address := roles.MinterController2.FormattedAddress()
+	require.Equal(t, minterController2Address, minterControllerType.MinterController.Controller)
+
+	// minter should have been updated even while paused
+	userAddress := extraWallets.User.FormattedAddress()
+	require.Equal(t, userAddress, minterControllerType.MinterController.Minter)
 
 	_, err = nobleValidator.ExecTx(ctx, roles.MinterController2.KeyName(),
 		tokenfactoryModName, "remove-minter", extraWallets.User.FormattedAddress(), "-b", "block",

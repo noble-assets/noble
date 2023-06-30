@@ -188,9 +188,13 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 
 	var err error
 
-	nobleRoles.Owner, err = nobleVal.BuildWallet(ctx, "owner-"+denomMetadata.Base, "")
+	nobleRoles.Owner, err = nobleVal.BuildRelayerWallet(ctx, "owner-"+denomMetadata.Base)
 	if err != nil {
 		return fmt.Errorf("failed to create wallet: %w", err)
+	}
+
+	if err := val.RecoverKey(ctx, nobleRoles.Owner.KeyName(), nobleRoles.Owner.Mnemonic()); err != nil {
+		return fmt.Errorf("failed to restore %s wallet: %w", nobleRoles.Owner.KeyName(), err)
 	}
 
 	genesisWallet := ibc.WalletAmount{
@@ -206,33 +210,41 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 		return nil
 	}
 
-	nobleRoles.Owner2, err = nobleVal.BuildWallet(ctx, "owner2-"+denomMetadata.Base, "")
+	nobleRoles.Owner2, err = nobleVal.BuildRelayerWallet(ctx, "owner2-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "owner2", err)
 	}
-	nobleRoles.MasterMinter, err = nobleVal.BuildWallet(ctx, "masterminter-"+denomMetadata.Base, "")
+	nobleRoles.MasterMinter, err = nobleVal.BuildRelayerWallet(ctx, "masterminter-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "masterminter", err)
 	}
-	nobleRoles.MinterController, err = nobleVal.BuildWallet(ctx, "mintercontroller-"+denomMetadata.Base, "")
+	nobleRoles.MinterController, err = nobleVal.BuildRelayerWallet(ctx, "mintercontroller-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "mintercontroller", err)
 	}
-	nobleRoles.MinterController2, err = nobleVal.BuildWallet(ctx, "mintercontroller2-"+denomMetadata.Base, "")
+	nobleRoles.MinterController2, err = nobleVal.BuildRelayerWallet(ctx, "mintercontroller2-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "mintercontroller2", err)
 	}
-	nobleRoles.Minter, err = nobleVal.BuildWallet(ctx, "minter-"+denomMetadata.Base, "")
+	nobleRoles.Minter, err = nobleVal.BuildRelayerWallet(ctx, "minter-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "minter", err)
 	}
-	nobleRoles.Blacklister, err = nobleVal.BuildWallet(ctx, "blacklister-"+denomMetadata.Base, "")
+	nobleRoles.Blacklister, err = nobleVal.BuildRelayerWallet(ctx, "blacklister-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "blacklister", err)
 	}
-	nobleRoles.Pauser, err = nobleVal.BuildWallet(ctx, "pauser-"+denomMetadata.Base, "")
+	nobleRoles.Pauser, err = nobleVal.BuildRelayerWallet(ctx, "pauser-"+denomMetadata.Base)
 	if err != nil {
-		return fmt.Errorf("failed to create wallet: %w", err)
+		return fmt.Errorf("failed to create %s wallet: %w", "pauser", err)
+	}
+
+	walletsToRestore := []ibc.Wallet{nobleRoles.Owner2, nobleRoles.MasterMinter, nobleRoles.MinterController, nobleRoles.MinterController2, nobleRoles.Minter, nobleRoles.Blacklister, nobleRoles.Pauser}
+	for _, wallet := range walletsToRestore {
+		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
+			return fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
+
+		}
 	}
 
 	genesisWallets := []ibc.WalletAmount{
@@ -315,17 +327,25 @@ func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Ex
 
 	extraWallets := &ExtraWallets{}
 
-	extraWallets.User, err = nobleVal.BuildWallet(ctx, "user", "")
+	extraWallets.User, err = nobleVal.BuildRelayerWallet(ctx, "user")
 	if err != nil {
 		return ExtraWallets{}, fmt.Errorf("failed to create wallet: %w", err)
 	}
-	extraWallets.User2, err = nobleVal.BuildWallet(ctx, "user2", "")
+	extraWallets.User2, err = nobleVal.BuildRelayerWallet(ctx, "user2")
 	if err != nil {
 		return ExtraWallets{}, fmt.Errorf("failed to create wallet: %w", err)
 	}
-	extraWallets.Alice, err = nobleVal.BuildWallet(ctx, "alice", "")
+	extraWallets.Alice, err = nobleVal.BuildRelayerWallet(ctx, "alice")
 	if err != nil {
 		return ExtraWallets{}, fmt.Errorf("failed to create wallet: %w", err)
+	}
+
+	walletsToRestore := []ibc.Wallet{extraWallets.User, extraWallets.User2, extraWallets.Alice}
+	for _, wallet := range walletsToRestore {
+		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
+			return ExtraWallets{}, fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
+
+		}
 	}
 
 	genesisWallets := []ibc.WalletAmount{
