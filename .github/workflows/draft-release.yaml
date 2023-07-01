@@ -1,0 +1,59 @@
+name: Create and Push Docker Image
+
+on:
+  push:
+    tags:
+    - '**'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: strangelove-ventures/heighliner-build-action@v0.0.3
+        with:
+          chain: noble
+          dockerfile: cosmos
+          build-target: make install
+          binaries: |
+            - /go/bin/nobled
+  
+  draft-release:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Copy Binary
+      run: |
+        docker create -it --entrypoint sh --name amd --platform linux/amd64 ghcr.io/${{ github.repository }}:${{ github.ref }}
+        docker create -it --entrypoint sh --name arm --platform linux/arm64 ghcr.io/${{ github.repository }}:${{ github.ref }}
+        docker cp amd:/bin/nobled ./nobled_linux-amd64
+        docker cp arm:/bin/nobled ./nobled_linux-arm64
+        sha256sum ./nobled_linux-amd64 > ./nobled_sha256.txt
+        sha256sum ./nobled_linux-amd64 >> ./nobled_sha256.txt
+    
+    - name: Draft Release
+      uses: softprops/action-gh-release@v1        
+      with:
+        draft: true
+        files: |
+          nobled_linux-amd64
+          nobled_linux-arm64
+          nobled_sha256.txt
