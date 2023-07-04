@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
-	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/relayer"
@@ -186,16 +184,21 @@ type NobleRoles struct {
 // It then recovers the key on the specified validator.
 func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomMetadata DenomMetadata, val *cosmos.ChainNode, minSetup bool) error {
 	chainCfg := val.Chain.Config()
+	nobleVal := val.Chain
 
-	kr := keyring.NewInMemory()
+	var err error
 
-	nobleRoles.Owner = interchaintest.BuildWallet(kr, "owner-"+denomMetadata.Base, chainCfg)
-	err := val.RecoverKey(ctx, nobleRoles.Owner.KeyName, nobleRoles.Owner.Mnemonic)
+	nobleRoles.Owner, err = nobleVal.BuildRelayerWallet(ctx, "owner-"+denomMetadata.Base)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create wallet: %w", err)
 	}
+
+	if err := val.RecoverKey(ctx, nobleRoles.Owner.KeyName(), nobleRoles.Owner.Mnemonic()); err != nil {
+		return fmt.Errorf("failed to restore %s wallet: %w", nobleRoles.Owner.KeyName(), err)
+	}
+
 	genesisWallet := ibc.WalletAmount{
-		Address: nobleRoles.Owner.Address,
+		Address: nobleRoles.Owner.FormattedAddress(),
 		Denom:   chainCfg.Denom,
 		Amount:  0,
 	}
@@ -207,76 +210,76 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 		return nil
 	}
 
-	nobleRoles.Owner2 = interchaintest.BuildWallet(kr, "owner2-"+denomMetadata.Base, chainCfg)
-	nobleRoles.MasterMinter = interchaintest.BuildWallet(kr, "masterminter-"+denomMetadata.Base, chainCfg)
-	nobleRoles.MinterController = interchaintest.BuildWallet(kr, "mintercontroller-"+denomMetadata.Base, chainCfg)
-	nobleRoles.MinterController2 = interchaintest.BuildWallet(kr, "mintercontroller2-"+denomMetadata.Base, chainCfg)
-	nobleRoles.Minter = interchaintest.BuildWallet(kr, "minter-"+denomMetadata.Base, chainCfg)
-	nobleRoles.Blacklister = interchaintest.BuildWallet(kr, "blacklister-"+denomMetadata.Base, chainCfg)
-	nobleRoles.Pauser = interchaintest.BuildWallet(kr, "pauser-"+denomMetadata.Base, chainCfg)
+	nobleRoles.Owner2, err = nobleVal.BuildRelayerWallet(ctx, "owner2-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "owner2", err)
+	}
+	nobleRoles.MasterMinter, err = nobleVal.BuildRelayerWallet(ctx, "masterminter-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "masterminter", err)
+	}
+	nobleRoles.MinterController, err = nobleVal.BuildRelayerWallet(ctx, "mintercontroller-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "mintercontroller", err)
+	}
+	nobleRoles.MinterController2, err = nobleVal.BuildRelayerWallet(ctx, "mintercontroller2-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "mintercontroller2", err)
+	}
+	nobleRoles.Minter, err = nobleVal.BuildRelayerWallet(ctx, "minter-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "minter", err)
+	}
+	nobleRoles.Blacklister, err = nobleVal.BuildRelayerWallet(ctx, "blacklister-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "blacklister", err)
+	}
+	nobleRoles.Pauser, err = nobleVal.BuildRelayerWallet(ctx, "pauser-"+denomMetadata.Base)
+	if err != nil {
+		return fmt.Errorf("failed to create %s wallet: %w", "pauser", err)
+	}
 
-	err = val.RecoverKey(ctx, nobleRoles.Owner2.KeyName, nobleRoles.Owner2.Mnemonic)
-	if err != nil {
-		return err
-	}
-	err = val.RecoverKey(ctx, nobleRoles.MasterMinter.KeyName, nobleRoles.MasterMinter.Mnemonic)
-	if err != nil {
-		return err
-	}
-	err = val.RecoverKey(ctx, nobleRoles.MinterController.KeyName, nobleRoles.MinterController.Mnemonic)
-	if err != nil {
-		return err
-	}
-	err = val.RecoverKey(ctx, nobleRoles.MinterController2.KeyName, nobleRoles.MinterController2.Mnemonic)
-	if err != nil {
-		return err
-	}
-	err = val.RecoverKey(ctx, nobleRoles.Minter.KeyName, nobleRoles.Minter.Mnemonic)
-	if err != nil {
-		return err
-	}
-	err = val.RecoverKey(ctx, nobleRoles.Blacklister.KeyName, nobleRoles.Blacklister.Mnemonic)
-	if err != nil {
-		return err
-	}
-	err = val.RecoverKey(ctx, nobleRoles.Pauser.KeyName, nobleRoles.Pauser.Mnemonic)
-	if err != nil {
-		return err
+	walletsToRestore := []ibc.Wallet{nobleRoles.Owner2, nobleRoles.MasterMinter, nobleRoles.MinterController, nobleRoles.MinterController2, nobleRoles.Minter, nobleRoles.Blacklister, nobleRoles.Pauser}
+	for _, wallet := range walletsToRestore {
+		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
+			return fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
+
+		}
 	}
 
 	genesisWallets := []ibc.WalletAmount{
 		{
-			Address: nobleRoles.Owner2.Address,
+			Address: nobleRoles.Owner2.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: nobleRoles.MasterMinter.Address,
+			Address: nobleRoles.MasterMinter.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: nobleRoles.MinterController.Address,
+			Address: nobleRoles.MinterController.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: nobleRoles.MinterController2.Address,
+			Address: nobleRoles.MinterController2.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: nobleRoles.Minter.Address,
+			Address: nobleRoles.Minter.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: nobleRoles.Blacklister.Address,
+			Address: nobleRoles.Blacklister.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: nobleRoles.Pauser.Address,
+			Address: nobleRoles.Pauser.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
@@ -296,24 +299,20 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 func createParamAuthAtGenesis(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet, error) {
 	chainCfg := val.Chain.Config()
 
-	kr := keyring.NewInMemory()
-
-	wallet := interchaintest.BuildWallet(kr, "authority", chainCfg)
-
-	err := val.RecoverKey(ctx, wallet.KeyName, wallet.Mnemonic)
+	wallet, err := val.Chain.BuildWallet(ctx, "authority", "")
 	if err != nil {
-		return ibc.Wallet{}, err
+		return nil, fmt.Errorf("failed to create wallet: %w", err)
 	}
 
 	genesisWallet := ibc.WalletAmount{
-		Address: wallet.Address,
+		Address: wallet.FormattedAddress(),
 		Denom:   chainCfg.Denom,
 		Amount:  0,
 	}
 
 	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []types.Coin{types.NewCoin(genesisWallet.Denom, types.NewIntFromUint64(uint64(genesisWallet.Amount)))})
 	if err != nil {
-		return ibc.Wallet{}, err
+		return nil, err
 	}
 	return wallet, nil
 }
@@ -322,41 +321,46 @@ func createParamAuthAtGenesis(ctx context.Context, val *cosmos.ChainNode) (ibc.W
 // It then recovers the key on the specified validator.
 func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (ExtraWallets, error) {
 	chainCfg := val.Chain.Config()
+	nobleVal := val.Chain
 
-	kr := keyring.NewInMemory()
+	var err error
 
 	extraWallets := &ExtraWallets{}
 
-	extraWallets.User = interchaintest.BuildWallet(kr, "user", chainCfg)
-	extraWallets.User2 = interchaintest.BuildWallet(kr, "user2", chainCfg)
-	extraWallets.Alice = interchaintest.BuildWallet(kr, "alice", chainCfg)
+	extraWallets.User, err = nobleVal.BuildRelayerWallet(ctx, "user")
+	if err != nil {
+		return ExtraWallets{}, fmt.Errorf("failed to create wallet: %w", err)
+	}
+	extraWallets.User2, err = nobleVal.BuildRelayerWallet(ctx, "user2")
+	if err != nil {
+		return ExtraWallets{}, fmt.Errorf("failed to create wallet: %w", err)
+	}
+	extraWallets.Alice, err = nobleVal.BuildRelayerWallet(ctx, "alice")
+	if err != nil {
+		return ExtraWallets{}, fmt.Errorf("failed to create wallet: %w", err)
+	}
 
-	err := val.RecoverKey(ctx, extraWallets.User.KeyName, extraWallets.User.Mnemonic)
-	if err != nil {
-		return ExtraWallets{}, err
-	}
-	err = val.RecoverKey(ctx, extraWallets.User2.KeyName, extraWallets.User2.Mnemonic)
-	if err != nil {
-		return ExtraWallets{}, err
-	}
-	err = val.RecoverKey(ctx, extraWallets.Alice.KeyName, extraWallets.Alice.Mnemonic)
-	if err != nil {
-		return ExtraWallets{}, err
+	walletsToRestore := []ibc.Wallet{extraWallets.User, extraWallets.User2, extraWallets.Alice}
+	for _, wallet := range walletsToRestore {
+		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
+			return ExtraWallets{}, fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
+
+		}
 	}
 
 	genesisWallets := []ibc.WalletAmount{
 		{
-			Address: extraWallets.User.Address,
+			Address: extraWallets.User.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
 		{
-			Address: extraWallets.User2.Address,
+			Address: extraWallets.User2.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  10_000,
 		},
 		{
-			Address: extraWallets.Alice.Address,
+			Address: extraWallets.Alice.FormattedAddress(),
 			Denom:   chainCfg.Denom,
 			Amount:  0,
 		},
@@ -375,7 +379,7 @@ func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Ex
 // If minSetup = true, only the owner address, paused state, and denom is setup in genesis.
 // These are minimum requirements to start the chain. Otherwise all tokenfactory accounts are created.
 func modifyGenesisTokenfactory(g map[string]interface{}, tokenfactoryModName string, denomMetadata DenomMetadata, roles *NobleRoles, minSetup bool) error {
-	if err := dyno.Set(g, TokenFactoryAddress{roles.Owner.Address}, "app_state", tokenfactoryModName, "owner"); err != nil {
+	if err := dyno.Set(g, TokenFactoryAddress{roles.Owner.FormattedAddress()}, "app_state", tokenfactoryModName, "owner"); err != nil {
 		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
 	if err := dyno.Set(g, TokenFactoryPaused{false}, "app_state", tokenfactoryModName, "paused"); err != nil {
@@ -390,13 +394,13 @@ func modifyGenesisTokenfactory(g map[string]interface{}, tokenfactoryModName str
 	if minSetup {
 		return nil
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{roles.MasterMinter.Address}, "app_state", tokenfactoryModName, "masterMinter"); err != nil {
+	if err := dyno.Set(g, TokenFactoryAddress{roles.MasterMinter.FormattedAddress()}, "app_state", tokenfactoryModName, "masterMinter"); err != nil {
 		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{roles.Blacklister.Address}, "app_state", tokenfactoryModName, "blacklister"); err != nil {
+	if err := dyno.Set(g, TokenFactoryAddress{roles.Blacklister.FormattedAddress()}, "app_state", tokenfactoryModName, "blacklister"); err != nil {
 		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
-	if err := dyno.Set(g, TokenFactoryAddress{roles.Pauser.Address}, "app_state", tokenfactoryModName, "pauser"); err != nil {
+	if err := dyno.Set(g, TokenFactoryAddress{roles.Pauser.FormattedAddress()}, "app_state", tokenfactoryModName, "pauser"); err != nil {
 		return fmt.Errorf("failed to set owner address in genesis json: %w", err)
 	}
 	return nil
