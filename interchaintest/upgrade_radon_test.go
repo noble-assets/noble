@@ -63,7 +63,7 @@ func testPostRadonUpgrade(
 	err = json.Unmarshal([]byte(tariffParamDistributionentities.Value), &distributionEntities)
 	require.NoError(t, err, "failed to unmarshall tariff distribution_entities param")
 	require.Len(t, distributionEntities, 1)
-	require.Equal(t, paramAuthority.Address, distributionEntities[0].Address)
+	require.Equal(t, paramAuthority.FormattedAddress(), distributionEntities[0].Address)
 	require.Equal(t, sdk.OneDec().String(), distributionEntities[0].Share)
 	require.Equal(t, `"`+sdk.NewDecWithPrec(8, 1).String()+`"`, tariffParamShare.Value)
 
