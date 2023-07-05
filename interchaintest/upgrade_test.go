@@ -145,6 +145,12 @@ func testNobleChainUpgrade(
 			upgrade.preUpgrade(t, ctx, noble, paramAuthority)
 		}
 
+		t.Log("---INFO---", upgrade.upgradeName)
+		stdout, sterr, err := noble.FullNodes[0].Chain.Exec(ctx, []string{"version"}, nil)
+		t.Log("stdout: ", stdout)
+		t.Log("sterr: ", sterr)
+		t.Log("err: ", err)
+
 		if upgrade.upgradeName == "" {
 			// patch/rolling upgrade
 
