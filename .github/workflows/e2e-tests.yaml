@@ -1,7 +1,11 @@
 name: End to End Tests
 
 on:
-  pull_request:
+  push:
+    tags:
+    - '**'
+    branches:
+    - '**'
 
 env:
   TAR_PATH: heighliner.tar
