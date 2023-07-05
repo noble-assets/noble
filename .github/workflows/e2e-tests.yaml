@@ -8,6 +8,7 @@ on:
     - '**'
 
 env:
+  REGISTRY: ghcr.io
   TAR_PATH: heighliner.tar
 
 concurrency:
@@ -15,9 +16,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   build-docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Docker image
         uses: strangelove-ventures/heighliner-build-action@v0.0.3
         with:
