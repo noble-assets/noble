@@ -146,7 +146,7 @@ func testNobleChainUpgrade(
 		}
 
 		t.Log("---INFO---", upgrade.upgradeName)
-		stdout, sterr, err := noble.Validators[0].Chain.Exec(ctx, []string{"version"}, nil)
+		stdout, sterr, err := noble.Validators[0].ExecBin(ctx, "version")
 		t.Log("stdout: ", stdout)
 		t.Log("sterr: ", sterr)
 		t.Log("err: ", err)
