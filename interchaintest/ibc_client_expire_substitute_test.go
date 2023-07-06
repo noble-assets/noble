@@ -221,6 +221,9 @@ func TestClientUnfreeze(t *testing.T) {
 	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "upgrade", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
 	require.NoError(t, err)
 
+	err = testutil.WaitForBlocks(ctx, 5, noble)
+	require.NoError(t, err)
+
 	// start up relayer and test a transfer on the new client
 	err = r.StartRelayer(ctx, eRep, pathName)
 	require.NoError(t, err)
