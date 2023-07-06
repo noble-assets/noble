@@ -145,6 +145,11 @@ func testNobleChainUpgrade(
 			upgrade.preUpgrade(t, ctx, noble, paramAuthority)
 		}
 
+		t.Log("---INFO---", upgrade.upgradeName)
+		stdout, _, err := noble.Validators[0].ExecBin(ctx, "version")
+		t.Log("stdout: ", string(stdout))
+		t.Log("err: ", err)
+
 		if upgrade.upgradeName == "" {
 			// patch/rolling upgrade
 
