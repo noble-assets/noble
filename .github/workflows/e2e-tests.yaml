@@ -42,7 +42,7 @@ jobs:
     strategy:
         matrix:
             # names of `make` commands to run tests
-            test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
+            test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees", "ictest-client-substitution"]
         fail-fast: false
 
     steps:

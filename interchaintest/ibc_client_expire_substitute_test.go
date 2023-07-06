@@ -16,7 +16,7 @@ import (
 )
 
 // run `make local-image`to rebuild updated binary before running test
-func TestClientUnfreeze(t *testing.T) {
+func TestClientSubstitution(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -129,18 +129,12 @@ func TestClientUnfreeze(t *testing.T) {
 			Chain2:  gaia,
 			Relayer: r,
 			Path:    pathName,
-			CreateClientOpts: ibc.CreateClientOptions{
-				TrustingPeriod: "20s",
-			},
 		})
 
 	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
 		TestName:  t.Name(),
 		Client:    client,
 		NetworkID: network,
-
-		// TODO comment out for CI
-		BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
 
 		SkipPathCreation: true,
 	}))
@@ -217,14 +211,15 @@ func TestClientUnfreeze(t *testing.T) {
 
 	newNobleClient := nobleClients[1]
 
-	// substitute new client for old client
+	// substitute new client state into old client
 	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "upgrade", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
 	require.NoError(t, err)
 
-	err = testutil.WaitForBlocks(ctx, 5, noble)
-	require.NoError(t, err)
+	// update config to old client ID
+	res = r.Exec(ctx, eRep, []string{"rly", "paths", "update", pathName, "--src-client-id", nobleClient.ClientID, "--home", "/home/relayer"}, nil)
+	require.NoError(t, res.Err)
 
-	// start up relayer and test a transfer on the new client
+	// start up relayer and test a transfer
 	err = r.StartRelayer(ctx, eRep, pathName)
 	require.NoError(t, err)
 
