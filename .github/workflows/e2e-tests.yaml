@@ -6,6 +6,7 @@ on:
     - '**'
 
 env:
+  REGISTRY: ghcr.io
   TAR_PATH: heighliner.tar
 
 concurrency:
