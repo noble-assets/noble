@@ -7,7 +7,6 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27
-	github.com/strangelove-ventures/noble v0.0.0-00010101000000-000000000000
 	github.com/strangelove-ventures/paramauthority v0.1.1
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
@@ -124,7 +123,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/rs/zerolog v1.27.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
@@ -134,6 +133,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
+	github.com/strangelove-ventures/noble-cctp v0.0.0-20230706120726-156732d2b846 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
@@ -183,8 +183,13 @@ replace (
 	// For this nested module, you always want to replace the parent reference with the current worktree.
 	github.com/strangelove-ventures/noble => ../
 
+	github.com/strangelove-ventures/noble-cctp v0.0.0-20230706120726-156732d2b846 => /Users/dkwork/go/src/github.com/strangelove-ventures/noble-cctp
+
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
 
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
+
+// github.com/circlefin/noble-cctp => github.com/strangelove-ventures/noble-cctp v0.0.0-20230706120726-156732d2b846
+
 )
