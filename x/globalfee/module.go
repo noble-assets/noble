@@ -16,8 +16,8 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/strangelove-ventures/noble/x/globalfee/client/cli"
-	"github.com/strangelove-ventures/noble/x/globalfee/types"
+	"github.com/strangelove-ventures/noble/v3/x/globalfee/client/cli"
+	"github.com/strangelove-ventures/noble/v3/x/globalfee/types"
 )
 
 var (

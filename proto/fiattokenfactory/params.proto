@@ -3,7 +3,7 @@ package noble.fiattokenfactory;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
+option go_package = "github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types";
 
 // Params defines the parameters for the module.
 message Params { option (gogoproto.goproto_stringer) = false; }

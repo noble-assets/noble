@@ -1,7 +1,7 @@
 syntax = "proto3";
 package noble.tariff;
 
-option go_package            = "github.com/strangelove-ventures/noble/x/tariff/types";
+option go_package            = "github.com/strangelove-ventures/noble/v3/x/tariff/types";
 option (gogoproto.equal_all) = true;
 
 import "gogoproto/gogo.proto";

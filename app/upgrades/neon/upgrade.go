@@ -9,9 +9,9 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory"
-	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory"
+	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/keeper"
+	fiattokenfactorytypes "github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types"
 )
 
 func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {

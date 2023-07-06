@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
-	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	keepertest "github.com/strangelove-ventures/noble/v3/testutil/keeper"
+	"github.com/strangelove-ventures/noble/v3/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types"
 )
 
 func TestOwnerGet(t *testing.T) {

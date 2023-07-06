@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/types/bech32"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types"
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -1,8 +1,8 @@
 package tariff
 
 import (
-	"github.com/strangelove-ventures/noble/x/tariff/keeper"
-	"github.com/strangelove-ventures/noble/x/tariff/types"
+	"github.com/strangelove-ventures/noble/v3/x/tariff/keeper"
+	"github.com/strangelove-ventures/noble/v3/x/tariff/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
