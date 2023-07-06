@@ -148,10 +148,39 @@ func TestClientUnfreeze(t *testing.T) {
 		_ = ic.Close()
 	})
 
+	nobleChainID := noble.Config().ChainID
+	gaiaChainID := gaia.Config().ChainID
+
+	err = r.GeneratePath(ctx, eRep, nobleChainID, gaiaChainID, pathName)
+	require.NoError(t, err)
+
+	// create client on noble with short trusting period which will expire.
+	res := r.Exec(ctx, eRep, []string{"rly", "tx", "client", nobleChainID, gaiaChainID, pathName, "--client-tp", "20s", "--home", "/home/relayer"}, nil)
+	require.NoError(t, res.Err)
+
+	// create client on gaia with longer trusting period so it won't expire for this test.
+	res = r.Exec(ctx, eRep, []string{"rly", "tx", "client", gaiaChainID, nobleChainID, pathName, "--home", "/home/relayer"}, nil)
+	require.NoError(t, res.Err)
+
+	err = testutil.WaitForBlocks(ctx, 2, noble, gaia)
+	require.NoError(t, err)
+
+	err = r.CreateConnections(ctx, eRep, pathName)
+	require.NoError(t, err)
+
+	err = testutil.WaitForBlocks(ctx, 2, noble, gaia)
+	require.NoError(t, err)
+
+	err = r.CreateChannel(ctx, eRep, pathName, ibc.CreateChannelOptions{
+		SourcePortName: "transfer",
+		DestPortName:   "transfer",
+		Order:          ibc.Unordered,
+		Version:        "ics20-1",
+	})
+	require.NoError(t, err)
+
 	const userFunds = int64(10_000_000_000)
 	users := interchaintest.GetAndFundTestUsers(t, ctx, t.Name(), userFunds, noble, gaia)
-
-	nobleChainID := noble.Config().ChainID
 
 	nobleClients, err := r.GetClients(ctx, eRep, nobleChainID)
 	require.NoError(t, err)
@@ -178,8 +207,9 @@ func TestClientUnfreeze(t *testing.T) {
 	require.Error(t, err)
 	require.ErrorContains(t, err, "status Expired: client is not active")
 
-	// create new client
-	require.NoError(t, r.CreateClients(ctx, eRep, pathName, ibc.CreateClientOptions{TrustingPeriod: "1h", Override: true}))
+	// create new client on noble
+	res = r.Exec(ctx, eRep, []string{"rly", "tx", "client", nobleChainID, gaiaChainID, pathName, "--override", "--home", "/home/relayer"}, nil)
+	require.NoError(t, res.Err)
 
 	nobleClients, err = r.GetClients(ctx, eRep, nobleChainID)
 	require.NoError(t, err)
@@ -191,12 +221,25 @@ func TestClientUnfreeze(t *testing.T) {
 	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "upgrade", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
 	require.NoError(t, err)
 
-	// send a packet on the same channel but new client, should succeed.
-	_, err = noble.SendIBCTransfer(ctx, nobleChannel.ChannelID, users[0].KeyName(), ibc.WalletAmount{
+	// start up relayer and test a transfer on the new client
+	err = r.StartRelayer(ctx, eRep, pathName)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		_ = r.StopRelayer(ctx, eRep)
+	})
+
+	nobleHeight, err := noble.Height(ctx)
+	require.NoError(t, err)
+
+	// send a packet on the same channel with new client, should succeed.
+	tx, err := noble.SendIBCTransfer(ctx, nobleChannel.ChannelID, users[0].KeyName(), ibc.WalletAmount{
 		Address: users[1].FormattedAddress(),
 		Amount:  1000000,
 		Denom:   noble.Config().Denom,
 	}, ibc.TransferOptions{})
 	require.NoError(t, err)
 
+	_, err = testutil.PollForAck(ctx, noble, nobleHeight, nobleHeight+10, tx.Packet)
+	require.NoError(t, err)
 }
