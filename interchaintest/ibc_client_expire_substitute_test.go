@@ -57,7 +57,7 @@ func TestClientSubstitution(t *testing.T) {
 			if err != nil {
 				return err
 			}
-			err = createTokenfactoryRoles(ctx, &roles2, denomMetadataDrachma, val, false)
+			err = createTokenfactoryRoles(ctx, &roles2, denomMetadataDrachma, val, true)
 			if err != nil {
 				return err
 			}
