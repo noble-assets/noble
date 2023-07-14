@@ -301,7 +301,6 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
 		upgradeCmd,
-		paramauthorityupgradecli.GetTxCmd(),
 		paramauthorityparamscli.GetTxCmd(),
 	)
 
