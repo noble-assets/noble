@@ -53,7 +53,7 @@ func TestClientSubstitution(t *testing.T) {
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
-			err = createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, false)
+			err = createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, true)
 			if err != nil {
 				return err
 			}
