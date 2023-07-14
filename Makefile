@@ -122,7 +122,9 @@ ictest-globalFee:
 
 ictest-ics20-bps-fees:
 	cd interchaintest && go test -race -v -run ^TestICS20BPSFees$$ .
-	
+
+ictest-client-substitution:
+	cd interchaintest && go test -race -v -run ^TestClientSubstitution$$ .
 
 ###############################################################################
 ###                                Build Image                              ###
