@@ -17,7 +17,7 @@ jobs:
       - name: Build Docker image
         uses: strangelove-ventures/heighliner-build-action@v0.0.3
         with:
-          registry: # empty registry, image only shared for e2e testing
+          registry: "" # empty registry, image only shared for e2e testing
           tag: local # emulate local environment for consistency in interchaintest cases
           tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
@@ -42,7 +42,7 @@ jobs:
     strategy:
         matrix:
             # names of `make` commands to run tests
-            test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees"]
+            test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees", "ictest-client-substitution"]
         fail-fast: false
 
     steps:
