@@ -14,7 +14,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/noble/cmd"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -74,6 +73,7 @@ func testParamsCase(t *testing.T, ctx context.Context, broadcaster *cosmos.Broad
 	}
 }
 
+// run `make local-image`to rebuild updated binary before running test
 func TestNobleParamAuthority(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -87,8 +87,6 @@ func TestNobleParamAuthority(t *testing.T) {
 	eRep := rep.RelayerExecReporter(t)
 
 	client, network := interchaintest.DockerSetup(t)
-
-	repo, version := integration.GetDockerImageInfo()
 
 	var noble *cosmos.CosmosChain
 	var roles NobleRoles
@@ -107,13 +105,7 @@ func TestNobleParamAuthority(t *testing.T) {
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
 		NoHostMount:    false,
-		Images: []ibc.DockerImage{
-			{
-				Repository: repo,
-				Version:    version,
-				UidGid:     "1025:1025",
-			},
-		},
+		Images:         nobleImageInfo,
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) error {
 			val := noble.Validators[0]
