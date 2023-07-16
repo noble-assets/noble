@@ -43,7 +43,7 @@ func (msg *MsgUnblacklist) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
 	}
 
-	if len(msg.Address) <= 0 {
+	if len(msg.Address) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address length cannot be less than or equal to 0")
 	}
 	return nil
