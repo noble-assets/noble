@@ -6,16 +6,17 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/icza/dyno"
-	"github.com/strangelove-ventures/interchaintest/v3"
-	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v4"
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
 	"github.com/strangelove-ventures/noble/cmd"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
+
+	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 )
 
 type ParamsCase struct {
@@ -181,7 +182,7 @@ func TestNobleParamAuthority(t *testing.T) {
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
-	var orderedTestCases = []ParamsCase{
+	orderedTestCases := []ParamsCase{
 		{
 			title:         "change authority to alice from incorrect msg authority and signer",
 			description:   "change params and upgrade authority to alice's address",
@@ -255,5 +256,4 @@ func TestNobleParamAuthority(t *testing.T) {
 	require.NoError(t, err, "failed to get authority from state export")
 
 	require.Equal(t, extraWallets.User2.FormattedAddress(), authority, "authority does not match")
-
 }

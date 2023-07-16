@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/strangelove-ventures/interchaintest/v3"
-	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v4"
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -232,7 +232,7 @@ func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModNam
 		Denom:   "token",
 		Amount:  100,
 	})
-	require.NoError(t, err, "The tx should have been successfull as that is no the minting denom")
+	require.NoError(t, err, "The tx should have been successful as that is no the minting denom")
 
 	_, err = nobleValidator.ExecTx(ctx, roles.Blacklister.KeyName(),
 		tokenfactoryModName, "unblacklist", extraWallets.User.FormattedAddress(), "-b", "block",

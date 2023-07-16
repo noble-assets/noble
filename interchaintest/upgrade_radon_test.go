@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func testPostRadonUpgrade(

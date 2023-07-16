@@ -7,15 +7,16 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	"github.com/strangelove-ventures/interchaintest/v3"
-	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
-	"github.com/strangelove-ventures/interchaintest/v3/testutil"
+	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	"github.com/strangelove-ventures/interchaintest/v4"
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v4/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type PacketMetadata struct {
@@ -359,7 +360,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		func() {
 			err := r.StopRelayer(ctx, eRep)
 			if err != nil {
-				t.Logf("an error occured while stopping the relayer: %s", err)
+				t.Logf("an error occurred while stopping the relayer: %s", err)
 			}
 		},
 	)

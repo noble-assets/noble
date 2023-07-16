@@ -4,27 +4,26 @@ import (
 	"context"
 	"fmt"
 
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
-	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	"github.com/strangelove-ventures/interchaintest/v3/relayer"
-	"github.com/strangelove-ventures/interchaintest/v3/relayer/rly"
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/relayer"
+	"github.com/strangelove-ventures/interchaintest/v4/relayer/rly"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
+
+	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/types"
 )
 
-var (
-	nobleImageInfo = []ibc.DockerImage{
-		{
-			Repository: "noble",
-			Version:    "local",
-			UidGid:     "1025:1025",
-		},
-	}
-)
+var nobleImageInfo = []ibc.DockerImage{
+	{
+		Repository: "noble",
+		Version:    "local",
+		UidGid:     "1025:1025",
+	},
+}
 
 var (
 	denomMetadataFrienzies = DenomMetadata{
@@ -243,7 +242,6 @@ func createTokenfactoryRoles(ctx context.Context, nobleRoles *NobleRoles, denomM
 	for _, wallet := range walletsToRestore {
 		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
 			return fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
-
 		}
 	}
 
@@ -344,7 +342,6 @@ func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Ex
 	for _, wallet := range walletsToRestore {
 		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
 			return ExtraWallets{}, fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
-
 		}
 	}
 

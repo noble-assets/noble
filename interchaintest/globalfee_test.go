@@ -6,15 +6,16 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/strangelove-ventures/interchaintest/v3"
-	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v4"
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
 	"github.com/strangelove-ventures/noble/cmd"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
+
+	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 )
 
 // run `make local-image`to rebuild updated binary before running test
@@ -205,5 +206,4 @@ func TestGlobalFee(t *testing.T) {
 		"-b", "block",
 	)
 	require.NoError(t, err, "failed to execute tx to accept ownership with zero fees")
-
 }
