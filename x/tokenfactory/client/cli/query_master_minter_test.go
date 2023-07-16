@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"testing"
 
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/stretchr/testify/require"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"google.golang.org/grpc/status"
-
 	"github.com/strangelove-ventures/noble/testutil/network"
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	"github.com/stretchr/testify/require"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"google.golang.org/grpc/status"
+
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 )
 
 func networkWithMasterMinterObjects(t *testing.T) (*network.Network, types.MasterMinter) {

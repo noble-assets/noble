@@ -9,7 +9,7 @@ const TypeMsgUpdatePauser = "update_pauser"
 
 var _ sdk.Msg = &MsgUpdatePauser{}
 
-func NewMsgUpdatePauser(from string, address string) *MsgUpdatePauser {
+func NewMsgUpdatePauser(from, address string) *MsgUpdatePauser {
 	return &MsgUpdatePauser{
 		From:    from,
 		Address: address,

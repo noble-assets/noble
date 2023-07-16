@@ -5,6 +5,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/strangelove-ventures/noble/app"
+	"github.com/strangelove-ventures/noble/cmd"
+	"github.com/strangelove-ventures/noble/testutil/sample"
+	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
+	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	tmdb "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -14,20 +22,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmdb "github.com/tendermint/tm-db"
-
 	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/strangelove-ventures/noble/app"
-	"github.com/strangelove-ventures/noble/cmd"
-	"github.com/strangelove-ventures/noble/testutil/sample"
-	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
-	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
 
 type (

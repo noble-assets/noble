@@ -9,7 +9,7 @@ const TypeMsgConfigureMinterController = "configure_minter_controller"
 
 var _ sdk.Msg = &MsgConfigureMinterController{}
 
-func NewMsgConfigureMinterController(from string, controller string, minter string) *MsgConfigureMinterController {
+func NewMsgConfigureMinterController(from, controller, minter string) *MsgConfigureMinterController {
 	return &MsgConfigureMinterController{
 		From:       from,
 		Controller: controller,

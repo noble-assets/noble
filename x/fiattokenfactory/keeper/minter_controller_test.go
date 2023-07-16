@@ -8,9 +8,9 @@ import (
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 )
 
 // Prevent strconv unused error
@@ -40,6 +40,7 @@ func TestMinterControllerGet(t *testing.T) {
 		)
 	}
 }
+
 func TestMinterControllerRemove(t *testing.T) {
 	keeper, ctx := keepertest.FiatTokenfactoryKeeper(t)
 	items := createNMinterController(keeper, ctx, 10)

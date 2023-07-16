@@ -9,7 +9,7 @@ const TypeMsgRemoveMinterController = "remove_minter_controller"
 
 var _ sdk.Msg = &MsgRemoveMinterController{}
 
-func NewMsgRemoveMinterController(from string, address string) *MsgRemoveMinterController {
+func NewMsgRemoveMinterController(from, address string) *MsgRemoveMinterController {
 	return &MsgRemoveMinterController{
 		From:       from,
 		Controller: address,

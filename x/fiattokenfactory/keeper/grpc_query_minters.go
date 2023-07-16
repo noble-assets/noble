@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 func (k Keeper) MintersAll(c context.Context, req *types.QueryAllMintersRequest) (*types.QueryAllMintersResponse, error) {
@@ -22,7 +23,7 @@ func (k Keeper) MintersAll(c context.Context, req *types.QueryAllMintersRequest)
 	store := ctx.KVStore(k.storeKey)
 	mintersStore := prefix.NewStore(store, types.KeyPrefix(types.MintersKeyPrefix))
 
-	pageRes, err := query.Paginate(mintersStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(mintersStore, req.Pagination, func(key, value []byte) error {
 		var minter types.Minters
 		if err := k.cdc.Unmarshal(value, &minter); err != nil {
 			return err
@@ -31,7 +32,6 @@ func (k Keeper) MintersAll(c context.Context, req *types.QueryAllMintersRequest)
 		minters = append(minters, minter)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

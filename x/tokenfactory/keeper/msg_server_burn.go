@@ -6,6 +6,7 @@ import (
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
 	sdkerrors "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 )

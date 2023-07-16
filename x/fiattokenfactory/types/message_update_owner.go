@@ -9,7 +9,7 @@ const TypeMsgUpdateOwner = "update_owner"
 
 var _ sdk.Msg = &MsgUpdateOwner{}
 
-func NewMsgUpdateOwner(from string, address string) *MsgUpdateOwner {
+func NewMsgUpdateOwner(from, address string) *MsgUpdateOwner {
 	return &MsgUpdateOwner{
 		From:    from,
 		Address: address,

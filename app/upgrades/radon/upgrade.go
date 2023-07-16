@@ -1,16 +1,14 @@
 package radon
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-
-	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
-
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
-
 	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
+	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func CreateRadonUpgradeHandler(
@@ -18,10 +16,8 @@ func CreateRadonUpgradeHandler(
 	cfg module.Configurator,
 	paramauthoritykeeper paramauthoritykeeper.Keeper,
 	fiatTFKeeper *fiattokenfactorykeeper.Keeper,
-
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-
 		// New modules run AFTER the migrations, so to set the correct params after the default
 		// becasuse RunMigrations runs `InitGenesis` on new modules`.
 		versionMap, err := mm.RunMigrations(ctx, cfg, vm)

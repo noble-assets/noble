@@ -20,7 +20,6 @@ func (k Keeper) SetMinterController(ctx sdk.Context, minterController types.Mint
 func (k Keeper) GetMinterController(
 	ctx sdk.Context,
 	controller string,
-
 ) (val types.MinterController, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MinterControllerKeyPrefix))
 
@@ -39,7 +38,6 @@ func (k Keeper) GetMinterController(
 func (k Keeper) DeleteMinterController(
 	ctx sdk.Context,
 	controller string,
-
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MinterControllerKeyPrefix))
 	store.Delete(types.MinterControllerKey(

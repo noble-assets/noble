@@ -9,7 +9,7 @@ const TypeMsgConfigureMinter = "configure_minter"
 
 var _ sdk.Msg = &MsgConfigureMinter{}
 
-func NewMsgConfigureMinter(from string, address string, allowance sdk.Coin) *MsgConfigureMinter {
+func NewMsgConfigureMinter(from, address string, allowance sdk.Coin) *MsgConfigureMinter {
 	return &MsgConfigureMinter{
 		From:      from,
 		Address:   address,

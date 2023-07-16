@@ -9,7 +9,7 @@ const TypeMsgUpdateMasterMinter = "update_master_minter"
 
 var _ sdk.Msg = &MsgUpdateMasterMinter{}
 
-func NewMsgUpdateMasterMinter(from string, address string) *MsgUpdateMasterMinter {
+func NewMsgUpdateMasterMinter(from, address string) *MsgUpdateMasterMinter {
 	return &MsgUpdateMasterMinter{
 		From:    from,
 		Address: address,

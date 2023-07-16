@@ -3,9 +3,9 @@ package globalfee
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/strangelove-ventures/noble/x/globalfee/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var _ types.QueryServer = &GrpcQuerier{}

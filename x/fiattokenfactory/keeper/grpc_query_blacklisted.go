@@ -3,13 +3,14 @@ package keeper
 import (
 	"context"
 
+	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (k Keeper) BlacklistedAll(c context.Context, req *types.QueryAllBlacklistedRequest) (*types.QueryAllBlacklistedResponse, error) {
@@ -23,7 +24,7 @@ func (k Keeper) BlacklistedAll(c context.Context, req *types.QueryAllBlacklisted
 	store := ctx.KVStore(k.storeKey)
 	blacklistedStore := prefix.NewStore(store, types.KeyPrefix(types.BlacklistedKeyPrefix))
 
-	pageRes, err := query.Paginate(blacklistedStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(blacklistedStore, req.Pagination, func(key, value []byte) error {
 		var blacklisted types.Blacklisted
 		if err := k.cdc.Unmarshal(value, &blacklisted); err != nil {
 			return err
@@ -32,7 +33,6 @@ func (k Keeper) BlacklistedAll(c context.Context, req *types.QueryAllBlacklisted
 		blacklisteds = append(blacklisteds, blacklisted)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

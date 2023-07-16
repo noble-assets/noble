@@ -3,11 +3,11 @@ package types_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var testAddress = sample.AccAddress()
@@ -26,7 +26,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
 				BlacklistedList: []types.Blacklisted{
 					{
 						AddressBz: sample.AddressBz(),
@@ -80,7 +79,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid privilege separation",
 			genState: &types.GenesisState{
-
 				BlacklistedList: []types.Blacklisted{
 					{
 						AddressBz: sample.AddressBz(),

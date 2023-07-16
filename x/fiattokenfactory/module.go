@@ -8,7 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-
+	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -16,9 +18,6 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 )
 
 var (
@@ -54,7 +53,7 @@ func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }
 
-// DefaultGenesis returns a default GenesisState for the module, marshalled to json.RawMessage. The default GenesisState need to be defined by the module developer and is primarily used for testing
+// DefaultGenesis returns a default GenesisState for the module, marshaled to json.RawMessage. The default GenesisState need to be defined by the module developer and is primarily used for testing
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesis())
 }

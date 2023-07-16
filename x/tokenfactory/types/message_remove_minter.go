@@ -9,7 +9,7 @@ const TypeMsgRemoveMinter = "remove_minter"
 
 var _ sdk.Msg = &MsgRemoveMinter{}
 
-func NewMsgRemoveMinter(from string, address string) *MsgRemoveMinter {
+func NewMsgRemoveMinter(from, address string) *MsgRemoveMinter {
 	return &MsgRemoveMinter{
 		From:    from,
 		Address: address,

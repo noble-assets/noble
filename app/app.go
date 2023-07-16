@@ -7,6 +7,49 @@ import (
 	"os"
 	"path/filepath"
 
+	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v3/modules/core"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	"github.com/spf13/cast"
+	neon "github.com/strangelove-ventures/noble/app/upgrades/neon"
+	radon "github.com/strangelove-ventures/noble/app/upgrades/radon"
+	"github.com/strangelove-ventures/noble/cmd"
+	"github.com/strangelove-ventures/noble/docs"
+	"github.com/strangelove-ventures/noble/x/blockibc"
+	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
+	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/x/globalfee"
+	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+	tariff "github.com/strangelove-ventures/noble/x/tariff"
+	tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
+	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
+	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
+	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
+	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
+	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	paramauthority "github.com/strangelove-ventures/paramauthority/x/params"
+	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
+	paramauthorityupgrade "github.com/strangelove-ventures/paramauthority/x/upgrade"
+	paramauthorityupgradekeeper "github.com/strangelove-ventures/paramauthority/x/upgrade/keeper"
+	abci "github.com/tendermint/tendermint/abci/types"
+	tmjson "github.com/tendermint/tendermint/libs/json"
+	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -56,54 +99,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	"github.com/spf13/cast"
-	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
-	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
-	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
-	paramauthority "github.com/strangelove-ventures/paramauthority/x/params"
-	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
-	paramauthorityupgrade "github.com/strangelove-ventures/paramauthority/x/upgrade"
-	paramauthorityupgradekeeper "github.com/strangelove-ventures/paramauthority/x/upgrade/keeper"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	dbm "github.com/tendermint/tm-db"
-
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	neon "github.com/strangelove-ventures/noble/app/upgrades/neon"
-	radon "github.com/strangelove-ventures/noble/app/upgrades/radon"
-	"github.com/strangelove-ventures/noble/cmd"
-	"github.com/strangelove-ventures/noble/docs"
-	"github.com/strangelove-ventures/noble/x/blockibc"
-	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
-	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	"github.com/strangelove-ventures/noble/x/globalfee"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
-	tariff "github.com/strangelove-ventures/noble/x/tariff"
-	tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
-	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
-	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
-	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
-	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 const (
@@ -429,7 +428,7 @@ func New(
 	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
-	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
+	// Create evidence Keeper for to register the IBC light client misbehavior evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
 		appCodec,
 		keys[evidencetypes.StoreKey],
@@ -480,7 +479,7 @@ func New(
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
-	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
