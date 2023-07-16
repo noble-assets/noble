@@ -30,6 +30,7 @@ func TestMinterControllerGet(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	items := createNMinterController(keeper, ctx, 10)
 	for _, item := range items {
+		item := item
 		rst, found := keeper.GetMinterController(ctx,
 			item.Controller,
 		)

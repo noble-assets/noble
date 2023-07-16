@@ -21,8 +21,9 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	"github.com/spf13/cast"
-	neon "github.com/strangelove-ventures/noble/app/upgrades/neon"
-	radon "github.com/strangelove-ventures/noble/app/upgrades/radon"
+	"github.com/strangelove-ventures/noble/app/upgrades/argon"
+	"github.com/strangelove-ventures/noble/app/upgrades/neon"
+	"github.com/strangelove-ventures/noble/app/upgrades/radon"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
@@ -30,7 +31,6 @@ import (
 	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/globalfee"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
 	tariff "github.com/strangelove-ventures/noble/x/tariff"
 	tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
 	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
@@ -40,6 +40,8 @@ import (
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	paramauthorityibc "github.com/strangelove-ventures/paramauthority/x/ibc"
+	paramauthorityibctypes "github.com/strangelove-ventures/paramauthority/x/ibc/types"
 	paramauthority "github.com/strangelove-ventures/paramauthority/x/params"
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 	paramauthorityupgrade "github.com/strangelove-ventures/paramauthority/x/upgrade"
@@ -602,11 +604,20 @@ func New(
 	// Uncomment if you want to set a custom migration order here.
 	// app.mm.SetOrderMigrations(custom order)
 
+	// Register interfaces for paramauthority ibc proposal shim
+	paramauthorityibctypes.RegisterInterfaces(interfaceRegistry)
+
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+
+	// Register authoritative IBC client update and IBC upgrade msg handlers
+	paramauthorityibctypes.RegisterMsgServer(
+		app.configurator.MsgServer(),
+		paramauthorityibc.NewMsgServer(app.UpgradeKeeper, app.IBCKeeper.ClientKeeper),
+	)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
@@ -854,6 +865,15 @@ func (app *App) setupUpgradeHandlers() {
 			app.FiatTokenFactoryKeeper,
 		))
 
+	// argon upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		argon.UpgradeName,
+		argon.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		),
+	)
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -862,22 +882,20 @@ func (app *App) setupUpgradeHandlers() {
 		return
 	}
 
-	var stroreUpgrades *storetypes.StoreUpgrades
+	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
 	case neon.UpgradeName:
-		stroreUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{fiattokenfactorymoduletypes.StoreKey},
-		}
+		storeLoader = neon.CreateStoreLoader(upgradeInfo.Height)
 	case radon.UpgradeName:
-		stroreUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{globalfeetypes.ModuleName, tarifftypes.ModuleName},
-		}
+		storeLoader = radon.CreateStoreLoader(upgradeInfo.Height)
+	case argon.UpgradeName:
+		storeLoader = argon.CreateStoreLoader(upgradeInfo.Height)
 	}
 
-	if stroreUpgrades != nil {
+	if storeLoader != nil {
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, stroreUpgrades))
+		app.SetStoreLoader(storeLoader)
 	}
 }
 

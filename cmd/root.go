@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	paramauthorityibccli "github.com/strangelove-ventures/paramauthority/x/ibc/client/cli"
+	paramauthorityparamscli "github.com/strangelove-ventures/paramauthority/x/params/client/cli"
 	paramauthorityupgradecli "github.com/strangelove-ventures/paramauthority/x/upgrade/client/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
@@ -284,6 +286,12 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
+	upgradeCmd := paramauthorityupgradecli.GetTxCmd()
+	upgradeCmd.AddCommand(
+		paramauthorityibccli.NewCmdSubmitUpdateClientProposal(),
+		paramauthorityibccli.NewCmdSubmitUpgradeProposal(),
+	)
+
 	cmd.AddCommand(
 		authcmd.GetSignCommand(),
 		authcmd.GetSignBatchCommand(),
@@ -293,7 +301,8 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		paramauthorityupgradecli.GetTxCmd(),
+		upgradeCmd,
+		paramauthorityparamscli.GetTxCmd(),
 	)
 
 	moduleBasics.AddTxCommands(cmd)
@@ -310,7 +319,7 @@ func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
 	set := func(s *pflag.FlagSet, key, val string) {
 		if f := s.Lookup(key); f != nil {
 			f.DefValue = val
-			f.Value.Set(val) //nolint
+			_ = f.Value.Set(val)
 		}
 	}
 	for key, val := range defaults {

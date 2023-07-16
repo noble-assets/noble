@@ -30,6 +30,7 @@ func TestMintersGet(t *testing.T) {
 	keeper, ctx := keepertest.FiatTokenfactoryKeeper(t)
 	items := createNMinters(keeper, ctx, 10)
 	for _, item := range items {
+		item := item
 		rst, found := keeper.GetMinters(ctx,
 			item.Address,
 		)
