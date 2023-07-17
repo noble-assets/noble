@@ -90,8 +90,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	neon "github.com/strangelove-ventures/noble/app/upgrades/neon"
-	radon "github.com/strangelove-ventures/noble/app/upgrades/radon"
+	"github.com/strangelove-ventures/noble/app/upgrades/argon"
+	"github.com/strangelove-ventures/noble/app/upgrades/neon"
+	"github.com/strangelove-ventures/noble/app/upgrades/radon"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
@@ -99,7 +100,6 @@ import (
 	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/globalfee"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
 	tariff "github.com/strangelove-ventures/noble/x/tariff"
 	tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
 	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
@@ -866,6 +866,15 @@ func (app *App) setupUpgradeHandlers() {
 			app.FiatTokenFactoryKeeper,
 		))
 
+	// argon upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		argon.UpgradeName,
+		argon.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		),
+	)
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -874,22 +883,20 @@ func (app *App) setupUpgradeHandlers() {
 		return
 	}
 
-	var stroreUpgrades *storetypes.StoreUpgrades
+	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
 	case neon.UpgradeName:
-		stroreUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{fiattokenfactorymoduletypes.StoreKey},
-		}
+		storeLoader = neon.CreateStoreLoader(upgradeInfo.Height)
 	case radon.UpgradeName:
-		stroreUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{globalfeetypes.ModuleName, tarifftypes.ModuleName},
-		}
+		storeLoader = radon.CreateStoreLoader(upgradeInfo.Height)
+	case argon.UpgradeName:
+		storeLoader = argon.CreateStoreLoader(upgradeInfo.Height)
 	}
 
-	if stroreUpgrades != nil {
+	if storeLoader != nil {
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, stroreUpgrades))
+		app.SetStoreLoader(storeLoader)
 	}
 }
 

@@ -112,10 +112,10 @@ ictest-paramauthority:
 	cd interchaintest && go test -race -v -run ^TestNobleParamAuthority$$ .
 
 ictest-chain-upgrade-grand-1:
-	cd interchaintest && go test -race -v -run ^TestGrand1ChainUpgrade$$ .
+	cd interchaintest && go test -race -v -timeout 15m -run ^TestGrand1ChainUpgrade$$ .
 
 ictest-chain-upgrade-noble-1:
-	cd interchaintest && go test -race -v -run ^TestNoble1ChainUpgrade$$ .
+	cd interchaintest && go test -race -v -timeout 15m -run ^TestNoble1ChainUpgrade$$ .
 
 ictest-globalFee:
 	cd interchaintest && go test -race -v -run ^TestGlobalFee$$ .
