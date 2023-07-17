@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+// Event signatures in the CCTP module
+message AttesterEnabled { string attester = 1; }
+
+message AttesterDisabled { string attester = 1; }
+
+message SignatureThresholdUpdated {
+  uint64 old_signature_threshold = 1;
+  uint64 new_signature_threshold = 2;
+}
+
+message AuthorityUpdated {
+  string previous_authority = 1;
+  string new_authority = 2;
+}
+
+message PauseBurningAndMinting {}
+
+message UnpauseBurningAndMinting {}
+
+message PauseSendingAndReceiving {}
+
+message UnpauseSendingAndReceiving {}
+
+message DepositForBurn {
+  uint64 nonce = 1;
+  string burn_token = 2;
+  uint64 amount = 3;
+  string depositor = 4;
+  bytes mint_recipient = 5;
+  uint32 destination_domain = 6;
+  bytes destination_token_messenger = 7;
+  bytes destination_caller = 8;
+}
+
+message MintAndWithdraw {
+  string mint_recipient = 1;
+  uint64 amount = 2;
+  string mint_token = 3;
+}
+
+message TokenPairLinked {
+  string local_token = 1;
+  uint32 remote_domain = 2;
+  string remote_token = 3;
+}
+
+message TokenPairUnlinked {
+  string local_token = 1;
+  uint32 remote_domain = 2;
+  string remote_token = 3;
+}
+
+message MessageSent { bytes message = 1; }
+
+message MessageReceived {
+  string caller = 1;
+  uint32 source_domain = 2;
+  uint64 nonce = 3;
+  bytes sender = 4;
+  bytes message_body = 5;
+}
+
+message MaxMessageBodySizeUpdated { uint64 new_max_message_body_size = 1; }
+
+message RemoteTokenMessengerAdded {
+  uint32 domain = 1;
+  bytes tokenMessenger = 2;
+}
+
+message RemoteTokenMessengerRemoved {
+  uint32 domain = 1;
+  bytes tokenMessenger = 2;
+}

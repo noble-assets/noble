@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cctp.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+message Denoms {
+  string address = 1;
+  cosmos.base.v1beta1.Coin allowance = 2 [ (gogoproto.nullable) = false ];
+}

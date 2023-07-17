@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+message BurningAndMintingPaused { bool paused = 1; }

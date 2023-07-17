@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+// ECDSA uncompressed public key, hex encoded
+message Attester { string attester = 1; }

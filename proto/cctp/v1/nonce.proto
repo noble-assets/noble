@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+// Nonce functions both as a retrieval key for receiving messages and a counter
+// for sending messages
+message Nonce { uint64 nonce = 1; }

@@ -1,0 +1,258 @@
+syntax = "proto3";
+
+package cctp.v1;
+
+import "cctp/v1/authority.proto";
+import "cctp/v1/burning_and_minting_paused.proto";
+import "cctp/v1/max_message_body_size.proto";
+import "cctp/v1/minter_allowances.proto";
+import "cctp/v1/params.proto";
+import "cctp/v1/per_message_burn_limit.proto";
+import "cctp/v1/attester.proto";
+import "cctp/v1/sending_and_receiving_messages_paused.proto";
+import "cctp/v1/signature_threshold.proto";
+import "cctp/v1/token_pairs.proto";
+import "cctp/v1/token_messenger.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/cctp/v1/params";
+  }
+  // Queries an Authority by index
+  rpc Authority(QueryGetAuthorityRequest) returns (QueryGetAuthorityResponse) {
+    option (google.api.http).get = "/cctp/v1/authority";
+  }
+  // Queries an Attester by index
+  rpc Attester(QueryGetAttesterRequest) returns (QueryGetAttesterResponse) {
+    option (google.api.http).get = "/cctp/v1/attesters/{attester}";
+  }
+  // Queries a list of Attesters
+  rpc Attesters(QueryAllAttestersRequest) returns (QueryAllAttestersResponse) {
+    option (google.api.http).get = "/cctp/v1/attesters";
+  }
+  // Queries a MinterAllowance by index
+  rpc MinterAllowance(QueryGetMinterAllowanceRequest)
+      returns (QueryGetMinterAllowanceResponse) {
+    option (google.api.http).get = "/cctp/v1/minter_allowances/{denom}";
+  }
+  // Queries a list of MinterAllowances
+  rpc MinterAllowances(QueryAllMinterAllowancesRequest)
+      returns (QueryAllMinterAllowancesResponse) {
+    option (google.api.http).get = "/cctp/v1/minter_allowances";
+  }
+  // Queries a PerMessageBurnLimit by index
+  rpc PerMessageBurnLimit(QueryGetPerMessageBurnLimitRequest)
+      returns (QueryGetPerMessageBurnLimitResponse) {
+    option (google.api.http).get = "/cctp/v1/per_message_burn_limit";
+  }
+  // Queries a BurningAndMintingPaused by index
+  rpc BurningAndMintingPaused(QueryGetBurningAndMintingPausedRequest)
+      returns (QueryGetBurningAndMintingPausedResponse) {
+    option (google.api.http).get = "/cctp/v1/burning_and_minting_paused";
+  }
+  // Queries a SendingAndReceivingPaused by index
+  rpc SendingAndReceivingMessagesPaused(
+      QueryGetSendingAndReceivingMessagesPausedRequest)
+      returns (QueryGetSendingAndReceivingMessagesPausedResponse) {
+    option (google.api.http).get = "/cctp/v1/sending_and_receiving_paused";
+  }
+  // Queries a MaxMessageBodySize by index
+  rpc MaxMessageBodySize(QueryGetMaxMessageBodySizeRequest)
+      returns (QueryGetMaxMessageBodySizeResponse) {
+    option (google.api.http).get = "/cctp/v1/max_message_body_size";
+  }
+  // Queries an SignatureThreshold by index
+  rpc SignatureThreshold(QueryGetSignatureThresholdRequest)
+      returns (QueryGetSignatureThresholdResponse) {
+    option (google.api.http).get = "/cctp/v1/signature_threshold";
+  }
+  // Queries a TokenPair by index
+  rpc TokenPair(QueryGetTokenPairRequest) returns (QueryGetTokenPairResponse) {
+    option (google.api.http).get =
+        "/cctp/v1/token_pairs/{remote_domain}/{remote_token}";
+  }
+  // Queries a list of TokenPairs
+  rpc TokenPairs(QueryAllTokenPairsRequest)
+      returns (QueryAllTokenPairsResponse) {
+    option (google.api.http).get = "/cctp/v1/token_pairs";
+  }
+  // Queries a TokenMessenger by index
+  rpc TokenMessenger(QueryGetTokenMessengerRequest)
+      returns (QueryGetTokenMessengerResponse) {
+    option (google.api.http).get = "/cctp/v1/token_messengers/{domain_id}";
+  }
+  // Queries a list of TokenMessenger
+  rpc TokenMessengers(QueryAllTokenMessengersRequest)
+      returns (QueryAllTokenMessengersResponse) {
+    option (google.api.http).get = "/cctp/v1/token_messengers";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAuthorityRequest is the request type for the Query/Authority RPC method.
+message QueryGetAuthorityRequest {}
+
+// QueryAuthorityResponse is the response type for the Query/Authority RPC
+// method.
+message QueryGetAuthorityResponse {
+  Authority authority = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAttestersRequest is the request type for the Query/Attester RPC method.
+message QueryGetAttesterRequest { string attester = 1; }
+
+// QueryAttestersResponse is the response type for the Query/Attester RPC
+// method.
+message QueryGetAttesterResponse {
+  Attester attester = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAllAttestersRequest is the request type for the Query/Attesters RPC
+// method.
+message QueryAllAttestersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllAttestersResponse is the response type for the Query/Attesters RPC
+// method.
+message QueryAllAttestersResponse {
+  repeated Attester attester = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetMinterAllowanceRequest is the request type for the
+// Query/MinterAllowance RPC method.
+message QueryGetMinterAllowanceRequest { string denom = 1; }
+
+// QueryGetMinterAllowanceResponse is the response type for the
+// Query/MinterAllowance RPC method.
+message QueryGetMinterAllowanceResponse {
+  MinterAllowances allowance = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAllMinterAllowancesRequest is the request type for the
+// Query/MinterAllowances RPC method.
+message QueryAllMinterAllowancesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllMinterAllowancesResponse is the response type for the
+// Query/MinterAllowances RPC method.
+message QueryAllMinterAllowancesResponse {
+  repeated MinterAllowances minter_allowances = 1
+      [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryPerMessageBurnLimitRequest is the request type for the
+// Query/PerMessageBurnLimit RPC method.
+message QueryGetPerMessageBurnLimitRequest {}
+
+// QueryPerMessageBurnLimitResponse is the response type for the
+// Query/PerMessageBurnLimit RPC method.
+message QueryGetPerMessageBurnLimitResponse {
+  PerMessageBurnLimit amount = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryBurningAndMintingPausedRequest is the request type for the
+// Query/BurningAndMintingPaused RPC method.
+message QueryGetBurningAndMintingPausedRequest {}
+
+// QueryBurningAndMintingPausedResponse is the response type for the
+// Query/BurningAndMintingPaused RPC method.
+message QueryGetBurningAndMintingPausedResponse {
+  BurningAndMintingPaused paused = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QuerySendingAndReceivingPausedRequest is the request type for the
+// Query/SendingAndReceivingPaused RPC method.
+message QueryGetSendingAndReceivingMessagesPausedRequest {}
+
+// QuerySendingAndReceivingPausedResponse is the response type for the
+// Query/SendingAndReceivingPaused RPC method.
+message QueryGetSendingAndReceivingMessagesPausedResponse {
+  SendingAndReceivingMessagesPaused paused = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryMaxMessageBodySizeRequest is the request type for the
+// Query/MaxMessageBodySize RPC method.
+message QueryGetMaxMessageBodySizeRequest {}
+
+// QueryMaxMessageBodySizeResponse is the response type for the
+// Query/MaxMessageBodySize RPC method.
+message QueryGetMaxMessageBodySizeResponse {
+  MaxMessageBodySize amount = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QuerySignatureThresholdRequest is the request type for the
+// Query/SignatureThreshold RPC method.
+message QueryGetSignatureThresholdRequest {}
+
+// QuerySignatureThresholdResponse is the response type for the
+// Query/SignatureThreshold RPC method.
+message QueryGetSignatureThresholdResponse {
+  SignatureThreshold amount = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryTokenPairRequest is the request type for the Query/TokenPair RPC method.
+message QueryGetTokenPairRequest {
+  uint32 remote_domain = 1;
+  string remote_token = 2;
+}
+
+// QueryTokenPairResponse is the response type for the Query/TokenPair RPC
+// method.
+message QueryGetTokenPairResponse {
+  TokenPairs pair = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryTokenPairsRequest is the request type for the Query/TokenPairs RPC
+// method.
+message QueryAllTokenPairsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryTokenPairsResponse is the response type for the Query/TokenPairs RPC
+// method.
+message QueryAllTokenPairsResponse {
+  repeated TokenPairs token_pairs = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetTokenMessengerRequest is the request type for the
+// Query/TokenMessenger RPC method.
+message QueryGetTokenMessengerRequest { uint32 domain_id = 1; }
+
+// QueryGetTokenMessengerResponse is the response type for the
+// Query/TokenMessenger RPC method.
+message QueryGetTokenMessengerResponse {
+  TokenMessenger token_messenger = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryAllTokenMessengersRequest is the request type for the
+// Query/TokenMessengers RPC method.
+message QueryAllTokenMessengersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllTokenMessengersResponse is the response type for the
+// Query/TokenMessengers RPC method.
+message QueryAllTokenMessengersResponse {
+  repeated TokenMessenger token_messengers = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
