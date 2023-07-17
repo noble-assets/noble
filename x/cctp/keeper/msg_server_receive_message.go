@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"github.com/strangelove-ventures/noble/x/cctp"
 	"strings"
 
 	sdkerrors "cosmossdk.io/errors"
@@ -12,7 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	routertypes "github.com/strangelove-ventures/noble/x/router/types"
 )
 
 func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMessage) (*types.MsgReceiveMessageResponse, error) {
@@ -135,12 +135,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 		err = ctx.EventManager().EmitTypedEvent(&mintEvent)
 
 	} else {
-		handleMessage := routertypes.MsgHandleMessage{
-			From:        msg.From,
-			Message:     string(msg.Message),
-			Attestation: string(msg.Attestation),
-		}
-		_, err := k.router.HandleMessage(ctx, &handleMessage)
+		_, err := k.router.HandleMessage(ctx, msg.Message)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrMint, "Error in handleMessage")
 		}

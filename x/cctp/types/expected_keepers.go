@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	routertypes "github.com/strangelove-ventures/noble/x/router/types"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
@@ -26,6 +25,5 @@ type FiatTokenfactoryKeeper interface {
 }
 
 type RouterKeeper interface {
-	HandleMessage(ctx sdk.Context, msg *routertypes.MsgHandleMessage) (*routertypes.MsgHandleMessageResponse, error)
-	GetDenom(ctx sdk.Context, key string) (val routertypes.Denoms, found bool)
+	HandleMessage(ctx sdk.Context, msg []byte) error
 }
