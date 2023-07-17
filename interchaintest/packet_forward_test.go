@@ -14,7 +14,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
@@ -33,6 +32,7 @@ type ForwardMetadata struct {
 	RefundSequence *uint64       `json:"refund_sequence,omitempty"`
 }
 
+// run `make local-image`to rebuild updated binary before running test
 func TestPacketForwardMiddleware(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping in short mode")
@@ -44,7 +44,6 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		rep                                        = testreporter.NewNopReporter()
 		eRep                                       = rep.RelayerExecReporter(t)
 		chainID_A, chainID_B, chainID_C, chainID_D = "chain-a", "chain-b", "chain-c", "chain-d"
-		repo, version                              = integration.GetDockerImageInfo()
 		chainA, chainB, chainC, chainD             *cosmos.CosmosChain
 		nv                                         = 1
 		nf                                         = 0
@@ -75,13 +74,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
 				NoHostMount:    false,
-				Images: []ibc.DockerImage{
-					{
-						Repository: repo,
-						Version:    version,
-						UidGid:     "1025:1025",
-					},
-				},
+				Images:         nobleImageInfo,
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainA.Validators[0]
@@ -136,13 +129,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
 				NoHostMount:    false,
-				Images: []ibc.DockerImage{
-					{
-						Repository: repo,
-						Version:    version,
-						UidGid:     "1025:1025",
-					},
-				},
+				Images:         nobleImageInfo,
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainB.Validators[0]
@@ -197,13 +184,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
 				NoHostMount:    false,
-				Images: []ibc.DockerImage{
-					{
-						Repository: repo,
-						Version:    version,
-						UidGid:     "1025:1025",
-					},
-				},
+				Images:         nobleImageInfo,
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainC.Validators[0]
@@ -258,13 +239,7 @@ func TestPacketForwardMiddleware(t *testing.T) {
 				GasAdjustment:  1.1,
 				TrustingPeriod: "504h",
 				NoHostMount:    false,
-				Images: []ibc.DockerImage{
-					{
-						Repository: repo,
-						Version:    version,
-						UidGid:     "1025:1025",
-					},
-				},
+				Images:         nobleImageInfo,
 				EncodingConfig: NobleEncoding(),
 				PreGenesis: func(cc ibc.ChainConfig) error {
 					val := chainD.Validators[0]

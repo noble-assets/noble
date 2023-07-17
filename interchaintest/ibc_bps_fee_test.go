@@ -12,11 +12,11 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
-	integration "github.com/strangelove-ventures/noble/interchaintest"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
 
+// run `make local-image`to rebuild updated binary before running test
 func TestICS20BPSFees(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -30,8 +30,6 @@ func TestICS20BPSFees(t *testing.T) {
 	eRep := rep.RelayerExecReporter(t)
 
 	client, network := interchaintest.DockerSetup(t)
-
-	repo, version := integration.GetDockerImageInfo()
 
 	var (
 		noble, gaia          *cosmos.CosmosChain
@@ -52,13 +50,7 @@ func TestICS20BPSFees(t *testing.T) {
 		GasAdjustment:  1.1,
 		TrustingPeriod: "504h",
 		NoHostMount:    false,
-		Images: []ibc.DockerImage{
-			{
-				Repository: repo,
-				Version:    version,
-				UidGid:     "1025:1025",
-			},
-		},
+		Images:         nobleImageInfo,
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
