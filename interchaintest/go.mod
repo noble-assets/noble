@@ -190,6 +190,6 @@ replace (
 
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
 
-// github.com/circlefin/noble-cctp => github.com/strangelove-ventures/noble-cctp v0.0.0-20230706120726-156732d2b846
+// github.com/strangelove-ventures/noble => github.com/strangelove-ventures/noble-cctp v0.0.0-20230706120726-156732d2b846
 
 )
