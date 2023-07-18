@@ -43,159 +43,23 @@ func TestPacketForwardMiddleware(t *testing.T) {
 		rep                                        = testreporter.NewNopReporter()
 		eRep                                       = rep.RelayerExecReporter(t)
 		chainID_A, chainID_B, chainID_C, chainID_D = "chain-a", "chain-b", "chain-c", "chain-d"
-		chainA, chainB, chainC, chainD             *cosmos.CosmosChain
 		nv                                         = 1
 		nf                                         = 0
-		coinType                                   = "118"
-		nobleRoles1                                NobleRoles
-		nobleRoles2                                NobleRoles
-		nobleRoles3                                NobleRoles
-		nobleRoles4                                NobleRoles
-		paramauthorityWallet1                      ibc.Wallet
-		paramauthorityWallet2                      ibc.Wallet
-		paramauthorityWallet3                      ibc.Wallet
-		paramauthorityWallet4                      ibc.Wallet
+		gw1, gw2, gw3, gw4                         genesisWrapper
 	)
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		{
-			NumValidators: &nv,
-			NumFullNodes:  &nf,
-			ChainConfig: ibc.ChainConfig{
-				Type:           "cosmos",
-				Name:           "noble",
-				ChainID:        chainID_A,
-				Bin:            "nobled",
-				Denom:          "token",
-				Bech32Prefix:   "noble",
-				CoinType:       coinType,
-				GasPrices:      "0.0token",
-				GasAdjustment:  1.1,
-				TrustingPeriod: "504h",
-				NoHostMount:    false,
-				Images:         nobleImageInfo,
-				EncodingConfig: NobleEncoding(),
-				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainA.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles1, denomMetadataRupee, val, true)
-					if err != nil {
-						return err
-					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles1, denomMetadataDrachma, val, true)
-					if err != nil {
-						return err
-					}
-					paramauthorityWallet1, err = createParamAuthAtGenesis(ctx, val)
-					return err
-				},
-				ModifyGenesis: modifyGenesisAll(&nobleRoles1, &nobleRoles1, paramauthorityWallet1.FormattedAddress()),
-			},
-		},
-		{
-			NumValidators: &nv,
-			NumFullNodes:  &nf,
-			ChainConfig: ibc.ChainConfig{
-				Type:           "cosmos",
-				Name:           "noble",
-				ChainID:        chainID_B,
-				Bin:            "nobled",
-				Denom:          "token",
-				Bech32Prefix:   "noble",
-				CoinType:       coinType,
-				GasPrices:      "0.0token",
-				GasAdjustment:  1.1,
-				TrustingPeriod: "504h",
-				NoHostMount:    false,
-				Images:         nobleImageInfo,
-				EncodingConfig: NobleEncoding(),
-				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainB.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles2, denomMetadataRupee, val, true)
-					if err != nil {
-						return err
-					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles2, denomMetadataDrachma, val, true)
-					if err != nil {
-						return err
-					}
-					paramauthorityWallet2, err = createParamAuthAtGenesis(ctx, val)
-					return err
-				},
-				ModifyGenesis: modifyGenesisAll(&nobleRoles2, &nobleRoles2, paramauthorityWallet2.FormattedAddress()),
-			},
-		},
-		{
-			NumValidators: &nv,
-			NumFullNodes:  &nf,
-			ChainConfig: ibc.ChainConfig{
-				Type:           "cosmos",
-				Name:           "noble",
-				ChainID:        chainID_C,
-				Bin:            "nobled",
-				Denom:          "token",
-				Bech32Prefix:   "noble",
-				CoinType:       coinType,
-				GasPrices:      "0.0token",
-				GasAdjustment:  1.1,
-				TrustingPeriod: "504h",
-				NoHostMount:    false,
-				Images:         nobleImageInfo,
-				EncodingConfig: NobleEncoding(),
-				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainC.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles3, denomMetadataRupee, val, true)
-					if err != nil {
-						return err
-					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles3, denomMetadataDrachma, val, true)
-					if err != nil {
-						return err
-					}
-					paramauthorityWallet3, err = createParamAuthAtGenesis(ctx, val)
-					return err
-				},
-				ModifyGenesis: modifyGenesisAll(&nobleRoles3, &nobleRoles3, paramauthorityWallet3.FormattedAddress()),
-			},
-		},
-		{
-			NumValidators: &nv,
-			NumFullNodes:  &nf,
-			ChainConfig: ibc.ChainConfig{
-				Type:           "cosmos",
-				Name:           "noble",
-				ChainID:        chainID_D,
-				Bin:            "nobled",
-				Denom:          "token",
-				Bech32Prefix:   "noble",
-				CoinType:       coinType,
-				GasPrices:      "0.0token",
-				GasAdjustment:  1.1,
-				TrustingPeriod: "504h",
-				NoHostMount:    false,
-				Images:         nobleImageInfo,
-				EncodingConfig: NobleEncoding(),
-				PreGenesis: func(cc ibc.ChainConfig) error {
-					val := chainD.Validators[0]
-					err := createTokenfactoryRoles(ctx, &nobleRoles4, denomMetadataRupee, val, true)
-					if err != nil {
-						return err
-					}
-					err = createTokenfactoryRoles(ctx, &nobleRoles4, denomMetadataDrachma, val, true)
-					if err != nil {
-						return err
-					}
-					paramauthorityWallet4, err = createParamAuthAtGenesis(ctx, val)
-					return err
-				},
-				ModifyGenesis: modifyGenesisAll(&nobleRoles4, &nobleRoles4, paramauthorityWallet4.FormattedAddress()),
-			},
-		},
+		nobleChainSpec(ctx, &gw1, chainID_A, nv, nf, true, true, true, true),
+		nobleChainSpec(ctx, &gw2, chainID_B, nv, nf, true, true, true, true),
+		nobleChainSpec(ctx, &gw3, chainID_C, nv, nf, true, true, true, true),
+		nobleChainSpec(ctx, &gw4, chainID_D, nv, nf, true, true, true, true),
 	})
 
 	chains, err := cf.Chains(t.Name())
 	require.NoError(t, err)
 
-	chainA, chainB, chainC, chainD = chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain), chains[2].(*cosmos.CosmosChain), chains[3].(*cosmos.CosmosChain)
+	gw1.chain, gw2.chain, gw3.chain, gw4.chain = chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain), chains[2].(*cosmos.CosmosChain), chains[3].(*cosmos.CosmosChain)
+	chainA, chainB, chainC, chainD := gw1.chain, gw2.chain, gw3.chain, gw4.chain
 
 	r := interchaintest.NewBuiltinRelayerFactory(
 		ibc.CosmosRly,
