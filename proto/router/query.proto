@@ -1,0 +1,108 @@
+syntax = "proto3";
+package noble.router;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "router/ibc_forward_metadata.proto";
+import "router/in_flight_packet.proto";
+import "router/mint.proto";
+import "router/params.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/router/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/noble/router/params";
+  }
+  // Queries a Mint by source_domain_sender and nonce
+  rpc Mint(QueryGetMintRequest) returns (QueryGetMintResponse) {
+    option (google.api.http).get = "/noble/router/mint/{source_domain_sender}/{nonce}";
+  }
+  // Queries a list of Mints
+  rpc Mints(QueryAllMintsRequest) returns (QueryAllMintsResponse) {
+    option (google.api.http).get = "/noble/router/mint";
+  }
+  // Queries an IBCForward by source_domain, source_domain_sender and nonce
+  rpc IBCForward(QueryGetIBCForwardRequest) returns (QueryGetIBCForwardResponse) {
+    option (google.api.http).get = "/noble/router/ibc_forward/{source_domain_sender}/{nonce}";
+  }
+  // Queries a list of IBCForwards
+  rpc IBCForwards(QueryAllIBCForwardsRequest) returns (QueryAllIBCForwardsResponse) {
+    option (google.api.http).get = "/noble/router/ibc_forward";
+  }
+  // Queries an InFlightPacket by source_domain_sender and nonce
+  rpc InFlightPacket(QueryGetInFlightPacketRequest) returns (QueryGetInFlightPacketResponse) {
+    option (google.api.http).get = "/noble/router/in_flight_packets/{channel_id}/{port_id}/{sequence}";
+  }
+  // Queries a list of InFlightPackets
+  rpc InFlightPackets(QueryAllInFlightPacketsRequest) returns (QueryAllInFlightPacketsResponse) {
+    option (google.api.http).get = "/noble/router/in_flight_packets";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetMintRequest {
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
+}
+
+message QueryGetMintResponse {
+  Mint mint = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMintsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllMintsResponse {
+  repeated Mint mints = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetIBCForwardRequest {
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
+}
+
+message QueryGetIBCForwardResponse {
+  StoreIBCForwardMetadata ibc_forward = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllIBCForwardsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllIBCForwardsResponse {
+  repeated StoreIBCForwardMetadata ibc_forwards = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetInFlightPacketRequest {
+  string channel_id = 1;
+  string port_id = 2;
+  uint64 sequence = 3;
+}
+
+message QueryGetInFlightPacketResponse {
+  InFlightPacket inFlightPacket = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllInFlightPacketsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllInFlightPacketsResponse {
+  repeated InFlightPacket inFlightPackets = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

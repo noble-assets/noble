@@ -1,0 +1,23 @@
+syntax = "proto3";
+package noble.router;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/router/types";
+
+// mints are stored so incoming IBC forward messages can check if a mint has been processed
+// @param source_domain - source domain id
+// @param source_domain_sender - address of MessageTransmitter caller on source domain
+// @param nonce - unique message nonce
+// @param amount - amount of minted tokens
+// @param destination_domain - destination domain id
+// @param mint_recipient - address to receive minted tokens on destination domain
+message Mint {
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
+  cosmos.base.v1beta1.Coin amount = 4;
+  string destination_domain = 5;
+  string mint_recipient = 6;
+}

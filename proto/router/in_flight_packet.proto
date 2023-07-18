@@ -1,0 +1,21 @@
+syntax = "proto3";
+package noble.router;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/router/types";
+
+// InFlightPacket contains information about the initially minted funds
+// @param source_domain_sender - address of MessageTransmitter caller on source domain
+// @param nonce - unique message nonce
+// @param channel_id - ibc channel
+// @param port_id - ibc port
+// @param sequence - ibc sequence
+message InFlightPacket {
+  string source_domain_sender = 1;
+  uint64 nonce = 2;
+  string channel_id = 3;
+  string port_id = 4;
+  uint64 sequence = 5;
+}
