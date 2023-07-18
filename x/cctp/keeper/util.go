@@ -51,9 +51,37 @@ func ParseBurnMessageIntoBytes(msg types.BurnMessage) []byte {
 	binary.LittleEndian.PutUint64(amountBytes, msg.Amount)
 
 	copyBytes(0, 4, versionBytes, &result)
-	copyBytes(4, 36, msg.BurnToken, &result)
+	copyBytes(4, 36, msg.BurnToken, &result) // TODO panics here
 	copyBytes(36, 68, msg.MintRecipient, &result)
 	copyBytes(68, 100, amountBytes, &result)
+
+	return result
+}
+
+func ParseIntoMessageBytes(msg types.Message) []byte {
+
+	result := make([]byte, messageBodyIndex+len(msg.MessageBody))
+
+	versionBytes := make([]byte, 4)
+	binary.LittleEndian.PutUint32(versionBytes, msg.Version)
+
+	sourceDomainBytes := make([]byte, 32)
+	binary.LittleEndian.PutUint32(sourceDomainBytes, msg.SourceDomain)
+
+	destinationDomain := make([]byte, 32)
+	binary.LittleEndian.PutUint32(destinationDomain, msg.DestinationDomain)
+
+	nonceBytes := make([]byte, 32)
+	binary.LittleEndian.PutUint64(nonceBytes, msg.Nonce)
+
+	copyBytes(0, 4, versionBytes, &result)
+	copyBytes(4, 8, sourceDomainBytes, &result)
+	copyBytes(8, 12, destinationDomain, &result)
+	copyBytes(12, 20, nonceBytes, &result)
+	copyBytes(20, 52, msg.Sender, &result)
+	copyBytes(52, 84, msg.Recipient, &result)
+	copyBytes(84, 116, msg.DestinationCaller, &result)
+	copyBytes(116, len(msg.MessageBody), msg.MessageBody, &result)
 
 	return result
 }

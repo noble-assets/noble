@@ -130,7 +130,7 @@ func TestCCTP(t *testing.T) {
 		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  "07865c6E87B9F70255377e024ace6630C1Eaa37F",
-		LocalToken:   "uusdc",
+		LocalToken:   "udrachma",
 	})
 
 	tx, err := cosmos.BroadcastTx(
@@ -169,10 +169,33 @@ func TestCCTP(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// depositForBurn, err := hex.DecodeString("0000000000000000000000010000000000039148000000000000000000000000D0C3DA58F55358142B8D3E06C1C30C5C6114EFE8000000000000000000000000EB08F243E5D3FCFF26A9E38AE5520A669F4019D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007865C6E87B9F70255377E024ACE6630C1EAA37F0000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D2700000000000000000000000000000000000000000000000000000000000F42400000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D27")
-	// require.NoError(t, err)
+	wrappedDepositForBurn := keeper.ParseIntoMessageBytes(cctptypes.Message{
+		Version:           0,
+		SourceDomainBytes: nil,
+		SourceDomain:      0,
+		DestinationDomain: 4,
+		NonceBytes:        nil,
+		Nonce:             0,
+		Sender:            []byte("12345678901234567890123456789012"),
+		Recipient:         []byte("12345678901234567890123456789012"),
+		DestinationCaller: []byte("12345678901234567890123456789012"),
+		MessageBody:       depositForBurn,
+	})
 
-	digest := crypto.Keccak256(depositForBurn)
+	_ = keeper.ParseIntoMessageBytes(cctptypes.Message{
+		Version:           0,
+		SourceDomainBytes: nil,
+		SourceDomain:      0,
+		DestinationDomain: 4,
+		NonceBytes:        nil,
+		Nonce:             0,
+		Sender:            []byte("12345678901234567890123456789012"),
+		Recipient:         []byte("12345678901234567890123456789012"),
+		DestinationCaller: []byte("12345678901234567890123456789012"),
+		MessageBody:       forward,
+	})
+
+	digest := crypto.Keccak256(wrappedDepositForBurn)
 
 	attestation := make([]byte, 0, len(attesters)*65)
 
@@ -197,7 +220,7 @@ func TestCCTP(t *testing.T) {
 		gw.fiatTfRoles.Owner,
 		&cctptypes.MsgReceiveMessage{
 			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
-			Message:     depositForBurn,
+			Message:     wrappedDepositForBurn,
 			Attestation: attestation,
 		},
 	)
