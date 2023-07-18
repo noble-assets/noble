@@ -5,15 +5,20 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"encoding/hex"
 	"sort"
 	"testing"
 
+	sdkclient "github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v3/testutil"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -110,18 +115,23 @@ func TestCCTP(t *testing.T) {
 	}
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
+	broadcaster.ConfigureClientContextOptions(func(clientContext sdkclient.Context) sdkclient.Context {
+		return clientContext.WithBroadcastMode(flags.BroadcastBlock)
+	})
 
-	_, err = cosmos.BroadcastTx(
+	tx, err := cosmos.BroadcastTx(
 		ctx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
 		msgs...,
 	)
 	require.NoError(t, err, "error submitting add public keys tx")
+	require.Zero(t, tx.Code)
 
-	mockMessaage := []byte("hello world") // TODO
+	depositForBurn, err := hex.DecodeString("0000000000000000000000010000000000039148000000000000000000000000D0C3DA58F55358142B8D3E06C1C30C5C6114EFE8000000000000000000000000EB08F243E5D3FCFF26A9E38AE5520A669F4019D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007865C6E87B9F70255377E024ACE6630C1EAA37F0000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D2700000000000000000000000000000000000000000000000000000000000F42400000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D27")
+	require.NoError(t, err)
 
-	digest := crypto.Keccak256(mockMessaage)
+	digest := crypto.Keccak256(depositForBurn)
 
 	attestation := make([]byte, 0, len(attesters)*65)
 
@@ -140,16 +150,33 @@ func TestCCTP(t *testing.T) {
 		attestation = append(attestation, sig...)
 	}
 
-	_, err = cosmos.BroadcastTx(
+	tx, err = cosmos.BroadcastTx(
 		ctx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
 		&cctptypes.MsgReceiveMessage{
 			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
-			Message:     mockMessaage,
+			Message:     depositForBurn,
 			Attestation: attestation,
 		},
 	)
 	require.NoError(t, err, "error submitting cctp recv tx")
+	require.Zerof(t, tx.Code, "cctp recv transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+
+	t.Logf("CCTP message successfully received: %s", tx.TxHash)
+
+	receiverBz, err := hex.DecodeString("9B6CA0C13EB603EF207C4657E1E619EF531A4D27")
+	require.NoError(t, err)
+
+	receiver, err := bech32.ConvertAndEncode(nobleChainCfg.Bech32Prefix, receiverBz)
+	require.NoError(t, err)
+
+	balance, err := noble.GetBalance(ctx, receiver, "uusdc")
+	require.NoError(t, err)
+
+	require.Equal(t, int64(1000000), balance)
+
+	err = testutil.WaitForBlocks(ctx, 100, noble)
+	require.NoError(t, err)
 
 }
