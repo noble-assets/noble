@@ -1,14 +1,15 @@
 package interchaintest_test
 
 import (
+	"bytes"
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
-	"crypto/rand"
+	"sort"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
@@ -92,19 +93,20 @@ func TestCCTP(t *testing.T) {
 	cmd.SetPrefixes(nobleChainCfg.Bech32Prefix)
 
 	attesters := make([]*ecdsa.PrivateKey, 3)
-	attesterPubs := make([][]byte, 3)
-
-	curve := secp256k1.S256()
+	msgs := make([]sdk.Msg, 3)
 
 	for i := range attesters {
-		p, err := ecdsa.GenerateKey(curve, rand.Reader)
+		p, err := crypto.GenerateKey()
 		require.NoError(t, err)
 
 		attesters[i] = p
 
 		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y)
 
-		attesterPubs[i] = pubKey
+		msgs[i] = &cctptypes.MsgAddPublicKey{
+			From:      gw.fiatTfRoles.Owner.FormattedAddress(),
+			PublicKey: pubKey,
+		}
 	}
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
@@ -113,18 +115,7 @@ func TestCCTP(t *testing.T) {
 		ctx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
-		&cctptypes.MsgAddPublicKey{
-			From:      gw.fiatTfRoles.Owner.FormattedAddress(),
-			PublicKey: attesterPubs[0],
-		},
-		&cctptypes.MsgAddPublicKey{
-			From:      gw.fiatTfRoles.Owner.FormattedAddress(),
-			PublicKey: attesterPubs[1],
-		},
-		&cctptypes.MsgAddPublicKey{
-			From:      gw.fiatTfRoles.Owner.FormattedAddress(),
-			PublicKey: attesterPubs[2],
-		},
+		msgs...,
 	)
 	require.NoError(t, err, "error submitting add public keys tx")
 
@@ -132,14 +123,21 @@ func TestCCTP(t *testing.T) {
 
 	digest := crypto.Keccak256(mockMessaage)
 
-	var attestation []byte
+	attestation := make([]byte, 0, len(attesters)*65)
+
+	// CCTP requires attestations to have signatures sorted by address
+	sort.Slice(attesters, func(i, j int) bool {
+		return bytes.Compare(
+			crypto.PubkeyToAddress(attesters[i].PublicKey).Bytes(),
+			crypto.PubkeyToAddress(attesters[j].PublicKey).Bytes(),
+		) < 0
+	})
 
 	for i := range attesters {
-		r, s, err := ecdsa.Sign(rand.Reader, attesters[i], digest)
+		sig, err := crypto.Sign(digest, attesters[i])
 		require.NoError(t, err)
 
-		attestation = append(attestation, r.Bytes()...)
-		attestation = append(attestation, s.Bytes()...)
+		attestation = append(attestation, sig...)
 	}
 
 	_, err = cosmos.BroadcastTx(
