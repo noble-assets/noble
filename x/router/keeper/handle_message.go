@@ -1,12 +1,13 @@
 package keeper
 
 import (
+	"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	"github.com/strangelove-ventures/noble/x/router/types"
-	"strconv"
 )
 
 func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
@@ -43,19 +44,18 @@ func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 
 	// try to parse internal message into burn (representing a remote burn -> local mint)
 	if burnMessage, err := DecodeBurnMessage(outerMessage.MessageBody); err == nil {
-		// TODO add this back when merging into Noble
 		// look up corresponding mint token from cctp
-		//tokenPair, found := k.cctpKeeper.GetTokenPair(ctx, outerMessage.SourceDomain, string(burnMessage.BurnToken))
-		//if !found {
-		//	return sdkerrors.Wrapf(types.ErrHandleMessage, "unable to find local token denom for this burn")
-		//}
+		tokenPair, found := k.cctpKeeper.GetTokenPair(ctx, outerMessage.SourceDomain, string(burnMessage.BurnToken))
+		if !found {
+			return sdkerrors.Wrapf(types.ErrHandleMessage, "unable to find local token denom for this burn")
+		}
 
 		// message is a Mint
 		mint := types.Mint{
 			SourceDomainSender: string(outerMessage.Sender),
 			Nonce:              outerMessage.Nonce,
 			Amount: &sdk.Coin{
-				Denom:  string(burnMessage.BurnToken), // TODO change to tokenPair.LocalToken,
+				Denom:  tokenPair.LocalToken,
 				Amount: sdk.NewIntFromBigInt(&burnMessage.Amount),
 			},
 			DestinationDomain: strconv.Itoa(int(outerMessage.DestinationDomain)),

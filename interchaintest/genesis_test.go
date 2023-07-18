@@ -154,6 +154,14 @@ type DistributionEntity struct {
 	Share   string `json:"share"`
 }
 
+type CCTPAmount struct {
+	Amount string `json:"amount"`
+}
+
+type CCTPNonce struct {
+	Nonce string `json:"nonce"`
+}
+
 func NobleEncoding() *simappparams.EncodingConfig {
 	cfg := cosmos.DefaultEncoding()
 
@@ -524,9 +532,39 @@ func modifyGenesisParamAuthority(genbz map[string]interface{}, authorityAddress 
 	return nil
 }
 
+// "params": {},
+// "authority": "our address",
+// "publicKeysList": [],
+// "minterAllowanceList": [],
+// "perMessageBurnLimit": 99999999,
+// "burningAndMintingPaused": false,
+// "sendingAndReceivingMessagesPaused": false,
+// "maxMessageBodySize": 8000,
+// "nonce": 0,
+// "signatureThreshold": 2,
+// "tokenPairList": [],
+// "usedNoncesList": []
 func modifyGenesisCCTP(genbz map[string]interface{}, authority string) error {
 	if err := dyno.Set(genbz, ParamAuthAddress{Address: authority}, "app_state", "cctp", "authority"); err != nil {
-		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
+		return fmt.Errorf("failed to set cctp authority address in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, CCTPAmount{Amount: "99999999"}, "app_state", "cctp", "perMessageBurnLimit"); err != nil {
+		return fmt.Errorf("failed to set cctp perMessageBurnLimit in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, TokenFactoryPaused{Paused: false}, "app_state", "cctp", "burningAndMintingPaused"); err != nil {
+		return fmt.Errorf("failed to set cctp burningAndMintingPaused in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, TokenFactoryPaused{Paused: false}, "app_state", "cctp", "sendingAndReceivingMessagesPaused"); err != nil {
+		return fmt.Errorf("failed to set cctp sendingAndReceivingMessagesPaused in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, CCTPAmount{Amount: "8000"}, "app_state", "cctp", "maxMessageBodySize"); err != nil {
+		return fmt.Errorf("failed to set cctp maxMessageBodySize in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, CCTPNonce{Nonce: "0"}, "app_state", "cctp", "nonce"); err != nil {
+		return fmt.Errorf("failed to set cctp nonce in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, CCTPAmount{Amount: "2"}, "app_state", "cctp", "signatureThreshold"); err != nil {
+		return fmt.Errorf("failed to set cctp signatureThreshold in genesis json: %w", err)
 	}
 
 	return nil

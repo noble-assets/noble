@@ -439,6 +439,7 @@ func New(
 		appCodec,
 		keys[routertypes.StoreKey],
 		app.GetSubspace(routertypes.ModuleName),
+		app.CCTPKeeper,
 		app.TransferKeeper,
 	)
 

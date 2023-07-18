@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,6 +17,7 @@ type (
 		cdc            codec.BinaryCodec
 		storeKey       storetypes.StoreKey
 		paramstore     paramtypes.Subspace
+		cctpKeeper     types.CctpKeeper
 		transferKeeper types.TransferKeeper
 	}
 )
@@ -24,6 +26,7 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
+	cctpKeeper types.CctpKeeper,
 	transferKeeper types.TransferKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -35,6 +38,7 @@ func NewKeeper(
 		cdc:            cdc,
 		storeKey:       storeKey,
 		paramstore:     ps,
+		cctpKeeper:     cctpKeeper,
 		transferKeeper: transferKeeper,
 	}
 }

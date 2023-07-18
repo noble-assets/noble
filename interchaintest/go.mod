@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/ethereum/go-ethereum v1.10.20
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27
 	github.com/strangelove-ventures/noble v0.0.0-00010101000000-000000000000
