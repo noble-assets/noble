@@ -9,7 +9,7 @@ import (
 
 // SetPublicKey sets a public key in the store
 func (k Keeper) SetPublicKey(ctx sdk.Context, key types.PublicKeys) {
-	store := ctx.KVStore(k.storeKey)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PublicKeyKeyPrefix))
 	b := k.cdc.MustMarshal(&key)
 	store.Set(types.KeyPrefix(types.PublicKeyKeyPrefix), b)
 }

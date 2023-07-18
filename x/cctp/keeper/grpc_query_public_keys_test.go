@@ -31,14 +31,14 @@ func TestPublicKeyQuerySingle(t *testing.T) {
 		{
 			desc: "First",
 			request: &types.QueryGetPublicKeyRequest{
-				Key: "PublicKey1",
+				Key: msgs[0].publicKey.Key,
 			},
 			response: &types.QueryGetPublicKeyResponse{PublicKey: msgs[0].publicKey},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryGetPublicKeyRequest{
-				Key: "PublicKey2",
+				Key: msgs[1].publicKey.Key,
 			},
 			response: &types.QueryGetPublicKeyResponse{PublicKey: msgs[1].publicKey},
 		},

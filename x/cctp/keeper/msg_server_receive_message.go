@@ -49,7 +49,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 
 	// validate correct domain
 	if message.DestinationDomain != nobleDomainId {
-		return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "incorrect destination domain: %s", message.DestinationDomain)
+		return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "incorrect destination domain: %d", message.DestinationDomain)
 	}
 
 	// validate destination caller
