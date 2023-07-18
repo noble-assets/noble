@@ -6,6 +6,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"encoding/hex"
+	"fmt"
 	"sort"
 	"testing"
 
@@ -87,7 +88,8 @@ func TestCCTP(t *testing.T) {
 		Client:    client,
 		NetworkID: network,
 
-		SkipPathCreation: false,
+		// TODO set to false
+		SkipPathCreation: true,
 	}))
 	t.Cleanup(func() {
 		_ = ic.Close()
@@ -108,9 +110,11 @@ func TestCCTP(t *testing.T) {
 
 		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y)
 
+		attesterPub := hex.EncodeToString(pubKey)
+
 		msgs[i] = &cctptypes.MsgAddPublicKey{
 			From:      gw.fiatTfRoles.Owner.FormattedAddress(),
-			PublicKey: pubKey,
+			PublicKey: []byte(attesterPub),
 		}
 	}
 

@@ -11,7 +11,7 @@ import (
 func (k Keeper) SetPublicKey(ctx sdk.Context, key types.PublicKeys) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PublicKeyKeyPrefix))
 	b := k.cdc.MustMarshal(&key)
-	store.Set(types.KeyPrefix(types.PublicKeyKeyPrefix), b)
+	store.Set(types.KeyPrefix(string(types.PublicKeyKey([]byte(key.Key)))), b)
 }
 
 // GetPublicKey returns public key

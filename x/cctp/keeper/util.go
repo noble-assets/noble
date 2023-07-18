@@ -2,13 +2,14 @@ package keeper
 
 import (
 	"bytes"
-	sdkerrors "cosmossdk.io/errors"
 	"crypto/ecdsa"
 	"encoding/binary"
 	"encoding/hex"
+	"math/big"
+
+	sdkerrors "cosmossdk.io/errors"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
-	"math/big"
 )
 
 func parseIntoMessage(msg []byte) types.Message {
@@ -113,7 +114,7 @@ func VerifyAttestationSignatures(
 		if latestECDSA.X != nil && latestECDSA.Y != nil && bytes.Compare(
 			crypto.PubkeyToAddress(latestECDSA).Bytes(),
 			crypto.PubkeyToAddress(recoveredECSDA).Bytes()) > -1 {
-			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "Invalid signature order or dupe")
+			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "invalid signature order or dupe")
 		}
 
 		// check that recovered key is a valid
@@ -130,7 +131,7 @@ func VerifyAttestationSignatures(
 		}
 
 		if !contains {
-			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "Invalid signature: not attester")
+			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "invalid signature: not an attester")
 		}
 
 		latestECDSA.X = recoveredECSDA.X
