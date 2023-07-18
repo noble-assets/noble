@@ -2,7 +2,6 @@ package interchaintest_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -71,29 +70,7 @@ func TestGlobalFee(t *testing.T) {
 			paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
 			return err
 		},
-		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			g := make(map[string]interface{})
-			if err := json.Unmarshal(b, &g); err != nil {
-				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
-			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &roles, false); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, true); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.FormattedAddress()); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.FormattedAddress()); err != nil {
-				return nil, err
-			}
-			out, err := json.Marshal(&g)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-			}
-			return out, nil
-		},
+		ModifyGenesis: modifyGenesisAll(&roles, &roles2, paramauthorityWallet.FormattedAddress()),
 	}
 
 	nv := 2

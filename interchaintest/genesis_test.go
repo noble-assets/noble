@@ -2,6 +2,7 @@ package interchaintest_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -375,6 +376,35 @@ func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Ex
 	return *extraWallets, nil
 }
 
+func modifyGenesisAll(tfRoles, fiatTfRoles *NobleRoles, paramAuthority string) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+		g := make(map[string]interface{})
+		if err := json.Unmarshal(b, &g); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+		}
+		if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, tfRoles, false); err != nil {
+			return nil, err
+		}
+		if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, fiatTfRoles, true); err != nil {
+			return nil, err
+		}
+		if err := modifyGenesisParamAuthority(g, paramAuthority); err != nil {
+			return nil, err
+		}
+		if err := modifyGenesisTariffDefaults(g, paramAuthority); err != nil {
+			return nil, err
+		}
+		if err := modifyGenesisCCTP(g, fiatTfRoles.Owner.FormattedAddress()); err != nil {
+			return nil, err
+		}
+		out, err := json.Marshal(&g)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+		}
+		return out, nil
+	}
+}
+
 // Modifies tokenfactory genesis accounts.
 // If minSetup = true, only the owner address, paused state, and denom is setup in genesis.
 // These are minimum requirements to start the chain. Otherwise all tokenfactory accounts are created.
@@ -413,6 +443,15 @@ func modifyGenesisParamAuthority(genbz map[string]interface{}, authorityAddress 
 	if err := dyno.Set(genbz, authorityAddress, "app_state", "upgrade", "params", "authority"); err != nil {
 		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
+
+	return nil
+}
+
+func modifyGenesisCCTP(genbz map[string]interface{}, authority string) error {
+	if err := dyno.Set(genbz, ParamAuthAddress{Address: authority}, "app_state", "cctp", "authority"); err != nil {
+		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
+	}
+
 	return nil
 }
 
