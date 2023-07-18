@@ -1,0 +1,217 @@
+syntax = "proto3";
+
+package circle.cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc UpdateAuthority(MsgUpdateAuthority) returns (MsgUpdateAuthorityResponse);
+  rpc EnableAttester(MsgEnableAttester) returns (MsgEnableAttesterResponse);
+  rpc DisableAttester(MsgDisableAttester) returns (MsgDisableAttesterResponse);
+  rpc PauseBurningAndMinting(MsgPauseBurningAndMinting) returns (MsgPauseBurningAndMintingResponse);
+  rpc UnpauseBurningAndMinting(MsgUnpauseBurningAndMinting) returns (MsgUnpauseBurningAndMintingResponse);
+  rpc PauseSendingAndReceivingMessages(MsgPauseSendingAndReceivingMessages) returns (MsgPauseSendingAndReceivingMessagesResponse);
+  rpc UnpauseSendingAndReceivingMessages(MsgUnpauseSendingAndReceivingMessages) returns (MsgUnpauseSendingAndReceivingMessagesResponse);
+  rpc UpdateMaxMessageBodySize(MsgUpdateMaxMessageBodySize) returns (MsgUpdateMaxMessageBodySizeResponse);
+  rpc UpdatePerMessageBurnLimit(MsgUpdatePerMessageBurnLimit) returns (MsgUpdatePerMessageBurnLimitResponse);
+  rpc UpdateSignatureThreshold(MsgUpdateSignatureThreshold) returns (MsgUpdateSignatureThresholdResponse);
+  rpc UpdateMinterAllowance(MsgUpdateMinterAllowance) returns (MsgUpdateMinterAllowanceResponse);
+  rpc LinkTokenPair(MsgLinkTokenPair) returns (MsgLinkTokenPairResponse);
+  rpc UnlinkTokenPair(MsgUnlinkTokenPair) returns (MsgUnlinkTokenPairResponse);
+  rpc AddTokenMessenger(MsgAddTokenMessenger) returns (MsgAddTokenMessengerResponse);
+  rpc RemoveTokenMessenger(MsgRemoveTokenMessenger) returns (MsgRemoveTokenMessengerResponse);
+
+  rpc DepositForBurn(MsgDepositForBurn) returns (MsgDepositForBurnResponse);
+  rpc DepositForBurnWithCaller(MsgDepositForBurnWithCaller) returns (MsgDepositForBurnWithCallerResponse);
+  rpc ReceiveMessage(MsgReceiveMessage) returns (MsgReceiveMessageResponse);
+  rpc ReplaceDepositForBurn(MsgReplaceDepositForBurn) returns (MsgReplaceDepositForBurnResponse);
+  rpc ReplaceMessage(MsgReplaceMessage) returns (MsgReplaceMessageResponse);
+  rpc SendMessage(MsgSendMessage) returns (MsgSendMessageResponse);
+  rpc SendMessageWithCaller(MsgSendMessageWithCaller) returns (MsgSendMessageWithCallerResponse);
+}
+
+message MsgUpdateAuthority {
+  string from = 1;
+  string new_authority = 2;
+}
+
+message MsgUpdateAuthorityResponse {}
+
+message MsgEnableAttester {
+  string from = 1;
+  bytes attester = 2;
+}
+
+message MsgEnableAttesterResponse {}
+
+message MsgDisableAttester {
+  string from = 1;
+  bytes attester = 2;
+}
+
+message MsgDisableAttesterResponse {}
+
+message MsgPauseBurningAndMinting {
+  string from = 1;
+}
+
+message MsgPauseBurningAndMintingResponse {}
+
+message MsgUnpauseBurningAndMinting {
+  string from = 1;
+}
+
+message MsgUnpauseBurningAndMintingResponse {}
+
+message MsgPauseSendingAndReceivingMessages {
+  string from = 1;
+}
+
+message MsgPauseSendingAndReceivingMessagesResponse {}
+
+message MsgUnpauseSendingAndReceivingMessages {
+  string from = 1;
+}
+
+message MsgUnpauseSendingAndReceivingMessagesResponse {}
+
+message MsgUpdateMaxMessageBodySize {
+  string from = 1;
+  uint32 message_size = 2;
+}
+
+message MsgUpdateMaxMessageBodySizeResponse {}
+
+message MsgUpdatePerMessageBurnLimit {
+  string from = 1;
+  uint64 per_message_burn_limit = 2;
+}
+
+message MsgUpdatePerMessageBurnLimitResponse {}
+
+message MsgDepositForBurn {
+  string from = 1;
+  uint32 amount = 2;
+  uint32 destination_domain = 3;
+  bytes mint_recipient = 4;
+  string burn_token = 5;
+}
+
+message MsgDepositForBurnResponse {
+  uint64 nonce = 1;
+}
+
+message MsgDepositForBurnWithCaller {
+  string from = 1;
+  uint32 amount = 2;
+  uint32 destination_domain = 3;
+  bytes mint_recipient = 4;
+  string burn_token = 5;
+  bytes destination_caller = 6;
+}
+
+message MsgDepositForBurnWithCallerResponse {
+  uint64 nonce = 1;
+}
+
+message MsgReplaceDepositForBurn {
+  string from = 1;
+  bytes original_message = 2;
+  bytes original_attestation = 3;
+  bytes new_destination_caller = 4;
+  bytes new_mint_recipient = 5;
+}
+
+message MsgReplaceDepositForBurnResponse {}
+
+message MsgReceiveMessage {
+  string from = 1;
+  bytes message = 2;
+  bytes attestation = 3;
+}
+
+message MsgReceiveMessageResponse {
+  bool success = 1;
+}
+
+message MsgSendMessage {
+  string from = 1;
+  uint32 destination_domain = 2;
+  bytes recipient = 3;
+  bytes message_body = 4;
+}
+
+message MsgSendMessageResponse {
+  uint64 nonce = 1;
+}
+
+message MsgSendMessageWithCaller {
+  string from = 1;
+  uint32 destination_domain = 2;
+  bytes recipient = 3;
+  bytes message_body = 4;
+  bytes destination_caller = 5;
+}
+
+message MsgSendMessageWithCallerResponse {
+  uint64 nonce = 1;
+}
+
+message MsgReplaceMessage {
+  string from = 1;
+  bytes original_message = 2;
+  bytes original_attestation = 3;
+  bytes new_message_body = 4;
+  bytes new_destination_caller = 5;
+}
+
+message MsgReplaceMessageResponse {}
+
+message MsgUpdateSignatureThreshold {
+  string from = 1;
+  uint32 amount = 2;
+}
+
+message MsgUpdateSignatureThresholdResponse {}
+
+message MsgUpdateMinterAllowance {
+  string from = 1;
+  string denom = 2;
+  uint64 amount = 3;
+}
+
+message MsgUpdateMinterAllowanceResponse {}
+
+message MsgLinkTokenPair {
+  string from = 1;
+  uint32 remote_domain = 2;
+  string remote_token = 3;
+  string local_token = 4;
+}
+
+message MsgLinkTokenPairResponse {}
+
+message MsgUnlinkTokenPair {
+  string from = 1;
+  uint32 remote_domain = 2;
+  string remote_token = 3;
+  string local_token = 4;
+}
+
+message MsgUnlinkTokenPairResponse {}
+
+message MsgAddTokenMessenger {
+  string from = 1;
+  uint32 domain_id = 2;
+  string address = 3;
+}
+
+message MsgAddTokenMessengerResponse {}
+
+message MsgRemoveTokenMessenger{
+  string from = 1;
+  uint32 domain_id = 2;
+}
+
+message MsgRemoveTokenMessengerResponse{}

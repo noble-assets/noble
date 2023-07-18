@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package circle.cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+message BurnMessage {
+  uint32 version = 1;
+  bytes burn_token = 2;
+  bytes mint_recipient = 3;
+  uint64 amount = 4;
+  bytes message_sender = 5;
+}
