@@ -35,6 +35,10 @@ func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
+func SignatureThresholdKey(key []byte) []byte {
+	return append(key, []byte("/")...)
+}
+
 // PublicKeyKey returns the store key to retrieve a PublicKey from the index fields
 func PublicKeyKey(key []byte) []byte {
 	return append(key, []byte("/")...)

@@ -97,8 +97,8 @@ func TestCCTP(t *testing.T) {
 
 	cmd.SetPrefixes(nobleChainCfg.Bech32Prefix)
 
-	attesters := make([]*ecdsa.PrivateKey, 3)
-	msgs := make([]sdk.Msg, 3)
+	attesters := make([]*ecdsa.PrivateKey, 2)
+	msgs := make([]sdk.Msg, 2)
 
 	for i := range attesters {
 		p, err := crypto.GenerateKey()

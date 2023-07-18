@@ -21,7 +21,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 		return nil, sdkerrors.Wrap(types.ErrReceiveMessage, "sending and receiving messages are paused")
 	}
 
-	// Validate each signature in the attestation
+	//// Validate each signature in the attestation
 	publicKeys := k.GetAllPublicKeys(ctx)
 	if len(publicKeys) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "no public keys found")
@@ -29,10 +29,10 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 
 	signatureThreshold, found := k.GetSignatureThreshold(ctx)
 	if !found {
-		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "signature threshold not found")
+		return nil, sdkerrors.Wrap(types.ErrReceiveMessage, "signature threshold not found")
 	}
 
-	verified, err := verifyAttestationSignatures(msg.Message, msg.Attestation, publicKeys, signatureThreshold.Amount)
+	verified, err := VerifyAttestationSignatures(msg.Message, msg.Attestation, publicKeys, signatureThreshold.Amount)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "error during signature verification")
 	}

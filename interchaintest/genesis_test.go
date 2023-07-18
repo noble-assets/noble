@@ -158,8 +158,16 @@ type CCTPAmount struct {
 	Amount string `json:"amount"`
 }
 
+type CCTPNumber struct {
+	Amount string `json:"amount"`
+}
+
 type CCTPNonce struct {
 	Nonce string `json:"nonce"`
+}
+
+type Attester struct {
+	Attester string `json:"attester"`
 }
 
 func NobleEncoding() *simappparams.EncodingConfig {
@@ -566,6 +574,12 @@ func modifyGenesisCCTP(genbz map[string]interface{}, authority string) error {
 	if err := dyno.Set(genbz, CCTPAmount{Amount: "2"}, "app_state", "cctp", "signatureThreshold"); err != nil {
 		return fmt.Errorf("failed to set cctp signatureThreshold in genesis json: %w", err)
 	}
+	//if err := dyno.Set(genbz, Attester{Attester: "0xE2fEfe09E74b921CbbFF229E7cD40009231501CA"}, "app_state", "cctp", "attes"); err != nil {
+	//	return fmt.Errorf("failed to set cctp signatureThreshold in genesis json: %w", err)
+	//}
+	//if err := dyno.Set(genbz, Attester{Attester: "0xb0Ea8E1bE37F346C7EA7ec708834D0db18A17361"}, "app_state", "cctp", "attes"); err != nil {
+	//	return fmt.Errorf("failed to set cctp signatureThreshold in genesis json: %w", err)
+	//}
 
 	return nil
 }

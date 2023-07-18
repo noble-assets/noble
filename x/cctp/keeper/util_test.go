@@ -1,0 +1,61 @@
+package keeper_test
+
+import (
+	"crypto/ecdsa"
+	"crypto/rand"
+	"encoding/hex"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto/secp256k1"
+	"github.com/strangelove-ventures/noble/x/cctp/keeper"
+	"github.com/strangelove-ventures/noble/x/cctp/types"
+	"testing"
+)
+
+// circle testnet values
+func TestVerifyAttestationSignatures(t *testing.T) {
+	// Prepare test data
+	// depositForBurn from https://goerli.etherscan.io/tx/0x7323d32ae63a475fdfc2ea75e8ec1cb48113320cc4c107d63a0d046b29c445e5#eventlog
+	message, _ := hex.DecodeString("0000000000000000000000030000000000039193000000000000000000000000D0C3DA58F55358142B8D3E06C1C30C5C6114EFE800000000000000000000000012DCFD3FE2E9EAC2859FD1ED86D2AB8C5A2F935200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007865C6E87B9F70255377E024ACE6630C1EAA37F0000000000000000000000009481EF9E2CA814FC94676DEA3E8C3097B06B3A3300000000000000000000000000000000000000000000000000000000007A12000000000000000000000000009481EF9E2CA814FC94676DEA3E8C3097B06B3A33")
+
+	// https://iris-api-sandbox.circle.com/attestations/0xd4d42eb5e134d3fe8d397e82d610c57b5fc3abae2d3d976532d52981dab0eb2b
+	attestation, _ := hex.DecodeString("640692cd7b0332ca6f38196f232752bca1a01619538d7e3ce6183f317c66d2483f4c7e83f2642fca25c384effc23647dec3cda7bc4ceac78c8681a22b7a351891bc5c3fedba209d406ec6cdfb434f62bb15d9623acc81d3769cb3d7987c5cb5d9b76b7ad0161e0985b4ae691c5334697fad1b5196ee104de19c09f9718751a740f1c")
+
+	// from https://iris-api-sandbox.circle.com/v1/publicKeys
+	publicKeys := []types.PublicKeys{
+		{Key: "048af0d36997eb1775c1a74a539b737f0a8db209ea7fc5677e64055a730ed07ad288fa3e7b3871ff18a4a55c4273c16ac5a2cff30dc00a122f63b3e655a62e093c"},
+		{Key: "04a36d8f1818402096aacaf7340493bdea39d1728948c40bbfb711feb7be35960139077dd8332be75f188f8567b4fc0fcf649fddf3397e569c856bf9ce9329d3b9"},
+	}
+
+	t.Run("valid input", func(t *testing.T) {
+		ok, err := keeper.VerifyAttestationSignatures(message, attestation, publicKeys, 2)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+		if !ok {
+			t.Errorf("expected true, got false")
+		}
+	})
+
+}
+
+// local values
+func TestWithGeneratedValues(t *testing.T) {
+	privKey1, _ := ecdsa.GenerateKey(secp256k1.S256(), rand.Reader)
+	privKey2, _ := ecdsa.GenerateKey(secp256k1.S256(), rand.Reader)
+
+	pubKey1 := crypto.FromECDSAPub(&privKey1.PublicKey)
+	pubKey2 := crypto.FromECDSAPub(&privKey2.PublicKey)
+	publicKeys := []types.PublicKeys{
+		{Key: string(pubKey1)},
+		{Key: string(pubKey2)},
+	}
+
+	message := []byte("Hello, World!")
+	signature, _ := crypto.Sign(crypto.Keccak256(message), privKey1)
+	signature2, _ := crypto.Sign(crypto.Keccak256(message), privKey2)
+
+	verified, err := keeper.VerifyAttestationSignatures(message, append(signature, signature2...), publicKeys, 2)
+	if err != nil || !verified {
+		panic("fuck")
+	}
+}

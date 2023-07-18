@@ -3,9 +3,12 @@ package keeper
 import (
 	"bytes"
 	sdkerrors "cosmossdk.io/errors"
+	"crypto/ecdsa"
 	"encoding/binary"
+	"encoding/hex"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
+	"math/big"
 )
 
 func parseIntoMessage(msg []byte) types.Message {
@@ -69,7 +72,7 @@ func copyBytes(start int, end int, copyFrom []byte, copyInto *[]byte) {
 * 3. no duplicate signers
 * 4. all signers must be enabled attesters
  */
-func verifyAttestationSignatures(
+func VerifyAttestationSignatures(
 	message []byte,
 	attestation []byte,
 	publicKeys []types.PublicKeys,
@@ -84,28 +87,45 @@ func verifyAttestationSignatures(
 	}
 
 	// public keys cannot be empty, so the recovered key should be bigger than latestPublicKey
-	var latestPublicKey []byte
+	var latestECDSA ecdsa.PublicKey
 
-	digest := crypto.Keccak256Hash(message).Bytes()
+	digest := crypto.Keccak256(message)
 
 	for i := uint32(0); i < signatureThreshold; i++ {
 		signature := attestation[i*signatureLength : (i*signatureLength)+signatureLength]
+
+		if signature[len(signature)-1] == 27 || signature[len(signature)-1] == 28 {
+			signature[len(signature)-1] -= 27
+		}
 
 		recoveredKey, err := crypto.Ecrecover(digest, signature)
 		if err != nil {
 			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "failed to recover public key")
 		}
 
-		// Signatures must be in increasing order of address, and may not duplicate signatures from same address
-		if bytes.Compare(latestPublicKey, recoveredKey) > -1 {
+		// Signatures must be in increasing order of address, and may not duplicate signatures from same address.
+
+		recoveredECSDA := ecdsa.PublicKey{
+			X: new(big.Int).SetBytes(recoveredKey[1:33]),
+			Y: new(big.Int).SetBytes(recoveredKey[33:]),
+		}
+
+		if latestECDSA.X != nil && latestECDSA.Y != nil && bytes.Compare(
+			crypto.PubkeyToAddress(latestECDSA).Bytes(),
+			crypto.PubkeyToAddress(recoveredECSDA).Bytes()) > -1 {
 			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "Invalid signature order or dupe")
 		}
 
 		// check that recovered key is a valid
 		contains := false
 		for _, key := range publicKeys {
-			if key.Key == string(recoveredKey) {
+			hexBz, err := hex.DecodeString(key.Key)
+			if err != nil {
+				return false, sdkerrors.Wrap(types.ErrSignatureVerification, "failed to decode public key in module state")
+			}
+			if bytes.Equal(hexBz, recoveredKey) {
 				contains = true
+				break
 			}
 		}
 
@@ -113,8 +133,8 @@ func verifyAttestationSignatures(
 			return false, sdkerrors.Wrap(types.ErrSignatureVerification, "Invalid signature: not attester")
 		}
 
-		latestPublicKey = recoveredKey
-
+		latestECDSA.X = recoveredECSDA.X
+		latestECDSA.Y = recoveredECSDA.Y
 	}
 	return true, nil
 }

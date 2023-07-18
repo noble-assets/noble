@@ -27,7 +27,7 @@ func (k msgServer) ReplaceMessage(goCtx context.Context, msg *types.MsgReplaceMe
 		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "signature threshold not found")
 	}
 
-	verified, err := verifyAttestationSignatures(msg.OriginalMessage, msg.OriginalAttestation, publicKeys, signatureThreshold.Amount)
+	verified, err := VerifyAttestationSignatures(msg.OriginalMessage, msg.OriginalAttestation, publicKeys, signatureThreshold.Amount)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "error during signature verification")
 	}
