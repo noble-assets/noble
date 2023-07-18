@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -46,7 +47,7 @@ func (k msgServer) ReplaceDepositForBurn(goCtx context.Context, msg *types.MsgRe
 		MessageSender: burnMessage.MessageSender,
 	}
 
-	newMessageBodyBytes := parseBurnMessageIntoBytes(newMessageBody)
+	newMessageBodyBytes := ParseBurnMessageIntoBytes(newMessageBody)
 
 	replaceMessage := types.MsgReplaceMessage{
 		From:                 msg.From,

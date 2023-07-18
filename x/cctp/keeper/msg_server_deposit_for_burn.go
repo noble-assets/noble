@@ -70,7 +70,7 @@ func (k msgServer) DepositForBurn(goCtx context.Context, msg *types.MsgDepositFo
 		Amount:        uint64(msg.Amount),
 		MessageSender: []byte(msg.From),
 	}
-	burnMessageBytes := parseBurnMessageIntoBytes(burnMessage)
+	burnMessageBytes := ParseBurnMessageIntoBytes(burnMessage)
 
 	sendMessage := types.MsgSendMessage{
 		From:              msg.From,

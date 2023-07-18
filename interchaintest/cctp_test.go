@@ -6,7 +6,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"encoding/hex"
-	"fmt"
 	"sort"
 	"testing"
 
@@ -15,6 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/golang/protobuf/proto"
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
@@ -24,7 +24,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 
+	"github.com/strangelove-ventures/noble/x/cctp/keeper"
 	cctptypes "github.com/strangelove-ventures/noble/x/cctp/types"
+	routertypes "github.com/strangelove-ventures/noble/x/router/types"
 )
 
 // run `make local-image`to rebuild updated binary before running test
@@ -96,6 +98,7 @@ func TestCCTP(t *testing.T) {
 	})
 
 	nobleChainCfg := noble.Config()
+	gaiaChainCfg := gaia.Config()
 
 	cmd.SetPrefixes(nobleChainCfg.Bech32Prefix)
 
@@ -123,6 +126,13 @@ func TestCCTP(t *testing.T) {
 		return clientContext.WithBroadcastMode(flags.BroadcastBlock)
 	})
 
+	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
+		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
+		RemoteDomain: 0,
+		RemoteToken:  "07865c6E87B9F70255377e024ace6630C1Eaa37F",
+		LocalToken:   "uusdc",
+	})
+
 	tx, err := cosmos.BroadcastTx(
 		ctx,
 		broadcaster,
@@ -132,8 +142,35 @@ func TestCCTP(t *testing.T) {
 	require.NoError(t, err, "error submitting add public keys tx")
 	require.Zero(t, tx.Code)
 
-	depositForBurn, err := hex.DecodeString("0000000000000000000000010000000000039148000000000000000000000000D0C3DA58F55358142B8D3E06C1C30C5C6114EFE8000000000000000000000000EB08F243E5D3FCFF26A9E38AE5520A669F4019D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007865C6E87B9F70255377E024ACE6630C1EAA37F0000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D2700000000000000000000000000000000000000000000000000000000000F42400000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D27")
+	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27"
+
+	receiverBz, err := hex.DecodeString(receiver)
 	require.NoError(t, err)
+
+	nobleReceiver, err := bech32.ConvertAndEncode(nobleChainCfg.Bech32Prefix, receiverBz)
+	require.NoError(t, err)
+
+	gaiaReceiver, err := bech32.ConvertAndEncode(gaiaChainCfg.Bech32Prefix, receiverBz)
+	require.NoError(t, err)
+
+	burnRecipient := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, receiverBz...)
+
+	depositForBurn := keeper.ParseBurnMessageIntoBytes(cctptypes.BurnMessage{
+		BurnToken:     []byte("07865c6E87B9F70255377e024ace6630C1Eaa37F"),
+		MintRecipient: burnRecipient,
+		Amount:        1000000,
+		MessageSender: receiverBz,
+	})
+
+	forward, err := proto.Marshal(&routertypes.IBCForwardMetadata{
+		Port:                "transfer",
+		Channel:             "channel-0",
+		DestinationReceiver: gaiaReceiver,
+	})
+	require.NoError(t, err)
+
+	// depositForBurn, err := hex.DecodeString("0000000000000000000000010000000000039148000000000000000000000000D0C3DA58F55358142B8D3E06C1C30C5C6114EFE8000000000000000000000000EB08F243E5D3FCFF26A9E38AE5520A669F4019D000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007865C6E87B9F70255377E024ACE6630C1EAA37F0000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D2700000000000000000000000000000000000000000000000000000000000F42400000000000000000000000009B6CA0C13EB603EF207C4657E1E619EF531A4D27")
+	// require.NoError(t, err)
 
 	digest := crypto.Keccak256(depositForBurn)
 
@@ -169,18 +206,11 @@ func TestCCTP(t *testing.T) {
 
 	t.Logf("CCTP message successfully received: %s", tx.TxHash)
 
-	receiverBz, err := hex.DecodeString("9B6CA0C13EB603EF207C4657E1E619EF531A4D27")
-	require.NoError(t, err)
-
-	receiver, err := bech32.ConvertAndEncode(nobleChainCfg.Bech32Prefix, receiverBz)
-	require.NoError(t, err)
-
-	balance, err := noble.GetBalance(ctx, receiver, "uusdc")
+	balance, err := noble.GetBalance(ctx, nobleReceiver, "uusdc")
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)
 
 	err = testutil.WaitForBlocks(ctx, 100, noble)
 	require.NoError(t, err)
-
 }

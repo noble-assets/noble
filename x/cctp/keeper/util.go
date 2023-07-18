@@ -41,7 +41,7 @@ func parseIntoBurnMessage(msg []byte) types.BurnMessage {
 	return message
 }
 
-func parseBurnMessageIntoBytes(msg types.BurnMessage) []byte {
+func ParseBurnMessageIntoBytes(msg types.BurnMessage) []byte {
 	result := make([]byte, burnMessageLength)
 
 	versionBytes := make([]byte, 4)
