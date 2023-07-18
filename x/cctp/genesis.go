@@ -46,7 +46,7 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	}
 
 	if genState.SignatureThreshold != nil {
-		k.SetNonce(ctx, *genState.Nonce)
+		k.SetSignatureThreshold(ctx, *genState.SignatureThreshold)
 	}
 
 	for _, elem := range genState.TokenPairList {
