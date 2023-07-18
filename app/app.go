@@ -167,8 +167,6 @@ var (
 		fiattokenfactorymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		stakingtypes.BondedPoolName:            {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName:         {authtypes.Burner, authtypes.Staking},
-		cctptypes.ModuleName:                   {authtypes.Minter, authtypes.Burner},
-		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
 
@@ -912,6 +910,9 @@ func (app *App) setupUpgradeHandlers() {
 		argon.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.FiatTokenFactoryKeeper,
+			app.ParamsKeeper,
+			app.CCTPKeeper,
 		),
 	)
 
