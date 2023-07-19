@@ -126,6 +126,9 @@ ictest-ics20-bps-fees:
 ictest-client-substitution:
 	cd interchaintest && go test -race -v -run ^TestClientSubstitution$$ .
 
+ictest-cctp:
+	cd interchaintest && go test -race -v -run ^TestCCTP$$ .
+
 ###############################################################################
 ###                                Build Image                              ###
 ###############################################################################

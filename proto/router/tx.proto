@@ -1,0 +1,7 @@
+syntax = "proto3";
+package noble.router;
+
+option go_package = "github.com/strangelove-ventures/noble/x/router/types";
+
+// Msg defines the Msg service.
+service Msg {}

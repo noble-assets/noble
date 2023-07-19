@@ -1,0 +1,18 @@
+syntax = "proto3";
+package noble.router;
+
+import "gogoproto/gogo.proto";
+import "router/ibc_forward_metadata.proto";
+import "router/in_flight_packet.proto";
+import "router/mint.proto";
+import "router/params.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/router/types";
+
+// GenesisState defines the router module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Mint mints = 3 [(gogoproto.nullable) = false];
+  repeated StoreIBCForwardMetadata ibc_forwards = 4 [(gogoproto.nullable) = false];
+  repeated InFlightPacket in_flight_packets = 5 [(gogoproto.nullable) = false];
+}

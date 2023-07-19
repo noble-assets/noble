@@ -3,7 +3,6 @@ package interchaintest_test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/strangelove-ventures/interchaintest/v3"
@@ -30,85 +29,17 @@ func TestNobleChain(t *testing.T) {
 
 	client, network := interchaintest.DockerSetup(t)
 
-	var (
-		noble                *cosmos.CosmosChain
-		roles                NobleRoles
-		roles2               NobleRoles
-		extraWallets         ExtraWallets
-		paramauthorityWallet ibc.Wallet
-	)
-
-	chainCfg := ibc.ChainConfig{
-		Type:           "cosmos",
-		Name:           "noble",
-		ChainID:        "noble-1",
-		Bin:            "nobled",
-		Denom:          "token",
-		Bech32Prefix:   "noble",
-		CoinType:       "118",
-		GasPrices:      "0.0token",
-		GasAdjustment:  1.1,
-		TrustingPeriod: "504h",
-		NoHostMount:    false,
-		Images:         nobleImageInfo,
-		EncodingConfig: NobleEncoding(),
-		PreGenesis: func(cc ibc.ChainConfig) (err error) {
-			val := noble.Validators[0]
-			err = createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, false)
-			if err != nil {
-				return err
-			}
-			err = createTokenfactoryRoles(ctx, &roles2, denomMetadataDrachma, val, false)
-			if err != nil {
-				return err
-			}
-			extraWallets, err = createExtraWalletsAtGenesis(ctx, val)
-			if err != nil {
-				return err
-			}
-			paramauthorityWallet, err = createParamAuthAtGenesis(ctx, val)
-			return err
-		},
-		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			g := make(map[string]interface{})
-			if err := json.Unmarshal(b, &g); err != nil {
-				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
-			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &roles, true); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, true); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.FormattedAddress()); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.FormattedAddress()); err != nil {
-				return nil, err
-			}
-			out, err := json.Marshal(&g)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-			}
-			return out, nil
-		},
-	}
-
-	nv := 2
-	nf := 1
+	var gw genesisWrapper
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		{
-			ChainConfig:   chainCfg,
-			NumValidators: &nv,
-			NumFullNodes:  &nf,
-		},
+		nobleChainSpec(ctx, &gw, "noble-1", 2, 1, false, false, true, true),
 	})
 
 	chains, err := cf.Chains(t.Name())
 	require.NoError(t, err)
 
-	noble = chains[0].(*cosmos.CosmosChain)
+	gw.chain = chains[0].(*cosmos.CosmosChain)
+	noble := gw.chain
 
 	ic := interchaintest.NewInterchain().
 		AddChain(noble)
@@ -126,12 +57,12 @@ func TestNobleChain(t *testing.T) {
 
 	t.Run("tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataRupee.Base, noble, roles, extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataRupee.Base, noble, gw.tfRoles, gw.extraWallets)
 	})
 
 	t.Run("fiat-tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataDrachma.Base, noble, roles2, extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataDrachma.Base, noble, gw.fiatTfRoles, gw.extraWallets)
 	})
 }
 

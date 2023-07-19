@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package circle.cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+message Message {
+  uint32 version = 1;
+  uint32 source_domain = 2;
+  uint32 destination_domain = 3;
+  uint64 nonce = 4;
+  bytes sender = 5;
+  bytes recipient = 6;
+  bytes destination_caller = 7;
+  bytes message_body = 8;
+}

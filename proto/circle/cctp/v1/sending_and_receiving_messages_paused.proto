@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package circle.cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+message SendingAndReceivingMessagesPaused {
+  bool paused = 1;
+}

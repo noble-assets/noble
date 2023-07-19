@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package circle.cctp.v1;
+
+import "circle/cctp/v1/authority.proto";
+import "circle/cctp/v1/burning_and_minting_paused.proto";
+import "circle/cctp/v1/max_message_body_size.proto";
+import "circle/cctp/v1/minter_allowances.proto";
+import "circle/cctp/v1/nonce.proto";
+import "circle/cctp/v1/params.proto";
+import "circle/cctp/v1/per_message_burn_limit.proto";
+import "circle/cctp/v1/attester.proto";
+import "circle/cctp/v1/sending_and_receiving_messages_paused.proto";
+import "circle/cctp/v1/signature_threshold.proto";
+import "circle/cctp/v1/token_pairs.proto";
+import "circle/cctp/v1/token_messenger.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+// GenesisState defines the cctp module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  Authority authority = 2;
+  repeated Attester attester_list = 3 [(gogoproto.nullable) = false];
+  repeated MinterAllowances minter_allowance_list = 4 [(gogoproto.nullable) = false];
+  PerMessageBurnLimit per_message_burn_limit = 5;
+  BurningAndMintingPaused burning_and_minting_paused = 6;
+  SendingAndReceivingMessagesPaused sending_and_receiving_messages_paused = 7;
+  MaxMessageBodySize max_message_body_size = 8;
+  Nonce nonce = 9;
+  SignatureThreshold signature_threshold = 10;
+  repeated TokenPairs token_pair_list = 11 [(gogoproto.nullable) = false];
+  repeated Nonce used_nonces_list = 12 [(gogoproto.nullable) = false];
+  repeated TokenMessenger token_messenger_list = 13 [(gogoproto.nullable) = false];
+}

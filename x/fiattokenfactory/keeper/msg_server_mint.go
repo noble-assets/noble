@@ -12,6 +12,10 @@ import (
 )
 
 func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
+	return k.Keeper.Mint(goCtx, msg)
+}
+
+func (k Keeper) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	minter, found := k.GetMinters(ctx, msg.From)
