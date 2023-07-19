@@ -8,7 +8,6 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 )
@@ -62,18 +61,24 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 		return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "invalid message version. expected: %d, found: %d", nobleVersion, message.Version)
 	}
 
+	sourceDomainBz := make([]byte, 4)
+	binary.BigEndian.PutUint32(sourceDomainBz, message.SourceDomain)
+
+	nonceBz := make([]byte, 8)
+	binary.BigEndian.PutUint64(nonceBz, message.Nonce)
+
 	// verify nonce has not been used
-	usedNonceKey := binary.BigEndian.Uint64(crypto.Keccak256Hash(append(message.SourceDomainBytes, message.NonceBytes...)).Bytes())
-	_, found = k.GetUsedNonce(ctx, usedNonceKey)
+	usedNonceKey := UsedNonce{
+		Nonce:        message.Nonce,
+		SourceDomain: message.SourceDomain,
+	}
+	found = k.GetUsedNonce(ctx, usedNonceKey)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "nonce already used")
 	}
 
 	// mark nonce as used
-	nonceToSave := types.Nonce{
-		Nonce: usedNonceKey,
-	}
-	k.SetUsedNonce(ctx, nonceToSave)
+	k.SetUsedNonce(ctx, usedNonceKey)
 
 	// verify and parse BurnMessage
 	burnMessage := new(types.BurnMessage)

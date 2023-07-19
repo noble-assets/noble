@@ -54,7 +54,11 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	}
 
 	for _, elem := range genState.UsedNoncesList {
-		k.SetUsedNonce(ctx, elem)
+		k.SetUsedNonce(ctx, keeper.UsedNonce{
+			// TODO add to proto
+			// SourceDomain: elem.SourceDomain,
+			Nonce: elem.Nonce,
+		})
 	}
 
 	k.SetParams(ctx, genState.Params)
@@ -106,7 +110,14 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 
 	genesis.TokenPairList = k.GetAllTokenPairs(ctx)
 
-	genesis.UsedNoncesList = k.GetAllUsedNonces(ctx)
+	usedNonces := k.GetAllUsedNonces(ctx)
+	for _, n := range usedNonces {
+		genesis.UsedNoncesList = append(genesis.UsedNoncesList, types.Nonce{
+			// TODO add to proto
+			// SourceDomain: n.SourceDomain,
+			Nonce: n.Nonce,
+		})
+	}
 
 	return genesis
 }
