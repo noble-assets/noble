@@ -88,7 +88,7 @@ func ParseIntoMessageBytes(msg types.Message) []byte {
 
 func copyBytes(start int, end int, copyFrom []byte, copyInto *[]byte) {
 	for i := start; i < end; i++ {
-		(*copyInto)[i] = copyFrom[i]
+		(*copyInto)[i] = copyFrom[i-start]
 	}
 }
 

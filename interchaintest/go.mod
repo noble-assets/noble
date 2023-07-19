@@ -6,6 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/ethereum/go-ethereum v1.10.20
+	github.com/golang/protobuf v1.5.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27
 	github.com/strangelove-ventures/noble v1.0.0
@@ -75,7 +76,6 @@ require (
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/gogo/protobuf v1.3.3 // indirect
 	github.com/golang/glog v1.1.0 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect

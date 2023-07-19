@@ -47,9 +47,6 @@ func (msg *MsgLinkTokenPair) ValidateBasic() error {
 	if len(msg.RemoteToken) == 0 {
 		return sdkerrors.Wrapf(ErrMalformedField, "Remote token is empty")
 	}
-	if len(msg.RemoteToken) > 32 {
-		return sdkerrors.Wrapf(ErrMalformedField, "Remote token is over 32 bytes")
-	}
 	if len(msg.LocalToken) == 0 {
 		return sdkerrors.Wrapf(ErrMalformedField, "Local token is empty")
 	}

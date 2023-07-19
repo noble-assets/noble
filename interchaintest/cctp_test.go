@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"sort"
 	"testing"
+	"time"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -126,21 +127,28 @@ func TestCCTP(t *testing.T) {
 		return clientContext.WithBroadcastMode(flags.BroadcastBlock)
 	})
 
+	t.Log("preparing to submit add public keys tx")
+
 	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
 		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  "07865c6E87B9F70255377e024ace6630C1Eaa37F",
-		LocalToken:   "udrachma",
+		LocalToken:   denomMetadataDrachma.Base,
 	})
 
+	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
+	defer bCancel()
+
 	tx, err := cosmos.BroadcastTx(
-		ctx,
+		bCtx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
 		msgs...,
 	)
 	require.NoError(t, err, "error submitting add public keys tx")
-	require.Zero(t, tx.Code)
+	require.Zero(t, tx.Code, "cctp add pub keys transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+
+	t.Logf("Submitted add public keys tx: %s", tx.TxHash)
 
 	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27"
 
@@ -153,11 +161,16 @@ func TestCCTP(t *testing.T) {
 	gaiaReceiver, err := bech32.ConvertAndEncode(gaiaChainCfg.Bech32Prefix, receiverBz)
 	require.NoError(t, err)
 
-	burnRecipient := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, receiverBz...)
+	burnRecipientPadded := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, receiverBz...)
+
+	burnToken, err := hex.DecodeString("07865c6E87B9F70255377e024ace6630C1Eaa37F")
+	require.NoError(t, err)
+
+	burnTokenPadded := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, burnToken...)
 
 	depositForBurn := keeper.ParseBurnMessageIntoBytes(cctptypes.BurnMessage{
-		BurnToken:     []byte("07865c6E87B9F70255377e024ace6630C1Eaa37F"),
-		MintRecipient: burnRecipient,
+		BurnToken:     burnTokenPadded,
+		MintRecipient: burnRecipientPadded,
 		Amount:        1000000,
 		MessageSender: receiverBz,
 	})
@@ -182,7 +195,7 @@ func TestCCTP(t *testing.T) {
 		MessageBody:       depositForBurn,
 	})
 
-	_ = keeper.ParseIntoMessageBytes(cctptypes.Message{
+	wrappedForward := keeper.ParseIntoMessageBytes(cctptypes.Message{
 		Version:           0,
 		SourceDomainBytes: nil,
 		SourceDomain:      0,
@@ -195,9 +208,11 @@ func TestCCTP(t *testing.T) {
 		MessageBody:       forward,
 	})
 
-	digest := crypto.Keccak256(wrappedDepositForBurn)
+	digestBurn := crypto.Keccak256(wrappedDepositForBurn)
+	digestForward := crypto.Keccak256(wrappedForward)
 
-	attestation := make([]byte, 0, len(attesters)*65)
+	attestationBurn := make([]byte, 0, len(attesters)*65)
+	attestationForward := make([]byte, 0, len(attesters)*65)
 
 	// CCTP requires attestations to have signatures sorted by address
 	sort.Slice(attesters, func(i, j int) bool {
@@ -208,11 +223,18 @@ func TestCCTP(t *testing.T) {
 	})
 
 	for i := range attesters {
-		sig, err := crypto.Sign(digest, attesters[i])
+		sig, err := crypto.Sign(digestBurn, attesters[i])
 		require.NoError(t, err)
 
-		attestation = append(attestation, sig...)
+		attestationBurn = append(attestationBurn, sig...)
+
+		sig, err = crypto.Sign(digestForward, attesters[i])
+		require.NoError(t, err)
+
+		attestationForward = append(attestationForward, sig...)
 	}
+
+	t.Logf("Attested to messages: %s", tx.TxHash)
 
 	tx, err = cosmos.BroadcastTx(
 		ctx,
@@ -221,18 +243,31 @@ func TestCCTP(t *testing.T) {
 		&cctptypes.MsgReceiveMessage{
 			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
 			Message:     wrappedDepositForBurn,
-			Attestation: attestation,
+			Attestation: attestationBurn,
 		},
 	)
-	require.NoError(t, err, "error submitting cctp recv tx")
-	require.Zerof(t, tx.Code, "cctp recv transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+	require.NoError(t, err, "error submitting cctp burn recv tx")
+	require.Zerof(t, tx.Code, "cctp burn recv transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	t.Logf("CCTP message successfully received: %s", tx.TxHash)
 
-	balance, err := noble.GetBalance(ctx, nobleReceiver, "uusdc")
+	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataDrachma.Base)
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)
+
+	tx, err = cosmos.BroadcastTx(
+		ctx,
+		broadcaster,
+		gw.fiatTfRoles.Owner,
+		&cctptypes.MsgReceiveMessage{
+			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
+			Message:     wrappedForward,
+			Attestation: attestationForward,
+		},
+	)
+	require.NoError(t, err, "error submitting cctp forward recv tx")
+	require.Zerof(t, tx.Code, "cctp forward recv transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	err = testutil.WaitForBlocks(ctx, 100, noble)
 	require.NoError(t, err)
