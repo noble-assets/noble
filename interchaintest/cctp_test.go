@@ -15,12 +15,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/protobuf/proto"
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v3/testutil"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -91,8 +93,7 @@ func TestCCTP(t *testing.T) {
 		Client:    client,
 		NetworkID: network,
 
-		// TODO set to false
-		SkipPathCreation: true,
+		SkipPathCreation: false,
 	}))
 	t.Cleanup(func() {
 		_ = ic.Close()
@@ -289,6 +290,14 @@ func TestCCTP(t *testing.T) {
 
 	t.Logf("CCTP IBC forward message successfully received: %s", tx.TxHash)
 
-	// err = testutil.WaitForBlocks(ctx, 100, noble)
-	// require.NoError(t, err)
+	err = testutil.WaitForBlocks(ctx, 10, noble, gaia)
+	require.NoError(t, err)
+
+	srcDenomTrace := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", "channel-0", denomMetadataDrachma.Base))
+	dstIbcDenom := srcDenomTrace.IBCDenom()
+
+	gaiaBal, err := gaia.GetBalance(ctx, gaiaReceiver, dstIbcDenom)
+	require.NoError(t, err)
+	require.Equal(t, int64(1000000), gaiaBal)
+
 }
