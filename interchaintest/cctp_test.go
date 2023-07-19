@@ -92,6 +92,7 @@ func TestCCTP(t *testing.T) {
 		TestName:  t.Name(),
 		Client:    client,
 		NetworkID: network,
+		// BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
 
 		SkipPathCreation: false,
 	}))
@@ -272,6 +273,12 @@ func TestCCTP(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)
+
+	err = r.StartRelayer(ctx, eRep, pathName)
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = r.StopRelayer(ctx, eRep)
+	})
 
 	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
