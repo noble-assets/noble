@@ -62,6 +62,11 @@ func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 			return sdkerrors.Wrapf(types.ErrHandleMessage, "unable to find local token denom for this burn")
 		}
 
+		addr, err := sdk.Bech32ifyAddressBytes("noble", burnMessage.MintRecipient[12:])
+		if err != nil {
+			return sdkerrors.Wrapf(types.ErrHandleMessage, "error bech32 encoding mint recipient address")
+		}
+
 		// message is a Mint
 		mint := types.Mint{
 			SourceDomain:       outerMessage.SourceDomain,
@@ -72,7 +77,7 @@ func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 				Amount: sdk.NewInt(int64(burnMessage.Amount)),
 			},
 			DestinationDomain: strconv.Itoa(int(outerMessage.DestinationDomain)),
-			MintRecipient:     string(burnMessage.MintRecipient),
+			MintRecipient:     addr,
 		}
 		k.SetMint(ctx, mint)
 		if existingIBCForward, found := k.GetIBCForward(ctx, outerMessage.SourceDomain, string(burnMessage.MessageSender), outerMessage.Nonce); found {
