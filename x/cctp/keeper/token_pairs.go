@@ -9,16 +9,16 @@ import (
 
 // SetTokenPair sets a token pair in the store
 func (k Keeper) SetTokenPair(ctx sdk.Context, tokenPair types.TokenPairs) {
-	store := ctx.KVStore(k.storeKey)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TokenPairKeyPrefix))
 	b := k.cdc.MustMarshal(&tokenPair)
-	store.Set(types.KeyPrefix(string(types.TokenPairKey(tokenPair.RemoteDomain, tokenPair.RemoteToken))), b)
+	store.Set(types.TokenPairKey(tokenPair.RemoteDomain, tokenPair.RemoteToken), b)
 }
 
 // GetTokenPair returns token pair
 func (k Keeper) GetTokenPair(ctx sdk.Context, remoteDomain uint32, remoteToken string) (val types.TokenPairs, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TokenPairKeyPrefix))
 
-	b := store.Get(types.KeyPrefix(string(types.TokenPairKey(remoteDomain, remoteToken))))
+	b := store.Get(types.TokenPairKey(remoteDomain, remoteToken))
 	if b == nil {
 		return val, false
 	}
@@ -34,7 +34,7 @@ func (k Keeper) DeleteTokenPair(
 	remoteToken string,
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TokenPairKeyPrefix))
-	store.Delete(types.KeyPrefix(string(types.TokenPairKey(remoteDomain, remoteToken))))
+	store.Delete(types.TokenPairKey(remoteDomain, remoteToken))
 }
 
 // GetAllTokenPairs returns all token pairs

@@ -46,12 +46,7 @@ func (k Keeper) SetUsedNonce(ctx sdk.Context, key UsedNonce) {
 func (k Keeper) GetUsedNonce(ctx sdk.Context, key UsedNonce) (found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsedNonceKeyPrefix))
 
-	b := store.Get(key.Key())
-	if b == nil {
-		return false
-	}
-
-	return true
+	return store.Get(key.Key()) != nil
 }
 
 // GetAllUsedNonces returns all UsedNonces
