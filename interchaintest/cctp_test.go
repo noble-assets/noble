@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/protobuf/proto"
 	"github.com/strangelove-ventures/interchaintest/v3"
@@ -25,6 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 
+	"github.com/strangelove-ventures/noble/x/cctp/types"
 	cctptypes "github.com/strangelove-ventures/noble/x/cctp/types"
 	routertypes "github.com/strangelove-ventures/noble/x/router/types"
 )
@@ -50,7 +52,7 @@ func TestCCTP(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, true, true, true),
+		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, false, true, false),
 		{
 			Name:          "gaia",
 			Version:       "v10.0.2",
@@ -148,6 +150,20 @@ func TestCCTP(t *testing.T) {
 	require.Zero(t, tx.Code, "cctp add pub keys transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	t.Logf("Submitted add public keys tx: %s", tx.TxHash)
+
+	nobleValidator := noble.Validators[0]
+
+	cctpModuleAccount := authtypes.NewModuleAddress(types.ModuleName).String()
+
+	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(),
+		"fiat-tokenfactory", "configure-minter-controller", gw.fiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount, "-b", "block",
+	)
+	require.NoError(t, err, "failed to execute configure minter controller tx")
+
+	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MinterController.KeyName(),
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataDrachma.Base, "-b", "block",
+	)
+	require.NoError(t, err, "failed to execute configure minter tx")
 
 	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27"
 

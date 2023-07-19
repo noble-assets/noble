@@ -9,6 +9,7 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 )
@@ -103,7 +104,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 		}
 
 		msgMint := fiattokenfactorytypes.MsgMint{
-			From:    msg.From,
+			From:    authtypes.NewModuleAddress(types.ModuleName).String(),
 			Address: string(burnMessage.MintRecipient),
 			Amount: sdk.Coin{
 				Denom:  strings.ToLower(tokenPair.LocalToken),

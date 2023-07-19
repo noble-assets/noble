@@ -43,6 +43,10 @@ func NewKeeper(
 	}
 }
 
+func (k *Keeper) SetCctpKeeper(cctpKeeper types.CctpKeeper) {
+	k.cctpKeeper = cctpKeeper
+}
+
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }

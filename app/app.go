@@ -470,6 +470,14 @@ func New(
 	)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.RouterKeeper = routerkeeper.NewKeeper(
+		appCodec,
+		keys[routertypes.StoreKey],
+		app.GetSubspace(routertypes.ModuleName),
+		app.CCTPKeeper,
+		app.TransferKeeper,
+	)
+
 	app.CCTPKeeper = cctpkeeper.NewKeeper(
 		appCodec,
 		keys[cctptypes.StoreKey],
@@ -479,13 +487,7 @@ func New(
 		app.RouterKeeper,
 	)
 
-	app.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec,
-		keys[routertypes.StoreKey],
-		app.GetSubspace(routertypes.ModuleName),
-		app.CCTPKeeper,
-		app.TransferKeeper,
-	)
+	app.RouterKeeper.SetCctpKeeper(app.CCTPKeeper)
 
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
