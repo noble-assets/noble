@@ -402,15 +402,6 @@ func New(
 		app.IBCKeeper.ChannelKeeper,
 	)
 
-	app.CCTPKeeper = cctpkeeper.NewKeeper(
-		appCodec,
-		keys[cctptypes.StoreKey],
-		app.GetSubspace(cctptypes.ModuleName),
-		app.BankKeeper,
-		app.FiatTokenFactoryKeeper,
-		app.RouterKeeper,
-	)
-
 	app.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		keys[packetforwardtypes.StoreKey],
@@ -433,14 +424,6 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		scopedTransferKeeper,
-	)
-
-	app.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec,
-		keys[routertypes.StoreKey],
-		app.GetSubspace(routertypes.ModuleName),
-		app.CCTPKeeper,
-		app.TransferKeeper,
 	)
 
 	app.PacketForwardKeeper.SetTransferKeeper(app.TransferKeeper)
@@ -486,6 +469,23 @@ func New(
 		app.BankKeeper,
 	)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.CCTPKeeper = cctpkeeper.NewKeeper(
+		appCodec,
+		keys[cctptypes.StoreKey],
+		app.GetSubspace(cctptypes.ModuleName),
+		app.BankKeeper,
+		app.FiatTokenFactoryKeeper,
+		app.RouterKeeper,
+	)
+
+	app.RouterKeeper = routerkeeper.NewKeeper(
+		appCodec,
+		keys[routertypes.StoreKey],
+		app.GetSubspace(routertypes.ModuleName),
+		app.CCTPKeeper,
+		app.TransferKeeper,
+	)
 
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
