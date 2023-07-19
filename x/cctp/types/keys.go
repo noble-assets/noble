@@ -2,6 +2,8 @@ package types
 
 import (
 	"encoding/binary"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -55,7 +57,7 @@ func TokenPairKey(remoteDomain uint32, remoteToken string) []byte {
 	remoteDomainBytes := make([]byte, 4)
 	binary.BigEndian.PutUint32(remoteDomainBytes, remoteDomain)
 
-	combinedBytes := append(remoteDomainBytes, []byte(remoteToken)...)
+	combinedBytes := append(remoteDomainBytes, []byte(strings.ToLower(remoteToken))...)
 	hashedKey := crypto.Keccak256(combinedBytes)
 
 	return append(hashedKey, []byte("/")...)

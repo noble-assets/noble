@@ -18,9 +18,9 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 		k.SetPublicKey(ctx, elem)
 	}
 
-	for _, elem := range genState.MinterAllowanceList {
-		k.SetMinterAllowance(ctx, elem)
-	}
+	// for _, elem := range genState.MinterAllowanceList {
+	// 	k.SetMinterAllowance(ctx, elem)
+	// }
 
 	if genState.PerMessageBurnLimit != nil {
 		k.SetPerMessageBurnLimit(ctx, *genState.PerMessageBurnLimit)
@@ -76,7 +76,7 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 
 	genesis.PublicKeysList = k.GetAllPublicKeys(ctx)
 
-	genesis.MinterAllowanceList = k.GetAllMinterAllowances(ctx)
+	// genesis.MinterAllowanceList = k.GetAllMinterAllowances(ctx)
 
 	perMessageBurnLimit, found := k.GetPerMessageBurnLimit(ctx)
 	if found {

@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strings"
 
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
@@ -22,7 +22,7 @@ func (k msgServer) LinkTokenPair(goCtx context.Context, msg *types.MsgLinkTokenP
 	}
 
 	// check whether there already exists a mapping for this remote domain/token
-	_, found = k.GetTokenPair(ctx, msg.RemoteDomain, strings.ToLower(msg.RemoteToken))
+	_, found = k.GetTokenPair(ctx, msg.RemoteDomain, msg.RemoteToken)
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrTokenPairAlreadyFound, "Token pair for this remote domain, token already exists in store")
 	}

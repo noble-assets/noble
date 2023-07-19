@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/hex"
 	"strings"
 
 	sdkerrors "cosmossdk.io/errors"
@@ -84,27 +85,22 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	burnMessage := new(types.BurnMessage)
 	if err := burnMessage.UnmarshalBytes(message.MessageBody); err == nil { // mint
 
+		nonZeroIndex := 0
+		for i, b := range burnMessage.BurnToken {
+			if b != 0 {
+				nonZeroIndex = i
+				break
+			}
+		}
+
+		unpadded := burnMessage.BurnToken[nonZeroIndex:]
+		burnTokenHex := hex.EncodeToString(unpadded)
+
 		// look up Noble mint token from corresponding source domain/token
-		tokenPair, found := k.GetTokenPair(ctx, message.SourceDomain, strings.ToLower(string(burnMessage.BurnToken)))
+		tokenPair, found := k.GetTokenPair(ctx, message.SourceDomain, burnTokenHex)
 		if !found {
-			return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "corresponding noble mint token not found")
+			return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "corresponding noble mint token not found for %s", burnTokenHex)
 		}
-
-		// check if there is enough minter allowance left for this mint
-		allowance, found := k.GetMinterAllowance(ctx, strings.ToLower(tokenPair.LocalToken))
-		if !found {
-			return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "no minter allowance found for this denom: %s", tokenPair.LocalToken)
-		}
-
-		if burnMessage.Amount > allowance.Amount {
-			return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "mint failure: mint amount is over the cctp minter allowance")
-		}
-
-		newMinterAllowance := types.MinterAllowances{
-			Denom:  strings.ToLower(tokenPair.LocalToken),
-			Amount: allowance.Amount - burnMessage.Amount,
-		}
-		k.SetMinterAllowance(ctx, newMinterAllowance)
 
 		msgMint := fiattokenfactorytypes.MsgMint{
 			From:    msg.From,
