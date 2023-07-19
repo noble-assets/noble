@@ -119,7 +119,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 
 		_, err = k.fiattokenfactory.Mint(goCtx, &msgMint)
 		if err != nil {
-			return nil, sdkerrors.Wrapf(err, "Error during minting")
+			return nil, sdkerrors.Wrapf(err, "error during minting")
 		}
 
 		mintEvent := types.MintAndWithdraw{

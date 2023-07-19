@@ -3,111 +3,16 @@ package keeper_test
 import (
 	"bytes"
 	"encoding/binary"
+	"math/big"
+	"testing"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/strangelove-ventures/noble/x/router/keeper"
 	"github.com/strangelove-ventures/noble/x/router/types"
-	"math/big"
-	"testing"
 
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/stretchr/testify/require"
 )
-
-func TestDecodeMessage(t *testing.T) {
-	for _, tc := range []struct {
-		desc     string
-		msg      []byte
-		expected keeper.Message
-		err      error
-	}{
-		{
-			desc: "Happy path",
-			msg: bytesFromMessage(keeper.Message{
-				Version:           1,
-				SourceDomain:      2,
-				DestinationDomain: 3,
-				Nonce:             4,
-				Sender:            fillByteArray(0, 32),
-				Recipient:         fillByteArray(32, 32),
-				DestinationCaller: fillByteArray(64, 32),
-				MessageBody:       []byte("your average run of the mill message body"),
-			}),
-			expected: keeper.Message{
-				Version:           1,
-				SourceDomain:      2,
-				DestinationDomain: 3,
-				Nonce:             4,
-				Sender:            fillByteArray(0, 32),
-				Recipient:         fillByteArray(32, 32),
-				DestinationCaller: fillByteArray(64, 32),
-				MessageBody:       []byte("your average run of the mill message body"),
-			},
-		},
-		{
-			desc: "invalid",
-			msg:  []byte("-1"),
-			err:  types.ErrDecodingMessage,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			result, err := keeper.DecodeMessage(tc.msg)
-			if tc.err != nil {
-				require.ErrorIs(t, err, tc.err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t,
-					nullify.Fill(tc.expected),
-					nullify.Fill(*result),
-				)
-			}
-		})
-	}
-}
-
-func TestDecodeBurnMessage(t *testing.T) {
-	for _, tc := range []struct {
-		desc     string
-		msg      []byte
-		expected keeper.BurnMessage
-		err      error
-	}{
-		{
-			desc: "Happy path",
-			msg: bytesFromBurnMessage(keeper.BurnMessage{
-				Version:       3,
-				BurnToken:     []byte("01234567890123456789012345678912"),
-				MintRecipient: []byte("01234567890123456789012345678912"),
-				Amount:        *big.NewInt(int64(98999)),
-				MessageSender: []byte("01234567890123456789012345678912"),
-			}),
-			expected: keeper.BurnMessage{
-				Version:       3,
-				BurnToken:     []byte("01234567890123456789012345678912"),
-				MintRecipient: []byte("01234567890123456789012345678912"),
-				Amount:        *big.NewInt(int64(98999)),
-				MessageSender: []byte("01234567890123456789012345678912"),
-			},
-		},
-		{
-			desc: "invalid",
-			msg:  []byte("-1"),
-			err:  types.ErrDecodingBurnMessage,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			result, err := keeper.DecodeBurnMessage(tc.msg)
-			if tc.err != nil {
-				require.ErrorIs(t, err, tc.err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t,
-					nullify.Fill(tc.expected),
-					nullify.Fill(*result),
-				)
-			}
-		})
-	}
-}
 
 func TestDecodeIBCForward(t *testing.T) {
 	for _, tc := range []struct {

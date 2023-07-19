@@ -1,20 +1,22 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	cctptypes "github.com/strangelove-ventures/noble/x/cctp/types"
 	"github.com/strangelove-ventures/noble/x/router/types"
 )
 
 func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 
 	// parse outer message
-	outerMessage, err := DecodeMessage(msg)
-	if err != nil {
+	outerMessage := new(cctptypes.Message)
+	if err := outerMessage.UnmarshalBytes(msg); err != nil {
 		return err
 	}
 
@@ -43,9 +45,19 @@ func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 	}
 
 	// try to parse internal message into burn (representing a remote burn -> local mint)
-	if burnMessage, err := DecodeBurnMessage(outerMessage.MessageBody); err == nil {
+	burnMessage := new(cctptypes.BurnMessage)
+	if err := burnMessage.UnmarshalBytes(outerMessage.MessageBody); err == nil {
 		// look up corresponding mint token from cctp
-		tokenPair, found := k.cctpKeeper.GetTokenPair(ctx, outerMessage.SourceDomain, string(burnMessage.BurnToken))
+		nonZeroIndex := 0
+		for i, b := range burnMessage.BurnToken {
+			if b != 0 {
+				nonZeroIndex = i
+				break
+			}
+		}
+		unpadded := burnMessage.BurnToken[nonZeroIndex:]
+		burnTokenHex := hex.EncodeToString(unpadded)
+		tokenPair, found := k.cctpKeeper.GetTokenPair(ctx, outerMessage.SourceDomain, burnTokenHex)
 		if !found {
 			return sdkerrors.Wrapf(types.ErrHandleMessage, "unable to find local token denom for this burn")
 		}
@@ -56,7 +68,7 @@ func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 			Nonce:              outerMessage.Nonce,
 			Amount: &sdk.Coin{
 				Denom:  tokenPair.LocalToken,
-				Amount: sdk.NewIntFromBigInt(&burnMessage.Amount),
+				Amount: sdk.NewInt(int64(burnMessage.Amount)),
 			},
 			DestinationDomain: strconv.Itoa(int(outerMessage.DestinationDomain)),
 			MintRecipient:     string(burnMessage.MintRecipient),

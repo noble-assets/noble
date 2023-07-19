@@ -200,10 +200,8 @@ func TestCCTP(t *testing.T) {
 
 	wrappedDepositForBurn := cctptypes.Message{
 		Version:           0,
-		SourceDomainBytes: nil,
 		SourceDomain:      0,
 		DestinationDomain: 4,
-		NonceBytes:        nil,
 		Nonce:             0,
 		Sender:            []byte("12345678901234567890123456789012"),
 		Recipient:         []byte(nobleReceiver),
@@ -214,11 +212,9 @@ func TestCCTP(t *testing.T) {
 
 	wrappedForward := &cctptypes.Message{
 		Version:           0,
-		SourceDomainBytes: nil,
 		SourceDomain:      0,
 		DestinationDomain: 4,
-		NonceBytes:        nil,
-		Nonce:             0,
+		Nonce:             1,
 		Sender:            []byte("12345678901234567890123456789012"),
 		Recipient:         []byte(nobleReceiver),
 		// DestinationCaller: []byte(gw.fiatTfRoles.Owner.FormattedAddress()),

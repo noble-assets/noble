@@ -1,11 +1,11 @@
 package keeper
 
 import (
+	"math/big"
+
 	sdkerrors "cosmossdk.io/errors"
-	"encoding/binary"
 	"github.com/gogo/protobuf/proto"
 	"github.com/strangelove-ventures/noble/x/router/types"
-	"math/big"
 )
 
 type BurnMessage struct {
@@ -52,42 +52,6 @@ const (
 
 	Bytes32Len = 32
 )
-
-func DecodeBurnMessage(msg []byte) (*BurnMessage, error) {
-	if len(msg) != BurnMessageLen {
-		return nil, sdkerrors.Wrap(types.ErrDecodingBurnMessage, "error decoding burn message")
-	}
-
-	message := BurnMessage{
-		Version:       binary.BigEndian.Uint32(msg[BurnMsgVersionIndex:BurnTokenIndex]),
-		BurnToken:     msg[BurnTokenIndex:MintRecipientIndex],
-		MintRecipient: msg[MintRecipientIndex:AmountIndex],
-		Amount:        bytesToBigInt(msg[AmountIndex:MsgSenderIndex]),
-		MessageSender: msg[MsgSenderIndex:BurnMessageLen],
-	}
-
-	return &message, nil
-}
-
-func DecodeMessage(msg []byte) (*Message, error) {
-
-	if len(msg) < MessageBodyIndex {
-		return nil, sdkerrors.Wrap(types.ErrDecodingMessage, "error decoding message")
-	}
-
-	message := Message{
-		Version:           binary.BigEndian.Uint32(msg[VersionIndex:SourceDomainIndex]),
-		SourceDomain:      binary.BigEndian.Uint32(msg[SourceDomainIndex:DestinationDomainIndex]),
-		DestinationDomain: binary.BigEndian.Uint32(msg[DestinationDomainIndex:NonceIndex]),
-		Nonce:             binary.BigEndian.Uint64(msg[NonceIndex:SenderIndex]),
-		Sender:            msg[SenderIndex:RecipientIndex],
-		Recipient:         msg[RecipientIndex:DestinationCallerIndex],
-		DestinationCaller: msg[DestinationCallerIndex:MessageBodyIndex],
-		MessageBody:       msg[MessageBodyIndex:],
-	}
-
-	return &message, nil
-}
 
 func DecodeIBCForward(msg []byte) (types.IBCForwardMetadata, error) {
 	var res types.IBCForwardMetadata
