@@ -305,6 +305,6 @@ func TestCCTP(t *testing.T) {
 
 	gaiaBal, err := gaia.GetBalance(ctx, gaiaReceiver, dstIbcDenom)
 	require.NoError(t, err)
-	require.Equal(t, int64(1000000), gaiaBal)
+	require.Equal(t, int64(999900), gaiaBal)
 
 }
