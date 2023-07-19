@@ -25,7 +25,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 
-	"github.com/strangelove-ventures/noble/x/cctp/keeper"
 	cctptypes "github.com/strangelove-ventures/noble/x/cctp/types"
 	routertypes "github.com/strangelove-ventures/noble/x/router/types"
 )
@@ -168,12 +167,13 @@ func TestCCTP(t *testing.T) {
 
 	burnTokenPadded := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, burnToken...)
 
-	depositForBurn := keeper.ParseBurnMessageIntoBytes(cctptypes.BurnMessage{
+	depositForBurn := &cctptypes.BurnMessage{
 		BurnToken:     burnTokenPadded,
 		MintRecipient: burnRecipientPadded,
 		Amount:        1000000,
 		MessageSender: receiverBz,
-	})
+	}
+	depositForBurnBz := depositForBurn.Bytes()
 
 	forward, err := proto.Marshal(&routertypes.IBCForwardMetadata{
 		Port:                "transfer",
@@ -182,7 +182,7 @@ func TestCCTP(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	wrappedDepositForBurn := keeper.ParseIntoMessageBytes(cctptypes.Message{
+	wrappedDepositForBurn := cctptypes.Message{
 		Version:           0,
 		SourceDomainBytes: nil,
 		SourceDomain:      0,
@@ -190,12 +190,13 @@ func TestCCTP(t *testing.T) {
 		NonceBytes:        nil,
 		Nonce:             0,
 		Sender:            []byte("12345678901234567890123456789012"),
-		Recipient:         []byte("12345678901234567890123456789012"),
-		DestinationCaller: []byte("12345678901234567890123456789012"),
-		MessageBody:       depositForBurn,
-	})
+		Recipient:         []byte(nobleReceiver),
+		DestinationCaller: []byte(gw.fiatTfRoles.Owner.FormattedAddress()),
+		MessageBody:       depositForBurnBz,
+	}
+	wrappedDepositForBurnBz := wrappedDepositForBurn.Bytes()
 
-	wrappedForward := keeper.ParseIntoMessageBytes(cctptypes.Message{
+	wrappedForward := &cctptypes.Message{
 		Version:           0,
 		SourceDomainBytes: nil,
 		SourceDomain:      0,
@@ -203,13 +204,14 @@ func TestCCTP(t *testing.T) {
 		NonceBytes:        nil,
 		Nonce:             0,
 		Sender:            []byte("12345678901234567890123456789012"),
-		Recipient:         []byte("12345678901234567890123456789012"),
-		DestinationCaller: []byte("12345678901234567890123456789012"),
+		Recipient:         []byte(nobleReceiver),
+		DestinationCaller: []byte(gw.fiatTfRoles.Owner.FormattedAddress()),
 		MessageBody:       forward,
-	})
+	}
+	wrappedForwardBz := wrappedForward.Bytes()
 
-	digestBurn := crypto.Keccak256(wrappedDepositForBurn)
-	digestForward := crypto.Keccak256(wrappedForward)
+	digestBurn := crypto.Keccak256(wrappedDepositForBurnBz)
+	digestForward := crypto.Keccak256(wrappedForwardBz)
 
 	attestationBurn := make([]byte, 0, len(attesters)*65)
 	attestationForward := make([]byte, 0, len(attesters)*65)
@@ -242,7 +244,7 @@ func TestCCTP(t *testing.T) {
 		gw.fiatTfRoles.Owner,
 		&cctptypes.MsgReceiveMessage{
 			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
-			Message:     wrappedDepositForBurn,
+			Message:     wrappedDepositForBurnBz,
 			Attestation: attestationBurn,
 		},
 	)
@@ -262,7 +264,7 @@ func TestCCTP(t *testing.T) {
 		gw.fiatTfRoles.Owner,
 		&cctptypes.MsgReceiveMessage{
 			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
-			Message:     wrappedForward,
+			Message:     wrappedForwardBz,
 			Attestation: attestationForward,
 		},
 	)

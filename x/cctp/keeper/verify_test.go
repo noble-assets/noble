@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"bytes"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"encoding/hex"
@@ -28,44 +27,6 @@ func TestVerifyAttestationSignatures(t *testing.T) {
 		{Key: "048af0d36997eb1775c1a74a539b737f0a8db209ea7fc5677e64055a730ed07ad288fa3e7b3871ff18a4a55c4273c16ac5a2cff30dc00a122f63b3e655a62e093c"},
 		{Key: "04a36d8f1818402096aacaf7340493bdea39d1728948c40bbfb711feb7be35960139077dd8332be75f188f8567b4fc0fcf649fddf3397e569c856bf9ce9329d3b9"},
 	}
-
-	depositForBurnWrapper := keeper.ParseIntoMessage(message)
-	depositForBurn := keeper.ParseIntoBurnMessage(depositForBurnWrapper.MessageBody)
-	require.Equal(t, uint32(3), depositForBurnWrapper.DestinationDomain)
-
-	const expectedDepositForBurn = "0000000000000000000000000000000007865c6e87b9f70255377e024ace6630c1eaa37f0000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a3300000000000000000000000000000000000000000000000000000000007a12000000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a33"
-	expectedDepositForBurnBz, err := hex.DecodeString(expectedDepositForBurn)
-	require.NoError(t, err)
-	require.True(t, bytes.Equal(expectedDepositForBurnBz, depositForBurnWrapper.MessageBody))
-
-	require.Equal(t, uint32(0), depositForBurn.Version)
-
-	const expectedBurnToken = "00000000000000000000000007865c6e87b9f70255377e024ace6630c1eaa37f"
-	expectedBurnTokenBz, err := hex.DecodeString(expectedBurnToken)
-	require.NoError(t, err)
-	require.Equal(t, expectedBurnTokenBz, depositForBurn.BurnToken)
-
-	const expectedMintRecipient = "0000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a33"
-	expectedMintRecipientBz, err := hex.DecodeString(expectedMintRecipient)
-	require.NoError(t, err)
-	require.Equal(t, expectedMintRecipientBz, depositForBurn.MintRecipient)
-
-	require.Equal(t, uint64(0x7a1200), depositForBurn.Amount)
-
-	const expectedMessageSender = "0000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a33"
-	expectedMessageSenderBz, err := hex.DecodeString(expectedMessageSender)
-	require.NoError(t, err)
-	require.Equal(t, expectedMessageSenderBz, depositForBurn.MessageSender)
-
-	mintRecipient, err := hex.DecodeString("0000000000000000000000009481EF9E2CA814FC94676DEA3E8C3097B06B3A33")
-	require.NoError(t, err)
-	require.True(t, bytes.Equal(mintRecipient, depositForBurn.MintRecipient))
-
-	marshaledBurn := keeper.ParseBurnMessageIntoBytes(depositForBurn)
-	require.Equal(t, expectedDepositForBurnBz, marshaledBurn)
-
-	marshaledMsg := keeper.ParseIntoMessageBytes(depositForBurnWrapper)
-	require.Equal(t, message, marshaledMsg)
 
 	t.Run("valid input", func(t *testing.T) {
 		ok, err := keeper.VerifyAttestationSignatures(message, attestation, publicKeys, 2)

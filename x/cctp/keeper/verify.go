@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"crypto/ecdsa"
-	"encoding/binary"
 	"encoding/hex"
 	"math/big"
 
@@ -11,83 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
-
-func ParseIntoMessage(msg []byte) types.Message {
-	message := types.Message{
-		Version:           binary.BigEndian.Uint32(msg[0:4]),
-		SourceDomainBytes: msg[4:8],
-		SourceDomain:      binary.BigEndian.Uint32(msg[4:8]),
-		DestinationDomain: binary.BigEndian.Uint32(msg[8:12]),
-		NonceBytes:        msg[12:20],
-		Nonce:             binary.BigEndian.Uint64(msg[12:20]),
-		Sender:            msg[20:52],
-		Recipient:         msg[52:84],
-		DestinationCaller: msg[84:116],
-		MessageBody:       msg[116:],
-	}
-
-	return message
-}
-
-func ParseIntoBurnMessage(msg []byte) types.BurnMessage {
-	message := types.BurnMessage{
-		Version:       binary.BigEndian.Uint32(msg[0:4]),
-		BurnToken:     msg[4:36],
-		MintRecipient: msg[36:68],
-		Amount:        binary.BigEndian.Uint64(msg[92:100]),
-		MessageSender: msg[100:132],
-	}
-
-	return message
-}
-
-func ParseBurnMessageIntoBytes(msg types.BurnMessage) []byte {
-	result := make([]byte, burnMessageLength)
-
-	versionBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(versionBytes, msg.Version)
-
-	amountBytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(amountBytes, msg.Amount)
-
-	amountBytesPadded := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, amountBytes...)
-
-	copy(result[0:4], versionBytes)
-	copy(result[4:36], msg.BurnToken)
-	copy(result[36:68], msg.MintRecipient)
-	copy(result[68:100], amountBytesPadded)
-	copy(result[100:132], msg.MessageSender)
-
-	return result
-}
-
-func ParseIntoMessageBytes(msg types.Message) []byte {
-
-	result := make([]byte, messageBodyIndex+len(msg.MessageBody))
-
-	versionBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(versionBytes, msg.Version)
-
-	sourceDomainBytes := make([]byte, 32)
-	binary.BigEndian.PutUint32(sourceDomainBytes, msg.SourceDomain)
-
-	destinationDomain := make([]byte, 32)
-	binary.BigEndian.PutUint32(destinationDomain, msg.DestinationDomain)
-
-	nonceBytes := make([]byte, 32)
-	binary.BigEndian.PutUint64(nonceBytes, msg.Nonce)
-
-	copy(result[0:4], versionBytes)
-	copy(result[4:8], sourceDomainBytes)
-	copy(result[8:12], destinationDomain)
-	copy(result[12:20], nonceBytes)
-	copy(result[20:52], msg.Sender)
-	copy(result[52:84], msg.Recipient)
-	copy(result[84:116], msg.DestinationCaller)
-	copy(result[116:], msg.MessageBody)
-
-	return result
-}
 
 /*
 * Rules for valid attestation:

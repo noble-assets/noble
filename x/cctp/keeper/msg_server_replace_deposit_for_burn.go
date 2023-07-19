@@ -18,16 +18,16 @@ func (k msgServer) ReplaceDepositForBurn(goCtx context.Context, msg *types.MsgRe
 	}
 
 	// verify and parse original originalMessage
-	if len(msg.OriginalMessage) < messageBodyIndex {
-		return nil, sdkerrors.Wrap(types.ErrDepositForBurn, "invalid message: too short")
+	originalMessage := new(types.Message)
+	if err := originalMessage.UnmarshalBytes(msg.OriginalMessage); err != nil {
+		return nil, sdkerrors.Wrap(types.ErrDepositForBurn, err.Error())
 	}
-	originalMessage := ParseIntoMessage(msg.OriginalMessage)
 
 	// verify and parse BurnMessage
-	if len(originalMessage.MessageBody) != burnMessageLength {
-		return nil, sdkerrors.Wrap(types.ErrDepositForBurn, "burn message body is not the correct length")
+	burnMessage := new(types.BurnMessage)
+	if err := burnMessage.UnmarshalBytes(originalMessage.MessageBody); err != nil {
+		return nil, sdkerrors.Wrap(types.ErrDepositForBurn, err.Error())
 	}
-	burnMessage := ParseIntoBurnMessage(originalMessage.MessageBody)
 
 	// validate originalMessage sender is the same as this message sender
 	if msg.From != string(originalMessage.Sender) {
@@ -47,7 +47,7 @@ func (k msgServer) ReplaceDepositForBurn(goCtx context.Context, msg *types.MsgRe
 		MessageSender: burnMessage.MessageSender,
 	}
 
-	newMessageBodyBytes := ParseBurnMessageIntoBytes(newMessageBody)
+	newMessageBodyBytes := newMessageBody.Bytes()
 
 	replaceMessage := types.MsgReplaceMessage{
 		From:                 msg.From,

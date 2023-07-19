@@ -37,10 +37,10 @@ func (k msgServer) ReplaceMessage(goCtx context.Context, msg *types.MsgReplaceMe
 	}
 
 	// validate message format
-	if len(msg.OriginalMessage) < messageBodyIndex {
-		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "invalid message: too short")
+	originalMessage := new(types.Message)
+	if err := originalMessage.UnmarshalBytes(msg.OriginalMessage); err != nil {
+		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, err.Error())
 	}
-	originalMessage := ParseIntoMessage(msg.OriginalMessage)
 
 	// validate originalMessage sender is the same as this message sender
 	if msg.From != string(originalMessage.Sender) {

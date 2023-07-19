@@ -41,11 +41,10 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	}
 
 	// verify and parse message
-	if len(msg.Message) < messageBodyIndex {
-		return nil, sdkerrors.Wrap(types.ErrReceiveMessage, "invalid message: too short")
+	message := new(types.Message)
+	if err := message.UnmarshalBytes(msg.Message); err != nil {
+		return nil, sdkerrors.Wrap(types.ErrReceiveMessage, err.Error())
 	}
-
-	message := ParseIntoMessage(msg.Message)
 
 	// validate correct domain
 	if message.DestinationDomain != nobleDomainId {
@@ -77,11 +76,8 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	k.SetUsedNonce(ctx, nonceToSave)
 
 	// verify and parse BurnMessage
-	burnMessageIsValid := len(message.MessageBody) == burnMessageLength
-
-	burnMessage := ParseIntoBurnMessage(message.MessageBody)
-
-	if burnMessageIsValid { // mint
+	burnMessage := new(types.BurnMessage)
+	if err := burnMessage.UnmarshalBytes(message.MessageBody); err == nil { // mint
 
 		// look up Noble mint token from corresponding source domain/token
 		tokenPair, found := k.GetTokenPair(ctx, message.SourceDomain, strings.ToLower(string(burnMessage.BurnToken)))
