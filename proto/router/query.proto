@@ -19,7 +19,7 @@ service Query {
   }
   // Queries a Mint by source_contract_address and nonce
   rpc Mint(QueryGetMintRequest) returns (QueryGetMintResponse) {
-    option (google.api.http).get = "/noble/router/mint/{source_contract_address}/{nonce}";
+    option (google.api.http).get = "/noble/router/mint/{source_domain}/{source_domain_sender}/{nonce}";
   }
   // Queries a list of Mints
   rpc Mints(QueryAllMintsRequest) returns (QueryAllMintsResponse) {
@@ -27,7 +27,7 @@ service Query {
   }
   // Queries an IBCForward by source_contract_address and nonce
   rpc IBCForward(QueryGetIBCForwardRequest) returns (QueryGetIBCForwardResponse) {
-    option (google.api.http).get = "/noble/router/ibc_forward/{source_contract_address}/{nonce}";
+    option (google.api.http).get = "/noble/router/ibc_forward/{source_domain}/{source_domain_sender}/{nonce}";
   }
   // Queries a list of IBCForwards
   rpc IBCForwards(QueryAllIBCForwardsRequest) returns (QueryAllIBCForwardsResponse) {
@@ -51,8 +51,9 @@ message QueryParamsResponse {
 }
 
 message QueryGetMintRequest {
-  string source_contract_address = 1;
-  uint64 nonce = 2;
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
 }
 
 message QueryGetMintResponse {
@@ -69,8 +70,9 @@ message QueryAllMintsResponse {
 }
 
 message QueryGetIBCForwardRequest {
-  string source_contract_address = 1;
-  uint64 nonce = 2;
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
 }
 
 message QueryGetIBCForwardResponse {

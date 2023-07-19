@@ -23,7 +23,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	}
 
 	//// Validate each signature in the attestation
-	publicKeys := k.GetAllPublicKeys(ctx)
+	publicKeys := k.GetAllAttesters(ctx)
 	if len(publicKeys) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "no public keys found")
 	}
@@ -70,7 +70,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	binary.BigEndian.PutUint64(nonceBz, message.Nonce)
 
 	// verify nonce has not been used
-	usedNonceKey := UsedNonce{
+	usedNonceKey := types.Nonce{
 		Nonce:        message.Nonce,
 		SourceDomain: message.SourceDomain,
 	}

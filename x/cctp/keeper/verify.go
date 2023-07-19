@@ -23,7 +23,7 @@ import (
 func VerifyAttestationSignatures(
 	message []byte,
 	attestation []byte,
-	publicKeys []types.PublicKeys,
+	publicKeys []types.Attester,
 	signatureThreshold uint32) (bool, error) {
 
 	if uint32(len(attestation)) != signatureLength*signatureThreshold {
@@ -67,7 +67,7 @@ func VerifyAttestationSignatures(
 		// check that recovered key is a valid
 		contains := false
 		for _, key := range publicKeys {
-			hexBz, err := hex.DecodeString(key.Key)
+			hexBz, err := hex.DecodeString(key.Attester)
 			if err != nil {
 				return false, sdkerrors.Wrap(types.ErrSignatureVerification, "failed to decode public key in module state")
 			}

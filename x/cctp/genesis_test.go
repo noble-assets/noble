@@ -1,12 +1,13 @@
 package cctp_test
 
 import (
+	"testing"
+
 	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/x/cctp"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestGenesis(t *testing.T) {
@@ -15,12 +16,12 @@ func TestGenesis(t *testing.T) {
 		Authority: &types.Authority{
 			Address: "123",
 		},
-		PublicKeysList: []types.PublicKeys{
+		AttesterList: []types.Attester{
 			{
-				Key: "0",
+				Attester: "0",
 			},
 			{
-				Key: "1",
+				Attester: "1",
 			},
 		},
 		MinterAllowanceList: []types.MinterAllowances{
@@ -81,7 +82,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.PublicKeysList, got.PublicKeysList)
+	require.ElementsMatch(t, genesisState.AttesterList, got.AttesterList)
 	require.Equal(t, genesisState.Authority, got.Authority)
 	require.ElementsMatch(t, genesisState.MinterAllowanceList, got.MinterAllowanceList)
 	require.Equal(t, genesisState.PerMessageBurnLimit, got.PerMessageBurnLimit)

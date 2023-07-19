@@ -10,7 +10,7 @@ import (
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
 
-func SimulateMsgRemovePublicKey(
+func SimulateMsgDisableAttester(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	fk types.FiatTokenfactoryKeeper,
@@ -19,7 +19,7 @@ func SimulateMsgRemovePublicKey(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgRemovePublicKey{
+		msg := &types.MsgDisableAttester{
 			From: simAccount.Address.String(),
 		}
 

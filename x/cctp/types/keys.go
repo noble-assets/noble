@@ -26,7 +26,7 @@ const (
 	MinterAllowanceKeyPrefix             = "MinterAllowance/value/"
 	NonceKeyPrefix                       = "Nonce/value/"
 	PerMessageBurnLimitKey               = "PerMessageBurnLimit/value/"
-	PublicKeyKeyPrefix                   = "PublicKey/value/"
+	AttesterKeyPrefix                    = "Attester/value/"
 	SendingAndReceivingMessagesPausedKey = "SendingAndReceivingMessagesPaused/value/"
 	SignatureThresholdKeyPrefix          = "SignatureThreshold/value/"
 	TokenPairKeyPrefix                   = "TokenPair/value/"

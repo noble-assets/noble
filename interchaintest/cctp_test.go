@@ -21,7 +21,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
-	"github.com/strangelove-ventures/interchaintest/v3/testutil"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -117,9 +116,9 @@ func TestCCTP(t *testing.T) {
 
 		attesterPub := hex.EncodeToString(pubKey)
 
-		msgs[i] = &cctptypes.MsgAddPublicKey{
-			From:      gw.fiatTfRoles.Owner.FormattedAddress(),
-			PublicKey: []byte(attesterPub),
+		msgs[i] = &cctptypes.MsgEnableAttester{
+			From:     gw.fiatTfRoles.Owner.FormattedAddress(),
+			Attester: []byte(attesterPub),
 		}
 	}
 
@@ -191,13 +190,6 @@ func TestCCTP(t *testing.T) {
 	}
 	depositForBurnBz := depositForBurn.Bytes()
 
-	forward, err := proto.Marshal(&routertypes.IBCForwardMetadata{
-		Port:                "transfer",
-		Channel:             "channel-0",
-		DestinationReceiver: gaiaReceiver,
-	})
-	require.NoError(t, err)
-
 	wrappedDepositForBurn := cctptypes.Message{
 		Version:           0,
 		SourceDomain:      0,
@@ -209,6 +201,14 @@ func TestCCTP(t *testing.T) {
 		MessageBody: depositForBurnBz,
 	}
 	wrappedDepositForBurnBz := wrappedDepositForBurn.Bytes()
+
+	forward, err := proto.Marshal(&routertypes.IBCForwardMetadata{
+		Nonce:               0,
+		Port:                "transfer",
+		Channel:             "channel-0",
+		DestinationReceiver: gaiaReceiver,
+	})
+	require.NoError(t, err)
 
 	wrappedForward := &cctptypes.Message{
 		Version:           0,
@@ -250,8 +250,10 @@ func TestCCTP(t *testing.T) {
 
 	t.Logf("Attested to messages: %s", tx.TxHash)
 
+	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
+	defer bCancel()
 	tx, err = cosmos.BroadcastTx(
-		ctx,
+		bCtx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
 		&cctptypes.MsgReceiveMessage{
@@ -263,15 +265,17 @@ func TestCCTP(t *testing.T) {
 	require.NoError(t, err, "error submitting cctp burn recv tx")
 	require.Zerof(t, tx.Code, "cctp burn recv transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
-	t.Logf("CCTP message successfully received: %s", tx.TxHash)
+	t.Logf("CCTP burn message successfully received: %s", tx.TxHash)
 
 	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataDrachma.Base)
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)
 
+	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
+	defer bCancel()
 	tx, err = cosmos.BroadcastTx(
-		ctx,
+		bCtx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
 		&cctptypes.MsgReceiveMessage{
@@ -283,6 +287,8 @@ func TestCCTP(t *testing.T) {
 	require.NoError(t, err, "error submitting cctp forward recv tx")
 	require.Zerof(t, tx.Code, "cctp forward recv transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
-	err = testutil.WaitForBlocks(ctx, 100, noble)
-	require.NoError(t, err)
+	t.Logf("CCTP IBC forward message successfully received: %s", tx.TxHash)
+
+	// err = testutil.WaitForBlocks(ctx, 100, noble)
+	// require.NoError(t, err)
 }

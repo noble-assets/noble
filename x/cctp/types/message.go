@@ -11,10 +11,8 @@ func (m *Message) UnmarshalBytes(msg []byte) error {
 		return fmt.Errorf("invalid message: %d bytes is too short, must be at least 116 bytes", len(msg))
 	}
 	m.Version = binary.BigEndian.Uint32(msg[0:4])
-	m.SourceDomainBytes = msg[4:8]
 	m.SourceDomain = binary.BigEndian.Uint32(msg[4:8])
 	m.DestinationDomain = binary.BigEndian.Uint32(msg[8:12])
-	m.NonceBytes = msg[12:20]
 	m.Nonce = binary.BigEndian.Uint64(msg[12:20])
 	m.Sender = msg[20:52]
 	m.Recipient = msg[52:84]

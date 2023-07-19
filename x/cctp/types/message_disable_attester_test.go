@@ -8,41 +8,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgRemovePublicKey_ValidateBasic(t *testing.T) {
+func TestMsgDisableAttester_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgRemovePublicKey
+		msg  MsgDisableAttester
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgRemovePublicKey{
-				From:      "invalid_address",
-				PublicKey: []byte{1, 2, 3},
+			msg: MsgDisableAttester{
+				From:     "invalid_address",
+				Attester: []byte{1, 2, 3},
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		{
 			name: "empty pubkey",
-			msg: MsgRemovePublicKey{
-				From:      sample.AccAddress(),
-				PublicKey: []byte{},
+			msg: MsgDisableAttester{
+				From:     sample.AccAddress(),
+				Attester: []byte{},
 			},
 			err: ErrMalformedField,
 		},
 		{
 			name: "nil pubkey",
-			msg: MsgRemovePublicKey{
-				From:      sample.AccAddress(),
-				PublicKey: nil,
+			msg: MsgDisableAttester{
+				From:     sample.AccAddress(),
+				Attester: nil,
 			},
 			err: ErrMalformedField,
 		},
 		{
 			name: "valid address and key",
-			msg: MsgRemovePublicKey{
-				From:      sample.AccAddress(),
-				PublicKey: []byte{1, 2, 3},
+			msg: MsgDisableAttester{
+				From:     sample.AccAddress(),
+				Attester: []byte{1, 2, 3},
 			},
 		},
 	}

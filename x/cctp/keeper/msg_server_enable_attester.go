@@ -2,13 +2,14 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
 
-func (k msgServer) AddPublicKey(goCtx context.Context, msg *types.MsgAddPublicKey) (*types.MsgAddPublicKeyResponse, error) {
+func (k msgServer) EnableAttester(goCtx context.Context, msg *types.MsgEnableAttester) (*types.MsgEnableAttesterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	owner, found := k.GetAuthority(ctx)
@@ -20,20 +21,20 @@ func (k msgServer) AddPublicKey(goCtx context.Context, msg *types.MsgAddPublicKe
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "This message sender cannot add public keys")
 	}
 
-	_, found = k.GetPublicKey(ctx, string(msg.PublicKey))
+	_, found = k.GetAttester(ctx, string(msg.Attester))
 	if found {
 		return nil, sdkerrors.Wrapf(types.ErrPublicKeyAlreadyFound, "Public Key already exists in store")
 	}
 
-	newKey := types.PublicKeys{
-		Key: string(msg.PublicKey),
+	newKey := types.Attester{
+		Attester: string(msg.Attester),
 	}
-	k.SetPublicKey(ctx, newKey)
+	k.SetAttester(ctx, newKey)
 
 	event := types.AttesterEnabled{
-		Attester: string(msg.PublicKey),
+		Attester: string(msg.Attester),
 	}
 	err := ctx.EventManager().EmitTypedEvent(&event)
 
-	return &types.MsgAddPublicKeyResponse{}, err
+	return &types.MsgEnableAttesterResponse{}, err
 }

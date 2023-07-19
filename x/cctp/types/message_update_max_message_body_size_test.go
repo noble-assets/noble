@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/strangelove-ventures/noble/testutil/sample"
 	"testing"
+
+	"github.com/strangelove-ventures/noble/testutil/sample"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
@@ -17,16 +18,16 @@ func TestMsgUpdateMaxMessageBodySize_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgUpdateMaxMessageBodySize{
-				From:  "invalid_address",
-				Size_: 8000,
+				From:        "invalid_address",
+				MessageSize: 8000,
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		{
 			name: "happy path",
 			msg: MsgUpdateMaxMessageBodySize{
-				From:  sample.AccAddress(),
-				Size_: 8000,
+				From:        sample.AccAddress(),
+				MessageSize: 8000,
 			},
 		},
 	}

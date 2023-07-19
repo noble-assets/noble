@@ -35,7 +35,6 @@ func (k Keeper) HandleMessage(ctx sdk.Context, msg []byte) error {
 		// this is the first time we are seeing this forward info -> store it.
 		k.SetIBCForward(ctx, types.StoreIBCForwardMetadata{
 			SourceDomainSender: string(outerMessage.Sender),
-			Nonce:              outerMessage.Nonce,
 			Metadata:           &ibcForward,
 		})
 		if existingMint, ok := k.GetMint(ctx, outerMessage.SourceDomain, string(outerMessage.Sender), outerMessage.Nonce); ok {
@@ -108,11 +107,13 @@ func (k Keeper) ForwardPacket(ctx sdk.Context, ibcForward types.IBCForwardMetada
 	}
 
 	inFlightPacket := types.InFlightPacket{
+		SourceDomain:       mint.SourceDomain,
 		SourceDomainSender: mint.SourceDomainSender,
 		Nonce:              mint.Nonce,
-		ChannelId:          ibcForward.Channel,
-		PortId:             ibcForward.Port,
-		Sequence:           res.Sequence,
+
+		Channel:  ibcForward.Channel,
+		Port:     ibcForward.Port,
+		Sequence: res.Sequence,
 	}
 
 	k.SetInFlightPacket(ctx, inFlightPacket)

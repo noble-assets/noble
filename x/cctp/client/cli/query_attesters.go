@@ -9,10 +9,10 @@ import (
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
 
-func CmdListPublicKeys() *cobra.Command {
+func CmdListAttesters() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-public-keys",
-		Short: "lists all public keys",
+		Use:   "list-attesters",
+		Short: "lists all attesters",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -24,11 +24,11 @@ func CmdListPublicKeys() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllPublicKeysRequest{
+			params := &types.QueryAllAttestersRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.PublicKeys(context.Background(), params)
+			res, err := queryClient.Attesters(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -43,10 +43,10 @@ func CmdListPublicKeys() *cobra.Command {
 	return cmd
 }
 
-func CmdShowPublicKey() *cobra.Command {
+func CmdShowAttester() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-public-key [key]",
-		Short: "shows a public key",
+		Use:   "show-attester [key]",
+		Short: "shows an attester",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -55,11 +55,11 @@ func CmdShowPublicKey() *cobra.Command {
 
 			key := args[0]
 
-			params := &types.QueryGetPublicKeyRequest{
-				Key: key,
+			params := &types.QueryGetAttesterRequest{
+				Attester: key,
 			}
 
-			res, err := queryClient.PublicKey(context.Background(), params)
+			res, err := queryClient.Attester(context.Background(), params)
 			if err != nil {
 				return err
 			}

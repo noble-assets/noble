@@ -14,8 +14,8 @@ func init() {
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateAuthority{}, "cctp/UpdateAuthority", nil)
-	cdc.RegisterConcrete(&MsgAddPublicKey{}, "cctp/AddPublicKey", nil)
-	cdc.RegisterConcrete(&MsgRemovePublicKey{}, "cctp/DeletePublicKey", nil)
+	cdc.RegisterConcrete(&MsgEnableAttester{}, "cctp/EnableAttester", nil)
+	cdc.RegisterConcrete(&MsgDisableAttester{}, "cctp/DisableAttester", nil)
 	cdc.RegisterConcrete(&MsgPauseBurningAndMinting{}, "cctp/PauseBurningAndMinting", nil)
 	cdc.RegisterConcrete(&MsgUnpauseBurningAndMinting{}, "cctp/UnpauseBurningAndMinting", nil)
 	cdc.RegisterConcrete(&MsgPauseSendingAndReceivingMessages{}, "cctp/PauseSendingAndReceivingMessages", nil)
@@ -34,8 +34,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateAuthority{},
-		&MsgAddPublicKey{},
-		&MsgRemovePublicKey{},
+		&MsgEnableAttester{},
+		&MsgDisableAttester{},
 		&MsgPauseBurningAndMinting{},
 		&MsgUnpauseBurningAndMinting{},
 		&MsgPauseSendingAndReceivingMessages{},

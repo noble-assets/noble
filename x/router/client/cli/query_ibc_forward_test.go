@@ -2,9 +2,10 @@ package cli_test
 
 import (
 	"fmt"
-	"google.golang.org/grpc/codes"
 	"strconv"
 	"testing"
+
+	"google.golang.org/grpc/codes"
 
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
@@ -27,7 +28,9 @@ func networkWithIBCForwardObjects(t *testing.T, n int) (*network.Network, []type
 		IBCForward := types.StoreIBCForwardMetadata{
 			SourceDomain:       uint32(i),
 			SourceDomainSender: strconv.Itoa(i),
-			Nonce:              uint64(i),
+			Metadata: &types.IBCForwardMetadata{
+				Nonce: uint64(i),
+			},
 		}
 		nullify.Fill(&IBCForward)
 		state.IbcForwards = append(state.IbcForwards, IBCForward)
@@ -59,7 +62,7 @@ func TestShowIBCForward(t *testing.T) {
 			desc:               "found",
 			sourceDomain:       objs[0].SourceDomain,
 			sourceDomainSender: objs[0].SourceDomainSender,
-			nonce:              strconv.Itoa(int(objs[0].Nonce)),
+			nonce:              strconv.Itoa(int(objs[0].Metadata.Nonce)),
 			args:               common,
 			obj:                objs[0],
 		},

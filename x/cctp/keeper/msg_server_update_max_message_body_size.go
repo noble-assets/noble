@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -21,12 +22,12 @@ func (k msgServer) UpdateMaxMessageBodySize(goCtx context.Context, msg *types.Ms
 	}
 
 	newMaxMessageBodySize := types.MaxMessageBodySize{
-		Amount: uint64(msg.Size_),
+		Amount: uint64(msg.MessageSize),
 	}
 	k.SetMaxMessageBodySize(ctx, newMaxMessageBodySize)
 
 	event := types.MaxMessageBodySizeUpdated{
-		NewMaxMessageBodySize: uint64(msg.Size_),
+		NewMaxMessageBodySize: uint64(msg.MessageSize),
 	}
 	err := ctx.EventManager().EmitTypedEvent(&event)
 

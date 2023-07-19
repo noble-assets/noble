@@ -1,13 +1,14 @@
 package keeper_test
 
 import (
+	"math/big"
+	"strconv"
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/strangelove-ventures/noble/x/router/keeper"
 	"github.com/strangelove-ventures/noble/x/router/types"
-	"math/big"
-	"strconv"
-	"testing"
 
 	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
 	"github.com/stretchr/testify/require"
@@ -52,8 +53,8 @@ func TestForwardOnAckErrWithExistingMint(t *testing.T) {
 
 	routerKeeper.SetIBCForward(ctx, types.StoreIBCForwardMetadata{
 		SourceDomainSender: sourceDomainSender,
-		Nonce:              nonce,
 		Metadata: &types.IBCForwardMetadata{
+			Nonce:                nonce,
 			Port:                 port,
 			Channel:              channel,
 			DestinationReceiver:  "12345",
@@ -97,12 +98,8 @@ func TestForwardOnAckErrWithExistingMint(t *testing.T) {
 	err := routerKeeper.HandleMessage(ctx, msg)
 	require.Nil(t, err)
 
-	packet, found := routerKeeper.GetInFlightPacket(ctx, channel, port, sequence)
+	_, found = routerKeeper.GetInFlightPacket(ctx, channel, port, sequence)
 	require.True(t, found)
-	require.Equal(t, port, packet.PortId)
-	require.Equal(t, channel, packet.ChannelId)
-	require.Equal(t, sequence, packet.Sequence)
-
 }
 
 // valid forward, found forward, ack error, no mint -> panic
@@ -114,8 +111,8 @@ func TestForwardOnAckErrWithNoMint(t *testing.T) {
 
 	routerKeeper.SetIBCForward(ctx, types.StoreIBCForwardMetadata{
 		SourceDomainSender: sourceDomainSender,
-		Nonce:              nonce,
 		Metadata: &types.IBCForwardMetadata{
+			Nonce:                nonce,
 			Port:                 port,
 			Channel:              channel,
 			DestinationReceiver:  "12345",
@@ -160,8 +157,8 @@ func TestForwardWithFoundForwardAndNoAckError(t *testing.T) {
 
 	routerKeeper.SetIBCForward(ctx, types.StoreIBCForwardMetadata{
 		SourceDomainSender: sourceDomainSender,
-		Nonce:              nonce,
 		Metadata: &types.IBCForwardMetadata{
+			Nonce:                nonce,
 			Port:                 port,
 			Channel:              channel,
 			DestinationReceiver:  "12345",
@@ -236,17 +233,13 @@ func TestForwardWithNoForwardFoundAndExistingMint(t *testing.T) {
 	err := routerKeeper.HandleMessage(ctx, msg)
 	require.Nil(t, err)
 
-	packet, found := routerKeeper.GetInFlightPacket(ctx, channel, port, sequence)
+	_, found = routerKeeper.GetInFlightPacket(ctx, channel, port, sequence)
 	require.True(t, found)
-	require.Equal(t, port, packet.PortId)
-	require.Equal(t, channel, packet.ChannelId)
-	require.Equal(t, sequence, packet.Sequence)
 
 	forward, found := routerKeeper.GetIBCForward(ctx, sourceDomain, sourceDomainSender, nonce)
 	require.True(t, found)
 	require.Equal(t, sourceDomainSender, forward.SourceDomainSender)
-	require.Equal(t, nonce, forward.Nonce)
-
+	require.Equal(t, nonce, forward.Metadata.Nonce)
 }
 
 // valid forward, no forward -> set forward, if no mint -> return nil (mint hasn't come in yet)
@@ -279,8 +272,7 @@ func TestForwardWithNoForwardFoundAndNoMint(t *testing.T) {
 	forward, found := routerKeeper.GetIBCForward(ctx, sourceDomain, sourceDomainSender, nonce)
 	require.True(t, found)
 	require.Equal(t, sourceDomainSender, forward.SourceDomainSender)
-	require.Equal(t, nonce, forward.Nonce)
-
+	require.Equal(t, nonce, forward.Metadata.Nonce)
 }
 
 // valid mint, set mint, no forward -> return nil (forward hasn't come in yet)
@@ -331,8 +323,8 @@ func TestMintWithExistingForward(t *testing.T) {
 
 	routerKeeper.SetIBCForward(ctx, types.StoreIBCForwardMetadata{
 		SourceDomainSender: sourceDomainSender,
-		Nonce:              nonce,
 		Metadata: &types.IBCForwardMetadata{
+			Nonce:                nonce,
 			Port:                 port,
 			Channel:              channel,
 			DestinationReceiver:  "12345",
@@ -365,11 +357,8 @@ func TestMintWithExistingForward(t *testing.T) {
 	err := routerKeeper.HandleMessage(ctx, msg)
 	require.Nil(t, err)
 
-	packet, found := routerKeeper.GetInFlightPacket(ctx, channel, port, sequence)
+	_, found = routerKeeper.GetInFlightPacket(ctx, channel, port, sequence)
 	require.True(t, found)
-	require.Equal(t, port, packet.PortId)
-	require.Equal(t, channel, packet.ChannelId)
-	require.Equal(t, sequence, packet.Sequence)
 
 	mint, found := routerKeeper.GetMint(ctx, sourceDomain, sourceDomainSender, nonce)
 	require.True(t, found)

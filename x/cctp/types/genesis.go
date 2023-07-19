@@ -11,7 +11,7 @@ import (
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		Authority:                         nil,
-		PublicKeysList:                    []PublicKeys{},
+		AttesterList:                      []Attester{},
 		MinterAllowanceList:               []MinterAllowances{},
 		PerMessageBurnLimit:               nil,
 		BurningAndMintingPaused:           nil,
@@ -34,8 +34,8 @@ func (gs GenesisState) Validate() error {
 
 	// Check for duplicated index in public keys
 	publicKeysIndexMap := make(map[string]struct{})
-	for _, elem := range gs.PublicKeysList {
-		index := string(PublicKeyKey([]byte(elem.Key)))
+	for _, elem := range gs.AttesterList {
+		index := string(PublicKeyKey([]byte(elem.Attester)))
 		if _, ok := publicKeysIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for public keys")
 		}

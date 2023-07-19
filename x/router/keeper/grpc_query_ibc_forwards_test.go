@@ -33,7 +33,7 @@ func TestIBCForwardQuerySingle(t *testing.T) {
 			request: &types.QueryGetIBCForwardRequest{
 				SourceDomain:       msgs[0].SourceDomain,
 				SourceDomainSender: msgs[0].SourceDomainSender,
-				Nonce:              msgs[0].Nonce,
+				Nonce:              msgs[0].Metadata.Nonce,
 			},
 			response: &types.QueryGetIBCForwardResponse{IbcForward: msgs[0]},
 		},
@@ -42,7 +42,7 @@ func TestIBCForwardQuerySingle(t *testing.T) {
 			request: &types.QueryGetIBCForwardRequest{
 				SourceDomain:       msgs[1].SourceDomain,
 				SourceDomainSender: msgs[1].SourceDomainSender,
-				Nonce:              msgs[1].Nonce,
+				Nonce:              msgs[1].Metadata.Nonce,
 			},
 			response: &types.QueryGetIBCForwardResponse{IbcForward: msgs[1]},
 		},

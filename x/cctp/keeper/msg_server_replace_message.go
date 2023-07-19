@@ -18,7 +18,7 @@ func (k msgServer) ReplaceMessage(goCtx context.Context, msg *types.MsgReplaceMe
 	}
 
 	// Validate each signature in the attestation
-	publicKeys := k.GetAllPublicKeys(ctx)
+	publicKeys := k.GetAllAttesters(ctx)
 	if len(publicKeys) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "no public keys found")
 	}

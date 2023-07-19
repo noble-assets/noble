@@ -5,26 +5,26 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgAddPublicKey = "add_public_key"
+const TypeMsgEnableAttester = "add_public_key"
 
-var _ sdk.Msg = &MsgAddPublicKey{}
+var _ sdk.Msg = &MsgEnableAttester{}
 
-func NewMsgAddPublicKey(from string, publicKey []byte) *MsgAddPublicKey {
-	return &MsgAddPublicKey{
-		From:      from,
-		PublicKey: publicKey,
+func NewMsgEnableAttester(from string, publicKey []byte) *MsgEnableAttester {
+	return &MsgEnableAttester{
+		From:     from,
+		Attester: publicKey,
 	}
 }
 
-func (msg *MsgAddPublicKey) Route() string {
+func (msg *MsgEnableAttester) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgAddPublicKey) Type() string {
-	return TypeMsgAddPublicKey
+func (msg *MsgEnableAttester) Type() string {
+	return TypeMsgEnableAttester
 }
 
-func (msg *MsgAddPublicKey) GetSigners() []sdk.AccAddress {
+func (msg *MsgEnableAttester) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		panic(err)
@@ -32,17 +32,17 @@ func (msg *MsgAddPublicKey) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func (msg *MsgAddPublicKey) GetSignBytes() []byte {
+func (msg *MsgEnableAttester) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgAddPublicKey) ValidateBasic() error {
+func (msg *MsgEnableAttester) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid from address (%s)", err)
 	}
-	if msg.PublicKey == nil || len(msg.PublicKey) == 0 {
+	if len(msg.Attester) == 0 {
 		return sdkerrors.Wrapf(ErrMalformedField, "Public key cannot be empty or nil")
 	}
 	return nil

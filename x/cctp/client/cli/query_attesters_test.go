@@ -2,9 +2,10 @@ package cli_test
 
 import (
 	"fmt"
-	"google.golang.org/grpc/codes"
 	"strconv"
 	"testing"
+
+	"google.golang.org/grpc/codes"
 
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
@@ -17,23 +18,23 @@ import (
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
 
-func networkWithPublicKeyObjects(t *testing.T, n int) (*network.Network, []types.PublicKeys) {
+func networkWithPublicKeyObjects(t *testing.T, n int) (*network.Network, []types.Attester) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		publicKeys := types.PublicKeys{
-			Key: strconv.Itoa(i),
+		publicKeys := types.Attester{
+			Attester: strconv.Itoa(i),
 		}
 		nullify.Fill(&publicKeys)
-		state.PublicKeysList = append(state.PublicKeysList, publicKeys)
+		state.AttesterList = append(state.AttesterList, publicKeys)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.PublicKeysList
+	return network.New(t, cfg), state.AttesterList
 }
 
 func TestShowPublicKey(t *testing.T) {
@@ -49,11 +50,11 @@ func TestShowPublicKey(t *testing.T) {
 
 		args []string
 		err  error
-		obj  types.PublicKeys
+		obj  types.Attester
 	}{
 		{
 			desc:  "found",
-			idKey: objs[0].Key,
+			idKey: objs[0].Attester,
 			args:  common,
 			obj:   objs[0],
 		},
@@ -69,19 +70,19 @@ func TestShowPublicKey(t *testing.T) {
 				tc.idKey,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowPublicKey(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowAttester(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetPublicKeyResponse
+				var resp types.QueryGetAttesterResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.PublicKey)
+				require.NotNil(t, resp.Attester)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.PublicKey),
+					nullify.Fill(&resp.Attester),
 				)
 			}
 		})

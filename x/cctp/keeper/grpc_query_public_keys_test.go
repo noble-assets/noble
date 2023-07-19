@@ -18,34 +18,34 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func TestPublicKeyQuerySingle(t *testing.T) {
+func TestAttesterQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.CctpKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNPublicKeys(keeper, ctx, 2)
+	msgs := createNAttesters(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetPublicKeyRequest
-		response *types.QueryGetPublicKeyResponse
+		request  *types.QueryGetAttesterRequest
+		response *types.QueryGetAttesterResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetPublicKeyRequest{
-				Key: msgs[0].publicKey.Key,
+			request: &types.QueryGetAttesterRequest{
+				Attester: msgs[0].attester.Attester,
 			},
-			response: &types.QueryGetPublicKeyResponse{PublicKey: msgs[0].publicKey},
+			response: &types.QueryGetAttesterResponse{Attester: msgs[0].attester},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetPublicKeyRequest{
-				Key: msgs[1].publicKey.Key,
+			request: &types.QueryGetAttesterRequest{
+				Attester: msgs[1].attester.Attester,
 			},
-			response: &types.QueryGetPublicKeyResponse{PublicKey: msgs[1].publicKey},
+			response: &types.QueryGetAttesterResponse{Attester: msgs[1].attester},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetPublicKeyRequest{
-				Key: "nothing",
+			request: &types.QueryGetAttesterRequest{
+				Attester: "nothing",
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -55,7 +55,7 @@ func TestPublicKeyQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.PublicKey(wctx, tc.request)
+			response, err := keeper.Attester(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -72,14 +72,14 @@ func TestPublicKeyQuerySingle(t *testing.T) {
 func TestPublicKeyQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.CctpKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNPublicKeys(keeper, ctx, 5)
-	PublicKey := make([]types.PublicKeys, len(msgs))
+	msgs := createNAttesters(keeper, ctx, 5)
+	attesters := make([]types.Attester, len(msgs))
 	for i, msg := range msgs {
-		PublicKey[i] = msg.publicKey
+		attesters[i] = msg.attester
 	}
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllPublicKeysRequest {
-		return &types.QueryAllPublicKeysRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAttestersRequest {
+		return &types.QueryAllAttestersRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -90,41 +90,41 @@ func TestPublicKeyQueryPaginated(t *testing.T) {
 	}
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
-		for i := 0; i < len(PublicKey); i += step {
-			resp, err := keeper.PublicKeys(wctx, request(nil, uint64(i), uint64(step), false))
+		for i := 0; i < len(attesters); i += step {
+			resp, err := keeper.Attesters(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.PublicKeys), step)
+			require.LessOrEqual(t, len(resp.Attester), step)
 			require.Subset(t,
-				nullify.Fill(PublicKey),
-				nullify.Fill(resp.PublicKeys),
+				nullify.Fill(attesters),
+				nullify.Fill(resp.Attester),
 			)
 		}
 	})
 	t.Run("ByKey", func(t *testing.T) {
 		step := 2
 		var next []byte
-		for i := 0; i < len(PublicKey); i += step {
-			resp, err := keeper.PublicKeys(wctx, request(next, 0, uint64(step), false))
+		for i := 0; i < len(attesters); i += step {
+			resp, err := keeper.Attesters(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.PublicKeys), step)
+			require.LessOrEqual(t, len(resp.Attester), step)
 			require.Subset(t,
-				nullify.Fill(PublicKey),
-				nullify.Fill(resp.PublicKeys),
+				nullify.Fill(attesters),
+				nullify.Fill(resp.Attester),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.PublicKeys(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.Attesters(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(PublicKey), int(resp.Pagination.Total))
+		require.Equal(t, len(attesters), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
-			nullify.Fill(PublicKey),
-			nullify.Fill(resp.PublicKeys),
+			nullify.Fill(attesters),
+			nullify.Fill(resp.Attester),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.PublicKeys(wctx, nil)
+		_, err := keeper.Attesters(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

@@ -16,56 +16,56 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-type publicKeyWrapper struct {
-	address   string
-	publicKey types.PublicKeys
+type attesterWrapper struct {
+	address  string
+	attester types.Attester
 }
 
-func createNPublicKeys(keeper *keeper.Keeper, ctx sdk.Context, n int) []publicKeyWrapper {
-	items := make([]publicKeyWrapper, n)
+func createNAttesters(keeper *keeper.Keeper, ctx sdk.Context, n int) []attesterWrapper {
+	items := make([]attesterWrapper, n)
 	for i := range items {
 		items[i].address = sample.AccAddress()
-		items[i].publicKey.Key = "PublicKey" + strconv.Itoa(i)
+		items[i].attester.Attester = "PublicKey" + strconv.Itoa(i)
 
-		keeper.SetPublicKey(ctx, items[i].publicKey)
+		keeper.SetAttester(ctx, items[i].attester)
 	}
 	return items
 }
 
-func TestPublicKeysGet(t *testing.T) {
+func TestAttestersGet(t *testing.T) {
 	cctpKeeper, ctx := keepertest.CctpKeeper(t)
-	items := createNPublicKeys(cctpKeeper, ctx, 10)
+	items := createNAttesters(cctpKeeper, ctx, 10)
 	for _, item := range items {
-		rst, found := cctpKeeper.GetPublicKey(ctx,
-			item.publicKey.Key,
+		rst, found := cctpKeeper.GetAttester(ctx,
+			item.attester.Attester,
 		)
 		require.True(t, found)
 		require.Equal(t,
-			nullify.Fill(&item.publicKey),
+			nullify.Fill(&item.attester),
 			nullify.Fill(&rst),
 		)
 	}
 }
 
-func TestPublicKeysRemove(t *testing.T) {
+func TestAttestersRemove(t *testing.T) {
 	cctpKeeper, ctx := keepertest.CctpKeeper(t)
-	items := createNPublicKeys(cctpKeeper, ctx, 10)
+	items := createNAttesters(cctpKeeper, ctx, 10)
 	for _, item := range items {
-		cctpKeeper.DeletePublicKey(ctx, item.address)
-		_, found := cctpKeeper.GetPublicKey(ctx, item.address)
+		cctpKeeper.DeleteAttester(ctx, item.address)
+		_, found := cctpKeeper.GetAttester(ctx, item.address)
 		require.False(t, found)
 	}
 }
 
-func TestPublicKeysGetAll(t *testing.T) {
+func TestAttestersGetAll(t *testing.T) {
 	cctpKeeper, ctx := keepertest.CctpKeeper(t)
-	items := createNPublicKeys(cctpKeeper, ctx, 10)
-	denom := make([]types.PublicKeys, len(items))
+	items := createNAttesters(cctpKeeper, ctx, 10)
+	denom := make([]types.Attester, len(items))
 	for i, item := range items {
-		denom[i] = item.publicKey
+		denom[i] = item.attester
 	}
 	require.ElementsMatch(t,
 		nullify.Fill(denom),
-		nullify.Fill(cctpKeeper.GetAllPublicKeys(ctx)),
+		nullify.Fill(cctpKeeper.GetAllAttesters(ctx)),
 	)
 }

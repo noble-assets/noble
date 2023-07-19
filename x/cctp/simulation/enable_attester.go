@@ -10,7 +10,7 @@ import (
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
 
-func SimulateMsgAddPublicKey(
+func SimulateMsgEnableAttester(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	fk types.FiatTokenfactoryKeeper,
@@ -19,9 +19,9 @@ func SimulateMsgAddPublicKey(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgAddPublicKey{
-			From:      simAccount.Address.String(),
-			PublicKey: simAccount.PubKey.Address(),
+		msg := &types.MsgEnableAttester{
+			From:     simAccount.Address.String(),
+			Attester: simAccount.PubKey.Address(),
 		}
 
 		// TODO: Handling the AddPublicKey simulation

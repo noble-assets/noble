@@ -11,8 +11,8 @@ var _ sdk.Msg = &MsgUpdateMaxMessageBodySize{}
 
 func NewMsgUpdateMaxMessageBodySize(from string, size uint32) *MsgUpdateMaxMessageBodySize {
 	return &MsgUpdateMaxMessageBodySize{
-		From:  from,
-		Size_: size,
+		From:        from,
+		MessageSize: size,
 	}
 }
 

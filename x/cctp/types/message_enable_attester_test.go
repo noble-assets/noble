@@ -8,41 +8,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgAddPublicKey_ValidateBasic(t *testing.T) {
+func TestMsgEnableAttester_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgAddPublicKey
+		msg  MsgEnableAttester
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgAddPublicKey{
-				From:      "invalid_address",
-				PublicKey: []byte{1, 2, 3},
+			msg: MsgEnableAttester{
+				From:     "invalid_address",
+				Attester: []byte{1, 2, 3},
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		{
 			name: "empty pubkey",
-			msg: MsgAddPublicKey{
-				From:      sample.AccAddress(),
-				PublicKey: []byte{},
+			msg: MsgEnableAttester{
+				From:     sample.AccAddress(),
+				Attester: []byte{},
 			},
 			err: ErrMalformedField,
 		},
 		{
 			name: "nil pubkey",
-			msg: MsgAddPublicKey{
-				From:      sample.AccAddress(),
-				PublicKey: nil,
+			msg: MsgEnableAttester{
+				From:     sample.AccAddress(),
+				Attester: nil,
 			},
 			err: ErrMalformedField,
 		},
 		{
 			name: "valid address and key",
-			msg: MsgAddPublicKey{
-				From:      sample.AccAddress(),
-				PublicKey: []byte{1, 2, 3},
+			msg: MsgEnableAttester{
+				From:     sample.AccAddress(),
+				Attester: []byte{1, 2, 3},
 			},
 		},
 	}

@@ -35,7 +35,7 @@ func (k msgServer) UpdateSignatureThreshold(goCtx context.Context, msg *types.Ms
 	}
 
 	// new signature threshold cannot be greater than the number of stored public keys
-	publicKeys := k.GetAllPublicKeys(ctx)
+	publicKeys := k.GetAllAttesters(ctx)
 	if msg.Amount > uint32(len(publicKeys)) {
 		return nil, sdkerrors.Wrapf(types.ErrUpdateSignatureThreshold, "new signature threshold is too high")
 	}

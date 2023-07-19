@@ -6,13 +6,11 @@ option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
 
 message Message {
   uint32 version = 1;
-  bytes source_domain_bytes = 2;
-  uint32 source_domain = 3;
-  uint32 destination_domain = 4;
-  bytes nonce_bytes = 5;
-  uint64 nonce = 6;
-  bytes sender = 7;
-  bytes recipient = 8;
-  bytes destination_caller = 9;
-  bytes message_body = 10;
+  uint32 source_domain = 2;
+  uint32 destination_domain = 3;
+  uint64 nonce = 4;
+  bytes sender = 5;
+  bytes recipient = 6;
+  bytes destination_caller = 7;
+  bytes message_body = 8;
 }

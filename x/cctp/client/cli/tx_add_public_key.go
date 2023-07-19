@@ -25,7 +25,7 @@ func CmdAddPublicKey() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddPublicKey(
+			msg := types.NewMsgEnableAttester(
 				clientCtx.GetFromAddress().String(),
 				[]byte(key),
 			)

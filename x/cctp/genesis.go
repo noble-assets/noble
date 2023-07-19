@@ -14,8 +14,8 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 		k.SetAuthority(ctx, *genState.Authority)
 	}
 
-	for _, elem := range genState.PublicKeysList {
-		k.SetPublicKey(ctx, elem)
+	for _, elem := range genState.AttesterList {
+		k.SetAttester(ctx, elem)
 	}
 
 	// for _, elem := range genState.MinterAllowanceList {
@@ -54,11 +54,7 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genState types.GenesisState)
 	}
 
 	for _, elem := range genState.UsedNoncesList {
-		k.SetUsedNonce(ctx, keeper.UsedNonce{
-			// TODO add to proto
-			// SourceDomain: elem.SourceDomain,
-			Nonce: elem.Nonce,
-		})
+		k.SetUsedNonce(ctx, elem)
 	}
 
 	k.SetParams(ctx, genState.Params)
@@ -74,7 +70,7 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 		genesis.Authority = &authority
 	}
 
-	genesis.PublicKeysList = k.GetAllPublicKeys(ctx)
+	genesis.AttesterList = k.GetAllAttesters(ctx)
 
 	// genesis.MinterAllowanceList = k.GetAllMinterAllowances(ctx)
 
@@ -111,13 +107,7 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 	genesis.TokenPairList = k.GetAllTokenPairs(ctx)
 
 	usedNonces := k.GetAllUsedNonces(ctx)
-	for _, n := range usedNonces {
-		genesis.UsedNoncesList = append(genesis.UsedNoncesList, types.Nonce{
-			// TODO add to proto
-			// SourceDomain: n.SourceDomain,
-			Nonce: n.Nonce,
-		})
-	}
+	genesis.UsedNoncesList = usedNonces
 
 	return genesis
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -11,38 +12,38 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) PublicKey(c context.Context, req *types.QueryGetPublicKeyRequest) (*types.QueryGetPublicKeyResponse, error) {
+func (k Keeper) Attester(c context.Context, req *types.QueryGetAttesterRequest) (*types.QueryGetAttesterResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetPublicKey(ctx, req.Key)
+	val, found := k.GetAttester(ctx, req.Attester)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetPublicKeyResponse{PublicKey: val}, nil
+	return &types.QueryGetAttesterResponse{Attester: val}, nil
 }
 
-func (k Keeper) PublicKeys(c context.Context, req *types.QueryAllPublicKeysRequest) (*types.QueryAllPublicKeysResponse, error) {
+func (k Keeper) Attesters(c context.Context, req *types.QueryAllAttestersRequest) (*types.QueryAllAttestersResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var publicKeys []types.PublicKeys
+	var attesters []types.Attester
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	PublicKeysStore := prefix.NewStore(store, types.KeyPrefix(types.PublicKeyKeyPrefix))
+	attesterStore := prefix.NewStore(store, types.KeyPrefix(types.AttesterKeyPrefix))
 
-	pageRes, err := query.Paginate(PublicKeysStore, req.Pagination, func(key []byte, value []byte) error {
-		var publicKey types.PublicKeys
-		if err := k.cdc.Unmarshal(value, &publicKey); err != nil {
+	pageRes, err := query.Paginate(attesterStore, req.Pagination, func(key []byte, value []byte) error {
+		var attester types.Attester
+		if err := k.cdc.Unmarshal(value, &attester); err != nil {
 			return err
 		}
 
-		publicKeys = append(publicKeys, publicKey)
+		attesters = append(attesters, attester)
 		return nil
 	})
 
@@ -50,5 +51,5 @@ func (k Keeper) PublicKeys(c context.Context, req *types.QueryAllPublicKeysReque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllPublicKeysResponse{PublicKeys: publicKeys, Pagination: pageRes}, nil
+	return &types.QueryAllAttestersResponse{Attester: attesters, Pagination: pageRes}, nil
 }

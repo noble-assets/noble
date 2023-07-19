@@ -23,9 +23,9 @@ func TestVerifyAttestationSignatures(t *testing.T) {
 	attestation, _ := hex.DecodeString("640692cd7b0332ca6f38196f232752bca1a01619538d7e3ce6183f317c66d2483f4c7e83f2642fca25c384effc23647dec3cda7bc4ceac78c8681a22b7a351891bc5c3fedba209d406ec6cdfb434f62bb15d9623acc81d3769cb3d7987c5cb5d9b76b7ad0161e0985b4ae691c5334697fad1b5196ee104de19c09f9718751a740f1c")
 
 	// from https://iris-api-sandbox.circle.com/v1/publicKeys
-	publicKeys := []types.PublicKeys{
-		{Key: "048af0d36997eb1775c1a74a539b737f0a8db209ea7fc5677e64055a730ed07ad288fa3e7b3871ff18a4a55c4273c16ac5a2cff30dc00a122f63b3e655a62e093c"},
-		{Key: "04a36d8f1818402096aacaf7340493bdea39d1728948c40bbfb711feb7be35960139077dd8332be75f188f8567b4fc0fcf649fddf3397e569c856bf9ce9329d3b9"},
+	publicKeys := []types.Attester{
+		{Attester: "048af0d36997eb1775c1a74a539b737f0a8db209ea7fc5677e64055a730ed07ad288fa3e7b3871ff18a4a55c4273c16ac5a2cff30dc00a122f63b3e655a62e093c"},
+		{Attester: "04a36d8f1818402096aacaf7340493bdea39d1728948c40bbfb711feb7be35960139077dd8332be75f188f8567b4fc0fcf649fddf3397e569c856bf9ce9329d3b9"},
 	}
 
 	t.Run("valid input", func(t *testing.T) {
@@ -43,9 +43,9 @@ func TestWithGeneratedValues(t *testing.T) {
 
 	pubKey1 := crypto.FromECDSAPub(&privKey1.PublicKey)
 	pubKey2 := crypto.FromECDSAPub(&privKey2.PublicKey)
-	publicKeys := []types.PublicKeys{
-		{Key: hex.EncodeToString(pubKey1)},
-		{Key: hex.EncodeToString(pubKey2)},
+	publicKeys := []types.Attester{
+		{Attester: hex.EncodeToString(pubKey1)},
+		{Attester: hex.EncodeToString(pubKey2)},
 	}
 
 	message := []byte("Hello, World!")

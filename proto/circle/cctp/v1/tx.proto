@@ -19,8 +19,8 @@ service Msg {
   rpc UpdateMinterAllowance(MsgUpdateMinterAllowance) returns (MsgUpdateMinterAllowanceResponse);
   rpc LinkTokenPair(MsgLinkTokenPair) returns (MsgLinkTokenPairResponse);
   rpc UnlinkTokenPair(MsgUnlinkTokenPair) returns (MsgUnlinkTokenPairResponse);
-  rpc AddTokenMessenger(MsgAddTokenMessenger) returns (MsgAddTokenMessengerResponse);
-  rpc RemoveTokenMessenger(MsgRemoveTokenMessenger) returns (MsgRemoveTokenMessengerResponse);
+  // rpc AddTokenMessenger(MsgAddTokenMessenger) returns (MsgAddTokenMessengerResponse);
+  // rpc RemoveTokenMessenger(MsgRemoveTokenMessenger) returns (MsgRemoveTokenMessengerResponse);
 
   rpc DepositForBurn(MsgDepositForBurn) returns (MsgDepositForBurnResponse);
   rpc DepositForBurnWithCaller(MsgDepositForBurnWithCaller) returns (MsgDepositForBurnWithCallerResponse);
@@ -201,17 +201,17 @@ message MsgUnlinkTokenPair {
 
 message MsgUnlinkTokenPairResponse {}
 
-message MsgAddTokenMessenger {
-  string from = 1;
-  uint32 domain_id = 2;
-  string address = 3;
-}
+// message MsgAddTokenMessenger {
+//   string from = 1;
+//   uint32 domain_id = 2;
+//   string address = 3;
+// }
 
-message MsgAddTokenMessengerResponse {}
+// message MsgAddTokenMessengerResponse {}
 
-message MsgRemoveTokenMessenger{
-  string from = 1;
-  uint32 domain_id = 2;
-}
+// message MsgRemoveTokenMessenger{
+//   string from = 1;
+//   uint32 domain_id = 2;
+// }
 
-message MsgRemoveTokenMessengerResponse{}
+// message MsgRemoveTokenMessengerResponse{}

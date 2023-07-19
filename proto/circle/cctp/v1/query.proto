@@ -73,14 +73,14 @@ service Query {
   rpc TokenPairs(QueryAllTokenPairsRequest) returns (QueryAllTokenPairsResponse) {
     option (google.api.http).get = "/circle/cctp/v1/token_pairs";
   }
-  // Queries a TokenMessenger by index
-  rpc TokenMessenger(QueryGetTokenMessengerRequest) returns (QueryGetTokenMessengerResponse) {
-      option (google.api.http).get = "/circle/cctp/v1/token_messengers/{domain_id}";
-  }
-  // Queries a list of TokenMessenger
-  rpc TokenMessengers(QueryAllTokenMessengersRequest) returns (QueryAllTokenMessengersResponse) {
-    option (google.api.http).get = "/circle/cctp/v1/token_messengers";
-  }
+  // // Queries a TokenMessenger by index
+  // rpc TokenMessenger(QueryGetTokenMessengerRequest) returns (QueryGetTokenMessengerResponse) {
+  //     option (google.api.http).get = "/circle/cctp/v1/token_messengers/{domain_id}";
+  // }
+  // // Queries a list of TokenMessenger
+  // rpc TokenMessengers(QueryAllTokenMessengersRequest) returns (QueryAllTokenMessengersResponse) {
+  //   option (google.api.http).get = "/circle/cctp/v1/token_messengers";
+  // }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.

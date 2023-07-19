@@ -20,7 +20,9 @@ func createNIBCForward(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.St
 	for i := range items {
 		items[i].SourceDomain = uint32(i)
 		items[i].SourceDomainSender = strconv.Itoa(i)
-		items[i].Nonce = uint64(i)
+		items[i].Metadata = &types.IBCForwardMetadata{
+			Nonce: uint64(i),
+		}
 
 		keeper.SetIBCForward(ctx, items[i])
 	}
@@ -35,7 +37,7 @@ func TestIBCForwardGet(t *testing.T) {
 			ctx,
 			item.SourceDomain,
 			item.SourceDomainSender,
-			item.Nonce,
+			item.Metadata.Nonce,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -53,13 +55,13 @@ func TestIBCForwardRemove(t *testing.T) {
 			ctx,
 			item.SourceDomain,
 			item.SourceDomainSender,
-			item.Nonce,
+			item.Metadata.Nonce,
 		)
 		_, found := routerKeeper.GetIBCForward(
 			ctx,
 			item.SourceDomain,
 			item.SourceDomainSender,
-			item.Nonce,
+			item.Metadata.Nonce,
 		)
 		require.False(t, found)
 	}

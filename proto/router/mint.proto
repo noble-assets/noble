@@ -11,9 +11,10 @@ option go_package = "github.com/strangelove-ventures/noble/x/router/types";
 // @param destinationDomain
 // @param mintRecipient
 message Mint {
-  string source_domain_sender = 1;
-  uint64 nonce = 2;
-  cosmos.base.v1beta1.Coin amount = 3;
-  string destination_domain = 4;
-  string mint_recipient = 5;
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
+  cosmos.base.v1beta1.Coin amount = 4;
+  string destination_domain = 5;
+  string mint_recipient = 6;
 }

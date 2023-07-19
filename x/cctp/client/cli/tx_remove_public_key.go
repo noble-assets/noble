@@ -25,7 +25,7 @@ func CmdRemovePublicKey() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemovePublicKey(
+			msg := types.NewMsgDisableAttester(
 				clientCtx.GetFromAddress().String(),
 				[]byte(key),
 			)

@@ -10,6 +10,12 @@ option go_package = "github.com/strangelove-ventures/noble/x/router/types";
 // @param source_domain_sender
 // @param nonce
 message InFlightPacket {
-  string source_domain_sender = 1;
-  uint64 nonce = 2;
+  uint32 source_domain = 1;
+  string source_domain_sender = 2;
+  uint64 nonce = 3;
+
+  // needed for restoration on genesis export/import.
+  string port = 4;
+  string channel = 5;
+  uint64 sequence = 6;
 }

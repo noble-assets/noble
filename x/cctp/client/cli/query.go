@@ -19,7 +19,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdListPublicKeys())
+	cmd.AddCommand(CmdListAttesters())
 	cmd.AddCommand(CmdListTokenPairs())
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdShowAuthority())
@@ -27,7 +27,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdShowMaxMessageBodySize())
 	cmd.AddCommand(CmdShowMinterAllowance())
 	cmd.AddCommand(CmdShowPerMessageBurnLimit())
-	cmd.AddCommand(CmdShowPublicKey())
+	cmd.AddCommand(CmdShowAttester())
 	cmd.AddCommand(CmdShowSendingAndReceivingMessagesPaused())
 	cmd.AddCommand(CmdShowSignatureThreshold())
 	cmd.AddCommand(CmdShowTokenPair())
