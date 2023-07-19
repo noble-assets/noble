@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -39,7 +40,7 @@ func (k msgServer) ReplaceMessage(goCtx context.Context, msg *types.MsgReplaceMe
 	if len(msg.OriginalMessage) < messageBodyIndex {
 		return nil, sdkerrors.Wrap(types.ErrReplaceMessage, "invalid message: too short")
 	}
-	originalMessage := parseIntoMessage(msg.OriginalMessage)
+	originalMessage := ParseIntoMessage(msg.OriginalMessage)
 
 	// validate originalMessage sender is the same as this message sender
 	if msg.From != string(originalMessage.Sender) {

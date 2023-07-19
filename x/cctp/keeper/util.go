@@ -12,7 +12,7 @@ import (
 	"github.com/strangelove-ventures/noble/x/cctp/types"
 )
 
-func parseIntoMessage(msg []byte) types.Message {
+func ParseIntoMessage(msg []byte) types.Message {
 	message := types.Message{
 		Version:           binary.BigEndian.Uint32(msg[0:4]),
 		SourceDomainBytes: msg[4:8],
@@ -29,12 +29,12 @@ func parseIntoMessage(msg []byte) types.Message {
 	return message
 }
 
-func parseIntoBurnMessage(msg []byte) types.BurnMessage {
+func ParseIntoBurnMessage(msg []byte) types.BurnMessage {
 	message := types.BurnMessage{
 		Version:       binary.BigEndian.Uint32(msg[0:4]),
 		BurnToken:     msg[4:36],
 		MintRecipient: msg[36:68],
-		Amount:        binary.BigEndian.Uint64(msg[68:100]),
+		Amount:        binary.BigEndian.Uint64(msg[92:100]),
 		MessageSender: msg[100:132],
 	}
 
@@ -45,15 +45,18 @@ func ParseBurnMessageIntoBytes(msg types.BurnMessage) []byte {
 	result := make([]byte, burnMessageLength)
 
 	versionBytes := make([]byte, 4)
-	binary.LittleEndian.PutUint32(versionBytes, msg.Version)
+	binary.BigEndian.PutUint32(versionBytes, msg.Version)
 
-	amountBytes := make([]byte, 32)
-	binary.LittleEndian.PutUint64(amountBytes, msg.Amount)
+	amountBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(amountBytes, msg.Amount)
 
-	copyBytes(0, 4, versionBytes, &result)
-	copyBytes(4, 36, msg.BurnToken, &result) // TODO panics here
-	copyBytes(36, 68, msg.MintRecipient, &result)
-	copyBytes(68, 100, amountBytes, &result)
+	amountBytesPadded := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, amountBytes...)
+
+	copy(result[0:4], versionBytes)
+	copy(result[4:36], msg.BurnToken)
+	copy(result[36:68], msg.MintRecipient)
+	copy(result[68:100], amountBytesPadded)
+	copy(result[100:132], msg.MessageSender)
 
 	return result
 }
@@ -63,33 +66,27 @@ func ParseIntoMessageBytes(msg types.Message) []byte {
 	result := make([]byte, messageBodyIndex+len(msg.MessageBody))
 
 	versionBytes := make([]byte, 4)
-	binary.LittleEndian.PutUint32(versionBytes, msg.Version)
+	binary.BigEndian.PutUint32(versionBytes, msg.Version)
 
 	sourceDomainBytes := make([]byte, 32)
-	binary.LittleEndian.PutUint32(sourceDomainBytes, msg.SourceDomain)
+	binary.BigEndian.PutUint32(sourceDomainBytes, msg.SourceDomain)
 
 	destinationDomain := make([]byte, 32)
-	binary.LittleEndian.PutUint32(destinationDomain, msg.DestinationDomain)
+	binary.BigEndian.PutUint32(destinationDomain, msg.DestinationDomain)
 
 	nonceBytes := make([]byte, 32)
-	binary.LittleEndian.PutUint64(nonceBytes, msg.Nonce)
+	binary.BigEndian.PutUint64(nonceBytes, msg.Nonce)
 
-	copyBytes(0, 4, versionBytes, &result)
-	copyBytes(4, 8, sourceDomainBytes, &result)
-	copyBytes(8, 12, destinationDomain, &result)
-	copyBytes(12, 20, nonceBytes, &result)
-	copyBytes(20, 52, msg.Sender, &result)
-	copyBytes(52, 84, msg.Recipient, &result)
-	copyBytes(84, 116, msg.DestinationCaller, &result)
-	copyBytes(116, len(msg.MessageBody), msg.MessageBody, &result)
+	copy(result[0:4], versionBytes)
+	copy(result[4:8], sourceDomainBytes)
+	copy(result[8:12], destinationDomain)
+	copy(result[12:20], nonceBytes)
+	copy(result[20:52], msg.Sender)
+	copy(result[52:84], msg.Recipient)
+	copy(result[84:116], msg.DestinationCaller)
+	copy(result[116:], msg.MessageBody)
 
 	return result
-}
-
-func copyBytes(start int, end int, copyFrom []byte, copyInto *[]byte) {
-	for i := start; i < end; i++ {
-		(*copyInto)[i] = copyFrom[i-start]
-	}
 }
 
 /*

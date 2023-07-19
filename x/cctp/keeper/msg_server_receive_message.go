@@ -45,7 +45,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 		return nil, sdkerrors.Wrap(types.ErrReceiveMessage, "invalid message: too short")
 	}
 
-	message := parseIntoMessage(msg.Message)
+	message := ParseIntoMessage(msg.Message)
 
 	// validate correct domain
 	if message.DestinationDomain != nobleDomainId {
@@ -79,7 +79,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	// verify and parse BurnMessage
 	burnMessageIsValid := len(message.MessageBody) == burnMessageLength
 
-	burnMessage := parseIntoBurnMessage(message.MessageBody)
+	burnMessage := ParseIntoBurnMessage(message.MessageBody)
 
 	if burnMessageIsValid { // mint
 

@@ -1,14 +1,17 @@
 package keeper_test
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"encoding/hex"
+	"testing"
+
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/strangelove-ventures/noble/x/cctp/keeper"
 	"github.com/strangelove-ventures/noble/x/cctp/types"
-	"testing"
+	"github.com/stretchr/testify/require"
 )
 
 // circle testnet values
@@ -26,14 +29,48 @@ func TestVerifyAttestationSignatures(t *testing.T) {
 		{Key: "04a36d8f1818402096aacaf7340493bdea39d1728948c40bbfb711feb7be35960139077dd8332be75f188f8567b4fc0fcf649fddf3397e569c856bf9ce9329d3b9"},
 	}
 
+	depositForBurnWrapper := keeper.ParseIntoMessage(message)
+	depositForBurn := keeper.ParseIntoBurnMessage(depositForBurnWrapper.MessageBody)
+	require.Equal(t, uint32(3), depositForBurnWrapper.DestinationDomain)
+
+	const expectedDepositForBurn = "0000000000000000000000000000000007865c6e87b9f70255377e024ace6630c1eaa37f0000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a3300000000000000000000000000000000000000000000000000000000007a12000000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a33"
+	expectedDepositForBurnBz, err := hex.DecodeString(expectedDepositForBurn)
+	require.NoError(t, err)
+	require.True(t, bytes.Equal(expectedDepositForBurnBz, depositForBurnWrapper.MessageBody))
+
+	require.Equal(t, uint32(0), depositForBurn.Version)
+
+	const expectedBurnToken = "00000000000000000000000007865c6e87b9f70255377e024ace6630c1eaa37f"
+	expectedBurnTokenBz, err := hex.DecodeString(expectedBurnToken)
+	require.NoError(t, err)
+	require.Equal(t, expectedBurnTokenBz, depositForBurn.BurnToken)
+
+	const expectedMintRecipient = "0000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a33"
+	expectedMintRecipientBz, err := hex.DecodeString(expectedMintRecipient)
+	require.NoError(t, err)
+	require.Equal(t, expectedMintRecipientBz, depositForBurn.MintRecipient)
+
+	require.Equal(t, uint64(0x7a1200), depositForBurn.Amount)
+
+	const expectedMessageSender = "0000000000000000000000009481ef9e2ca814fc94676dea3e8c3097b06b3a33"
+	expectedMessageSenderBz, err := hex.DecodeString(expectedMessageSender)
+	require.NoError(t, err)
+	require.Equal(t, expectedMessageSenderBz, depositForBurn.MessageSender)
+
+	mintRecipient, err := hex.DecodeString("0000000000000000000000009481EF9E2CA814FC94676DEA3E8C3097B06B3A33")
+	require.NoError(t, err)
+	require.True(t, bytes.Equal(mintRecipient, depositForBurn.MintRecipient))
+
+	marshaledBurn := keeper.ParseBurnMessageIntoBytes(depositForBurn)
+	require.Equal(t, expectedDepositForBurnBz, marshaledBurn)
+
+	marshaledMsg := keeper.ParseIntoMessageBytes(depositForBurnWrapper)
+	require.Equal(t, message, marshaledMsg)
+
 	t.Run("valid input", func(t *testing.T) {
 		ok, err := keeper.VerifyAttestationSignatures(message, attestation, publicKeys, 2)
-		if err != nil {
-			t.Errorf("expected no error, got %v", err)
-		}
-		if !ok {
-			t.Errorf("expected true, got false")
-		}
+		require.NoError(t, err)
+		require.True(t, ok)
 	})
 
 }
@@ -46,16 +83,16 @@ func TestWithGeneratedValues(t *testing.T) {
 	pubKey1 := crypto.FromECDSAPub(&privKey1.PublicKey)
 	pubKey2 := crypto.FromECDSAPub(&privKey2.PublicKey)
 	publicKeys := []types.PublicKeys{
-		{Key: string(pubKey1)},
-		{Key: string(pubKey2)},
+		{Key: hex.EncodeToString(pubKey1)},
+		{Key: hex.EncodeToString(pubKey2)},
 	}
 
 	message := []byte("Hello, World!")
-	signature, _ := crypto.Sign(crypto.Keccak256(message), privKey1)
-	signature2, _ := crypto.Sign(crypto.Keccak256(message), privKey2)
+	digest := crypto.Keccak256(message)
+	signature, _ := crypto.Sign(digest, privKey1)
+	signature2, _ := crypto.Sign(digest, privKey2)
 
 	verified, err := keeper.VerifyAttestationSignatures(message, append(signature, signature2...), publicKeys, 2)
-	if err != nil || !verified {
-		panic("fuck")
-	}
+	require.NoError(t, err)
+	require.True(t, verified)
 }
