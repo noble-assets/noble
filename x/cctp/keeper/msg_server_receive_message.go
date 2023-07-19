@@ -103,9 +103,14 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 			return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "corresponding noble mint token not found for %s", burnTokenHex)
 		}
 
+		addr, err := sdk.Bech32ifyAddressBytes("noble", burnMessage.MintRecipient[12:])
+		if err != nil {
+			return nil, sdkerrors.Wrapf(types.ErrReceiveMessage, "error bech32 encoding mint recipient address")
+		}
+
 		msgMint := fiattokenfactorytypes.MsgMint{
 			From:    authtypes.NewModuleAddress(types.ModuleName).String(),
-			Address: string(burnMessage.MintRecipient),
+			Address: addr,
 			Amount: sdk.Coin{
 				Denom:  strings.ToLower(tokenPair.LocalToken),
 				Amount: sdk.NewIntFromUint64(burnMessage.Amount),
@@ -118,9 +123,9 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 		}
 
 		mintEvent := types.MintAndWithdraw{
-			MintRecipient: string(burnMessage.MintRecipient),
+			MintRecipient: addr,
 			Amount:        burnMessage.Amount,
-			MintToken:     string(burnMessage.BurnToken),
+			MintToken:     burnTokenHex,
 		}
 		err = ctx.EventManager().EmitTypedEvent(&mintEvent)
 		if err != nil {
@@ -129,7 +134,7 @@ func (k msgServer) ReceiveMessage(goCtx context.Context, msg *types.MsgReceiveMe
 	}
 
 	if err := k.router.HandleMessage(ctx, msg.Message); err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrMint, "Error in handleMessage")
+		return nil, sdkerrors.Wrapf(err, "Error in handleMessage")
 	}
 
 	event := types.MessageReceived{
