@@ -1,7 +1,11 @@
 package keeper
 
 import (
+	"context"
 	"testing"
+
+	"github.com/strangelove-ventures/noble/testutil/sample"
+	cctpmoduletypes "github.com/strangelove-ventures/noble/x/cctp/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -47,4 +51,22 @@ func FiatTokenfactoryKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	k.SetParams(ctx, types.DefaultParams())
 
 	return k, ctx
+}
+
+type MockFiatTokenfactoryKeeper struct{}
+
+func (k MockFiatTokenfactoryKeeper) GetAuthority(ctx sdk.Context) (val cctpmoduletypes.Authority, found bool) {
+	return cctpmoduletypes.Authority{Address: sample.AccAddress()}, true
+}
+
+func (MockFiatTokenfactoryKeeper) Mint(ctx context.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
+	return &types.MsgMintResponse{}, nil
+}
+
+func (MockFiatTokenfactoryKeeper) Burn(ctx context.Context, msg *types.MsgBurn) (*types.MsgBurnResponse, error) {
+	return &types.MsgBurnResponse{}, nil
+}
+
+func (MockFiatTokenfactoryKeeper) GetMintingDenom(ctx sdk.Context) (val types.MintingDenom) {
+	return types.MintingDenom{Denom: "uusdc"}
 }

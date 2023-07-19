@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package circle.cctp.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/x/cctp/types";
+
+message TokenPairs {
+  uint32 remote_domain = 1;
+  string remote_token = 2;
+  string local_token = 3;
+}
