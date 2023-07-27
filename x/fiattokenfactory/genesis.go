@@ -1,11 +1,11 @@
 package fiattokenfactory
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.

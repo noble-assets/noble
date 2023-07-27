@@ -3,11 +3,11 @@ package cli
 import (
 	"context"
 
+	"github.com/spf13/cobra"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/spf13/cobra"
 )
 
 func CmdListMinterController() *cobra.Command {

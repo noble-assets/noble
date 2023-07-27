@@ -7,7 +7,6 @@ import (
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/x/tokenfactory"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
-
 	"github.com/stretchr/testify/require"
 )
 

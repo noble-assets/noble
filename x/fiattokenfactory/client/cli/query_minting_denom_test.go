@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"testing"
 
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/stretchr/testify/require"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"google.golang.org/grpc/status"
-
 	"github.com/strangelove-ventures/noble/testutil/network"
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/stretchr/testify/require"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"google.golang.org/grpc/status"
+
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 func networkWithMintingDenomObjects(t *testing.T) (*network.Network, types.MintingDenom) {

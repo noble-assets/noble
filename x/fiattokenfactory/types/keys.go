@@ -41,7 +41,6 @@ func MintersKey(address string) []byte {
 // MinterControllerKey returns the store key to retrieve a MinterController from the index fields
 func MinterControllerKey(controllerAddress string) []byte {
 	return append([]byte(controllerAddress), []byte("/")...)
-
 }
 
 const (

@@ -3,10 +3,11 @@ package keeper
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) Pauser(c context.Context, req *types.QueryGetPauserRequest) (*types.QueryGetPauserResponse, error) {

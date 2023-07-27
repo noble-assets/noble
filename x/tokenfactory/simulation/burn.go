@@ -3,11 +3,12 @@ package simulation
 import (
 	"math/rand"
 
+	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
 
 func SimulateMsgBurn(

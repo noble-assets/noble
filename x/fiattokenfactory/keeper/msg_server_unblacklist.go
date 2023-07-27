@@ -3,11 +3,12 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 
 	sdkerrors "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 )
 
 func (k msgServer) Unblacklist(goCtx context.Context, msg *types.MsgUnblacklist) (*types.MsgUnblacklistResponse, error) {

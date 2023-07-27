@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 )
 
 // SetBlacklisted set a specific blacklisted in the store from its index

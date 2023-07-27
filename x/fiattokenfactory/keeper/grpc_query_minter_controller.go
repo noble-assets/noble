@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (k Keeper) MinterControllerAll(c context.Context, req *types.QueryAllMinterControllerRequest) (*types.QueryAllMinterControllerResponse, error) {
@@ -23,7 +23,7 @@ func (k Keeper) MinterControllerAll(c context.Context, req *types.QueryAllMinter
 	store := ctx.KVStore(k.storeKey)
 	minterControllerStore := prefix.NewStore(store, types.KeyPrefix(types.MinterControllerKeyPrefix))
 
-	pageRes, err := query.Paginate(minterControllerStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(minterControllerStore, req.Pagination, func(key, value []byte) error {
 		var minterController types.MinterController
 		if err := k.cdc.Unmarshal(value, &minterController); err != nil {
 			return err
@@ -32,7 +32,6 @@ func (k Keeper) MinterControllerAll(c context.Context, req *types.QueryAllMinter
 		minterControllers = append(minterControllers, minterController)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

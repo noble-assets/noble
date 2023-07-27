@@ -9,7 +9,7 @@ const TypeMsgUpdateBlacklister = "update_blacklister"
 
 var _ sdk.Msg = &MsgUpdateBlacklister{}
 
-func NewMsgUpdateBlacklister(from string, address string) *MsgUpdateBlacklister {
+func NewMsgUpdateBlacklister(from, address string) *MsgUpdateBlacklister {
 	return &MsgUpdateBlacklister{
 		From:    from,
 		Address: address,

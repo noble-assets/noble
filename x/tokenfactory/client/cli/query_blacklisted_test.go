@@ -5,18 +5,18 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/strangelove-ventures/noble/testutil/network"
+	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/testutil/sample"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/strangelove-ventures/noble/testutil/network"
-	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 )
 
 // Prevent strconv unused error

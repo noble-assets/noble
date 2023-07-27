@@ -1,17 +1,16 @@
 package neon
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory"
 	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
@@ -59,27 +58,24 @@ func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
 	return *s
 }
 
-var (
-	denomMetadataUsdc = banktypes.Metadata{
-
-		Description: "USD Coin",
-		Name:        "usdc",
-		Base:        "uusdc",
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom: "uusdc",
-				Aliases: []string{
-					"microusdc",
-				},
-				Exponent: 0,
+var denomMetadataUsdc = banktypes.Metadata{
+	Description: "USD Coin",
+	Name:        "usdc",
+	Base:        "uusdc",
+	DenomUnits: []*banktypes.DenomUnit{
+		{
+			Denom: "uusdc",
+			Aliases: []string{
+				"microusdc",
 			},
-			{
-				Denom:    "usdc",
-				Exponent: 6,
-			},
+			Exponent: 0,
 		},
-	}
-)
+		{
+			Denom:    "usdc",
+			Exponent: 6,
+		},
+	},
+}
 
 func CreateNeonUpgradeHandler(
 	mm *module.Manager,
@@ -87,7 +83,6 @@ func CreateNeonUpgradeHandler(
 	fiatTFKeeper fiattokenfactorykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	accountKeeper authkeeper.AccountKeeper,
-
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		logger := ctx.Logger().With("upgrade", UpgradeName)

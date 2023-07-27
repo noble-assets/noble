@@ -3,13 +3,13 @@ package ante
 import (
 	"errors"
 
+	"github.com/strangelove-ventures/noble/x/globalfee"
+	"github.com/strangelove-ventures/noble/x/globalfee/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/strangelove-ventures/noble/x/globalfee/types"
-
-	"github.com/strangelove-ventures/noble/x/globalfee"
 )
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
