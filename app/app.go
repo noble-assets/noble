@@ -254,9 +254,9 @@ func NewNobleApp(
 	app.App = appBuilder.Build(logger, db, traceStore, baseAppOptions...)
 
 	// Registers all modules that don't use App Wiring (e.g. IBC).
-	// app.RegisterLegacyModules()
+	app.RegisterLegacyModules()
 	// Registers all proposals handlers that are using v1beta1 governance.
-	// app.RegisterLegacyRouter()
+	app.RegisterLegacyRouter()
 
 	if err := app.Load(loadLatest); err != nil {
 		panic(err)
