@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package noble.tariff.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "noble/tariff/v1/tariff.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/tariff/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/noble/tariff/v1/params";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

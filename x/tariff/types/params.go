@@ -3,129 +3,34 @@ package types
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"gopkg.in/yaml.v2"
 )
 
-var (
-	KeyShare                = []byte("Share")
-	KeyDistributionEntities = []byte("DistributionEntities")
-	KeyTransferFeeBPS       = []byte("TransferFeeBPS")
-	KeyTransferFeeMax       = []byte("TransferFeeMax")
-	KeyTransferFeeDenom     = []byte("TransferFeeDenom")
-)
-
-var _ paramtypes.ParamSet = (*Params)(nil)
-
-// ParamKeyTable the param key table for launch module
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
+// NewParams creates a new Params object.
+func NewParams(share math.LegacyDec, distributionEntities []DistributionEntity, transferFeeBPS math.Int, transferFeeMax math.Int, transferFeeDenom string) Params {
+	return Params{
+		Share:                share,
+		DistributionEntities: distributionEntities,
+		TransferFeeBps:       transferFeeBPS,
+		TransferFeeMax:       transferFeeMax,
+		TransferFeeDenom:     transferFeeDenom,
+	}
 }
 
-// DefaultParams returns a default set of parameters
+// DefaultParams creates a default Params object.
 func DefaultParams() Params {
 	return Params{}
 }
 
-// ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyShare, &p.Share, validateShare),
-		paramtypes.NewParamSetPair(KeyDistributionEntities, &p.DistributionEntities, validateDistributionEntityParams),
-		paramtypes.NewParamSetPair(KeyTransferFeeBPS, &p.TransferFeeBps, validateTransferFeeBPS),
-		paramtypes.NewParamSetPair(KeyTransferFeeMax, &p.TransferFeeMax, validateTransferFeeMax),
-		paramtypes.NewParamSetPair(KeyTransferFeeDenom, &p.TransferFeeDenom, validateTransferFeeDenom),
-	}
-}
-
-func validateDistributionEntityParams(i interface{}) error {
-	distributionEntities, ok := i.([]DistributionEntity)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	// ensure each denom is only registered one time.
-	sum := sdk.ZeroDec()
-	for _, d := range distributionEntities {
-		adr, err := sdk.AccAddressFromBech32(d.Address)
-		if err != nil {
-			return fmt.Errorf("failed to parse bech32 address: %s", d.Address)
-		}
-		count := 0
-		for _, dd := range distributionEntities {
-			if dd.Address == adr.String() {
-				count++
-			}
-		}
-		if count > 1 {
-			return fmt.Errorf("address is already added as a distribution entity: %s", adr)
-		}
-
-		if d.Share.LTE(sdk.ZeroDec()) || d.Share.GT(sdk.OneDec()) {
-			return fmt.Errorf("distribution entity share must be greater than 0 and less than or equal to 100%%: %s", d.Share.String())
-		}
-
-		sum = sum.Add(d.Share)
-	}
-
-	if len(distributionEntities) > 0 && !sum.Equal(sdk.OneDec()) {
-		return fmt.Errorf("sum of distribution entity shares don't equal 100%%: %s", sum.String())
-	}
-
-	return nil
-}
-
-func validateShare(i interface{}) error {
-	share, ok := i.(sdk.Dec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	if share.LT(sdk.ZeroDec()) || share.GT(sdk.OneDec()) {
-		return fmt.Errorf("share is outside of the range of 0 to 100%%: %s", share.String())
-	}
-	return nil
-}
-
-func validateTransferFeeBPS(i interface{}) error {
-	transferFeeBPS, ok := i.(sdk.Int)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	if transferFeeBPS.LT(sdk.ZeroInt()) || transferFeeBPS.GT(sdk.NewInt(10000)) {
-		return fmt.Errorf("ibc transfer basis points fee is outside of the range of 0 to 10000: %s", transferFeeBPS.String())
-	}
-	return nil
-}
-
-func validateTransferFeeMax(i interface{}) error {
-	transferFeeMax, ok := i.(sdk.Int)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	if transferFeeMax.LT(sdk.ZeroInt()) {
-		return fmt.Errorf("ibc transfer max fee is less than 0: %s", transferFeeMax.String())
-	}
-	return nil
-}
-
-func validateTransferFeeDenom(i interface{}) error {
-	transferFeeDenom, ok := i.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	if transferFeeDenom == "" {
-		return nil
-	}
-	return sdk.ValidateDenom(transferFeeDenom)
-}
-
-// Validate validates the set of params
-func (p Params) Validate() error {
+// Validate validates the provided params.
+func (p *Params) Validate() error {
 	if err := validateShare(p.Share); err != nil {
 		return err
 	}
 
-	if err := validateDistributionEntityParams(p.DistributionEntities); err != nil {
+	if err := validateDistributionEntities(p.DistributionEntities); err != nil {
 		return err
 	}
 
@@ -144,8 +49,93 @@ func (p Params) Validate() error {
 	return nil
 }
 
-// String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
+//
+
+func validateShare(i interface{}) error {
+	v, ok := i.(math.LegacyDec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.LT(math.LegacyZeroDec()) || v.GT(math.LegacyOneDec()) {
+		return fmt.Errorf("value must be a percentage")
+	}
+
+	return nil
+}
+
+func validateDistributionEntities(i interface{}) error {
+	v, ok := i.([]DistributionEntity)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	sum := math.LegacyZeroDec()
+	for _, entity := range v {
+		if _, err := sdk.AccAddressFromBech32(entity.Address); err != nil {
+			return err
+		}
+
+		count := 0
+		for _, secondEntity := range v {
+			if secondEntity.Address == entity.Address {
+				count++
+			}
+		}
+
+		if count > 1 {
+			return fmt.Errorf("address occurred multiple times: %s", entity.Address)
+		}
+
+		if entity.Share.LT(math.LegacyZeroDec()) || entity.Share.GT(math.LegacyOneDec()) {
+			return fmt.Errorf("entity share must be a percentage")
+		}
+
+		sum = sum.Add(entity.Share)
+	}
+
+	if len(v) > 0 && !sum.Equal(math.LegacyOneDec()) {
+		return fmt.Errorf("sum of distribution entities is not 100%%: %s", sum)
+	}
+
+	return nil
+}
+
+func validateTransferFeeBPS(i interface{}) error {
+	v, ok := i.(math.Int)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.LT(math.ZeroInt()) || v.GT(math.NewInt(10000)) {
+		return fmt.Errorf("value is outside the range of 0 and 10000: %s", v)
+	}
+
+	return nil
+}
+
+func validateTransferFeeMax(i interface{}) error {
+	v, ok := i.(math.Int)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.IsNegative() {
+		return fmt.Errorf("value must be positive")
+	}
+
+	return nil
+}
+
+func validateTransferFeeDenom(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == "" {
+		return nil
+	}
+
+	return sdk.ValidateDenom(v)
 }

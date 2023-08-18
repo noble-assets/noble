@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package noble.globalfee.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+message Module {
+  option (cosmos.app.v1alpha1.module) = {go_import: "github.com/strangelove-ventures/noble/x/globalfee"};
+
+  string authority = 1;
+}

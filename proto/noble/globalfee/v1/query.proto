@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package noble.globalfee.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "noble/globalfee/v1/globalfee.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/globalfee/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/noble/globalfee/v1/params";
+  }
+}
+
+// QueryParamsRequest is the Query/Params request type.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the Query/Params response type.
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

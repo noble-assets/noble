@@ -20,7 +20,6 @@ func DefaultGenesis() *GenesisState {
 		MinterControllerList: []MinterController{},
 		MintingDenom:         nil,
 		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
 	}
 }
 
@@ -117,7 +116,7 @@ func (gs GenesisState) Validate() error {
 
 	// this line is used by starport scaffolding # genesis/types/validate
 
-	return gs.Params.Validate()
+	return nil
 }
 
 // validatePrivileges ensures that the same address is not being assigned to more than one privileged role.

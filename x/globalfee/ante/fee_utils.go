@@ -3,9 +3,8 @@ package ante
 import (
 	"math"
 
+	tmstrings "github.com/cometbft/cometbft/libs/strings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
 // getMinGasPrice will also return sorted coins
@@ -29,12 +28,8 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 }
 
 func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
-	var bypassMinFeeMsgTypes []string
-	if mfd.GlobalMinFee.Has(ctx, globalfeetypes.ParamStoreKeyBypassMinFeeMsgTypes) {
-		mfd.GlobalMinFee.Get(ctx, globalfeetypes.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMinFeeMsgTypes)
-	} else {
-		bypassMinFeeMsgTypes = globalfeetypes.DefaultParams().BypassMinFeeMsgTypes
-	}
+	bypassMinFeeMsgTypes := mfd.GlobalFeeKeeper.GetParams(ctx).BypassMinFeeMsgTypes
+
 	for _, msg := range msgs {
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), bypassMinFeeMsgTypes) {
 			continue

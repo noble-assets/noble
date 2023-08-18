@@ -1,16 +1,16 @@
 package blockibc
 
 import (
+	fiatKeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+	fiat_types "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
-	fiatKeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiat_types "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
 )
@@ -43,7 +43,7 @@ func (im IBCMiddleware) OnChanOpenInit(
 	channelCap *capabilitytypes.Capability,
 	counterparty channeltypes.Counterparty,
 	version string,
-) error {
+) (string, error) {
 	return im.app.OnChanOpenInit(ctx, order, connectionHops, portID, channelID, channelCap, counterparty, version)
 }
 
@@ -93,12 +93,11 @@ func (im IBCMiddleware) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
-
 	var data transfertypes.FungibleTokenPacketData
 	var ackErr error
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		ackErr = sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "cannot unmarshal ICS-20 transfer packet data")
-		return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+		return channeltypes.NewErrorAcknowledgement(ackErr)
 	}
 
 	denomTrace := transfertypes.ParseDenomTrace(data.Denom)
@@ -113,61 +112,60 @@ func (im IBCMiddleware) OnRecvPacket(
 	// denom is tokenfactory asset
 	case denomTrace.BaseDenom == tfMintingDenom.Denom:
 		if im.keeper.GetPaused(ctx).Paused {
-			return channeltypes.NewErrorAcknowledgement(types.ErrPaused.Error())
+			return channeltypes.NewErrorAcknowledgement(types.ErrPaused)
 		}
 
 		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
 		if err != nil {
-			return channeltypes.NewErrorAcknowledgement(err.Error())
+			return channeltypes.NewErrorAcknowledgement(err)
 		}
 
 		_, found := im.keeper.GetBlacklisted(ctx, addressBz)
 		if found {
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
-			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+			return channeltypes.NewErrorAcknowledgement(ackErr)
 		}
 
 		_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
 		if err != nil {
-			return channeltypes.NewErrorAcknowledgement(err.Error())
+			return channeltypes.NewErrorAcknowledgement(err)
 		}
 
 		_, found = im.keeper.GetBlacklisted(ctx, addressBz)
 		if found {
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
-			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+			return channeltypes.NewErrorAcknowledgement(ackErr)
 		}
 	// denom is fiat-tokenfactory asset
 	case denomTrace.BaseDenom == ctfMintingDenom.Denom:
 		if im.fiatKeeper.GetPaused(ctx).Paused {
-			return channeltypes.NewErrorAcknowledgement(fiat_types.ErrPaused.Error())
+			return channeltypes.NewErrorAcknowledgement(fiat_types.ErrPaused)
 		}
 
 		_, addressBz, err := bech32.DecodeAndConvert(data.Receiver)
 		if err != nil {
-			return channeltypes.NewErrorAcknowledgement(err.Error())
+			return channeltypes.NewErrorAcknowledgement(err)
 		}
 
 		_, found := im.fiatKeeper.GetBlacklisted(ctx, addressBz)
 		if found {
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "receiver address is blacklisted")
-			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+			return channeltypes.NewErrorAcknowledgement(ackErr)
 		}
 
 		_, addressBz, err = bech32.DecodeAndConvert(data.Sender)
 		if err != nil {
-			return channeltypes.NewErrorAcknowledgement(err.Error())
+			return channeltypes.NewErrorAcknowledgement(err)
 		}
 
 		_, found = im.fiatKeeper.GetBlacklisted(ctx, addressBz)
 		if found {
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
-			return channeltypes.NewErrorAcknowledgement(ackErr.Error())
+			return channeltypes.NewErrorAcknowledgement(ackErr)
 		}
 
 	}
 	return im.app.OnRecvPacket(ctx, packet, relayer)
-
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface.

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package noble.tariff.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/tariff/types";
+
+message DistributionEntity {
+  string address = 1;
+  string share = 2 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message Params {
+  string share = 1 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+
+  repeated DistributionEntity distribution_entities = 2 [(gogoproto.nullable) = false];
+
+  string transfer_fee_bps = 3 [
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  string transfer_fee_max = 4 [
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  string transfer_fee_denom = 5;
+}

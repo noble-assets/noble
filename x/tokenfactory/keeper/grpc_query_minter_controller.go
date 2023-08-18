@@ -32,7 +32,6 @@ func (k Keeper) MinterControllerAll(c context.Context, req *types.QueryAllMinter
 		minterControllers = append(minterControllers, minterController)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

@@ -7,6 +7,6 @@ import (
 
 // BeginBlocker sets the proposer for determining distribution during endblock
 // and distribute rewards for the previous block
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, k *keeper.Keeper) {
 	k.AllocateTokens(ctx)
 }

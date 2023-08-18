@@ -1,8 +1,5 @@
 package types
 
-const (
-	// ModuleName is the name of the this module
-	ModuleName = "globalfee"
+const ModuleName = "globalfee"
 
-	QuerierRoute = ModuleName
-)
+var ParamsKey = []byte("params")

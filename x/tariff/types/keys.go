@@ -1,6 +1,5 @@
 package types
 
-const (
-	// ModuleName defines the module name
-	ModuleName = "tariff"
-)
+const ModuleName = "tariff"
+
+var ParamsKey = []byte("params")

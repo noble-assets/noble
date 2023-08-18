@@ -1,14 +1,18 @@
 package types
 
-// DefaultGenesis returns the default genesis state
-func DefaultGenesis() *GenesisState {
+// NewGenesisState creates a new GenesisState object.
+func NewGenesisState(params Params) *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
+		Params: params,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
+// DefaultGenesisState creates a default GenesisState object.
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(DefaultParams())
+}
+
+// Validate validates the provided genesis state.
+func (gs *GenesisState) Validate() error {
 	return gs.Params.Validate()
 }

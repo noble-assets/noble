@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package noble.tariff.v1;
+
+import "gogoproto/gogo.proto";
+import "noble/tariff/v1/tariff.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/tariff/types";
+
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

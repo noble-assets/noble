@@ -50,13 +50,11 @@ func InitGenesis(ctx sdk.Context, k *keeper.Keeper, bankKeeper types.BankKeeper,
 		k.SetMintingDenom(ctx, *genState.MintingDenom)
 	}
 	// this line is used by starport scaffolding # genesis/module/init
-	k.SetParams(ctx, genState.Params)
 }
 
 // ExportGenesis returns the module's exported GenesisState
 func ExportGenesis(ctx sdk.Context, k *keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
 
 	genesis.BlacklistedList = k.GetAllBlacklisted(ctx)
 

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package noble.globalfee.v1;
+
+import "gogoproto/gogo.proto";
+import "noble/globalfee/v1/globalfee.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/x/globalfee/types";
+
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

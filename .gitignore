@@ -1,9 +1,2 @@
-vue/node_modules
-vue/dist
-release/
-.idea/
-.vscode/
-.DS_Store
-play_sh/
-/heighliner*
-bin/
+.idea
+build
