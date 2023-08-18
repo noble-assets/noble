@@ -145,6 +145,7 @@ func (app *NobleApp) RegisterLegacyModules() {
 		app.IBCKeeper,
 		authTypes.FeeCollectorName,
 	)
+	app.ScopedConsumerKeeper = scopedConsumerKeeper
 
 	// Keeper: ICA Controller
 	scopedICAControllerKeeper := app.CapabilityKeeper.ScopeToModule(icaControllerTypes.SubModuleName)
