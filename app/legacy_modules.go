@@ -4,8 +4,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
+	// Auth
+	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	// BlockIBC
 	blockIBC "github.com/strangelove-ventures/noble/x/blockibc"
+	// Consumer
+	consumerKeeper "github.com/cosmos/interchain-security/v3/x/ccv/consumer/keeper"
+	consumerTypes "github.com/cosmos/interchain-security/v3/x/ccv/consumer/types"
 	// IBC Client
 	ibcClientSolomachine "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
 	ibcClientTendermint "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
@@ -40,15 +45,17 @@ import (
 
 var (
 	keys = sdk.NewKVStoreKeys(
-		ibcTypes.StoreKey, ibcFeeTypes.StoreKey, ibcTransferTypes.StoreKey,
-		icaControllerTypes.StoreKey, icaHostTypes.StoreKey, pfmTypes.StoreKey,
+		consumerTypes.StoreKey, ibcTypes.StoreKey, ibcFeeTypes.StoreKey,
+		ibcTransferTypes.StoreKey, icaControllerTypes.StoreKey,
+		icaHostTypes.StoreKey, pfmTypes.StoreKey,
 	)
 
 	memKeys = sdk.NewMemoryStoreKeys()
 
 	subspaces = []string{
-		ibcTypes.ModuleName, ibcFeeTypes.ModuleName, ibcTransferTypes.ModuleName,
-		icaControllerTypes.SubModuleName, icaHostTypes.SubModuleName, pfmTypes.ModuleName,
+		consumerTypes.ModuleName, ibcTypes.ModuleName, ibcFeeTypes.ModuleName,
+		ibcTransferTypes.ModuleName, icaControllerTypes.SubModuleName,
+		icaHostTypes.SubModuleName, pfmTypes.ModuleName,
 	}
 )
 
@@ -118,6 +125,26 @@ func (app *NobleApp) RegisterLegacyModules() {
 	)
 	app.ScopedIBCTransferKeeper = scopedIBCTransferKeeper
 	app.PFMKeeper.SetTransferKeeper(app.IBCTransferKeeper)
+
+	// Keeper: Consumer
+	scopedConsumerKeeper := app.CapabilityKeeper.ScopeToModule(consumerTypes.ModuleName)
+	app.ConsumerKeeper = consumerKeeper.NewKeeper(
+		app.appCodec,
+		keys[consumerTypes.StoreKey],
+		app.GetSubspace(consumerTypes.ModuleName),
+
+		scopedConsumerKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.IBCKeeper.ConnectionKeeper,
+		app.IBCKeeper.ClientKeeper,
+		app.SlashingKeeper,
+		app.BankKeeper,
+		app.AccountKeeper,
+		app.IBCTransferKeeper,
+		app.IBCKeeper,
+		authTypes.FeeCollectorName,
+	)
 
 	// Keeper: ICA Controller
 	scopedICAControllerKeeper := app.CapabilityKeeper.ScopeToModule(icaControllerTypes.SubModuleName)

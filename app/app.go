@@ -37,6 +37,9 @@ import (
 	// Consensus
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusKeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	// Consumer
+	"github.com/cosmos/interchain-security/v3/x/ccv/consumer"
+	consumerKeeper "github.com/cosmos/interchain-security/v3/x/ccv/consumer/keeper"
 	// Crisis
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisisKeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
@@ -126,6 +129,7 @@ var (
 		upgrade.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 
+		consumer.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibcClientSolomachine.AppModuleBasic{},
 		ibcClientTendermint.AppModuleBasic{},
@@ -172,6 +176,7 @@ type NobleApp struct {
 	UpgradeKeeper      *upgradeKeeper.Keeper
 
 	// IBC Keepers
+	ConsumerKeeper      consumerKeeper.Keeper
 	IBCKeeper           *ibcKeeper.Keeper
 	IBCFeeKeeper        ibcFeeKeeper.Keeper
 	IBCTransferKeeper   ibcTransferKeeper.Keeper
@@ -187,6 +192,7 @@ type NobleApp struct {
 	TokenFactoryKeeper     *tokenFactoryKeeper.Keeper
 
 	// Scoped Keepers (for IBC)
+	ScopedConsumerKeeper      capabilityKeeper.ScopedKeeper
 	ScopedIBCKeeper           capabilityKeeper.ScopedKeeper
 	ScopedIBCTransferKeeper   capabilityKeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilityKeeper.ScopedKeeper

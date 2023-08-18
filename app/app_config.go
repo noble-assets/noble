@@ -26,6 +26,8 @@ import (
 	// Consensus
 	consensus "cosmossdk.io/api/cosmos/consensus/module/v1"
 	consensusTypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	// Consumer
+	consumerTypes "github.com/cosmos/interchain-security/v3/x/ccv/consumer/types"
 	// Crisis
 	crisis "cosmossdk.io/api/cosmos/crisis/module/v1"
 	crisisTypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -102,6 +104,7 @@ var AppConfig = appconfig.Compose(&app.Config{
 					authTypes.ModuleName,
 					bankTypes.ModuleName,
 					crisisTypes.ModuleName,
+					consumerTypes.ModuleName,    // TODO -- ICS
 					ibcTransferTypes.ModuleName, // IBC
 					ibcTypes.ModuleName,         // IBC
 					icaTypes.ModuleName,         // IBC
@@ -123,6 +126,7 @@ var AppConfig = appconfig.Compose(&app.Config{
 				EndBlockers: []string{
 					crisisTypes.ModuleName,
 					stakingTypes.ModuleName,
+					consumerTypes.ModuleName,    // TODO -- ICS
 					ibcTransferTypes.ModuleName, // IBC
 					ibcTypes.ModuleName,         // IBC
 					icaTypes.ModuleName,         // IBC
@@ -174,6 +178,7 @@ var AppConfig = appconfig.Compose(&app.Config{
 					vestingTypes.ModuleName,
 					consensusTypes.ModuleName,
 
+					consumerTypes.ModuleName, // TODO -- ICS
 					ibcTransferTypes.ModuleName,
 					ibcTypes.ModuleName,
 					icaTypes.ModuleName,
