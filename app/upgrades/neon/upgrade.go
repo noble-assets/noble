@@ -18,7 +18,8 @@ func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
 	s := fiattokenfactorytypes.DefaultGenesis()
 
 	s.Owner = &fiattokenfactorytypes.Owner{
-		Address: "noble10908tarhjl6zzlm4k6u9hkax48qeutk28tj4sp",
+		Address: "noble1mp0z2yrmq86l53kr8gjzml3ctyf33ma969zjt6",
+		// TEST-MN: leg stove oblige forest occur range jar observe ahead morning street forward amazing negative digital syrup bar doctor fortune purpose buddy quote laptop civil
 	}
 
 	s.MasterMinter = &fiattokenfactorytypes.MasterMinter{
