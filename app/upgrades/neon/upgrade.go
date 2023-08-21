@@ -61,21 +61,48 @@ func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
 }
 
 var (
-	denomMetadataUsdc = banktypes.Metadata{
+	// denomMetadataUsdc = banktypes.Metadata{
 
-		Description: "USD Coin",
-		Name:        "usdc",
-		Base:        "uusdc",
+	// 	Description: "USD Coin",
+	// 	Name:        "usdc",
+	// 	Base:        "uusdc",
+	// 	DenomUnits: []*banktypes.DenomUnit{
+	// 		{
+	// 			Denom: "uusdc",
+	// 			Aliases: []string{
+	// 				"microusdc",
+	// 			},
+	// 			Exponent: 0,
+	// 		},
+	// 		{
+	// 			Denom:    "usdc",
+	// 			Exponent: 6,
+	// 		},
+	// 	},
+	// }
+
+	denomMetadataDrachma = banktypes.Metadata{
+		Display: "drachma",
+		Base:    "udrachma",
+		Name:    "drachma",
+		Symbol:  "DRACHMA",
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom: "uusdc",
+				Denom: "udrachma",
 				Aliases: []string{
-					"microusdc",
+					"microdrachma",
 				},
 				Exponent: 0,
 			},
 			{
-				Denom:    "usdc",
+				Denom: "mdrachma",
+				Aliases: []string{
+					"millidrachma",
+				},
+				Exponent: 3,
+			},
+			{
+				Denom:    "drachma",
 				Exponent: 6,
 			},
 		},
@@ -95,7 +122,7 @@ func CreateNeonUpgradeHandler(
 
 		// NOTE: denomMetadata must be set before setting the minting denom
 		logger.Debug("adding usdc to bank denom metadata")
-		bankKeeper.SetDenomMetaData(ctx, denomMetadataUsdc)
+		bankKeeper.SetDenomMetaData(ctx, denomMetadataDrachma)
 
 		logger.Debug("setting fiat-tokenfactory params")
 		fiatTokenFactoryParams := initialFiatTokenFactoryState()
