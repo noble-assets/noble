@@ -54,7 +54,7 @@ func initialFiatTokenFactoryState() fiattokenfactorytypes.GenesisState {
 	}
 
 	s.MintingDenom = &fiattokenfactorytypes.MintingDenom{
-		Denom: "uusdc",
+		Denom: "udrachma",
 	}
 
 	return *s
