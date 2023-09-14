@@ -2,7 +2,7 @@ package tariff
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/noble/x/tariff/keeper"
+	"github.com/strangelove-ventures/noble/v3/x/tariff/keeper"
 )
 
 // BeginBlocker sets the proposer for determining distribution during endblock

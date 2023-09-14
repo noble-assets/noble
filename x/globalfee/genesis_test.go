@@ -17,7 +17,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/strangelove-ventures/noble/x/globalfee/types"
+	"github.com/strangelove-ventures/noble/v3/x/globalfee/types"
 )
 
 func TestValidateGenesis(t *testing.T) {

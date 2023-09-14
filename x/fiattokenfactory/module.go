@@ -16,9 +16,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types"
 )
 
 var (

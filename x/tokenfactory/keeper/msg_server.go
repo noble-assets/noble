@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/v3/x/tokenfactory/types"
 )
 
 type msgServer struct {
