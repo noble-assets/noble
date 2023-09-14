@@ -90,8 +90,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	neon "github.com/strangelove-ventures/noble/v3/app/upgrades/neon"
-	radon "github.com/strangelove-ventures/noble/v3/app/upgrades/radon"
+	"github.com/strangelove-ventures/noble/v3/app/upgrades/neon"
+	"github.com/strangelove-ventures/noble/v3/app/upgrades/radon"
+	v3m1p0 "github.com/strangelove-ventures/noble/v3/app/upgrades/v3.1.0"
 	"github.com/strangelove-ventures/noble/v3/cmd"
 	"github.com/strangelove-ventures/noble/v3/docs"
 	"github.com/strangelove-ventures/noble/v3/x/blockibc"
@@ -866,6 +867,14 @@ func (app *App) setupUpgradeHandlers() {
 			app.FiatTokenFactoryKeeper,
 		))
 
+	// v3.1.0 upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v3m1p0.UpgradeName,
+		v3m1p0.CreateV3M1P0UpgradeHandler(
+			app.mm,
+			app.configurator,
+		))
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -885,6 +894,8 @@ func (app *App) setupUpgradeHandlers() {
 		stroreUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{globalfeetypes.ModuleName, tarifftypes.ModuleName},
 		}
+	case v3m1p0.UpgradeName:
+		stroreUpgrades = &storetypes.StoreUpgrades{}
 	}
 
 	if stroreUpgrades != nil {

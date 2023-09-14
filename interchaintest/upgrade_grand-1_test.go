@@ -46,7 +46,15 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		},
 		{
 			// post radon patch upgrade (will be applied as rolling upgrade due to lack of upgradeName)
-			image: nobleImageInfo[0],
+			image: ibc.DockerImage{
+				Repository: "ghcr.io/strangelove-ventures/noble",
+				Version:    "v3.0.0",
+				UidGid:     containerUidGid,
+			},
+		},
+		{
+			upgradeName: "v3.1.0",
+			image:       nobleImageInfo[0],
 		},
 	}
 

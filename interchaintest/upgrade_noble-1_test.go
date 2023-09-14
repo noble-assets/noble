@@ -40,8 +40,16 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		},
 		{
 			upgradeName: "radon",
-			image:       nobleImageInfo[0],
+			image: ibc.DockerImage{
+				Repository: "ghcr.io/strangelove-ventures/noble",
+				Version:    "v3.0.0",
+				UidGid:     containerUidGid,
+			},
 			postUpgrade: testPostRadonUpgrade,
+		},
+		{
+			upgradeName: "v3.1.0",
+			image:       nobleImageInfo[0],
 		},
 	}
 
