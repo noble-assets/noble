@@ -90,9 +90,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/v3/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/v3/app/upgrades/radon"
 	v3m1p0 "github.com/strangelove-ventures/noble/v3/app/upgrades/v3.1.0"
+=======
+	neon "github.com/strangelove-ventures/noble/v3/app/upgrades/neon"
+	radon "github.com/strangelove-ventures/noble/v3/app/upgrades/radon"
+>>>>>>> d14825377cf438d661eba5946d581da60820c123
 	"github.com/strangelove-ventures/noble/v3/cmd"
 	"github.com/strangelove-ventures/noble/v3/docs"
 	"github.com/strangelove-ventures/noble/v3/x/blockibc"
