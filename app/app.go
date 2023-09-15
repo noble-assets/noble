@@ -146,6 +146,7 @@ var (
 		packetforward.AppModuleBasic{},
 		globalfee.AppModuleBasic{},
 		tariff.AppModuleBasic{},
+		paramauthorityibc.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -604,9 +605,6 @@ func New(
 
 	// Uncomment if you want to set a custom migration order here.
 	// app.mm.SetOrderMigrations(custom order)
-
-	// Register interfaces for paramauthority ibc proposal shim
-	paramauthorityibctypes.RegisterInterfaces(interfaceRegistry)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)

@@ -940,6 +940,8 @@ github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5 h1:iXXjziCSA
 github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5/go.mod h1:ncgsf5rykh36HkM16BNcKKx1XzVRdWXt+4pph1syDHE=
 github.com/strangelove-ventures/paramauthority v0.2.0 h1:h/ApdnvwV0gAjgQAFJ0Z2U6xuARvBnpmzhkvJRdkJZU=
 github.com/strangelove-ventures/paramauthority v0.2.0/go.mod h1:31HVpoItQMa4Wj2BimVhQWbIYeb+kdUDJ8MzBEbGj28=
+github.com/strangelove-ventures/paramauthority v0.2.1-0.20230915144245-28bb74cf85c5 h1:bikYenP6xGeVg4bLe/P+y+Bk8SJReH+AP6T8mgJYKHA=
+github.com/strangelove-ventures/paramauthority v0.2.1-0.20230915144245-28bb74cf85c5/go.mod h1:31HVpoItQMa4Wj2BimVhQWbIYeb+kdUDJ8MzBEbGj28=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
