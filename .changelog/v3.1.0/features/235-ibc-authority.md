@@ -1,0 +1,1 @@
+- Include support for IBC inside the ParamAuthority. ([#235](https://github.com/strangelove-ventures/noble/pull/235))
