@@ -52,10 +52,6 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 				UidGid:     containerUidGid,
 			},
 		},
-		{
-			upgradeName: "v3.1.0",
-			image:       nobleImageInfo[0],
-		},
 	}
 
 	testNobleChainUpgrade(t, grand1ChainID, grand1Genesis, denomMetadataDrachma, numVals, numFullNodes, grand1Upgrades)
