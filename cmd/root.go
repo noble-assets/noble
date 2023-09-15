@@ -285,12 +285,6 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	upgradeCmd := paramauthorityupgradecli.GetTxCmd()
-	upgradeCmd.AddCommand(
-		paramauthorityibccli.NewCmdSubmitUpdateClientProposal(),
-		paramauthorityibccli.NewCmdSubmitUpgradeProposal(),
-	)
-
 	cmd.AddCommand(
 		authcmd.GetSignCommand(),
 		authcmd.GetSignBatchCommand(),
@@ -301,7 +295,8 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
 		paramauthorityparamscli.GetTxCmd(),
-		upgradeCmd,
+		paramauthorityupgradecli.GetTxCmd(),
+		paramauthorityibccli.GetTxCmd(),
 	)
 
 	moduleBasics.AddTxCommands(cmd)

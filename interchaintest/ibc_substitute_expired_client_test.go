@@ -212,7 +212,7 @@ func TestClientSubstitution(t *testing.T) {
 	newNobleClient := nobleClients[1]
 
 	// substitute new client state into old client
-	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "upgrade", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
+	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "ibc-authority", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
 	require.NoError(t, err)
 
 	// update config to old client ID
