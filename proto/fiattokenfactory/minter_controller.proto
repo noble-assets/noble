@@ -1,7 +1,7 @@
 syntax = "proto3";
 package noble.fiattokenfactory;
 
-option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
+option go_package = "github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types";
 
 message MinterController {
   string minter = 1;

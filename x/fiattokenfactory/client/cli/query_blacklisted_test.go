@@ -7,16 +7,16 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/strangelove-ventures/noble/testutil/sample"
+	"github.com/strangelove-ventures/noble/v3/testutil/sample"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/strangelove-ventures/noble/testutil/network"
-	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v3/testutil/network"
+	"github.com/strangelove-ventures/noble/v3/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types"
 )
 
 // Prevent strconv unused error

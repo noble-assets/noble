@@ -9,10 +9,10 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
-	fiatKeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiat_types "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	fiatKeeper "github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/keeper"
+	fiat_types "github.com/strangelove-ventures/noble/v3/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v3/x/tokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/v3/x/tokenfactory/types"
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}

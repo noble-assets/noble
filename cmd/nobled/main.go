@@ -5,8 +5,8 @@ import (
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/strangelove-ventures/noble/app"
-	"github.com/strangelove-ventures/noble/cmd"
+	"github.com/strangelove-ventures/noble/v3/app"
+	"github.com/strangelove-ventures/noble/v3/cmd"
 )
 
 func main() {
