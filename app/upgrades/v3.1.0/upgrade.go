@@ -6,7 +6,7 @@ import (
 	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-func CreateV3M1P0UpgradeHandler(
+func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 ) upgradeTypes.UpgradeHandler {
