@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
@@ -83,10 +82,10 @@ func TestGlobalFee(t *testing.T) {
 			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.Address); err != nil {
+			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.FormattedAddress()); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.Address); err != nil {
+			if err := modifyGenesisTariffDefaults(g, paramauthorityWallet.FormattedAddress()); err != nil {
 				return nil, err
 			}
 			out, err := json.Marshal(&g)
@@ -138,7 +137,7 @@ func TestGlobalFee(t *testing.T) {
 	zeroGasPrice := "0.0" + chainCfg.Denom
 
 	// send tx with zero fees with the default MinimumGasPricesParam of 0 (null) - tx should succeed
-	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName, "bank", "send", extraWallets.User2.KeyName, extraWallets.Alice.Address, sendAmount100, "--gas-prices", zeroGasPrice)
+	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName(), "bank", "send", extraWallets.User2.KeyName(), extraWallets.Alice.FormattedAddress(), sendAmount100, "--gas-prices", zeroGasPrice)
 	require.NoError(t, err, "failed sending transaction")
 
 	msgUpdateParams := proposaltypes.MsgUpdateParams{
@@ -152,18 +151,18 @@ func TestGlobalFee(t *testing.T) {
 					Value:    fmt.Sprintf(`[{"denom":"%s", "amount":"%s"}]`, chainCfg.Denom, minGasPriceAmount),
 				},
 			}),
-		Authority: paramauthorityWallet.Address,
+		Authority: paramauthorityWallet.FormattedAddress(),
 	}
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
-	decoded := sdk.MustAccAddressFromBech32(paramauthorityWallet.Address)
-	wallet := &ibc.Wallet{
-		Address:  string(decoded),
-		Mnemonic: paramauthorityWallet.Mnemonic,
-		KeyName:  paramauthorityWallet.KeyName,
-		CoinType: paramauthorityWallet.CoinType,
-	}
+	wallet := cosmos.NewWallet(
+		paramauthorityWallet.KeyName(),
+		paramauthorityWallet.Address(),
+		paramauthorityWallet.Mnemonic(),
+		chainCfg,
+	)
+
 	tx, err := cosmos.BroadcastTx(
 		ctx,
 		broadcaster,
@@ -174,33 +173,33 @@ func TestGlobalFee(t *testing.T) {
 	require.Equal(t, uint32(0), tx.Code, "tx proposal failed")
 
 	// send tx with zero fees while the default MinimumGasPricesParam requires fees - tx should fail
-	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName,
+	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName(),
 		"bank", "send",
-		extraWallets.User2.Address, extraWallets.Alice.Address, sendAmount100,
+		extraWallets.User2.FormattedAddress(), extraWallets.Alice.FormattedAddress(), sendAmount100,
 		"--gas-prices", zeroGasPrice,
 		"-b", "block",
 	)
 	require.Error(t, err, "tx should not have succeeded with zero fees")
 
 	// send tx with the gas price set by MinimumGasPricesParam - tx should succeed
-	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName,
+	_, err = nobleValidator.ExecTx(ctx, extraWallets.User2.KeyName(),
 		"bank", "send",
-		extraWallets.User2.Address, extraWallets.Alice.Address, sendAmount100,
+		extraWallets.User2.FormattedAddress(), extraWallets.Alice.FormattedAddress(), sendAmount100,
 		"--gas-prices", minGasPrice,
 		"-b", "block",
 	)
 	require.NoError(t, err, "tx should have succeeded")
 
 	// send tx with zero fees while the default MinimumGasPricesParam requires fees, but update owner msg is in the bypass min fee msgs list - tx should succeed
-	_, err = nobleValidator.ExecTx(ctx, roles.Owner.KeyName,
-		"tokenfactory", "update-owner", roles.Owner2.Address,
+	_, err = nobleValidator.ExecTx(ctx, roles.Owner.KeyName(),
+		"tokenfactory", "update-owner", roles.Owner2.FormattedAddress(),
 		"--gas-prices", zeroGasPrice,
 		"-b", "block",
 	)
 	require.NoError(t, err, "failed to execute update owner tx with zero fees")
 
 	// send tx with zero fees while the default MinimumGasPricesParam requires fees, but accept owner msg is in the bypass min fee msgs list - tx should succeed
-	_, err = nobleValidator.ExecTx(ctx, roles.Owner2.KeyName,
+	_, err = nobleValidator.ExecTx(ctx, roles.Owner2.KeyName(),
 		"tokenfactory", "accept-owner",
 		"--gas-prices", zeroGasPrice,
 		"-b", "block",

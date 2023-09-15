@@ -74,6 +74,8 @@ import (
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v3/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	paramauthorityibc "github.com/strangelove-ventures/paramauthority/x/ibc"
+	paramauthorityibctypes "github.com/strangelove-ventures/paramauthority/x/ibc/types"
 	paramauthority "github.com/strangelove-ventures/paramauthority/x/params"
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 	paramauthorityupgrade "github.com/strangelove-ventures/paramauthority/x/upgrade"
@@ -144,6 +146,7 @@ var (
 		packetforward.AppModuleBasic{},
 		globalfee.AppModuleBasic{},
 		tariff.AppModuleBasic{},
+		paramauthorityibc.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -608,6 +611,12 @@ func New(
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+
+	// Register authoritative IBC client update and IBC upgrade msg handlers
+	paramauthorityibctypes.RegisterMsgServer(
+		app.configurator.MsgServer(),
+		paramauthorityibc.NewMsgServer(app.UpgradeKeeper, app.IBCKeeper.ClientKeeper),
+	)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
