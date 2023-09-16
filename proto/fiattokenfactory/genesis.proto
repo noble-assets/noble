@@ -14,7 +14,7 @@ import "fiattokenfactory/minter_controller.proto";
 import "fiattokenfactory/minting_denom.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
+option go_package = "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types";
 
 // GenesisState defines the fiattokenfactory module's genesis state.
 message GenesisState {

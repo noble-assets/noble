@@ -7,10 +7,10 @@ import (
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/keeper"
+	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
 
-	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
+	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
 )
 
 func CreateRadonUpgradeHandler(

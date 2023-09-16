@@ -2,10 +2,10 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
-	fiattokenfactory "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	fiattokenfactory "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/keeper"
+	fiattokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types"
+	tokenfactory "github.com/strangelove-ventures/noble/v4/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -16,7 +16,7 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 
-	feeante "github.com/strangelove-ventures/noble/x/globalfee/ante"
+	feeante "github.com/strangelove-ventures/noble/v4/x/globalfee/ante"
 )
 
 type HandlerOptions struct {

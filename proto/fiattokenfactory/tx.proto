@@ -5,7 +5,7 @@ package noble.fiattokenfactory;
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
+option go_package = "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types";
 
 // Msg defines the Msg service.
 service Msg {

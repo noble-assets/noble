@@ -23,9 +23,9 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/strangelove-ventures/noble/app"
-	"github.com/strangelove-ventures/noble/cmd"
-	"github.com/strangelove-ventures/noble/testutil/sample"
+	"github.com/strangelove-ventures/noble/v4/app"
+	"github.com/strangelove-ventures/noble/v4/cmd"
+	"github.com/strangelove-ventures/noble/v4/testutil/sample"
 	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
