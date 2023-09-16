@@ -93,6 +93,7 @@ import (
 	"github.com/strangelove-ventures/noble/app/upgrades/argon"
 	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/app/upgrades/radon"
+	v3m1p0 "github.com/strangelove-ventures/noble/app/upgrades/v3.1.0"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
@@ -866,6 +867,14 @@ func (app *App) setupUpgradeHandlers() {
 			app.FiatTokenFactoryKeeper,
 		))
 
+	// v3.1.0 upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v3m1p0.UpgradeName,
+		v3m1p0.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		))
+
 	// argon upgrade
 	app.UpgradeKeeper.SetUpgradeHandler(
 		argon.UpgradeName,
@@ -890,6 +899,8 @@ func (app *App) setupUpgradeHandlers() {
 		storeLoader = neon.CreateStoreLoader(upgradeInfo.Height)
 	case radon.UpgradeName:
 		storeLoader = radon.CreateStoreLoader(upgradeInfo.Height)
+	case v3m1p0.UpgradeName:
+		storeLoader = v3m1p0.CreateStoreLoader(upgradeInfo.Height)
 	case argon.UpgradeName:
 		storeLoader = argon.CreateStoreLoader(upgradeInfo.Height)
 	}
