@@ -10,9 +10,9 @@ require (
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27
-	github.com/strangelove-ventures/noble v1.0.1-0.20230717234609-400609f26a31
 	github.com/strangelove-ventures/noble-router v0.0.0-20230926014033-6b65b68f8d24
 	github.com/strangelove-ventures/paramauthority v1.0.0
+	github.com/strangelove-ventures/noble/v4 v4.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
 )
@@ -188,7 +188,7 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	// For this nested module, you always want to replace the parent reference with the current worktree.
-	github.com/strangelove-ventures/noble => ../
+	github.com/strangelove-ventures/noble/v4 => ../
 
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27

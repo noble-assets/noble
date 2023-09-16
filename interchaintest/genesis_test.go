@@ -13,7 +13,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/relayer"
 	"github.com/strangelove-ventures/interchaintest/v3/relayer/rly"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )

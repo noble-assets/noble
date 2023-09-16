@@ -11,7 +11,7 @@ import (
 	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	routerkeeper "github.com/strangelove-ventures/noble-router/x/router/keeper"
 	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
-	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/keeper"
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 )
 

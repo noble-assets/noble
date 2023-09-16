@@ -8,8 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
-	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+	fiattokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types"
+	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
 	"github.com/stretchr/testify/require"
 )
 

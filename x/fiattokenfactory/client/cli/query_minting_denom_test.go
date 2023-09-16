@@ -10,10 +10,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-	"github.com/strangelove-ventures/noble/testutil/network"
-	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v4/testutil/network"
+	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types"
 )
 
 func networkWithMintingDenomObjects(t *testing.T) (*network.Network, types.MintingDenom) {

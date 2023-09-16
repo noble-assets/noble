@@ -9,7 +9,7 @@ package globalfee
 // 	"github.com/stretchr/testify/assert"
 // 	"github.com/stretchr/testify/require"
 
-// 	"github.com/strangelove-ventures/noble/x/globalfee/types"
+// 	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
 // )
 
 // func TestQueryMinimumGasPrices(t *testing.T) {

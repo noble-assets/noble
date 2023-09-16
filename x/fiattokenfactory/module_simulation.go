@@ -9,9 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/strangelove-ventures/noble/testutil/sample"
-	tokenfactorysimulation "github.com/strangelove-ventures/noble/x/fiattokenfactory/simulation"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	"github.com/strangelove-ventures/noble/v4/testutil/sample"
+	tokenfactorysimulation "github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/simulation"
+	"github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types"
 )
 
 // avoid unused import issue

@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	testkeeper "github.com/strangelove-ventures/noble/testutil/keeper"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	testkeeper "github.com/strangelove-ventures/noble/v4/testutil/keeper"
+	"github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types"
 	"github.com/stretchr/testify/require"
 )
 

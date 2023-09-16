@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	keepertest "github.com/strangelove-ventures/noble/testutil/keeper"
-	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	keepertest "github.com/strangelove-ventures/noble/v4/testutil/keeper"
+	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v4/x/fiattokenfactory/types"
 )
 
 func TestBlacklisterQuery(t *testing.T) {

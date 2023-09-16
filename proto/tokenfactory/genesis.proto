@@ -14,7 +14,7 @@ import "tokenfactory/minter_controller.proto";
 import "tokenfactory/minting_denom.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
+option go_package = "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types";
 
 // GenesisState defines the tokenfactory module's genesis state.
 message GenesisState {
