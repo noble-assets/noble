@@ -157,6 +157,7 @@ var (
 		tariff.AppModuleBasic{},
 		cctp.AppModuleBasic{},
 		router.AppModuleBasic{},
+		paramauthorityibc.AppModuleBasic{},
 	)
 
 	// module account permissions
