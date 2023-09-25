@@ -6,7 +6,7 @@ toolchain go1.21.1
 
 require (
 	cosmossdk.io/math v1.0.1
-	github.com/circlefin/noble-cctp v0.0.0-20230925160209-fba5dffdac25
+	github.com/circlefin/noble-cctp v0.0.0-20230925203250-4d2482bd0d7c
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/ethereum/go-ethereum v1.12.2

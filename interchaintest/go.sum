@@ -189,8 +189,8 @@ github.com/cespare/xxhash/v2 v2.2.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
-github.com/circlefin/noble-cctp v0.0.0-20230925160209-fba5dffdac25 h1:xYkhAAzS+vjbIBIBJ17WtjJDytCHfNOawAj9mTNdEjI=
-github.com/circlefin/noble-cctp v0.0.0-20230925160209-fba5dffdac25/go.mod h1:kTaX51dOT10LBoERZYT1ahuove3dL/+q5IagWQUABd0=
+github.com/circlefin/noble-cctp v0.0.0-20230925203250-4d2482bd0d7c h1:RwSIc6O1bcBkfpOMrBF08xpctcwkVDxAQCIRlOHyg0U=
+github.com/circlefin/noble-cctp v0.0.0-20230925203250-4d2482bd0d7c/go.mod h1:kTaX51dOT10LBoERZYT1ahuove3dL/+q5IagWQUABd0=
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec/go.mod h1:jMjuTZXRI4dUb/I5gc9Hdhagfvm9+RyrPryS/auMzxE=
