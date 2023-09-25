@@ -91,6 +91,8 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon"
+	"github.com/strangelove-ventures/noble/app/upgrades/argon2"
+	"github.com/strangelove-ventures/noble/app/upgrades/argon3"
 	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/app/upgrades/radon"
 	"github.com/strangelove-ventures/noble/cmd"
@@ -106,6 +108,13 @@ import (
 	tokenfactorymodule "github.com/strangelove-ventures/noble/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+
+	cctp "github.com/circlefin/noble-cctp/x/cctp"
+	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
+	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
+	router "github.com/strangelove-ventures/noble-router/x/router"
+	routerkeeper "github.com/strangelove-ventures/noble-router/x/router/keeper"
+	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
 )
 
 const (
@@ -146,6 +155,8 @@ var (
 		packetforward.AppModuleBasic{},
 		globalfee.AppModuleBasic{},
 		tariff.AppModuleBasic{},
+		cctp.AppModuleBasic{},
+		router.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -158,7 +169,7 @@ var (
 		fiattokenfactorymoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		stakingtypes.BondedPoolName:            {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName:         {authtypes.Burner, authtypes.Staking},
-		// this line is used by starport scaffolding # stargate/app/maccPerms
+		cctptypes.ModuleName:                   nil,
 	}
 )
 
@@ -221,6 +232,8 @@ type App struct {
 	TokenFactoryKeeper     *tokenfactorymodulekeeper.Keeper
 	FiatTokenFactoryKeeper *fiattokenfactorymodulekeeper.Keeper
 	TariffKeeper           tariffkeeper.Keeper
+	CCTPKeeper             *cctpkeeper.Keeper
+	RouterKeeper           *routerkeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -259,6 +272,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
+		cctptypes.StoreKey, routertypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -459,6 +473,25 @@ func New(
 	)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.RouterKeeper = routerkeeper.NewKeeper(
+		appCodec,
+		keys[routertypes.StoreKey],
+		app.GetSubspace(routertypes.ModuleName),
+		app.CCTPKeeper,
+		app.TransferKeeper,
+	)
+
+	app.CCTPKeeper = cctpkeeper.NewKeeper(
+		appCodec,
+		keys[cctptypes.StoreKey],
+		app.GetSubspace(cctptypes.ModuleName),
+		app.BankKeeper,
+		app.FiatTokenFactoryKeeper,
+		app.RouterKeeper,
+	)
+
+	app.RouterKeeper.SetCctpKeeper(app.CCTPKeeper)
+
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
 	transferStack = packetforward.NewIBCMiddleware(
@@ -468,6 +501,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
+	transferStack = router.NewIBCMiddleware(transferStack, app.RouterKeeper)
 	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.FiatTokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -513,6 +547,8 @@ func New(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
+		cctp.NewAppModule(appCodec, app.CCTPKeeper),
+		router.NewAppModule(appCodec, app.RouterKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -543,6 +579,8 @@ func New(
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
+		cctptypes.ModuleName,
+		routertypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -568,6 +606,8 @@ func New(
 		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
 		tarifftypes.ModuleName,
+		cctptypes.ModuleName,
+		routertypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -598,15 +638,14 @@ func New(
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
+		cctptypes.ModuleName,
+		routertypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
 	// Uncomment if you want to set a custom migration order here.
 	// app.mm.SetOrderMigrations(custom order)
-
-	// Register interfaces for paramauthority ibc proposal shim
-	paramauthorityibctypes.RegisterInterfaces(interfaceRegistry)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
@@ -840,6 +879,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(fiattokenfactorymoduletypes.ModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
+	paramsKeeper.Subspace(cctptypes.ModuleName)
+	paramsKeeper.Subspace(routertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
@@ -872,6 +913,30 @@ func (app *App) setupUpgradeHandlers() {
 		argon.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.FiatTokenFactoryKeeper,
+			app.ParamsKeeper,
+			app.CCTPKeeper,
+		),
+	)
+	// argon2 upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		argon2.UpgradeName,
+		argon2.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.FiatTokenFactoryKeeper,
+			app.ParamsKeeper,
+			app.CCTPKeeper,
+		),
+	)
+	// argon3 upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		argon3.UpgradeName,
+		argon3.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.ParamsKeeper,
+			app.RouterKeeper,
 		),
 	)
 
@@ -892,6 +957,10 @@ func (app *App) setupUpgradeHandlers() {
 		storeLoader = radon.CreateStoreLoader(upgradeInfo.Height)
 	case argon.UpgradeName:
 		storeLoader = argon.CreateStoreLoader(upgradeInfo.Height)
+	case argon2.UpgradeName:
+		storeLoader = argon2.CreateStoreLoader(upgradeInfo.Height)
+	case argon3.UpgradeName:
+		storeLoader = argon3.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {

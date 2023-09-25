@@ -1,8 +1,6 @@
-package argon
+package argon2
 
 import (
-	"fmt"
-
 	"cosmossdk.io/math"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
@@ -21,24 +19,14 @@ func CreateUpgradeHandler(
 	cctpKeeper *cctpkeeper.Keeper,
 ) upgradeTypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradeTypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		var authority string
-		if ctx.ChainID() == TestnetChainID {
-			authority = paramauthoritykeeper.GetAuthority(ctx)
-		} else {
-			owner, ok := fiatTFKeeper.GetOwner(ctx)
-			if !ok {
-				return nil, fmt.Errorf("fiat token factory owner not found")
-			}
-
-			authority = owner.Address
-		}
+		authority := paramauthoritykeeper.GetAuthority(ctx)
 
 		denom := fiatTFKeeper.GetMintingDenom(ctx)
 
 		cctpKeeper.SetOwner(ctx, authority)
-		cctpKeeper.SetAttesterManager(ctx, authority)
-		cctpKeeper.SetPauser(ctx, authority)
-		cctpKeeper.SetTokenController(ctx, authority)
+		cctpKeeper.SetAttesterManager(ctx, "noble1rx6vk9ll2vglwkrrlf8a7cl86lfz55uj8deunm")
+		cctpKeeper.SetPauser(ctx, "noble1hvm5pxssempk3jg0tgzugtsk85js42rze7cnxd")
+		cctpKeeper.SetTokenController(ctx, "noble1hl7nlkt3vyjzk0c4ytfveemmykw8ectspapcd3")
 		cctpKeeper.SetPerMessageBurnLimit(ctx, cctptypes.PerMessageBurnLimit{Denom: denom.Denom, Amount: math.NewInt(99999999)})
 		cctpKeeper.SetBurningAndMintingPaused(ctx, cctptypes.BurningAndMintingPaused{Paused: false})
 		cctpKeeper.SetSendingAndReceivingMessagesPaused(ctx, cctptypes.SendingAndReceivingMessagesPaused{Paused: false})

@@ -28,9 +28,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	paramauthorityibccli "github.com/strangelove-ventures/paramauthority/x/ibc/client/cli"
-	paramauthorityparamscli "github.com/strangelove-ventures/paramauthority/x/params/client/cli"
-	paramauthorityupgradecli "github.com/strangelove-ventures/paramauthority/x/upgrade/client/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -286,12 +283,6 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	upgradeCmd := paramauthorityupgradecli.GetTxCmd()
-	upgradeCmd.AddCommand(
-		paramauthorityibccli.NewCmdSubmitUpdateClientProposal(),
-		paramauthorityibccli.NewCmdSubmitUpgradeProposal(),
-	)
-
 	cmd.AddCommand(
 		authcmd.GetSignCommand(),
 		authcmd.GetSignBatchCommand(),
@@ -301,8 +292,6 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		upgradeCmd,
-		paramauthorityparamscli.GetTxCmd(),
 	)
 
 	moduleBasics.AddTxCommands(cmd)

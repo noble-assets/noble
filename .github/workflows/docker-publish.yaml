@@ -33,5 +33,14 @@ jobs:
           chain: noble
           dockerfile: cosmos
           build-target: make install
+          build-env:
+            GOPRIVATE=github.com/circlefin/noble-cctp
+          pre-build: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            apk add openssh
+            git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
           binaries: |
             - /go/bin/nobled
