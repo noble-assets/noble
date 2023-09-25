@@ -45,13 +45,30 @@ jobs:
           name: noble-docker-image
           path: ${{ env.TAR_PATH }}
 
+  prepare-e2e-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Generate matrix
+      id: set-matrix
+      run: |
+        # Run the command and convert its output to a JSON array
+        TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
+        echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
+  
   e2e-tests:
-    needs: build-docker
+    needs: 
+      - build-docker
+      - prepare-e2e-tests
     runs-on: ubuntu-latest
     strategy:
         matrix:
             # names of `make` commands to run tests
-            test: ["ictest-tkn-factory", "ictest-packet-forward", "ictest-paramauthority", "ictest-chain-upgrade-noble-1", "ictest-chain-upgrade-grand-1", "ictest-globalFee", "ictest-ics20-bps-fees", "ictest-client-substitution"]
+          test: ${{fromJson(needs.prepare-e2e-tests.outputs.matrix)}}
         fail-fast: false
 
     steps:
@@ -72,4 +89,4 @@ jobs:
         run: docker image load -i ${{ env.TAR_PATH }}
 
       - name: run test
-        run: make ${{ matrix.test }}
+        run: cd interchaintest && go test -race -v -timeout 15m -run ^${{ matrix.test }}$$ .

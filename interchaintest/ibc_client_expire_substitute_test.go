@@ -53,11 +53,11 @@ func TestClientSubstitution(t *testing.T) {
 		EncodingConfig: NobleEncoding(),
 		PreGenesis: func(cc ibc.ChainConfig) (err error) {
 			val := noble.Validators[0]
-			err = createTokenfactoryRoles(ctx, &roles, denomMetadataRupee, val, true)
+			roles, err = createTokenfactoryRoles(ctx, denomMetadataRupee, val, true)
 			if err != nil {
 				return err
 			}
-			err = createTokenfactoryRoles(ctx, &roles2, denomMetadataDrachma, val, true)
+			roles2, err = createTokenfactoryRoles(ctx, denomMetadataDrachma, val, true)
 			if err != nil {
 				return err
 			}
@@ -69,10 +69,10 @@ func TestClientSubstitution(t *testing.T) {
 			if err := json.Unmarshal(b, &g); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, &roles, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, roles, true); err != nil {
 				return nil, err
 			}
-			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, &roles2, true); err != nil {
+			if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, roles2, true); err != nil {
 				return nil, err
 			}
 			if err := modifyGenesisParamAuthority(g, paramauthorityWallet.FormattedAddress()); err != nil {
@@ -212,7 +212,7 @@ func TestClientSubstitution(t *testing.T) {
 	newNobleClient := nobleClients[1]
 
 	// substitute new client state into old client
-	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "upgrade", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
+	_, err = noble.Validators[0].ExecTx(ctx, paramauthorityWallet.KeyName(), "ibc-authority", "update-client", nobleClient.ClientID, newNobleClient.ClientID)
 	require.NoError(t, err)
 
 	// update config to old client ID

@@ -102,30 +102,6 @@ lint:
 test:
 	go test -v -race ./...
 
-ictest-tkn-factory:
-	cd interchaintest && go test -race -v -run ^TestNobleChain$$ .
-
-ictest-packet-forward:
-	cd interchaintest && go test -race -v -run ^TestPacketForwardMiddleware$$ .
-
-ictest-paramauthority:
-	cd interchaintest && go test -race -v -run ^TestNobleParamAuthority$$ .
-
-ictest-chain-upgrade-grand-1:
-	cd interchaintest && go test -race -v -timeout 15m -run ^TestGrand1ChainUpgrade$$ .
-
-ictest-chain-upgrade-noble-1:
-	cd interchaintest && go test -race -v -timeout 15m -run ^TestNoble1ChainUpgrade$$ .
-
-ictest-globalFee:
-	cd interchaintest && go test -race -v -run ^TestGlobalFee$$ .
-
-ictest-ics20-bps-fees:
-	cd interchaintest && go test -race -v -run ^TestICS20BPSFees$$ .
-
-ictest-client-substitution:
-	cd interchaintest && go test -race -v -run ^TestClientSubstitution$$ .
-
 ###############################################################################
 ###                                Build Image                              ###
 ###############################################################################
