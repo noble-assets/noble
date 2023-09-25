@@ -58,6 +58,15 @@ jobs:
       with:
         go-version: '^1.21'
 
+    - name: CCTP private repo auth
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        export GOPRIVATE=github.com/circlefin/noble-cctp
+        git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
+
     - name: Generate matrix
       id: set-matrix
       run: |
@@ -84,6 +93,15 @@ jobs:
               
       - name: checkout chain
         uses: actions/checkout@v4
+
+      - name: CCTP private repo auth
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          export GOPRIVATE=github.com/circlefin/noble-cctp
+          git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
 
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v3
