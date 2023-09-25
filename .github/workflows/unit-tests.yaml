@@ -15,5 +15,14 @@ jobs:
         with:
           go-version: ^1.21
 
+      - name: CCTP private repo auth
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          export GOPRIVATE=github.com/circlefin/noble-cctp
+          git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
+
       - name: Run Unit Tests
         run: go test -v ./...
