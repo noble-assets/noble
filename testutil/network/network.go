@@ -18,11 +18,13 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
+	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/testutil/sample"
@@ -101,6 +103,17 @@ func DefaultConfig() network.Config {
 	upgrade := paramauthorityupgradetypes.DefaultGenesis()
 	upgrade.Params.Authority = sample.AccAddress()
 	cfg.GenesisState[upgradetypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(upgrade)
+
+	router := routertypes.DefaultGenesis()
+	router.Owner = params.Params.Authority
+	cfg.GenesisState[routertypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(router)
+
+	cctp := cctptypes.DefaultGenesis()
+	cctp.Owner = sample.AccAddress()
+	cctp.AttesterManager = sample.AccAddress()
+	cctp.Pauser = sample.AccAddress()
+	cctp.TokenController = sample.AccAddress()
+	cfg.GenesisState[cctptypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(cctp)
 
 	return cfg
 }
