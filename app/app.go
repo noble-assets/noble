@@ -917,6 +917,7 @@ func (app *App) setupUpgradeHandlers() {
 			app.FiatTokenFactoryKeeper,
 			app.ParamsKeeper,
 			app.CCTPKeeper,
+			app.RouterKeeper,
 		),
 	)
 	// argon2 upgrade
