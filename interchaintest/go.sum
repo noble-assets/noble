@@ -1003,8 +1003,8 @@ github.com/spf13/viper v1.15.0/go.mod h1:fFcTBJxvhhzSJiZy8n+PeW6t8l+KeT/uTARa0jH
 github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4/go.mod h1:RZLeN1LMWmRsyYjvAu+I6Dm9QmlDaIIt+Y+4Kd7Tp+Q=
 github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27 h1:oJ9yZIFp3yRTlH8BOLnACrsjR1fPIpHyOoLFjM5VRBc=
 github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27/go.mod h1:dWv7E8XtgidmA/A5Gy9x76qMIygES+SxPTnlWjYUb7g=
-github.com/strangelove-ventures/noble-router v0.0.0-20230926014033-6b65b68f8d24 h1:kaT5ZG7s2Cbq5d2JNd8WbqtWbSaU6GKllRKnnVLwdJA=
-github.com/strangelove-ventures/noble-router v0.0.0-20230926014033-6b65b68f8d24/go.mod h1:zYp/EROBOZh//YJiAVTeiWEmjwsSWdp0iGvksSI93YY=
+github.com/strangelove-ventures/noble-router v1.0.0 h1:YvBivqz/qpXLom8MpghbjYoRCYavnCmhwQDDmg2V6Po=
+github.com/strangelove-ventures/noble-router v1.0.0/go.mod h1:zYp/EROBOZh//YJiAVTeiWEmjwsSWdp0iGvksSI93YY=
 github.com/strangelove-ventures/paramauthority v1.0.0 h1:kgWsSfkiBh25ZZyt/ZQUwXEVdFknX9YIdEWDm1X7AWg=
 github.com/strangelove-ventures/paramauthority v1.0.0/go.mod h1:31HVpoItQMa4Wj2BimVhQWbIYeb+kdUDJ8MzBEbGj28=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
