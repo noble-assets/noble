@@ -116,7 +116,7 @@ var (
 	defaultTransferMaxFee          = "5000000"
 	defaultTransferFeeDenom        = denomMetadataDrachma.Base
 
-	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.0", rly.RlyDefaultUidGid)
+	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.1", rly.RlyDefaultUidGid)
 )
 
 type DenomMetadata struct {
