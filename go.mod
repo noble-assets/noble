@@ -17,7 +17,7 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/noble-router v0.0.0-20230925195953-bcb42317a439
+	github.com/strangelove-ventures/noble-router v0.0.0-20230926014033-6b65b68f8d24
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5
 	github.com/strangelove-ventures/paramauthority v1.0.0
 	github.com/stretchr/testify v1.8.4

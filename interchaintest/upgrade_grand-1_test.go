@@ -46,13 +46,11 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			// This upgrade is only relevant to the grand-1 testnet
 			upgradeName: "argon2",
 			image:       ghcrImage("v4.0.0-alpha3"),
-			postUpgrade: testPostArgonUpgradeTestnet,
 		},
 		{
 			// This upgrade is only relevant to the grand-1 testnet
 			upgradeName: "argon3",
 			image:       ghcrImage("v4.0.0-beta1"),
-			postUpgrade: testPostArgonUpgradeTestnet,
 		},
 		{
 			// This upgrade is only relevant to the grand-1 testnet

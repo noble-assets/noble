@@ -27,6 +27,10 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		{
 			upgradeName: "radon",
 			image:       ghcrImage("v3.0.0"),
+		},
+		{
+			upgradeName: "v3.1.0",
+			image:       ghcrImage("v3.1.0"),
 			postUpgrade: testPostRadonUpgrade,
 		},
 		{
