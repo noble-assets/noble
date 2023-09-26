@@ -950,8 +950,8 @@ github.com/spf13/viper v1.3.2/go.mod h1:ZiWeW+zYFKm7srdB9IoDzzZXaJaI5eL9QjNiN/DM
 github.com/spf13/viper v1.14.0 h1:Rg7d3Lo706X9tHsJMUjdiwMpHB7W8WnSVOssIY+JElU=
 github.com/spf13/viper v1.14.0/go.mod h1:WT//axPky3FdvXHzGw33dNdXXXfFQqmEalje+egj8As=
 github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4/go.mod h1:RZLeN1LMWmRsyYjvAu+I6Dm9QmlDaIIt+Y+4Kd7Tp+Q=
-github.com/strangelove-ventures/noble-router v0.0.0-20230926014033-6b65b68f8d24 h1:kaT5ZG7s2Cbq5d2JNd8WbqtWbSaU6GKllRKnnVLwdJA=
-github.com/strangelove-ventures/noble-router v0.0.0-20230926014033-6b65b68f8d24/go.mod h1:zYp/EROBOZh//YJiAVTeiWEmjwsSWdp0iGvksSI93YY=
+github.com/strangelove-ventures/noble-router v1.0.0 h1:YvBivqz/qpXLom8MpghbjYoRCYavnCmhwQDDmg2V6Po=
+github.com/strangelove-ventures/noble-router v1.0.0/go.mod h1:zYp/EROBOZh//YJiAVTeiWEmjwsSWdp0iGvksSI93YY=
 github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5 h1:iXXjziCSAebzuRUPFSnqD7epSDB8LEPgkh9zhbj7ha4=
 github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5/go.mod h1:ncgsf5rykh36HkM16BNcKKx1XzVRdWXt+4pph1syDHE=
 github.com/strangelove-ventures/paramauthority v1.0.0 h1:kgWsSfkiBh25ZZyt/ZQUwXEVdFknX9YIdEWDm1X7AWg=
