@@ -91,8 +91,6 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon"
-	"github.com/strangelove-ventures/noble/app/upgrades/argon2"
-	"github.com/strangelove-ventures/noble/app/upgrades/argon3"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon4"
 	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/app/upgrades/radon"
@@ -921,28 +919,8 @@ func (app *App) setupUpgradeHandlers() {
 			app.RouterKeeper,
 		),
 	)
-	// argon2 upgrade
-	app.UpgradeKeeper.SetUpgradeHandler(
-		argon2.UpgradeName,
-		argon2.CreateUpgradeHandler(
-			app.mm,
-			app.configurator,
-			app.FiatTokenFactoryKeeper,
-			app.ParamsKeeper,
-			app.CCTPKeeper,
-		),
-	)
-	// argon3 upgrade
-	app.UpgradeKeeper.SetUpgradeHandler(
-		argon3.UpgradeName,
-		argon3.CreateUpgradeHandler(
-			app.mm,
-			app.configurator,
-			app.ParamsKeeper,
-			app.RouterKeeper,
-		),
-	)
-	// argon3 upgrade
+
+	// argon4 upgrade
 	app.UpgradeKeeper.SetUpgradeHandler(
 		argon4.UpgradeName,
 		argon4.CreateUpgradeHandler(
@@ -968,12 +946,8 @@ func (app *App) setupUpgradeHandlers() {
 		storeLoader = radon.CreateStoreLoader(upgradeInfo.Height)
 	case argon.UpgradeName:
 		storeLoader = argon.CreateStoreLoader(upgradeInfo.Height)
-	case argon2.UpgradeName:
-		storeLoader = argon2.CreateStoreLoader(upgradeInfo.Height)
-	case argon3.UpgradeName:
-		storeLoader = argon3.CreateStoreLoader(upgradeInfo.Height)
 	case argon4.UpgradeName:
-		storeLoader = argon3.CreateStoreLoader(upgradeInfo.Height)
+		storeLoader = argon4.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {
