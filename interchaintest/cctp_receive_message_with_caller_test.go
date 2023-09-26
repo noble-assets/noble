@@ -11,9 +11,7 @@ import (
 	"time"
 
 	cosmossdk_io_math "cosmossdk.io/math"
-	"github.com/circlefin/noble-cctp-private-builds/cmd"
-	cctptypes "github.com/circlefin/noble-cctp-private-builds/x/cctp/types"
-	routertypes "github.com/circlefin/noble-cctp-private-builds/x/router/types"
+	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,6 +25,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
+	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
+	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )

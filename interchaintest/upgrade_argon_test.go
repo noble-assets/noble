@@ -12,7 +12,7 @@ import (
 	"time"
 
 	cosmossdk_io_math "cosmossdk.io/math"
-	cctptypes "github.com/circlefin/noble-cctp-private-builds/x/cctp/types"
+	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
