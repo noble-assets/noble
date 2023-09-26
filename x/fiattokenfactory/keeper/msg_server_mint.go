@@ -13,7 +13,10 @@ import (
 
 func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	return k.Keeper.Mint(ctx, msg)
+}
 
+func (k Keeper) Mint(ctx sdk.Context, msg *types.MsgMint) (*types.MsgMintResponse, error) {
 	minter, found := k.GetMinters(ctx, msg.From)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not a minter")

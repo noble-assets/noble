@@ -21,6 +21,7 @@ import (
 )
 
 const (
+	ghcrRepo        = "ghcr.io/strangelove-ventures/noble"
 	containerUidGid = "1025:1025"
 
 	haltHeightDelta    = uint64(10) // will propose upgrade this many blocks in the future
@@ -38,6 +39,14 @@ type chainUpgrade struct {
 	upgradeName string // if upgradeName is empty, assumes patch/rolling update
 	preUpgrade  func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet)
 	postUpgrade func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet)
+}
+
+func ghcrImage(version string) ibc.DockerImage {
+	return ibc.DockerImage{
+		Repository: ghcrRepo,
+		Version:    version,
+		UidGid:     containerUidGid,
+	}
 }
 
 func testNobleChainUpgrade(
@@ -62,66 +71,49 @@ func testNobleChainUpgrade(
 
 	client, network := interchaintest.DockerSetup(t)
 
-	var noble *cosmos.CosmosChain
-	var roles NobleRoles
-	var paramAuthority ibc.Wallet
+	var gw genesisWrapper
 
-	chainCfg := ibc.ChainConfig{
-		Type:           "cosmos",
-		Name:           "noble",
-		ChainID:        chainID,
-		Bin:            "nobled",
-		Denom:          "token",
-		Bech32Prefix:   "noble",
-		CoinType:       "118",
-		GasPrices:      "0.0token",
-		GasAdjustment:  1.1,
-		TrustingPeriod: "504h",
-		NoHostMount:    false,
-		Images:         []ibc.DockerImage{genesisVersionImage},
-		EncodingConfig: NobleEncoding(),
-		PreGenesis: func(cc ibc.ChainConfig) error {
-			val := noble.Validators[0]
-			err := createTokenfactoryRoles(ctx, &roles, genesisTokenFactoryDenomMetadata, val, true)
-			if err != nil {
-				return err
-			}
-			paramAuthority, err = createParamAuthAtGenesis(ctx, val)
+	cs := nobleChainSpec(ctx, &gw, chainID, numberOfValidators, numberOfFullNodes, false, false, false, false)
+
+	cs.ChainConfig.PreGenesis = func(cc ibc.ChainConfig) error {
+		val := gw.chain.Validators[0]
+		var err error
+		gw.tfRoles, err = createTokenfactoryRoles(ctx, genesisTokenFactoryDenomMetadata, val, true)
+		if err != nil {
 			return err
-		},
-		ModifyGenesis: func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			g := make(map[string]interface{})
-			if err := json.Unmarshal(b, &g); err != nil {
-				return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
-			}
-			if err := modifyGenesisTokenfactory(g, "tokenfactory", genesisTokenFactoryDenomMetadata, &roles, true); err != nil {
-				return nil, err
-			}
-			if err := modifyGenesisParamAuthority(g, paramAuthority.FormattedAddress()); err != nil {
-				return nil, err
-			}
-			out, err := json.Marshal(&g)
-			if err != nil {
-				return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
-			}
-			return out, nil
-		},
+		}
+		gw.paramAuthority, err = createParamAuthAtGenesis(ctx, val)
+		return err
 	}
+
+	cs.ChainConfig.ModifyGenesis = func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+		g := make(map[string]interface{})
+		if err := json.Unmarshal(b, &g); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
+		}
+		if err := modifyGenesisTokenfactory(g, "tokenfactory", genesisTokenFactoryDenomMetadata, gw.tfRoles, true); err != nil {
+			return nil, err
+		}
+		if err := modifyGenesisParamAuthority(g, gw.paramAuthority.FormattedAddress()); err != nil {
+			return nil, err
+		}
+		out, err := json.Marshal(&g)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
+		}
+		return out, nil
+	}
+
+	cs.ChainConfig.Images = []ibc.DockerImage{genesisVersionImage}
 
 	logger := zaptest.NewLogger(t)
 
-	cf := interchaintest.NewBuiltinChainFactory(logger, []*interchaintest.ChainSpec{
-		{
-			ChainConfig:   chainCfg,
-			NumValidators: &numberOfValidators,
-			NumFullNodes:  &numberOfFullNodes,
-		},
-	})
-
+	cf := interchaintest.NewBuiltinChainFactory(logger, []*interchaintest.ChainSpec{cs})
 	chains, err := cf.Chains(t.Name())
 	require.NoError(t, err)
 
-	noble = chains[0].(*cosmos.CosmosChain)
+	gw.chain = chains[0].(*cosmos.CosmosChain)
+	noble := gw.chain
 
 	ic := interchaintest.NewInterchain().
 		AddChain(noble)
@@ -138,11 +130,13 @@ func testNobleChainUpgrade(
 		_ = ic.Close()
 	})
 
+	chainCfg := noble.Config()
+
 	cmd.SetPrefixes(chainCfg.Bech32Prefix)
 
 	for _, upgrade := range upgrades {
 		if upgrade.preUpgrade != nil {
-			upgrade.preUpgrade(t, ctx, noble, paramAuthority)
+			upgrade.preUpgrade(t, ctx, noble, gw.paramAuthority)
 		}
 
 		if upgrade.upgradeName == "" {
@@ -208,9 +202,9 @@ func testNobleChainUpgrade(
 			}
 
 			wallet := cosmos.NewWallet(
-				paramAuthority.KeyName(),
-				paramAuthority.Address(),
-				paramAuthority.Mnemonic(),
+				gw.paramAuthority.KeyName(),
+				gw.paramAuthority.Address(),
+				gw.paramAuthority.Mnemonic(),
 				chainCfg,
 			)
 
@@ -219,7 +213,7 @@ func testNobleChainUpgrade(
 				broadcaster,
 				wallet,
 				&upgradetypes.MsgSoftwareUpgrade{
-					Authority: paramAuthority.FormattedAddress(),
+					Authority: gw.paramAuthority.FormattedAddress(),
 					Plan:      upgradePlan,
 				},
 			)
@@ -274,7 +268,7 @@ func testNobleChainUpgrade(
 		}
 
 		if upgrade.postUpgrade != nil {
-			upgrade.postUpgrade(t, ctx, noble, paramAuthority)
+			upgrade.postUpgrade(t, ctx, noble, gw.paramAuthority)
 		}
 	}
 }

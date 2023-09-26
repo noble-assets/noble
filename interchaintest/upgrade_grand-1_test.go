@@ -2,8 +2,6 @@ package interchaintest_test
 
 import (
 	"testing"
-
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 )
 
 // run `make local-image`to rebuild updated binary before running test
@@ -15,11 +13,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		numFullNodes  = 0
 	)
 
-	var grand1Genesis = ibc.DockerImage{
-		Repository: "ghcr.io/strangelove-ventures/noble",
-		Version:    "v0.3.0",
-		UidGid:     containerUidGid,
-	}
+	var grand1Genesis = ghcrImage("v0.3.0")
 
 	var grand1Upgrades = []chainUpgrade{
 		{
@@ -28,33 +22,41 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			// As such, v0.4.2 was required to complete the upgrade, which changed the upgrade
 			// name in the code to "v0.4.1" as a workaround.
 			upgradeName: "v0.4.1",
-			image: ibc.DockerImage{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				Version:    "v0.4.2",
-				UidGid:     containerUidGid,
-			},
+			image:       ghcrImage("dan-neon-control-test"), //this is an adjusted version that gives us control of the fiat-tokenfactory owner
 		},
 		{
 			upgradeName: "radon",
-			image: ibc.DockerImage{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				// testnet actually upgraded to v0.5.0, but that required a hack to fix the consensus min fee. v0.5.1 fixes that.
-				Version: "v0.5.1",
-				UidGid:  containerUidGid,
-			},
+			image:       ghcrImage("v0.5.1"), // testnet actually upgraded to v0.5.0, but that required a hack to fix the consensus min fee. v0.5.1 fixes that
 			postUpgrade: testPostRadonUpgrade,
 		},
 		{
 			// post radon patch upgrade (will be applied as rolling upgrade due to lack of upgradeName)
-			image: ibc.DockerImage{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				Version:    "v3.0.0",
-				UidGid:     containerUidGid,
-			},
+			image: ghcrImage("v3.0.0"),
 		},
 		{
 			upgradeName: "argon",
+			image:       ghcrImage("v4.0.0-alpha1"),
+		},
+		{
+			// post argon patch upgrade (will be applied as rolling upgrade due to lack of upgradeName)
+			// This upgrade is only relevant to the grand-1 testnet
+			image: ghcrImage("v4.0.0-alpha2"),
+		},
+		{
+			// This upgrade is only relevant to the grand-1 testnet
+			upgradeName: "argon2",
+			image:       ghcrImage("v4.0.0-alpha3"),
+		},
+		{
+			// This upgrade is only relevant to the grand-1 testnet
+			upgradeName: "argon3",
+			image:       ghcrImage("v4.0.0-beta1"),
+		},
+		{
+			// This upgrade is only relevant to the grand-1 testnet
+			upgradeName: "v4.0.0-beta2",
 			image:       nobleImageInfo[0],
+			postUpgrade: testPostArgonUpgradeTestnet,
 		},
 	}
 
