@@ -93,6 +93,7 @@ import (
 	"github.com/strangelove-ventures/noble/app/upgrades/argon"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon2"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon3"
+	"github.com/strangelove-ventures/noble/app/upgrades/argon4"
 	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/app/upgrades/radon"
 	"github.com/strangelove-ventures/noble/cmd"
@@ -941,6 +942,14 @@ func (app *App) setupUpgradeHandlers() {
 			app.RouterKeeper,
 		),
 	)
+	// argon3 upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		argon4.UpgradeName,
+		argon4.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		),
+	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
@@ -962,6 +971,8 @@ func (app *App) setupUpgradeHandlers() {
 	case argon2.UpgradeName:
 		storeLoader = argon2.CreateStoreLoader(upgradeInfo.Height)
 	case argon3.UpgradeName:
+		storeLoader = argon3.CreateStoreLoader(upgradeInfo.Height)
+	case argon4.UpgradeName:
 		storeLoader = argon3.CreateStoreLoader(upgradeInfo.Height)
 	}
 

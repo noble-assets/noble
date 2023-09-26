@@ -54,6 +54,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		},
 		{
 			// This upgrade is only relevant to the grand-1 testnet
+			upgradeName: "argon4",
 			image:       nobleImageInfo[0],
 			postUpgrade: testPostArgonUpgradeTestnet,
 		},
