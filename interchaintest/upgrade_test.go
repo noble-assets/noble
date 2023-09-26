@@ -7,13 +7,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/circlefin/noble-cctp-private-builds/cmd"
 	sdkupgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v3"
 	"github.com/strangelove-ventures/interchaintest/v3/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v3/testutil"
-	"github.com/strangelove-ventures/noble/cmd"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -21,6 +21,7 @@ import (
 )
 
 const (
+	ghcrRepo        = "ghcr.io/strangelove-ventures/noble"
 	containerUidGid = "1025:1025"
 
 	haltHeightDelta    = uint64(10) // will propose upgrade this many blocks in the future
@@ -38,6 +39,14 @@ type chainUpgrade struct {
 	upgradeName string // if upgradeName is empty, assumes patch/rolling update
 	preUpgrade  func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet)
 	postUpgrade func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet)
+}
+
+func ghcrImage(version string) ibc.DockerImage {
+	return ibc.DockerImage{
+		Repository: ghcrRepo,
+		Version:    version,
+		UidGid:     containerUidGid,
+	}
 }
 
 func testNobleChainUpgrade(
@@ -64,7 +73,7 @@ func testNobleChainUpgrade(
 
 	var gw genesisWrapper
 
-	cs := nobleChainSpec(ctx, &gw, "noble-1", numberOfValidators, numberOfFullNodes, false, false, false, false)
+	cs := nobleChainSpec(ctx, &gw, chainID, numberOfValidators, numberOfFullNodes, false, false, false, false)
 
 	cs.ChainConfig.PreGenesis = func(cc ibc.ChainConfig) error {
 		val := gw.chain.Validators[0]

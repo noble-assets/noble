@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	tokenfactorytypes "github.com/circlefin/noble-cctp-private-builds/x/tokenfactory/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
@@ -13,7 +14,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 	"github.com/strangelove-ventures/interchaintest/v3/relayer"
 	"github.com/strangelove-ventures/interchaintest/v3/relayer/rly"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
@@ -116,7 +116,7 @@ var (
 	defaultTransferMaxFee          = "5000000"
 	defaultTransferFeeDenom        = denomMetadataDrachma.Base
 
-	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.1", rly.RlyDefaultUidGid)
+	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.0", rly.RlyDefaultUidGid)
 )
 
 type DenomMetadata struct {
@@ -494,7 +494,7 @@ func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(
 			return nil, err
 		}
 
-		if err := modifyGenesisRouter(g, gw.fiatTfRoles.Owner.FormattedAddress()); err != nil {
+		if err := modifyGenesisRouter(g, authority); err != nil {
 			return nil, err
 		}
 
@@ -598,7 +598,7 @@ func modifyGenesisCCTP(genbz map[string]interface{}, authority string) error {
 
 func modifyGenesisRouter(genbz map[string]interface{}, authority string) error {
 	if err := dyno.Set(genbz, authority, "app_state", "router", "owner"); err != nil {
-		return fmt.Errorf("failed to set router authority address in genesis json: %w", err)
+		return fmt.Errorf("failed to set cctp authority address in genesis json: %w", err)
 	}
 
 	return nil

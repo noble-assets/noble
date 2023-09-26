@@ -2,8 +2,6 @@ package interchaintest_test
 
 import (
 	"testing"
-
-	"github.com/strangelove-ventures/interchaintest/v3/ibc"
 )
 
 // run `make local-image`to rebuild updated binary before running test
@@ -15,41 +13,26 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		numFullNodes  = 0
 	)
 
-	var noble1Genesis = ibc.DockerImage{
-		Repository: "ghcr.io/strangelove-ventures/noble",
-		Version:    "v1.0.0",
-		UidGid:     containerUidGid,
-	}
+	var noble1Genesis = ghcrImage("v1.0.0")
 
 	var noble1Upgrades = []chainUpgrade{
 		{
 			upgradeName: "neon",
-			image: ibc.DockerImage{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				Version:    "v2.0.0",
-				UidGid:     containerUidGid,
-			},
+			image:       ghcrImage("v2.0.0"),
 		},
 		{
 			// omitting upgradeName due to huckleberry patch
-			image: ibc.DockerImage{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				Version:    "v2.0.1",
-				UidGid:     containerUidGid,
-			},
+			image: ghcrImage("v2.0.1"),
 		},
 		{
 			upgradeName: "radon",
-			image: ibc.DockerImage{
-				Repository: "ghcr.io/strangelove-ventures/noble",
-				Version:    "v3.0.0",
-				UidGid:     containerUidGid,
-			},
+			image:       ghcrImage("v3.0.0"),
 			postUpgrade: testPostRadonUpgrade,
 		},
 		{
 			upgradeName: "argon",
 			image:       nobleImageInfo[0],
+			// postUpgrade: testPostArgonUpgradeMainnet,
 		},
 	}
 
