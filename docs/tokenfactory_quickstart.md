@@ -9,7 +9,7 @@ The steps below assume the following:
     - Master Minter -> masterminter
     - Minter Controller -> mintercontroller
     - Minter -> minter
-- Each wallet being used (except Owner and Alice) are pre-funded (making them known to the network) or included in genesis.
+- Each wallet being used (except Owner and Alice) is pre-funded (making them known to the network) or included in genesis.
 
 
 ---
