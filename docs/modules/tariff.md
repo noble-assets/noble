@@ -13,7 +13,7 @@ The tariff module is meant to sit before the distribution module in the begin-bl
 
 - `TransferFeeMax`: The max amount of fees to be collected for an outgoing IBC transfer.
 
-- `TransferFeeDenom`: The denom to collect fees for on outgoing IBC transfers.
+- `TransferFeeDenom`: The denom to collect fees for an outgoing IBC transfer.
 
 ---
 
