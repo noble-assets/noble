@@ -54,7 +54,7 @@ Bypass messages are messages that are exempt from paying fees. The above global 
 - The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`. Note: the current `MaxTotalBypassMinFeeMsgGasUsage` is set to `1,000,000`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
-The list of these messages is stored in module parameters and can be updated via governance proposals or the maintenence multisig. The following are default:
+The list of these messages is stored in module parameters and can be updated via governance proposals or the maintenance multisig. The following are default:
 
 ```go
 defaultBypassMinFeeMsgTypes := []string{
@@ -118,7 +118,7 @@ A `proposal.json` example:
 
 Here are a few examples to clarify the relationship between global fees, minimum-gas-prices and transaction fees.
 
-**Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [santitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
+**Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [sanitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
 This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
 In the following examples, zero-coin fees are removed from the transaction fees.
 
@@ -127,7 +127,7 @@ In the following examples, zero-coin fees are removed from the transaction fees.
 
 `minimum-gas-prices`: in `app.toml` -> `minimum-gas-prices`
 
-`gas`: a uniuqe amount deteremend by chain per transaction
+`gas`: a unique amount determined by chain per transaction
 
 `paidfee`: (`--gas` flag in `tx bank send` * `--gas-prices` flag in `tx bank send`)
 
