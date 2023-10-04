@@ -7,7 +7,7 @@ toolchain go1.21.1
 require (
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.0.1
-	github.com/circlefin/noble-cctp v0.0.0-20230925203250-4d2482bd0d7c
+	github.com/circlefin/noble-cctp v0.0.0-20230929163611-b9e0cf535132
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/gogo/protobuf v1.3.3
