@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	bankTypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	tokenfactorysimulation "github.com/strangelove-ventures/noble/x/tokenfactory/simulation"
@@ -90,10 +91,42 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	tokenfactoryGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
+		Params:       types.DefaultParams(),
+		MintingDenom: &types.MintingDenom{Denom: "ufrienzies"},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&tokenfactoryGenesis)
+
+	bankGenesisBz := simState.GenState[bankTypes.ModuleName]
+	var bankGenesis bankTypes.GenesisState
+	simState.Cdc.MustUnmarshalJSON(bankGenesisBz, &bankGenesis)
+
+	bankGenesis.DenomMetadata = append(bankGenesis.DenomMetadata, bankTypes.Metadata{
+		Description: "Frienzies are an IBC token redeemable exclusively for a physical asset issued by the Noble entity.",
+		DenomUnits: []*bankTypes.DenomUnit{
+			{
+				Denom:    "ufrienzies",
+				Exponent: 0,
+				Aliases:  []string{"microfrienzies"},
+			},
+			{
+				Denom:    "mfrienzies",
+				Exponent: 3,
+				Aliases:  []string{"millifrienzies"},
+			},
+			{
+				Denom:    "frienzies",
+				Exponent: 6,
+				Aliases:  []string{},
+			},
+		},
+		Base:    "ufrienzies",
+		Display: "frienzies",
+		Name:    "frienzies",
+		Symbol:  "FRNZ",
+	})
+
+	simState.GenState[bankTypes.ModuleName] = simState.Cdc.MustMarshalJSON(&bankGenesis)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals

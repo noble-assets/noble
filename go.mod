@@ -153,11 +153,15 @@ require (
 )
 
 replace (
+	github.com/circlefin/noble-cctp => github.com/noble-assets/cctp v0.0.0-20231011123114-2d9a649f0036
+
 	// huckleberry patch for ibc-go v3
 	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry
 
 	// use cosmos-flavored protocol buffers
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	github.com/strangelove-ventures/paramauthority => github.com/noble-assets/paramauthority v0.0.0-20231012123800-75b3a76f31c0
 
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27

@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	bankTypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	tokenfactorysimulation "github.com/strangelove-ventures/noble/x/fiattokenfactory/simulation"
@@ -90,10 +91,37 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	tokenfactoryGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
+		Params:       types.DefaultParams(),
+		MintingDenom: &types.MintingDenom{Denom: "uusdc"},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&tokenfactoryGenesis)
+
+	bankGenesisBz := simState.GenState[bankTypes.ModuleName]
+	var bankGenesis bankTypes.GenesisState
+	simState.Cdc.MustUnmarshalJSON(bankGenesisBz, &bankGenesis)
+
+	bankGenesis.DenomMetadata = append(bankGenesis.DenomMetadata, bankTypes.Metadata{
+		Description: "USD Coin",
+		DenomUnits: []*bankTypes.DenomUnit{
+			{
+				Denom:    "uusdc",
+				Exponent: 0,
+				Aliases:  []string{"microusdc"},
+			},
+			{
+				Denom:    "usdc",
+				Exponent: 6,
+				Aliases:  []string{},
+			},
+		},
+		Base:    "uusdc",
+		Display: "usdc",
+		Name:    "usdc",
+		Symbol:  "USDC",
+	})
+
+	simState.GenState[bankTypes.ModuleName] = simState.Cdc.MustMarshalJSON(&bankGenesis)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals

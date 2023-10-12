@@ -112,9 +112,6 @@ import (
 	cctp "github.com/circlefin/noble-cctp/x/cctp"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
-	router "github.com/strangelove-ventures/noble-router/x/router"
-	routerkeeper "github.com/strangelove-ventures/noble-router/x/router/keeper"
-	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
 )
 
 const (
@@ -156,7 +153,7 @@ var (
 		globalfee.AppModuleBasic{},
 		tariff.AppModuleBasic{},
 		cctp.AppModuleBasic{},
-		router.AppModuleBasic{},
+		//router.AppModuleBasic{},
 		paramauthorityibc.AppModuleBasic{},
 	)
 
@@ -234,7 +231,7 @@ type App struct {
 	FiatTokenFactoryKeeper *fiattokenfactorymodulekeeper.Keeper
 	TariffKeeper           tariffkeeper.Keeper
 	CCTPKeeper             *cctpkeeper.Keeper
-	RouterKeeper           *routerkeeper.Keeper
+	//RouterKeeper           *routerkeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -273,7 +270,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
-		cctptypes.StoreKey, routertypes.StoreKey,
+		cctptypes.StoreKey, // routertypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -385,7 +382,9 @@ func New(
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *app.StakingKeeper.SetHooks(app.SlashingKeeper.Hooks())
+	app.StakingKeeper = *app.StakingKeeper.SetHooks(
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+	)
 
 	// ... other modules keepers
 
@@ -474,13 +473,13 @@ func New(
 	)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec,
-		keys[routertypes.StoreKey],
-		app.GetSubspace(routertypes.ModuleName),
-		app.CCTPKeeper,
-		app.TransferKeeper,
-	)
+	//app.RouterKeeper = routerkeeper.NewKeeper(
+	//	appCodec,
+	//	keys[routertypes.StoreKey],
+	//	app.GetSubspace(routertypes.ModuleName),
+	//	app.CCTPKeeper,
+	//	app.TransferKeeper,
+	//)
 
 	app.CCTPKeeper = cctpkeeper.NewKeeper(
 		appCodec,
@@ -488,10 +487,10 @@ func New(
 		app.GetSubspace(cctptypes.ModuleName),
 		app.BankKeeper,
 		app.FiatTokenFactoryKeeper,
-		app.RouterKeeper,
+		nil,
 	)
 
-	app.RouterKeeper.SetCctpKeeper(app.CCTPKeeper)
+	//app.RouterKeeper.SetCctpKeeper(app.CCTPKeeper)
 
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -502,8 +501,8 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = router.NewIBCMiddleware(transferStack, app.RouterKeeper)
-	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.FiatTokenFactoryKeeper)
+	//transferStack = router.NewIBCMiddleware(transferStack, app.RouterKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, nil, app.FiatTokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -534,7 +533,7 @@ func New(
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, &app.StakingKeeper),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		paramauthorityupgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
@@ -548,8 +547,8 @@ func New(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
-		cctp.NewAppModule(appCodec, app.CCTPKeeper),
-		router.NewAppModule(appCodec, app.RouterKeeper),
+		cctp.NewAppModule(appCodec, app.AccountKeeper, app.CCTPKeeper),
+		//router.NewAppModule(appCodec, app.RouterKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -581,7 +580,7 @@ func New(
 		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
-		routertypes.ModuleName,
+		//routertypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -608,7 +607,7 @@ func New(
 		globalfee.ModuleName,
 		tarifftypes.ModuleName,
 		cctptypes.ModuleName,
-		routertypes.ModuleName,
+		//routertypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -617,11 +616,11 @@ func New(
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		stakingtypes.ModuleName,
 		capabilitytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
+		stakingtypes.ModuleName,
 		tarifftypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -640,7 +639,7 @@ func New(
 		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
-		routertypes.ModuleName,
+		//routertypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -661,21 +660,11 @@ func New(
 	)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
-	app.sm = module.NewSimulationManager(
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
-		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, &app.StakingKeeper),
-		paramauthority.NewAppModule(app.ParamsKeeper),
-		evidence.NewAppModule(app.EvidenceKeeper),
-		ibc.NewAppModule(app.IBCKeeper),
-		transferModule,
-		tokenfactoryModule,
-		fiattokenfactorymodule,
-	)
+	overrideModules := map[string]module.AppModuleSimulation{
+		authtypes.ModuleName: auth.NewAppModule(app.appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
+	}
+	app.sm = module.NewSimulationManagerFromAppModules(app.mm.Modules, overrideModules)
+
 	app.sm.RegisterStoreDecoders()
 
 	// initialize stores
@@ -881,7 +870,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(cctptypes.ModuleName)
-	paramsKeeper.Subspace(routertypes.ModuleName)
+	//paramsKeeper.Subspace(routertypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
@@ -925,7 +914,7 @@ func (app *App) setupUpgradeHandlers() {
 			app.FiatTokenFactoryKeeper,
 			app.ParamsKeeper,
 			app.CCTPKeeper,
-			app.RouterKeeper,
+			nil,
 		),
 	)
 
