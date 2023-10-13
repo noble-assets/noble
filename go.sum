@@ -763,8 +763,8 @@ github.com/nats-io/nkeys v0.1.3/go.mod h1:xpnFELMwJABBLVhffcfd1MZx6VsNRFpEugbxzi
 github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OSON2c=
 github.com/neilotoole/errgroup v0.1.6/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/noble-assets/cctp v0.0.0-20231011123114-2d9a649f0036 h1:Ang5ySxQFPVr89NPGcTAWKKU9jk6Q053/lhkiuBks+4=
-github.com/noble-assets/cctp v0.0.0-20231011123114-2d9a649f0036/go.mod h1:kTaX51dOT10LBoERZYT1ahuove3dL/+q5IagWQUABd0=
+github.com/noble-assets/cctp v0.0.0-20231013125130-fa24826314fe h1:IRTPiqRtYYVZpYN0jNdcUNnPMXn4VM8vwqsjB9ga/a8=
+github.com/noble-assets/cctp v0.0.0-20231013125130-fa24826314fe/go.mod h1:kTaX51dOT10LBoERZYT1ahuove3dL/+q5IagWQUABd0=
 github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry h1:02oo/GHLGITexbPNUO/jmYa67xE+B5BvNv/i+wufdHI=
 github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry/go.mod h1:VwB/vWu4ysT5DN2aF78d17LYmx3omSAdq6gpKvM7XRA=
 github.com/noble-assets/paramauthority v0.0.0-20231012123800-75b3a76f31c0 h1:+D+62FTPcn63gaFuI8FDeOl5lAUw2b5NvrMfMxOMGiA=

@@ -487,7 +487,6 @@ func New(
 		app.GetSubspace(cctptypes.ModuleName),
 		app.BankKeeper,
 		app.FiatTokenFactoryKeeper,
-		nil,
 	)
 
 	//app.RouterKeeper.SetCctpKeeper(app.CCTPKeeper)
@@ -547,7 +546,7 @@ func New(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
-		cctp.NewAppModule(appCodec, app.AccountKeeper, app.CCTPKeeper),
+		cctp.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.CCTPKeeper),
 		//router.NewAppModule(appCodec, app.RouterKeeper),
 	)
 

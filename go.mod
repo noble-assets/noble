@@ -153,7 +153,7 @@ require (
 )
 
 replace (
-	github.com/circlefin/noble-cctp => github.com/noble-assets/cctp v0.0.0-20231011123114-2d9a649f0036
+	github.com/circlefin/noble-cctp => github.com/noble-assets/cctp v0.0.0-20231013125130-fa24826314fe
 
 	// huckleberry patch for ibc-go v3
 	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry

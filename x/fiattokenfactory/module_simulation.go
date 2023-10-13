@@ -1,6 +1,7 @@
 package fiattokenfactory
 
 import (
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -91,7 +92,16 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	tokenfactoryGenesis := types.GenesisState{
-		Params:       types.DefaultParams(),
+		MintersList: []types.Minters{
+			{
+				Address: authtypes.NewModuleAddress("cctp").String(),
+			},
+		},
+		MinterControllerList: []types.MinterController{
+			{
+				Minter: authtypes.NewModuleAddress("cctp").String(),
+			},
+		},
 		MintingDenom: &types.MintingDenom{Denom: "uusdc"},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
