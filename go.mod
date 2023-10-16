@@ -2,12 +2,12 @@ module github.com/strangelove-ventures/noble
 
 go 1.21
 
-toolchain go1.21.1
+toolchain go1.21.3
 
 require (
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.0.1
-	github.com/circlefin/noble-cctp v0.0.0-20230925203250-4d2482bd0d7c
+	github.com/circlefin/noble-cctp v0.0.0-20231013164358-dc81b3e0d566
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/gogo/protobuf v1.3.3
@@ -17,7 +17,6 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/noble-router v1.0.0
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5
 	github.com/strangelove-ventures/paramauthority v1.0.0
 	github.com/stretchr/testify v1.8.4

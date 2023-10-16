@@ -9,8 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	routerkeeper "github.com/strangelove-ventures/noble-router/x/router/keeper"
-	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
 	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 )
@@ -21,7 +19,6 @@ func CreateUpgradeHandler(
 	fiatTFKeeper *fiattokenfactorykeeper.Keeper,
 	paramauthoritykeeper paramauthoritykeeper.Keeper,
 	cctpKeeper *cctpkeeper.Keeper,
-	routerKeeper *routerkeeper.Keeper,
 ) upgradeTypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradeTypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		var cctpAuthority string
@@ -48,9 +45,6 @@ func CreateUpgradeHandler(
 		cctpKeeper.SetSendingAndReceivingMessagesPaused(ctx, cctptypes.SendingAndReceivingMessagesPaused{Paused: false})
 		cctpKeeper.SetMaxMessageBodySize(ctx, cctptypes.MaxMessageBodySize{Amount: 8000})
 		cctpKeeper.SetSignatureThreshold(ctx, cctptypes.SignatureThreshold{Amount: 2})
-
-		routerKeeper.SetOwner(ctx, paramAuthority)
-		routerKeeper.SetParams(ctx, routertypes.DefaultParams())
 
 		return mm.RunMigrations(ctx, configurator, vm)
 	}

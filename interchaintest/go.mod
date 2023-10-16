@@ -4,14 +4,13 @@ go 1.21
 
 require (
 	cosmossdk.io/math v1.0.1
-	github.com/circlefin/noble-cctp v0.0.0-20230925203250-4d2482bd0d7c
+	github.com/circlefin/noble-cctp v0.0.0-20231013164358-dc81b3e0d566
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27
 	github.com/strangelove-ventures/noble v1.0.1-0.20230717234609-400609f26a31
-	github.com/strangelove-ventures/noble-router v1.0.0
 	github.com/strangelove-ventures/paramauthority v1.0.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
