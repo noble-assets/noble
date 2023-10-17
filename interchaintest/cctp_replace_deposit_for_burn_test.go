@@ -178,7 +178,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 		SourceDomain:      4, // noble is 4
 		DestinationDomain: 0,
 		Nonce:             0, // dif per message
-		Sender:            messageSender,
+		Sender:            cctptypes.PaddedModuleAddress,
 		Recipient:         cctptypes.PaddedModuleAddress,
 		DestinationCaller: emptyDestinationCaller,
 		MessageBody:       depositForBurnBz,
@@ -267,7 +267,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 			require.Equal(t, wrappedDepositForBurn.SourceDomain, message.SourceDomain)
 			require.Equal(t, wrappedDepositForBurn.DestinationDomain, message.DestinationDomain)
 			require.Equal(t, wrappedDepositForBurn.Nonce, message.Nonce)
-			require.True(t, bytes.Equal(messageSender, message.Sender))
+			require.Equal(t, cctptypes.PaddedModuleAddress, message.Sender)
 			require.Equal(t, cctptypes.PaddedModuleAddress, message.Recipient)
 			require.Equal(t, newDestCaller, message.DestinationCaller)
 

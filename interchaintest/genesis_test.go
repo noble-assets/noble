@@ -494,10 +494,6 @@ func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(
 			return nil, err
 		}
 
-		if err := modifyGenesisRouter(g, authority); err != nil {
-			return nil, err
-		}
-
 		out, err := json.Marshal(&g)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
@@ -592,14 +588,6 @@ func modifyGenesisCCTP(genbz map[string]interface{}, authority string) error {
 	//if err := dyno.Set(genbz, Attester{Attester: "0xb0Ea8E1bE37F346C7EA7ec708834D0db18A17361"}, "app_state", "cctp", "attes"); err != nil {
 	//	return fmt.Errorf("failed to set cctp signatureThreshold in genesis json: %w", err)
 	//}
-
-	return nil
-}
-
-func modifyGenesisRouter(genbz map[string]interface{}, authority string) error {
-	if err := dyno.Set(genbz, authority, "app_state", "router", "owner"); err != nil {
-		return fmt.Errorf("failed to set cctp authority address in genesis json: %w", err)
-	}
 
 	return nil
 }

@@ -24,7 +24,6 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	routertypes "github.com/strangelove-ventures/noble-router/x/router/types"
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/testutil/sample"
@@ -103,10 +102,6 @@ func DefaultConfig() network.Config {
 	upgrade := paramauthorityupgradetypes.DefaultGenesis()
 	upgrade.Params.Authority = sample.AccAddress()
 	cfg.GenesisState[upgradetypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(upgrade)
-
-	router := routertypes.DefaultGenesis()
-	router.Owner = params.Params.Authority
-	cfg.GenesisState[routertypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(router)
 
 	cctp := cctptypes.DefaultGenesis()
 	cctp.Owner = sample.AccAddress()
