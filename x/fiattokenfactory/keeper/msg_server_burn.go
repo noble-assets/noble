@@ -12,7 +12,10 @@ import (
 
 func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBurnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	return k.Keeper.Burn(ctx, msg)
+}
 
+func (k Keeper) Burn(ctx sdk.Context, msg *types.MsgBurn) (*types.MsgBurnResponse, error) {
 	_, found := k.GetMinters(ctx, msg.From)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrBurn, "%v: you are not a minter", types.ErrUnauthorized)
