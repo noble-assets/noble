@@ -1,0 +1,1 @@
+- Add `x/fiattokenfactory` interface changes required for [CCTP](https://www.circle.com/en/cross-chain-transfer-protocol). ([#251](https://github.com/strangelove-ventures/noble/pull/251))
