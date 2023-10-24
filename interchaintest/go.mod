@@ -189,6 +189,8 @@ replace (
 	// For this nested module, you always want to replace the parent reference with the current worktree.
 	github.com/strangelove-ventures/noble => ../
 
+	github.com/strangelove-ventures/paramauthority => github.com/noble-assets/paramauthority v0.0.0-20231012123800-75b3a76f31c0
+
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
 

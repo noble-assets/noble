@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	tokenfactorysimulation "github.com/strangelove-ventures/noble/x/tokenfactory/simulation"
@@ -85,15 +86,46 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
+	// x/tokenfactory
+
+	genesis := types.GenesisState{
+		MintingDenom: &types.MintingDenom{Denom: "ufrienzies"},
 	}
-	tokenfactoryGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		// this line is used by starport scaffolding # simapp/module/genesisState
-	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&tokenfactoryGenesis)
+
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&genesis)
+
+	// x/bank
+
+	bankGenesisBz := simState.GenState[banktypes.ModuleName]
+	var bankGenesis banktypes.GenesisState
+	simState.Cdc.MustUnmarshalJSON(bankGenesisBz, &bankGenesis)
+
+	bankGenesis.DenomMetadata = append(bankGenesis.DenomMetadata, banktypes.Metadata{
+		Description: "Frienzies are an IBC token redeemable exclusively for a physical asset issued by the Noble entity.",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "ufrienzies",
+				Exponent: 0,
+				Aliases:  []string{"microfrienzies"},
+			},
+			{
+				Denom:    "mfrienzies",
+				Exponent: 3,
+				Aliases:  []string{"millifrienzies"},
+			},
+			{
+				Denom:    "frienzies",
+				Exponent: 6,
+				Aliases:  []string{},
+			},
+		},
+		Base:    "ufrienzies",
+		Display: "frienzies",
+		Name:    "frienzies",
+		Symbol:  "FRNZ",
+	})
+
+	simState.GenState[banktypes.ModuleName] = simState.Cdc.MustMarshalJSON(&bankGenesis)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals
