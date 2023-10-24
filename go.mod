@@ -2,14 +2,13 @@ module github.com/strangelove-ventures/noble
 
 go 1.21
 
-toolchain go1.21.3
-
 require (
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20231013164358-dc81b3e0d566
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.0
+	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
@@ -17,7 +16,6 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5
 	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.27
@@ -57,7 +55,6 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.5 // indirect
-	github.com/cosmos/ibc-go/v4 v4.5.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.2 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
@@ -153,9 +150,6 @@ require (
 )
 
 replace (
-	// huckleberry patch for ibc-go v3
-	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry
-
 	// use macos sonoma compatible cosmos/ledger-cosmos-go
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 
