@@ -18,7 +18,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.5
-	github.com/strangelove-ventures/paramauthority v1.0.0
+	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7
@@ -50,13 +50,14 @@ require (
 	github.com/cockroachdb/redact v1.1.3 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
-	github.com/confio/ics23/go v0.9.0 // indirect
+	github.com/confio/ics23/go v0.9.1 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-db v0.0.0-20221226095112-f3c38ecb5e32 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.1 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.5 // indirect
+	github.com/cosmos/ibc-go/v4 v4.5.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.2 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
@@ -160,9 +161,6 @@ replace (
 
 	// use cosmos-flavored protocol buffers
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	// use simulation compatible strangelove-ventures/paramauthority
-	github.com/strangelove-ventures/paramauthority => github.com/noble-assets/paramauthority v0.0.0-20231012123800-75b3a76f31c0
 
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27

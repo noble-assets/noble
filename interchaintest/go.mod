@@ -11,7 +11,7 @@ require (
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v3 v3.0.0-20230622221919-28c608364e27
 	github.com/strangelove-ventures/noble v1.0.1-0.20230717234609-400609f26a31
-	github.com/strangelove-ventures/paramauthority v1.0.0
+	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
 )
@@ -43,7 +43,7 @@ require (
 	github.com/cockroachdb/redact v1.1.3 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
-	github.com/confio/ics23/go v0.9.0 // indirect
+	github.com/confio/ics23/go v0.9.1 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-db v0.0.0-20221226095112-f3c38ecb5e32 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
@@ -188,8 +188,6 @@ replace (
 
 	// For this nested module, you always want to replace the parent reference with the current worktree.
 	github.com/strangelove-ventures/noble => ../
-
-	github.com/strangelove-ventures/paramauthority => github.com/noble-assets/paramauthority v0.0.0-20231012123800-75b3a76f31c0
 
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
