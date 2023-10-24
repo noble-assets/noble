@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/paramauthority v1.0.0
+	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7
@@ -155,9 +155,6 @@ replace (
 
 	// use cosmos-flavored protocol buffers
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	// use ibc v4 compatible strangelove-ventures/paramauthority
-	github.com/strangelove-ventures/paramauthority => github.com/noble-assets/paramauthority v0.0.0-20231013150542-f7f7c5739e34
 
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27

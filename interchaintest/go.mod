@@ -11,7 +11,7 @@ require (
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231020192006-848acaeab959
 	github.com/strangelove-ventures/noble v1.0.1-0.20230717234609-400609f26a31
-	github.com/strangelove-ventures/paramauthority v1.0.0
+	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
 )
@@ -188,8 +188,6 @@ replace (
 
 	// For this nested module, you always want to replace the parent reference with the current worktree.
 	github.com/strangelove-ventures/noble => ../
-
-	github.com/strangelove-ventures/paramauthority => github.com/noble-assets/paramauthority v0.0.0-20231013150542-f7f7c5739e34
 
 	// cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
