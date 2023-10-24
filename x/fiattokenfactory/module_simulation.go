@@ -8,6 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	tokenfactorysimulation "github.com/strangelove-ventures/noble/x/fiattokenfactory/simulation"
@@ -85,15 +87,51 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
+	// x/fiattokenfactory
+
+	genesis := types.GenesisState{
+		MintersList: []types.Minters{
+			{
+				Address: authtypes.NewModuleAddress("cctp").String(),
+			},
+		},
+		MinterControllerList: []types.MinterController{
+			{
+				Minter: authtypes.NewModuleAddress("cctp").String(),
+			},
+		},
+		MintingDenom: &types.MintingDenom{Denom: "uusdc"},
 	}
-	tokenfactoryGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		// this line is used by starport scaffolding # simapp/module/genesisState
-	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&tokenfactoryGenesis)
+
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&genesis)
+
+	// x/bank
+
+	bankGenesisBz := simState.GenState[banktypes.ModuleName]
+	var bankGenesis banktypes.GenesisState
+	simState.Cdc.MustUnmarshalJSON(bankGenesisBz, &bankGenesis)
+
+	bankGenesis.DenomMetadata = append(bankGenesis.DenomMetadata, banktypes.Metadata{
+		Description: "USD Coin",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "uusdc",
+				Exponent: 0,
+				Aliases:  []string{"microusdc"},
+			},
+			{
+				Denom:    "usdc",
+				Exponent: 6,
+				Aliases:  []string{},
+			},
+		},
+		Base:    "uusdc",
+		Display: "usdc",
+		Name:    "usdc",
+		Symbol:  "USDC",
+	})
+
+	simState.GenState[banktypes.ModuleName] = simState.Cdc.MustMarshalJSON(&bankGenesis)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals

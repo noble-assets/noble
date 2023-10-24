@@ -41,8 +41,11 @@ type SimApp interface {
 // Running as go benchmark test:
 // `go test -benchmem -run=^$ -bench ^BenchmarkSimulation ./app -NumBlocks=200 -BlockSize 50 -Commit=true -Verbose=true -Enabled=true`
 func BenchmarkSimulation(b *testing.B) {
-	simapp.FlagEnabledValue = true
+	simapp.FlagNumBlocksValue = 250
+	simapp.FlagBlockSizeValue = 50
 	simapp.FlagCommitValue = true
+	simapp.FlagVerboseValue = true
+	simapp.FlagEnabledValue = true
 
 	config, db, dir, logger, _, err := simapp.SetupSimulation("goleveldb-app-sim", "Simulation")
 	require.NoError(b, err, "simulation setup failed")
