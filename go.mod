@@ -7,7 +7,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20231013164358-dc81b3e0d566
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.1
 	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
@@ -32,7 +32,7 @@ require (
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
+	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
@@ -150,15 +150,19 @@ require (
 )
 
 replace (
+	// use cosmos compatible ChainSafe/go-schnorrkel
+	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
+
 	// use macos sonoma compatible cosmos/ledger-cosmos-go
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 
-	// use cosmos-flavored protocol buffers
+	// use cosmos flavored gogo/protobuf
+	// https://github.com/cosmos/cosmos-sdk/issues/8469
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-	// cometbft
+	// use cometbft
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
 
-	// use grpc version that's compatible with cosmos-flavored protocol buffers
+	// use cosmos compatible google.golang.org/grpc
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
