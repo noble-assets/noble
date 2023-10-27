@@ -150,8 +150,8 @@ require (
 )
 
 replace (
-	// use IAVL store fix
-	github.com/cosmos/cosmos-sdk => github.com/reecepbcups/cosmos-sdk v0.45.16-fast.1
+	// use historical query compatible cosmos/cosmos-sdk
+	github.com/cosmos/cosmos-sdk => github.com/noble-assets/cosmos-sdk v0.0.0-20231027123500-bbdd07f7d209
 
 	// use macos sonoma compatible cosmos/ledger-cosmos-go
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
