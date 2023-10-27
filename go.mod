@@ -144,6 +144,9 @@ require (
 )
 
 replace (
+	// use historical query compatible cosmos/cosmos-sdk
+	github.com/cosmos/cosmos-sdk => github.com/noble-assets/cosmos-sdk v0.0.0-20231027124444-b4a955ded6e5
+
 	// huckleberry patch for ibc-go v3
 	github.com/cosmos/ibc-go/v3 => github.com/noble-assets/ibc-go/v3 v3.4.0-huckleberry
 
