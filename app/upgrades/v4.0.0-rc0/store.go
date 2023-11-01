@@ -2,14 +2,14 @@ package v4m0p0rc0
 
 import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
-	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
-	storeUpgrades := storeTypes.StoreUpgrades{
+	storeUpgrades := storetypes.StoreUpgrades{
 		Deleted: []string{"router"},
 	}
 
-	return upgradeTypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
+	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
 }
