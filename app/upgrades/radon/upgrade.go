@@ -6,8 +6,8 @@ import (
 
 	paramauthoritykeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 
+	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
 
 	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"

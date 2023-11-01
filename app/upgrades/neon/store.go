@@ -5,7 +5,7 @@ import (
 	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	// FiatTokenFactory
-	fiatTokenFactoryTypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+	fiatTokenFactoryTypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	// Upgrade
 	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
