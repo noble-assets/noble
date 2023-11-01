@@ -27,16 +27,16 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		{
 			upgradeName: "radon",
 			image:       ghcrImage("v3.0.0"),
+			postUpgrade: testPostRadonUpgrade,
 		},
 		{
 			upgradeName: "v3.1.0",
 			image:       ghcrImage("v3.1.0"),
-			postUpgrade: testPostRadonUpgrade,
 		},
 		{
 			upgradeName: "argon",
 			image:       nobleImageInfo[0],
-			// postUpgrade: testPostArgonUpgradeMainnet,
+			// NOTE: Add postUpgrade task once Neon mock image is created.
 		},
 	}
 

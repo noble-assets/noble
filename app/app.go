@@ -95,6 +95,7 @@ import (
 	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/app/upgrades/radon"
 	v3m1p0 "github.com/strangelove-ventures/noble/app/upgrades/v3.1.0"
+	v4m0p0rc0 "github.com/strangelove-ventures/noble/app/upgrades/v4.0.0-rc0"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
@@ -906,6 +907,15 @@ func (app *App) setupUpgradeHandlers() {
 		),
 	)
 
+	// v4.0.0-rc0 upgrade
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v4m0p0rc0.UpgradeName,
+		v4m0p0rc0.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+		),
+	)
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -927,6 +937,8 @@ func (app *App) setupUpgradeHandlers() {
 		storeLoader = argon.CreateStoreLoader(upgradeInfo.Height)
 	case argon4.UpgradeName:
 		storeLoader = argon4.CreateStoreLoader(upgradeInfo.Height)
+	case v4m0p0rc0.UpgradeName:
+		storeLoader = v4m0p0rc0.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {
