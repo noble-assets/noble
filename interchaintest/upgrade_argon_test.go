@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func testPostArgonUpgrade(
+func testPostArgonUpgradeTestnet(
 	t *testing.T,
 	ctx context.Context,
 	noble *cosmos.CosmosChain,
