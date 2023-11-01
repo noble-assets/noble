@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
-	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
 	"github.com/stretchr/testify/require"
 )
 

@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/noble/x/tariff/types"
+	"github.com/strangelove-ventures/noble/v4/x/tariff/types"
 )
 
 // GetParams get all parameters as types.Params
