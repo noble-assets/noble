@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	v4m0p0rc0 "github.com/strangelove-ventures/noble/app/upgrades/v4.0.0-rc0"
 	"io"
 	"net/http"
 	"os"
@@ -96,6 +95,7 @@ import (
 	"github.com/strangelove-ventures/noble/app/upgrades/neon"
 	"github.com/strangelove-ventures/noble/app/upgrades/radon"
 	v3m1p0 "github.com/strangelove-ventures/noble/app/upgrades/v3.1.0"
+	v4m0p0rc0 "github.com/strangelove-ventures/noble/app/upgrades/v4.0.0-rc0"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
