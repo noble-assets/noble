@@ -90,6 +90,7 @@ func testPostArgonUpgradeTestnet(
 	err = json.Unmarshal(queryRolesResults, &cctpRoles)
 	require.NoError(t, err, "failed to unmarshall cctp roles")
 
+	// For CI testing purposes, the paramauthority and cctp owner are the same.
 	require.Equal(t, paramAuthority.FormattedAddress(), cctpRoles.Owner)
 	require.Equal(t, cctpAttesterManager.FormattedAddress(), cctpRoles.AttesterManager)
 	require.Equal(t, cctpTokenController.FormattedAddress(), cctpRoles.TokenController)
@@ -162,7 +163,7 @@ func testPostArgonUpgradeTestnet(
 			From:         cctpTokenController.FormattedAddress(),
 			RemoteDomain: 0,
 			RemoteToken:  burnToken,
-			LocalToken:   denomMetadataDrachma.Base,
+			LocalToken:   denomMetadataUsdc.Base,
 		},
 	)
 	require.NoError(t, err, "error submitting add token pair tx")
@@ -183,7 +184,7 @@ func testPostArgonUpgradeTestnet(
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = val.ExecTx(ctx, fiatMinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
@@ -268,7 +269,7 @@ func testPostArgonUpgradeTestnet(
 
 	t.Logf("CCTP burn message successfully received: %s", tx.TxHash)
 
-	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataDrachma.Base)
+	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataUsdc.Base)
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)

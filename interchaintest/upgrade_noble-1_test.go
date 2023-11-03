@@ -18,7 +18,9 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 	var noble1Upgrades = []chainUpgrade{
 		{
 			upgradeName: "neon",
-			image:       ghcrImage("v2.0.0"),
+			// this is a mock image that gives us control of the
+			// fiat-tokenfactory owner for testing purposes (postUpgrade tests)
+			image: ghcrImage("mock-v2.0.0"),
 		},
 		{
 			// omitting upgradeName due to huckleberry patch
@@ -35,8 +37,13 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		},
 		{
 			upgradeName: "argon",
-			image:       nobleImageInfo[0],
-			// NOTE: Add postUpgrade task once Neon mock image is created.
+			// this is a mock image that gives us control of the
+			// cctp owner for testing purposes (postUpgrade tests)
+			// (this is not needed for the `upgrade_grand-1_test` because
+			// the v4.0.0-alpha1 upgrade handler was only run in the testnet
+			// making the cctp owner the same as the paramauthority. This is
+			// not the case in mainnet; the cctp owner is a separate wallet)
+			image: ghcrImage("mock-v4.0.0"),
 		},
 	}
 
