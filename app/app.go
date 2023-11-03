@@ -892,9 +892,8 @@ func (app *App) setupUpgradeHandlers() {
 		argon.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
-			app.FiatTokenFactoryKeeper,
-			app.ParamsKeeper,
 			app.CCTPKeeper,
+			app.FiatTokenFactoryKeeper,
 		),
 	)
 

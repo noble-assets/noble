@@ -1,0 +1,1 @@
+- Fix simulation tests. ([#252](https://github.com/strangelove-ventures/noble/pull/252))
