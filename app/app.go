@@ -87,6 +87,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon"
 	"github.com/strangelove-ventures/noble/app/upgrades/argon4"
 	"github.com/strangelove-ventures/noble/app/upgrades/krypton"
@@ -133,6 +136,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		bank.AppModuleBasic{},
+		staking.AppModuleBasic{},
 		capability.AppModuleBasic{},
 		paramauthority.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -161,6 +165,8 @@ var (
 		ibctransfertypes.ModuleName:                {authtypes.Minter, authtypes.Burner},
 		tokenfactorymoduletypes.ModuleName:         {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		fiattokenfactorymoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		stakingtypes.BondedPoolName:                {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:             {authtypes.Burner, authtypes.Staking},
 		cctptypes.ModuleName:                       nil,
 		consumerTypes.ConsumerRedistributeName:     nil,
 		consumerTypes.ConsumerToSendToProviderName: nil,
@@ -203,6 +209,7 @@ type App struct {
 	AccountKeeper       authkeeper.AccountKeeper
 	AuthzKeeper         authzkeeper.Keeper
 	BankKeeper          bankkeeper.Keeper
+	StakingKeeper       stakingkeeper.Keeper
 	CapabilityKeeper    *capabilitykeeper.Keeper
 	SlashingKeeper      slashingkeeper.Keeper
 	CrisisKeeper        crisiskeeper.Keeper
@@ -263,7 +270,7 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
-		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey,
+		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
 		cctptypes.StoreKey, consumerTypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -327,6 +334,14 @@ func New(
 		app.BlockedModuleAccountAddrs(),
 	)
 
+	app.StakingKeeper = stakingkeeper.NewKeeper(
+		appCodec,
+		keys[stakingtypes.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.GetSubspace(stakingtypes.ModuleName),
+	)
+
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
 		keys[slashingtypes.StoreKey],
@@ -355,6 +370,10 @@ func New(
 		app.BaseApp,
 		app.GetSubspace(upgradetypes.ModuleName),
 	)
+
+	// register the staking hooks
+	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
+	app.StakingKeeper = *app.StakingKeeper.SetHooks(app.SlashingKeeper.Hooks())
 
 	// ... other modules keepers
 
@@ -402,6 +421,8 @@ func New(
 		app.IBCKeeper,
 		authtypes.FeeCollectorName,
 	)
+
+	app.ConsumerKeeper.SetStandaloneStakingKeeper(app.StakingKeeper)
 
 	app.ConsumerKeeper = *app.ConsumerKeeper.SetHooks(app.SlashingKeeper.Hooks())
 	consumerModule := consumer.NewAppModule(app.ConsumerKeeper, app.GetSubspace(consumerTypes.ModuleName))
@@ -523,6 +544,7 @@ func New(
 		tokenfactoryModule,
 		fiattokenfactorymodule,
 		packetforward.NewAppModule(app.PacketForwardKeeper),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
 		cctp.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.CCTPKeeper),
@@ -540,6 +562,7 @@ func New(
 		tarifftypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
+		stakingtypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		crisistypes.ModuleName,
@@ -561,6 +584,7 @@ func New(
 
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
+		stakingtypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
@@ -594,6 +618,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
+		stakingtypes.ModuleName,
 		tarifftypes.ModuleName,
 		slashingtypes.ModuleName,
 		crisistypes.ModuleName,
@@ -831,6 +856,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
+	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(tarifftypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
