@@ -111,7 +111,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  burnToken,
-		LocalToken:   denomMetadataDrachma.Base,
+		LocalToken:   denomMetadataUsdc.Base,
 	})
 
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
@@ -128,7 +128,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 
 	t.Logf("Submitted add public keys tx: %s", tx.TxHash)
 
-	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
+	_, bCancel = context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
 
 	nobleValidator := noble.Validators[0]
@@ -141,7 +141,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
@@ -223,7 +223,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 
 	t.Logf("CCTP burn message successfully received: %s", tx.TxHash)
 
-	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataDrachma.Base)
+	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataUsdc.Base)
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)

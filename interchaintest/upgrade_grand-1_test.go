@@ -22,7 +22,9 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			// As such, v0.4.2 was required to complete the upgrade, which changed the upgrade
 			// name in the code to "v0.4.1" as a workaround.
 			upgradeName: "v0.4.1",
-			image:       ghcrImage("dan-neon-control-test"), //this is an adjusted version that gives us control of the fiat-tokenfactory owner
+			// this is a mock image that gives us control of the
+			// fiat-tokenfactory owner for testing purposes (postUpgrade tests)
+			image: ghcrImage("mock-v0.4.2"),
 		},
 		{
 			upgradeName: "radon",
@@ -60,9 +62,9 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		{
 			upgradeName: "v4.0.0-rc0",
 			image:       ghcrImage("v4.0.0-rc0"),
-			postUpgrade: testPostArgonUpgradeTestnet,
+			postUpgrade: testPostArgonUpgrade,
 		},
 	}
 
-	testNobleChainUpgrade(t, grand1ChainID, grand1Genesis, denomMetadataDrachma, numVals, numFullNodes, grand1Upgrades)
+	testNobleChainUpgrade(t, grand1ChainID, grand1Genesis, denomMetadataUsdc, numVals, numFullNodes, grand1Upgrades)
 }

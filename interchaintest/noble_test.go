@@ -57,12 +57,12 @@ func TestNobleChain(t *testing.T) {
 
 	t.Run("tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataRupee.Base, noble, gw.tfRoles, gw.extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataFrienzies.Base, noble, gw.tfRoles, gw.extraWallets)
 	})
 
 	t.Run("fiat-tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataDrachma.Base, noble, gw.fiatTfRoles, gw.extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataUsdc.Base, noble, gw.fiatTfRoles, gw.extraWallets)
 	})
 }
 

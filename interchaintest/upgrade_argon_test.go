@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func testPostArgonUpgradeTestnet(
+func testPostArgonUpgrade(
 	t *testing.T,
 	ctx context.Context,
 	noble *cosmos.CosmosChain,
@@ -90,6 +90,7 @@ func testPostArgonUpgradeTestnet(
 	err = json.Unmarshal(queryRolesResults, &cctpRoles)
 	require.NoError(t, err, "failed to unmarshall cctp roles")
 
+	// For CI testing purposes, the paramauthority and cctp owner are the same.
 	require.Equal(t, paramAuthority.FormattedAddress(), cctpRoles.Owner)
 	require.Equal(t, cctpAttesterManager.FormattedAddress(), cctpRoles.AttesterManager)
 	require.Equal(t, cctpTokenController.FormattedAddress(), cctpRoles.TokenController)
@@ -162,7 +163,7 @@ func testPostArgonUpgradeTestnet(
 			From:         cctpTokenController.FormattedAddress(),
 			RemoteDomain: 0,
 			RemoteToken:  burnToken,
-			LocalToken:   denomMetadataDrachma.Base,
+			LocalToken:   denomMetadataUsdc.Base,
 		},
 	)
 	require.NoError(t, err, "error submitting add token pair tx")
@@ -172,7 +173,7 @@ func testPostArgonUpgradeTestnet(
 
 	cctpModuleAccount := authtypes.NewModuleAddress(cctptypes.ModuleName).String()
 
-	// we don't have access to the fiat tokenfactory owner, so this fails.
+	// by using mock images `mock-v2.0.0` or `mock-v0.4.2`, we have access to the fiat-tokenfactory owner accout
 	_, err = val.ExecTx(ctx, fiatOwner.KeyName(),
 		"fiat-tokenfactory", "update-master-minter", fiatMasterMinter.FormattedAddress(), "-b", "block")
 	require.NoError(t, err, "failed to execute update master minter tx")
@@ -183,7 +184,7 @@ func testPostArgonUpgradeTestnet(
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = val.ExecTx(ctx, fiatMinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
@@ -268,7 +269,7 @@ func testPostArgonUpgradeTestnet(
 
 	t.Logf("CCTP burn message successfully received: %s", tx.TxHash)
 
-	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataDrachma.Base)
+	balance, err := noble.GetBalance(ctx, nobleReceiver, denomMetadataUsdc.Base)
 	require.NoError(t, err)
 
 	require.Equal(t, int64(1000000), balance)
