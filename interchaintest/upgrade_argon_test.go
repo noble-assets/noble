@@ -173,7 +173,7 @@ func testPostArgonUpgradeTestnet(
 
 	cctpModuleAccount := authtypes.NewModuleAddress(cctptypes.ModuleName).String()
 
-	// we don't have access to the fiat tokenfactory owner, so this fails.
+	// by using mock images `mock-v2.0.0` or `mock-v0.4.2`, we have access to the fiat-tokenfactory owner accout
 	_, err = val.ExecTx(ctx, fiatOwner.KeyName(),
 		"fiat-tokenfactory", "update-master-minter", fiatMasterMinter.FormattedAddress(), "-b", "block")
 	require.NoError(t, err, "failed to execute update master minter tx")

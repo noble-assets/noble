@@ -289,7 +289,8 @@ func createTokenfactoryRoles(ctx context.Context, denomMetadata DenomMetadata, v
 func createParamAuthAtGenesis(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet, error) {
 	chainCfg := val.Chain.Config()
 
-	wallet, err := val.Chain.BuildWallet(ctx, "authority", "")
+	// Test address: noble127de05h6z3a3rh5jf0rjepa48zpgxtesfywgtf
+	wallet, err := val.Chain.BuildWallet(ctx, "authority", "index grain inform faith cave know pluck avoid supply zoo retreat system perfect aware shuffle abuse fat security cash amount night return grape candy")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create wallet: %w", err)
 	}
