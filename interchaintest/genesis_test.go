@@ -56,55 +56,20 @@ var (
 		},
 	}
 
-	denomMetadataRupee = DenomMetadata{
-		Display: "rupee",
-		Base:    "urupee",
-		Name:    "rupee",
-		Symbol:  "RUPEE",
+	denomMetadataUsdc = DenomMetadata{
+		Display: "usdc",
+		Name:    "usdc",
+		Base:    "uusdc",
 		DenomUnits: []DenomUnit{
 			{
-				Denom: "urupee",
+				Denom: "uusdc",
 				Aliases: []string{
-					"microrupee",
+					"microusdc",
 				},
 				Exponent: "0",
 			},
 			{
-				Denom: "mrupee",
-				Aliases: []string{
-					"millirupee",
-				},
-				Exponent: "3",
-			},
-			{
-				Denom:    "rupee",
-				Exponent: "6",
-			},
-		},
-	}
-
-	denomMetadataDrachma = DenomMetadata{
-		Display: "drachma",
-		Base:    "udrachma",
-		Name:    "drachma",
-		Symbol:  "DRACHMA",
-		DenomUnits: []DenomUnit{
-			{
-				Denom: "udrachma",
-				Aliases: []string{
-					"microdrachma",
-				},
-				Exponent: "0",
-			},
-			{
-				Denom: "mdrachma",
-				Aliases: []string{
-					"millidrachma",
-				},
-				Exponent: "3",
-			},
-			{
-				Denom:    "drachma",
+				Denom:    "usdc",
 				Exponent: "6",
 			},
 		},
@@ -114,7 +79,7 @@ var (
 	defaultDistributionEntityShare = "1.0"
 	defaultTransferBPSFee          = "1"
 	defaultTransferMaxFee          = "5000000"
-	defaultTransferFeeDenom        = denomMetadataDrachma.Base
+	defaultTransferFeeDenom        = denomMetadataUsdc.Base
 
 	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.1", rly.RlyDefaultUidGid)
 )
@@ -324,7 +289,8 @@ func createTokenfactoryRoles(ctx context.Context, denomMetadata DenomMetadata, v
 func createParamAuthAtGenesis(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet, error) {
 	chainCfg := val.Chain.Config()
 
-	wallet, err := val.Chain.BuildWallet(ctx, "authority", "")
+	// Test address: noble127de05h6z3a3rh5jf0rjepa48zpgxtesfywgtf
+	wallet, err := val.Chain.BuildWallet(ctx, "authority", "index grain inform faith cave know pluck avoid supply zoo retreat system perfect aware shuffle abuse fat security cash amount night return grape candy")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create wallet: %w", err)
 	}
@@ -443,12 +409,12 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 	return func(cc ibc.ChainConfig) (err error) {
 		val := gw.chain.Validators[0]
 
-		gw.tfRoles, err = createTokenfactoryRoles(ctx, denomMetadataRupee, val, minSetupTf)
+		gw.tfRoles, err = createTokenfactoryRoles(ctx, denomMetadataFrienzies, val, minSetupTf)
 		if err != nil {
 			return err
 		}
 
-		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataDrachma, val, minSetupFiatTf)
+		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdc, val, minSetupFiatTf)
 		if err != nil {
 			return err
 		}
@@ -472,11 +438,11 @@ func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(
 			return nil, fmt.Errorf("failed to unmarshal genesis file: %w", err)
 		}
 
-		if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataRupee, gw.tfRoles, minSetupTf); err != nil {
+		if err := modifyGenesisTokenfactory(g, "tokenfactory", denomMetadataFrienzies, gw.tfRoles, minSetupTf); err != nil {
 			return nil, err
 		}
 
-		if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataDrachma, gw.fiatTfRoles, minSetupFiatTf); err != nil {
+		if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataUsdc, gw.fiatTfRoles, minSetupFiatTf); err != nil {
 			return nil, err
 		}
 
@@ -570,7 +536,7 @@ func modifyGenesisCCTP(genbz map[string]interface{}, authority string) error {
 	if err := dyno.Set(genbz, authority, "app_state", "cctp", "token_controller"); err != nil {
 		return fmt.Errorf("failed to set cctp authority address in genesis json: %w", err)
 	}
-	if err := dyno.Set(genbz, []CCTPPerMessageBurnLimit{{Amount: "99999999", Denom: denomMetadataDrachma.Base}}, "app_state", "cctp", "per_message_burn_limit_list"); err != nil {
+	if err := dyno.Set(genbz, []CCTPPerMessageBurnLimit{{Amount: "99999999", Denom: denomMetadataUsdc.Base}}, "app_state", "cctp", "per_message_burn_limit_list"); err != nil {
 		return fmt.Errorf("failed to set cctp perMessageBurnLimit in genesis json: %w", err)
 	}
 	if err := dyno.Set(genbz, CCTPAmount{Amount: "8000"}, "app_state", "cctp", "max_message_body_size"); err != nil {
