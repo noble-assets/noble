@@ -1,57 +1,54 @@
 package krypton
 
 import (
-	"github.com/cosmos/cosmos-sdk/client/flags"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
-	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	connectionkeeper "github.com/cosmos/ibc-go/v4/modules/core/03-connection/keeper"
+	connectiontypes "github.com/cosmos/ibc-go/v4/modules/core/03-connection/types"
 	consumerKeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
-	consumerTypes "github.com/cosmos/interchain-security/v2/x/ccv/consumer/types"
-	"github.com/spf13/cast"
-	fiatTokenFactoryKeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	consumertypes "github.com/cosmos/interchain-security/v2/x/ccv/consumer/types"
+	"os"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	cdc codec.Codec,
-	options servertypes.AppOptions,
 	consumerKeeper consumerKeeper.Keeper,
-	fiatTokenFactoryKeeper *fiatTokenFactoryKeeper.Keeper,
+	connectionKeeper connectionkeeper.Keeper,
 ) upgradeTypes.UpgradeHandler {
+	// The below is taken from https://github.com/cosmos/interchain-security/blob/v2.0.0/app/consumer-democracy/app.go#L635-L672.
 	return func(ctx sdk.Context, _ upgradeTypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		connectionKeeper.SetParams(ctx, connectiontypes.DefaultParams())
+
+		fromVM := make(map[string]uint64)
+
+		for moduleName, eachModule := range mm.Modules {
+			fromVM[moduleName] = eachModule.ConsensusVersion()
+		}
+
+		userHomeDir, err := os.UserHomeDir()
 		if err != nil {
-			return vm, err
+			return fromVM, err
 		}
-
-		home := cast.ToString(options.Get(flags.FlagHome))
-		state, _, err := genutiltypes.GenesisStateFromGenFile(home + "/config/genesis.json")
+		nodeHome := userHomeDir + "/.sovereign/config/genesis.json"
+		appState, _, err := genutiltypes.GenesisStateFromGenFile(nodeHome)
 		if err != nil {
-			return vm, err
+			return fromVM, fmt.Errorf("failed to unmarshal genesis state: %w", err)
 		}
 
-		var genesis consumerTypes.GenesisState
-		cdc.MustUnmarshalJSON(state[consumerTypes.ModuleName], &genesis)
+		consumerGenesis := consumertypes.GenesisState{}
+		cdc.MustUnmarshalJSON(appState[consumertypes.ModuleName], &consumerGenesis)
 
-		genesis.PreCCV = true
-		genesis.Params.SoftOptOutThreshold = "0.05"
-		genesis.Params.RewardDenoms = []string{
-			fiatTokenFactoryKeeper.GetMintingDenom(ctx).Denom, // USDC
-		}
+		consumerGenesis.PreCCV = true
+		consumerKeeper.InitGenesis(ctx, &consumerGenesis)
 
-		consumerKeeper.InitGenesis(ctx, &genesis)
+		ctx.Logger().Info("start to run module migrations...")
 
-		switch ctx.ChainID() {
-		case TestnetChainID:
-			// TODO
-		case MainnetChainID:
-			consumerKeeper.SetDistributionTransmissionChannel(ctx, "channel-4")
-		}
-
-		return vm, nil
+		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
