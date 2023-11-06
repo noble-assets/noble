@@ -17,6 +17,11 @@ func CreateUpgradeHandler(
 	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return vm, nil
+		}
+
 		cctpKeeper.SetOwner(ctx, "noble1ye45j5c5gks2r68z6s8k9aehma372r927nuze4")
 		cctpKeeper.SetAttesterManager(ctx, "noble1ak4d4dsrx5ec37h3qpsm8x6kg39xy0d0l8ptdq")
 		cctpKeeper.SetPauser(ctx, "noble1cnl6q0c7g3aq8fjgeh9ygy5p2gv83kxqp4pfw4")
@@ -39,6 +44,6 @@ func CreateUpgradeHandler(
 		cctpKeeper.SetMaxMessageBodySize(ctx, cctptypes.MaxMessageBodySize{Amount: 8192})
 		cctpKeeper.SetSignatureThreshold(ctx, cctptypes.SignatureThreshold{Amount: 2})
 
-		return mm.RunMigrations(ctx, configurator, vm)
+		return vm, nil
 	}
 }
