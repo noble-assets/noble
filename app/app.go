@@ -915,9 +915,8 @@ func (app *App) setupUpgradeHandlers(options servertypes.AppOptions) {
 			app.mm,
 			app.configurator,
 			app.appCodec,
-			options,
+			app.IBCKeeper.ConnectionKeeper,
 			app.ConsumerKeeper,
-			app.FiatTokenFactoryKeeper,
 		),
 	)
 

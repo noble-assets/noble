@@ -2,27 +2,28 @@ package krypton
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	upgradeTypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	connectionkeeper "github.com/cosmos/ibc-go/v4/modules/core/03-connection/keeper"
 	connectiontypes "github.com/cosmos/ibc-go/v4/modules/core/03-connection/types"
-	consumerKeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
+	consumerkeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/v2/x/ccv/consumer/types"
-	"os"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	cdc codec.Codec,
-	consumerKeeper consumerKeeper.Keeper,
 	connectionKeeper connectionkeeper.Keeper,
-) upgradeTypes.UpgradeHandler {
+	consumerKeeper consumerkeeper.Keeper,
+) upgradetypes.UpgradeHandler {
 	// The below is taken from https://github.com/cosmos/interchain-security/blob/v2.0.0/app/consumer-democracy/app.go#L635-L672.
-	return func(ctx sdk.Context, _ upgradeTypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		connectionKeeper.SetParams(ctx, connectiontypes.DefaultParams())
 
 		fromVM := make(map[string]uint64)
