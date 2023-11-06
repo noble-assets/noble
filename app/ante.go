@@ -2,6 +2,8 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	consumerante "github.com/cosmos/interchain-security/v2/app/consumer/ante"
+	consumerKeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
 	fiattokenfactory "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
@@ -24,8 +26,8 @@ type HandlerOptions struct {
 	tokenFactoryKeeper     *tokenfactory.Keeper
 	fiatTokenFactoryKeeper *fiattokenfactory.Keeper
 	IBCKeeper              *ibckeeper.Keeper
+	ConsumerKeeper         consumerKeeper.Keeper
 	GlobalFeeSubspace      paramtypes.Subspace
-	StakingSubspace        paramtypes.Subspace
 }
 
 type IsPausedDecorator struct {
@@ -226,6 +228,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
+		consumerante.NewMsgFilterDecorator(options.ConsumerKeeper),
+		consumerante.NewDisabledModulesDecorator("/cosmos.evidence", "/cosmos.slashing"),
 		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
 		NewIsPausedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
 		ante.NewMempoolFeeDecorator(),
@@ -233,7 +237,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		feeante.NewFeeDecorator(options.GlobalFeeSubspace, options.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
+		feeante.NewFeeDecorator(options.GlobalFeeSubspace, maxTotalBypassMinFeeMsgGasUsage),
 
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators

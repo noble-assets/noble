@@ -21,8 +21,8 @@ import (
 var (
 	nobleImageInfo = []ibc.DockerImage{
 		{
-			Repository: "noble",
-			Version:    "local",
+			Repository: "ghcr.io/strangelove-ventures/noble",
+			Version:    "main",
 			UidGid:     "1025:1025",
 		},
 	}
@@ -116,7 +116,7 @@ var (
 	defaultTransferMaxFee          = "5000000"
 	defaultTransferFeeDenom        = denomMetadataDrachma.Base
 
-	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.1", rly.RlyDefaultUidGid)
+	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.2", rly.RlyDefaultUidGid)
 )
 
 type DenomMetadata struct {

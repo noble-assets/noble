@@ -1,15 +1,11 @@
 package ante
 
 import (
-	"errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/strangelove-ventures/noble/x/globalfee/types"
-
 	"github.com/strangelove-ventures/noble/x/globalfee"
+	"github.com/strangelove-ventures/noble/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
@@ -27,22 +23,16 @@ var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
 	GlobalMinFee                    globalfee.ParamSource
-	StakingSubspace                 paramtypes.Subspace
 	MaxTotalBypassMinFeeMsgGasUsage uint64
 }
 
-func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
+func NewFeeDecorator(globalfeeSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
 
-	if !stakingSubspace.HasKeyTable() {
-		panic("staking paramspace was not set up via module")
-	}
-
 	return FeeDecorator{
 		GlobalMinFee:                    globalfeeSubspace,
-		StakingSubspace:                 stakingSubspace,
 		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
 	}
 }
@@ -125,7 +115,7 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	}
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
-		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
+		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee()
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -139,20 +129,6 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	return requiredGlobalFees.Sort(), err
 }
 
-func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
-	bondDenom := mfd.getBondDenom(ctx)
-	if bondDenom == "" {
-		return nil, errors.New("empty staking bond denomination")
-	}
-
-	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
-}
-
-func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
-	var bondDenom string
-	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
-		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
-	}
-
-	return bondDenom
+func (mfd FeeDecorator) DefaultZeroGlobalFee() ([]sdk.DecCoin, error) {
+	return []sdk.DecCoin{sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, sdk.NewDec(0))}, nil
 }
