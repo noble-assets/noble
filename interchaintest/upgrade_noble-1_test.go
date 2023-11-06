@@ -43,7 +43,8 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			// the v4.0.0-alpha1 upgrade handler was only run in the testnet
 			// making the cctp owner the same as the paramauthority. This is
 			// not the case in mainnet; the cctp owner is a separate wallet)
-			image: ghcrImage("mock-v4.0.0"),
+			image:       ghcrImage("john-prepare-argon"),
+			postUpgrade: testPostArgonUpgrade,
 		},
 	}
 
