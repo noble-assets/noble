@@ -78,12 +78,12 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", gw.fiatTfRoles.Minter.FormattedAddress(), "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", gw.fiatTfRoles.Minter.FormattedAddress(), "1000000000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
 	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.Minter.KeyName(),
-		"fiat-tokenfactory", "mint", gw.extraWallets.User.FormattedAddress(), "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "mint", gw.extraWallets.User.FormattedAddress(), "1000000000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute mint to user tx")
 
@@ -93,7 +93,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	require.NoError(t, err, "failed to configure cctp minter controller")
 
 	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctptypes.ModuleAddress.String(), "1000000000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctptypes.ModuleAddress.String(), "1000000000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to configure cctp minter")
 
@@ -122,7 +122,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  burnToken,
-		LocalToken:   denomMetadataDrachma.Base,
+		LocalToken:   denomMetadataUsdc.Base,
 	})
 
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
@@ -137,7 +137,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	require.NoError(t, err, "error configuring remote domain")
 	require.Zero(t, tx.Code, "configuring remote domain failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
-	beforeBurnBal, err := noble.GetBalance(ctx, gw.extraWallets.User.FormattedAddress(), denomMetadataDrachma.Base)
+	beforeBurnBal, err := noble.GetBalance(ctx, gw.extraWallets.User.FormattedAddress(), denomMetadataUsdc.Base)
 	require.NoError(t, err)
 
 	mintRecipient := make([]byte, 32)
@@ -148,7 +148,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	depositForBurnWithCallerNoble := &cctptypes.MsgDepositForBurnWithCaller{
 		From:              gw.extraWallets.User.FormattedAddress(),
 		Amount:            cosmossdk_io_math.NewInt(1000000),
-		BurnToken:         denomMetadataDrachma.Base,
+		BurnToken:         denomMetadataUsdc.Base,
 		DestinationDomain: 0,
 		MintRecipient:     mintRecipient,
 		DestinationCaller: destinationCaller,
@@ -163,7 +163,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	require.NoError(t, err, "error broadcasting msgDepositForBurnWithCaller")
 	require.Zero(t, tx.Code, "msgDepositForBurnWithCaller failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
-	afterBurnBal, err := noble.GetBalance(ctx, gw.extraWallets.User.FormattedAddress(), denomMetadataDrachma.Base)
+	afterBurnBal, err := noble.GetBalance(ctx, gw.extraWallets.User.FormattedAddress(), denomMetadataUsdc.Base)
 	require.NoError(t, err)
 
 	require.Equal(t, afterBurnBal, beforeBurnBal-1000000)
@@ -176,7 +176,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 			depositForBurn, ok := parsedEvent.(*cctptypes.DepositForBurn)
 			require.True(t, ok)
 
-			expectedBurnToken := hex.EncodeToString(crypto.Keccak256([]byte(denomMetadataDrachma.Base)))
+			expectedBurnToken := hex.EncodeToString(crypto.Keccak256([]byte(denomMetadataUsdc.Base)))
 
 			require.Equal(t, uint64(0), depositForBurn.Nonce)
 			require.Equal(t, expectedBurnToken, depositForBurn.BurnToken)
