@@ -2,54 +2,46 @@ package krypton
 
 import (
 	"fmt"
-	"os"
-
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	connectionkeeper "github.com/cosmos/ibc-go/v4/modules/core/03-connection/keeper"
-	connectiontypes "github.com/cosmos/ibc-go/v4/modules/core/03-connection/types"
 	consumerkeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/v2/x/ccv/consumer/types"
+	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
+	"os"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	cdc codec.Codec,
-	connectionKeeper connectionkeeper.Keeper,
+	options servertypes.AppOptions,
 	consumerKeeper consumerkeeper.Keeper,
+	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	// The below is taken from https://github.com/cosmos/interchain-security/blob/v2.0.0/app/consumer-democracy/app.go#L635-L672.
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		connectionKeeper.SetParams(ctx, connectiontypes.DefaultParams())
-
-		fromVM := make(map[string]uint64)
-
-		for moduleName, eachModule := range mm.Modules {
-			fromVM[moduleName] = eachModule.ConsensusVersion()
-		}
-
-		userHomeDir, err := os.UserHomeDir()
+		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
-			return fromVM, err
-		}
-		nodeHome := userHomeDir + "/.sovereign/config/genesis.json"
-		appState, _, err := genutiltypes.GenesisStateFromGenFile(nodeHome)
-		if err != nil {
-			return fromVM, fmt.Errorf("failed to unmarshal genesis state: %w", err)
+			return vm, err
 		}
 
-		consumerGenesis := consumertypes.GenesisState{}
-		cdc.MustUnmarshalJSON(appState[consumertypes.ModuleName], &consumerGenesis)
+		bz, _ := os.ReadFile(fmt.Sprintf("%s/config/ccv.json", options.Get(flags.FlagHome)))
 
-		consumerGenesis.PreCCV = true
-		consumerKeeper.InitGenesis(ctx, &consumerGenesis)
+		var genesis consumertypes.GenesisState
+		cdc.MustUnmarshalJSON(bz, &genesis)
 
-		ctx.Logger().Info("start to run module migrations...")
+		genesis.PreCCV = true
+		genesis.Params.SoftOptOutThreshold = "0.05"
+		genesis.Params.RewardDenoms = []string{
+			fiatTokenFactoryKeeper.GetMintingDenom(ctx).Denom, // USDC
+		}
 
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		consumerKeeper.InitGenesis(ctx, &genesis)
+
+		return vm, nil
 	}
 }
