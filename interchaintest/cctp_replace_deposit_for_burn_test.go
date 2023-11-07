@@ -119,7 +119,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  burnToken,
-		LocalToken:   denomMetadataDrachma.Base,
+		LocalToken:   denomMetadataUsdc.Base,
 	})
 
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
@@ -146,7 +146,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataDrachma.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
