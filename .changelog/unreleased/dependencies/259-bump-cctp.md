@@ -1,0 +1,1 @@
+- Bump CCTP from [`dc81b3e`](https://github.com/circlefin/noble-cctp/commit/dc81b3e0d566d195c869a213519fcecd38b020a5) to [`dce662f`](https://github.com/circlefin/noble-cctp/commit/dce662fac8c282e512140f3c08797a0c39746671) ([#259](https://github.com/strangelove-ventures/noble/pull/259))

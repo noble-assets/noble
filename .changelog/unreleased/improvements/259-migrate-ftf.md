@@ -1,0 +1,1 @@
+- Remove `x/fiattokenfactory` module from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#259](https://github.com/strangelove-ventures/noble/pull/259))
