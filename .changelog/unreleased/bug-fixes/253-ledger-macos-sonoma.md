@@ -1,1 +1,0 @@
-- Fix Ledger support for MacOS Sonoma. ([#253](https://github.com/strangelove-ventures/noble/pull/253))

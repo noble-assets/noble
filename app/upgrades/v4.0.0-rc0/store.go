@@ -1,7 +1,6 @@
-package argon
+package v4m0p0rc0
 
 import (
-	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -9,7 +8,7 @@ import (
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 	storeUpgrades := storetypes.StoreUpgrades{
-		Added: []string{cctptypes.ModuleName},
+		Deleted: []string{"router"},
 	}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)

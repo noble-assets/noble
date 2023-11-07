@@ -1,0 +1,1 @@
+- Add `x/fiattokenfactory` interface changes required for CCTP. ([#241](https://github.com/strangelove-ventures/noble/pull/241))
