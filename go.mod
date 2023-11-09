@@ -1,4 +1,4 @@
-module github.com/strangelove-ventures/noble
+module github.com/strangelove-ventures/noble/v4
 
 go 1.21
 
