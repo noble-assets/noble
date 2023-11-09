@@ -185,6 +185,9 @@ replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
+	// temporarily replace circlefin/noble-cctp before open sourcing
+	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20231108011259-7c5206df02dc
+
 	// use cosmos flavored gogo/protobuf
 	// https://github.com/cosmos/cosmos-sdk/issues/8469
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
