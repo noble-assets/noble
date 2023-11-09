@@ -154,6 +154,9 @@ replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
+	// temporarily replace circlefin/noble-cctp before open sourcing
+	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20231108011259-7c5206df02dc
+
 	// use ics compatible cosmos/cosmos-sdk
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics
 

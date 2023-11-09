@@ -12,7 +12,7 @@ require (
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20230811023800-6c5ef2128f69
+	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231109205540-ba30bbf6f78d
 	github.com/strangelove-ventures/noble v1.0.1-0.20230717234609-400609f26a31
 	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
@@ -186,15 +186,15 @@ replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
+	// temporarily replace circlefin/noble-cctp before open sourcing
+	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20231108011259-7c5206df02dc
+
 	// use ics compatible cosmos/cosmos-sdk
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics
 
 	// use cosmos flavored gogo/protobuf
 	// https://github.com/cosmos/cosmos-sdk/issues/8469
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	// use ics compatible strangelove-ventures/interchaintest
-	github.com/strangelove-ventures/interchaintest/v4 => github.com/noble-assets/interchaintest/v4 v4.0.0-20231109181313-83e528c9e369
 
 	// use local version of noble
 	github.com/strangelove-ventures/noble => ./..
