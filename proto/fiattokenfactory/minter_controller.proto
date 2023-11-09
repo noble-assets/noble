@@ -1,9 +1,0 @@
-syntax = "proto3";
-package noble.fiattokenfactory;
-
-option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
-
-message MinterController {
-  string minter = 1;
-  string controller = 2;
-}
