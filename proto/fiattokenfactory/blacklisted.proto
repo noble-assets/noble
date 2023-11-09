@@ -1,6 +1,0 @@
-syntax = "proto3";
-package noble.fiattokenfactory;
-
-option go_package = "github.com/strangelove-ventures/noble/x/fiattokenfactory/types";
-
-message Blacklisted { bytes addressBz = 1; }
