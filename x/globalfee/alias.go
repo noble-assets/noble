@@ -1,7 +1,7 @@
 package globalfee
 
 import (
-	"github.com/strangelove-ventures/noble/x/globalfee/types"
+	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
 )
 
 const (

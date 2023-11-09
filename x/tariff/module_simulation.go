@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/strangelove-ventures/noble/x/tariff/types"
+	"github.com/strangelove-ventures/noble/v4/x/tariff/types"
 	"math/rand"
 )
 

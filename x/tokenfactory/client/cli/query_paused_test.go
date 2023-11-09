@@ -9,10 +9,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-	"github.com/strangelove-ventures/noble/testutil/network"
-	"github.com/strangelove-ventures/noble/testutil/nullify"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/v4/testutil/network"
+	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 )
 
 func networkWithPausedObjects(t *testing.T) (*network.Network, types.Paused) {

@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/strangelove-ventures/noble/x/globalfee/types"
+	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
 )
 
 var _ types.QueryServer = &GrpcQuerier{}
@@ -25,7 +25,7 @@ func NewGrpcQuerier(paramSource ParamSource) GrpcQuerier {
 }
 
 // Params returns the total set of global fee parameters.
-func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest) (*types.Params, error) {
+func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var (
 		minGasPrices         sdk.DecCoins
 		bypassMinFeeMsgTypes []string
@@ -37,8 +37,10 @@ func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest)
 	if g.paramSource.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
 		g.paramSource.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMinFeeMsgTypes)
 	}
-	return &types.Params{
-		MinimumGasPrices:     minGasPrices,
-		BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
+	return &types.QueryParamsResponse{
+		Params: types.Params{
+			MinimumGasPrices:     minGasPrices,
+			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
+		},
 	}, nil
 }

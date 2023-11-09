@@ -120,35 +120,32 @@ endif
 	go-mod-cache build interchaintest get-heighliner local-image \
 
 ###############################################################################
-###                               Protobuf                                  ###
+###                                Protobuf                                 ###
 ###############################################################################
-containerProtoVer=v0.2
-containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
-containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
-containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+
+BUF_VERSION=1.27.2
 
 proto-all: proto-format proto-lint proto-gen
 
-proto-gen:
-	@echo "Generating Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./scripts/protocgen.sh; fi
-
 proto-format:
-	@echo "Formatting Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoFmt}$$"; then docker start -a $(containerProtoFmt); else docker run --name $(containerProtoFmt) -v $(CURDIR):/workspace --workdir /workspace tendermintdev/docker-build-proto \
-		find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \; ; fi
+	@echo "🤖 Running protobuf formatter..."
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		bufbuild/buf:$(BUF_VERSION) format --diff --write
+	@echo "✅ Completed protobuf formatting!"
 
-proto-swagger-gen:
-	@echo "Generating Protobuf Swagger"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./scripts/protoc-swagger-gen.sh; fi
+proto-gen:
+	@echo "🤖 Generating code from protobuf..."
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		noble-proto sh ./proto/generate.sh
+	@echo "✅ Completed code generation!"
 
 proto-lint:
-	@$(DOCKER_BUF) lint --error-format=json
+	@echo "🤖 Running protobuf linter..."
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		bufbuild/buf:$(BUF_VERSION) lint
+	@echo "✅ Completed protobuf linting!"
 
-proto-check-breaking:
-	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=main
-
-.PHONY: proto-all proto-gen proto-format proto-swagger-gen proto-lint proto-check-breaking
+proto-setup:
+	@echo "🤖 Setting up protobuf environment..."
+	@docker build --rm --tag noble-proto:latest --file proto/Dockerfile .
+	@echo "✅ Setup protobuf environment!"

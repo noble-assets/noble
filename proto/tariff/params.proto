@@ -1,53 +1,49 @@
 syntax = "proto3";
 package noble.tariff;
 
-option go_package            = "github.com/strangelove-ventures/noble/x/tariff/types";
-option (gogoproto.equal_all) = true;
-
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/v4/x/tariff/types";
+option (gogoproto.equal_all) = true;
 
 // Params defines the set of params for the distribution module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  // share is % of tx fees or rewards allocated to distribution_entities 
+  // share is % of tx fees or rewards allocated to distribution_entities
   string share = 1 [
-    (gogoproto.moretags)   = "yaml:\"share\"",
+    (gogoproto.moretags) = "yaml:\"share\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
-  
+
   // % of tx fees or rewards allocated to a set of global distribution entities
   // these shares must add up to 1
   repeated DistributionEntity distribution_entities = 2 [
-    (gogoproto.moretags)   = "yaml:\"distribution_entities\"",
-    (gogoproto.nullable)   = false
+    (gogoproto.moretags) = "yaml:\"distribution_entities\"",
+    (gogoproto.nullable) = false
   ];
 
   string transfer_fee_bps = 3 [
-    (gogoproto.moretags)   = "yaml:\"transfer_fee_bps\"",
+    (gogoproto.moretags) = "yaml:\"transfer_fee_bps\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 
   string transfer_fee_max = 4 [
-    (gogoproto.moretags)   = "yaml:\"transfer_fee_max\"",
+    (gogoproto.moretags) = "yaml:\"transfer_fee_max\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 
-  string transfer_fee_denom = 5 [
-    (gogoproto.moretags)   = "yaml:\"transfer_fee_denom\""
-  ];
+  string transfer_fee_denom = 5 [(gogoproto.moretags) = "yaml:\"transfer_fee_denom\""];
 }
 
 // DistributionEntity defines a distribution entity
 message DistributionEntity {
   string address = 1;
   string share = 2 [
-    (gogoproto.moretags)   = "yaml:\"share\"",
+    (gogoproto.moretags) = "yaml:\"share\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 }
-
