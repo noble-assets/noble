@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -12,7 +13,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	consumerkeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/v2/x/ccv/consumer/types"
-	fiattokenfactorykeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 )
 
 func CreateUpgradeHandler(

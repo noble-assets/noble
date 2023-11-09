@@ -1,11 +1,11 @@
 package app
 
 import (
+	fiattokenfactory "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	consumerante "github.com/cosmos/interchain-security/v2/app/consumer/ante"
 	consumerkeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
-	fiattokenfactory "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
 
