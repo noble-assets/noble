@@ -10,10 +10,11 @@ option go_package = "github.com/strangelove-ventures/noble/x/globalfee/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  rpc Params(QueryParamsRequest) returns (Params) {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/noble/globalfee/v1beta1/params";
   }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
 message QueryParamsRequest {}
+message QueryParamsResponse { Params params = 1 [ (gogoproto.nullable) = false ]; }
