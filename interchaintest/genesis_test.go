@@ -8,23 +8,19 @@ import (
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
-	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer/rly"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
 
 var (
 	nobleImageInfo = []ibc.DockerImage{
-		{
-			Repository: "noble",
-			Version:    "local",
-			UidGid:     "1025:1025",
-		},
+		// TODO: Revert to local image once post ICS testing has been solved.
+		ghcrImage("v4.0.0"),
 	}
 )
 
