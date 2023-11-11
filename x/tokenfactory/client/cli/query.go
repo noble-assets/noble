@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
