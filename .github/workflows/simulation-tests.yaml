@@ -15,6 +15,7 @@ jobs:
         with:
           go-version: 1.21
 
+<<<<<<< HEAD
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -24,5 +25,7 @@ jobs:
           export GOPRIVATE=github.com/circlefin/noble-cctp
           git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
 
+=======
+>>>>>>> bd0c969 (chore: revert #265 (#267))
       - name: Run Unit Tests
         run: go test -bench BenchmarkSimulation ./app

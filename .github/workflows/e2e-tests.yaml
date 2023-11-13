@@ -27,6 +27,7 @@ jobs:
           chain: noble
           dockerfile: cosmos
           build-target: make install
+<<<<<<< HEAD
           build-env: |
             - GOPRIVATE=github.com/circlefin/noble-cctp
           pre-build: |
@@ -36,6 +37,8 @@ jobs:
             apk add openssh
             git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
             ssh-keyscan github.com >> ~/.ssh/known_hosts
+=======
+>>>>>>> bd0c969 (chore: revert #265 (#267))
           binaries: |
             - /go/bin/nobled
 
@@ -50,14 +53,15 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Go 1.21
-      uses: actions/setup-go@v4
-      with:
-        go-version: '^1.21'
+      - name: Set up Go 1.21
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.21'
 
+<<<<<<< HEAD
     - name: CCTP private repo auth
       run: |
         mkdir -p ~/.ssh
@@ -73,27 +77,36 @@ jobs:
         # Run the command and convert its output to a JSON array
         TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
         echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
+=======
+      - name: Generate matrix
+        id: set-matrix
+        run: |
+          # Run the command and convert its output to a JSON array
+          TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
+          echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
+>>>>>>> bd0c969 (chore: revert #265 (#267))
   
   e2e-tests:
-    needs: 
+    needs:
       - build-docker
       - prepare-e2e-tests
     runs-on: ubuntu-latest
     strategy:
-        matrix:
-            # names of `make` commands to run tests
-          test: ${{fromJson(needs.prepare-e2e-tests.outputs.matrix)}}
-        fail-fast: false
+      matrix:
+        # names of `make` commands to run tests
+        test: ${{fromJson(needs.prepare-e2e-tests.outputs.matrix)}}
+      fail-fast: false
 
     steps:
       - name: Set up Go 1.21
         uses: actions/setup-go@v4
         with:
           go-version: '^1.21'
-              
+
       - name: checkout chain
         uses: actions/checkout@v4
 
+<<<<<<< HEAD
       - name: CCTP private repo auth
         run: |
           mkdir -p ~/.ssh
@@ -103,6 +116,8 @@ jobs:
           export GOPRIVATE=github.com/circlefin/noble-cctp
           git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
 
+=======
+>>>>>>> bd0c969 (chore: revert #265 (#267))
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v3
         with:

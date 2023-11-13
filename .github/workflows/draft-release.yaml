@@ -3,7 +3,7 @@ name: Create and Push Docker Image
 on:
   push:
     tags:
-    - '**'
+      - '**'
 
 env:
   REGISTRY: ghcr.io
@@ -33,6 +33,7 @@ jobs:
           chain: noble
           dockerfile: cosmos
           build-target: make install
+<<<<<<< HEAD
           build-env: |
             - GOPRIVATE=github.com/circlefin/noble-cctp
           pre-build: |
@@ -42,6 +43,8 @@ jobs:
             apk add openssh
             git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
             ssh-keyscan github.com >> ~/.ssh/known_hosts
+=======
+>>>>>>> bd0c969 (chore: revert #265 (#267))
           binaries: |
             - /go/bin/nobled
   
@@ -49,20 +52,20 @@ jobs:
     needs: build-and-push-image
     runs-on: ubuntu-latest
     steps:
-    - name: Copy Binary
-      run: |
-        docker create -it --entrypoint sh --name amd --platform linux/amd64 ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
-        docker create -it --entrypoint sh --name arm --platform linux/arm64 ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
-        docker cp amd:/bin/nobled ./nobled_linux-amd64
-        docker cp arm:/bin/nobled ./nobled_linux-arm64
-        sha256sum ./nobled_linux-amd64 > ./nobled_sha256.txt
-        sha256sum ./nobled_linux-arm64 >> ./nobled_sha256.txt
-    
-    - name: Draft Release
-      uses: softprops/action-gh-release@v1        
-      with:
-        draft: true
-        files: |
-          nobled_linux-amd64
-          nobled_linux-arm64
-          nobled_sha256.txt
+      - name: Copy Binary
+        run: |
+          docker create -it --entrypoint sh --name amd --platform linux/amd64 ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
+          docker create -it --entrypoint sh --name arm --platform linux/arm64 ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
+          docker cp amd:/bin/nobled ./nobled_linux-amd64
+          docker cp arm:/bin/nobled ./nobled_linux-arm64
+          sha256sum ./nobled_linux-amd64 > ./nobled_sha256.txt
+          sha256sum ./nobled_linux-arm64 >> ./nobled_sha256.txt
+
+      - name: Draft Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            nobled_linux-amd64
+            nobled_linux-arm64
+            nobled_sha256.txt
