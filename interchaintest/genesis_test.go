@@ -75,13 +75,32 @@ var (
 		},
 	}
 
+	denomMetadataUsdlr = DenomMetadata{
+		Display: "usdlr",
+		Name:    "usdlr",
+		Base:    "uusdlr",
+		DenomUnits: []DenomUnit{
+			{
+				Denom: "uusdlr",
+				Aliases: []string{
+					"microusdlr",
+				},
+				Exponent: "0",
+			},
+			{
+				Denom:    "usdlr",
+				Exponent: "6",
+			},
+		},
+	}
+
 	defaultShare                   = "0.8"
 	defaultDistributionEntityShare = "1.0"
 	defaultTransferBPSFee          = "1"
 	defaultTransferMaxFee          = "5000000"
 	defaultTransferFeeDenom        = denomMetadataUsdc.Base
 
-	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.1", rly.RlyDefaultUidGid)
+	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.2", rly.RlyDefaultUidGid)
 )
 
 type DenomMetadata struct {
@@ -370,6 +389,7 @@ type genesisWrapper struct {
 	chain          *cosmos.CosmosChain
 	tfRoles        NobleRoles
 	fiatTfRoles    NobleRoles
+	stableTfRoles  NobleRoles
 	paramAuthority ibc.Wallet
 	extraWallets   ExtraWallets
 }
@@ -379,8 +399,8 @@ func nobleChainSpec(
 	gw *genesisWrapper,
 	chainID string,
 	nv, nf int,
-	minSetupTf, minSetupFiatTf bool,
-	minModifyTf, minModifyFiatTf bool,
+	minSetupTf, minSetupFiatTf, minSetupStableTf bool,
+	minModifyTf, minModifyFiatTf, minModifyStableTf bool,
 ) *interchaintest.ChainSpec {
 	return &interchaintest.ChainSpec{
 		NumValidators: &nv,
@@ -399,13 +419,13 @@ func nobleChainSpec(
 			NoHostMount:    false,
 			Images:         nobleImageInfo,
 			EncodingConfig: NobleEncoding(),
-			PreGenesis:     preGenesisAll(ctx, gw, minSetupTf, minSetupFiatTf),
-			ModifyGenesis:  modifyGenesisAll(gw, minModifyTf, minModifyFiatTf),
+			PreGenesis:     preGenesisAll(ctx, gw, minSetupTf, minSetupFiatTf, minSetupStableTf),
+			ModifyGenesis:  modifyGenesisAll(gw, minModifyTf, minModifyFiatTf, minModifyStableTf),
 		},
 	}
 }
 
-func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(ibc.ChainConfig) error {
+func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetupFiatTf, minSetupStableTf bool) func(ibc.ChainConfig) error {
 	return func(cc ibc.ChainConfig) (err error) {
 		val := gw.chain.Validators[0]
 
@@ -415,6 +435,11 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 		}
 
 		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdc, val, minSetupFiatTf)
+		if err != nil {
+			return err
+		}
+
+		gw.stableTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdlr, val, minSetupStableTf)
 		if err != nil {
 			return err
 		}
@@ -430,7 +455,7 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 	}
 }
 
-func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf, minSetupStableTf bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 		g := make(map[string]interface{})
 
@@ -443,6 +468,10 @@ func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(
 		}
 
 		if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataUsdc, gw.fiatTfRoles, minSetupFiatTf); err != nil {
+			return nil, err
+		}
+
+		if err := modifyGenesisTokenfactory(g, "stable-tokenfactory", denomMetadataUsdlr, gw.stableTfRoles, minSetupStableTf); err != nil {
 			return nil, err
 		}
 

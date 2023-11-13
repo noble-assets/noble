@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package stable.tokenfactory.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types";
+
+message Blacklisted {
+  bytes addressBz = 1;
+}

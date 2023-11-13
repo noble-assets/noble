@@ -34,7 +34,7 @@ func TestClientSubstitution(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, true, true, true),
+		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, true, true, true, true, true),
 		{
 			Name:          "gaia",
 			Version:       "v10.0.2",
