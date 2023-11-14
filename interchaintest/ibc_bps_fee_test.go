@@ -35,7 +35,7 @@ func TestICS20BPSFees(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, false, false, true, false),
+		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, false, false, false, true, false, false),
 		{
 			Name:          "gaia",
 			Version:       "v9.0.2",

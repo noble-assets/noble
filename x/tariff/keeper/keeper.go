@@ -66,9 +66,19 @@ func (k Keeper) SendPacket(
 	}
 
 	params := k.GetParams(ctx)
-	bpsFee, maxFee, feeDenom := params.TransferFeeBps, params.TransferFeeMax, params.TransferFeeDenom
+	bpsFee, maxFee, feeDenom := sdk.ZeroInt(), sdk.ZeroInt(), ""
 
-	if data.Denom != feeDenom {
+	for _, transferFee := range params.TransferFees {
+		if data.Denom == transferFee.Denom {
+			bpsFee = transferFee.Bps
+			maxFee = transferFee.Max
+			feeDenom = transferFee.Denom
+
+			break
+		}
+	}
+
+	if feeDenom == "" {
 		// not fee collection denom, forward to next middleware
 		return k.ics4Wrapper.SendPacket(ctx, chanCap, packet)
 	}

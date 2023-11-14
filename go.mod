@@ -4,7 +4,6 @@ go 1.21
 
 require (
 	cosmossdk.io/errors v1.0.0
-	cosmossdk.io/math v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20231110151013-86f425e6fac9
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20231026180023-32fd993c1f60
 	github.com/cosmos/cosmos-sdk v0.45.16
@@ -30,6 +29,7 @@ require (
 	cosmossdk.io/api v0.2.6 // indirect
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
+	cosmossdk.io/math v1.0.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
