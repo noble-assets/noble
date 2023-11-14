@@ -7,26 +7,26 @@ import (
 
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer/rly"
+	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
 
-var (
-	nobleImageInfo = []ibc.DockerImage{
-		{
-			Repository: "noble",
-			Version:    "local",
-			UidGid:     "1025:1025",
-		},
-	}
-)
+var nobleImageInfo = []ibc.DockerImage{
+	{
+		Repository: "noble",
+		Version:    "local",
+		UidGid:     "1025:1025",
+	},
+}
 
 var (
 	denomMetadataFrienzies = DenomMetadata{
@@ -96,9 +96,8 @@ var (
 
 	defaultShare                   = "0.8"
 	defaultDistributionEntityShare = "1.0"
-	defaultTransferBPSFee          = "1"
-	defaultTransferMaxFee          = "5000000"
-	defaultTransferFeeDenom        = denomMetadataUsdc.Base
+	defaultTransferBPSFee          = sdk.OneInt()
+	defaultTransferMaxFee          = sdk.NewInt(5_000_000)
 
 	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.2", rly.RlyDefaultUidGid)
 )
@@ -354,7 +353,6 @@ func createExtraWalletsAtGenesis(ctx context.Context, val *cosmos.ChainNode) (Ex
 	for _, wallet := range walletsToRestore {
 		if err = val.RecoverKey(ctx, wallet.KeyName(), wallet.Mnemonic()); err != nil {
 			return ExtraWallets{}, fmt.Errorf("failed to restore %s wallet: %w", wallet.KeyName(), err)
-
 		}
 	}
 
@@ -451,7 +449,6 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 
 		gw.paramAuthority, err = createParamAuthAtGenesis(ctx, val)
 		return err
-
 	}
 }
 
@@ -591,8 +588,20 @@ func modifyGenesisTariffDefaults(
 	genbz map[string]interface{},
 	distributionEntity string,
 ) error {
-	return modifyGenesisTariff(genbz, defaultShare, distributionEntity,
-		defaultDistributionEntityShare, defaultTransferBPSFee, defaultTransferMaxFee, defaultTransferFeeDenom)
+	transferFees := []tarifftypes.TransferFee{
+		{
+			Bps:   defaultTransferBPSFee,
+			Max:   defaultTransferMaxFee,
+			Denom: denomMetadataUsdc.Base,
+		},
+		{
+			Bps:   defaultTransferBPSFee,
+			Max:   defaultTransferMaxFee,
+			Denom: denomMetadataUsdlr.Base,
+		},
+	}
+
+	return modifyGenesisTariff(genbz, defaultShare, distributionEntity, defaultDistributionEntityShare, transferFees)
 }
 
 func modifyGenesisTariff(
@@ -600,9 +609,7 @@ func modifyGenesisTariff(
 	share string,
 	distributionEntity string,
 	distributionEntityShare string,
-	transferBPSFee string,
-	transferMaxFee string,
-	transferDenom string,
+	transferFees []tarifftypes.TransferFee,
 ) error {
 	if err := dyno.Set(genbz, share, "app_state", "tariff", "params", "share"); err != nil {
 		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
@@ -616,14 +623,8 @@ func modifyGenesisTariff(
 	if err := dyno.Set(genbz, distributionEntities, "app_state", "tariff", "params", "distribution_entities"); err != nil {
 		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
-	if err := dyno.Set(genbz, transferBPSFee, "app_state", "tariff", "params", "transfer_fee_bps"); err != nil {
-		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
-	}
-	if err := dyno.Set(genbz, transferMaxFee, "app_state", "tariff", "params", "transfer_fee_max"); err != nil {
-		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
-	}
-	if err := dyno.Set(genbz, transferDenom, "app_state", "tariff", "params", "transfer_fee_denom"); err != nil {
-		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	if err := dyno.Set(genbz, transferFees, "app_state", "tariff", "params", "transfer_fees"); err != nil {
+		return fmt.Errorf("failed to set tariff transfer fees in genesis json: %w", err)
 	}
 	return nil
 }
