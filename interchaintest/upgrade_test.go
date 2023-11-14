@@ -13,7 +13,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"
-	"github.com/strangelove-ventures/noble/v4/cmd"
+	"github.com/strangelove-ventures/noble/v5/cmd"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

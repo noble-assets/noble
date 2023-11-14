@@ -3,7 +3,7 @@ package noble.tariff;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/strangelove-ventures/noble/v4/x/tariff/types";
+option go_package = "github.com/strangelove-ventures/noble/v5/x/tariff/types";
 option (gogoproto.equal_all) = true;
 
 // Params defines the set of params for the distribution module.

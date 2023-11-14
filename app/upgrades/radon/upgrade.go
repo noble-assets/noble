@@ -8,9 +8,9 @@ import (
 
 	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+	globalfeetypes "github.com/strangelove-ventures/noble/v5/x/globalfee/types"
 
-	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
+	tarifftypes "github.com/strangelove-ventures/noble/v5/x/tariff/types"
 )
 
 func CreateRadonUpgradeHandler(
