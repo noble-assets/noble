@@ -27,18 +27,6 @@ jobs:
           chain: noble
           dockerfile: cosmos
           build-target: make install
-<<<<<<< HEAD
-          build-env: |
-            - GOPRIVATE=github.com/circlefin/noble-cctp
-          pre-build: |
-            mkdir -p ~/.ssh
-            echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
-            chmod 600 ~/.ssh/id_ed25519
-            apk add openssh
-            git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-=======
->>>>>>> bd0c969 (chore: revert #265 (#267))
           binaries: |
             - /go/bin/nobled
 
@@ -61,31 +49,13 @@ jobs:
         with:
           go-version: '^1.21'
 
-<<<<<<< HEAD
-    - name: CCTP private repo auth
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan github.com >> ~/.ssh/known_hosts
-        export GOPRIVATE=github.com/circlefin/noble-cctp
-        git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
-
-    - name: Generate matrix
-      id: set-matrix
-      run: |
-        # Run the command and convert its output to a JSON array
-        TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
-        echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
-=======
       - name: Generate matrix
         id: set-matrix
         run: |
           # Run the command and convert its output to a JSON array
           TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
           echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
->>>>>>> bd0c969 (chore: revert #265 (#267))
-  
+
   e2e-tests:
     needs:
       - build-docker
@@ -106,18 +76,6 @@ jobs:
       - name: checkout chain
         uses: actions/checkout@v4
 
-<<<<<<< HEAD
-      - name: CCTP private repo auth
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          export GOPRIVATE=github.com/circlefin/noble-cctp
-          git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
-
-=======
->>>>>>> bd0c969 (chore: revert #265 (#267))
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v3
         with:
