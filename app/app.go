@@ -879,9 +879,12 @@ func (app *App) setupUpgradeHandlers() {
 		v4m1p0rc0.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.cdc,
 			app.AccountKeeper,
 			app.BankKeeper,
+			app.FiatTokenFactoryKeeper,
 			app.StableTokenFactoryKeeper,
+			app.GetSubspace(tarifftypes.ModuleName),
 		),
 	)
 

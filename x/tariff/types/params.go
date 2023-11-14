@@ -11,9 +11,7 @@ import (
 var (
 	KeyShare                = []byte("Share")
 	KeyDistributionEntities = []byte("DistributionEntities")
-	KeyTransferFeeBPS       = []byte("TransferFeeBPS")
-	KeyTransferFeeMax       = []byte("TransferFeeMax")
-	KeyTransferFeeDenom     = []byte("TransferFeeDenom")
+	KeyTransferFees         = []byte("TransferFees")
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -33,9 +31,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyShare, &p.Share, validateShare),
 		paramtypes.NewParamSetPair(KeyDistributionEntities, &p.DistributionEntities, validateDistributionEntityParams),
-		paramtypes.NewParamSetPair(KeyTransferFeeBPS, &p.TransferFeeBps, validateTransferFeeBPS),
-		paramtypes.NewParamSetPair(KeyTransferFeeMax, &p.TransferFeeMax, validateTransferFeeMax),
-		paramtypes.NewParamSetPair(KeyTransferFeeDenom, &p.TransferFeeDenom, validateTransferFeeDenom),
+		paramtypes.NewParamSetPair(KeyTransferFees, &p.TransferFees, validateTransferFees),
 	}
 }
 
@@ -86,6 +82,29 @@ func validateShare(i interface{}) error {
 	return nil
 }
 
+func validateTransferFees(i interface{}) error {
+	transferFees, ok := i.([]TransferFee)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	for _, transferFee := range transferFees {
+		if err := validateTransferFeeBPS(transferFee.Bps); err != nil {
+			return err
+		}
+
+		if err := validateTransferFeeMax(transferFee.Max); err != nil {
+			return err
+		}
+
+		if err := validateTransferFeeDenom(transferFee.Denom); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func validateTransferFeeBPS(i interface{}) error {
 	transferFeeBPS, ok := i.(sdk.Int)
 	if !ok {
@@ -129,15 +148,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateTransferFeeBPS(p.TransferFeeBps); err != nil {
-		return err
-	}
-
-	if err := validateTransferFeeMax(p.TransferFeeMax); err != nil {
-		return err
-	}
-
-	if err := validateTransferFeeDenom(p.TransferFeeDenom); err != nil {
+	if err := validateTransferFees(p.TransferFees); err != nil {
 		return err
 	}
 

@@ -4,22 +4,29 @@ import (
 	"errors"
 	"fmt"
 
+	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory"
 	stabletokenfactorykeeper "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
 	stabletokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
+	cdc *codec.LegacyAmino,
 	accountKeeper authkeeper.AccountKeeper,
 	bankKeeper bankkeeper.Keeper,
+	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper,
 	stableTokenFactoryKeeper *stabletokenfactorykeeper.Keeper,
+	tariffSubspace paramstypes.Subspace,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		// Ensure that this upgrade is only run on Noble's testnet.
@@ -50,6 +57,27 @@ func CreateUpgradeHandler(
 
 		stabletokenfactory.InitGenesis(ctx, stableTokenFactoryKeeper, bankKeeper, genesis)
 		vm[stabletokenfactorytypes.ModuleName] = stabletokenfactory.AppModule{}.ConsensusVersion()
+
+		// Update x/tariff module parameters to include $USDLR fees.
+		fiatMintingDenom := fiatTokenFactoryKeeper.GetMintingDenom(ctx)
+
+		transferFees := []tarifftypes.TransferFee{
+			{
+				Bps:   sdk.OneInt(),
+				Max:   sdk.NewInt(5_000_000),
+				Denom: fiatMintingDenom.Denom,
+			},
+			{
+				Bps:   sdk.OneInt(),
+				Max:   sdk.NewInt(5_000_000),
+				Denom: USDLRMetadata.Base,
+			},
+		}
+
+		err := tariffSubspace.Update(ctx, tarifftypes.KeyTransferFees, cdc.MustMarshalJSON(transferFees))
+		if err != nil {
+			return vm, err
+		}
 
 		return mm.RunMigrations(ctx, cfg, vm)
 	}
