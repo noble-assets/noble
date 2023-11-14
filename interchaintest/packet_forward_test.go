@@ -49,10 +49,10 @@ func TestPacketForwardMiddleware(t *testing.T) {
 	)
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw1, chainID_A, nv, nf, true, true, true, true),
-		nobleChainSpec(ctx, &gw2, chainID_B, nv, nf, true, true, true, true),
-		nobleChainSpec(ctx, &gw3, chainID_C, nv, nf, true, true, true, true),
-		nobleChainSpec(ctx, &gw4, chainID_D, nv, nf, true, true, true, true),
+		nobleChainSpec(ctx, &gw1, chainID_A, nv, nf, true, true, true, true, true, true),
+		nobleChainSpec(ctx, &gw2, chainID_B, nv, nf, true, true, true, true, true, true),
+		nobleChainSpec(ctx, &gw3, chainID_C, nv, nf, true, true, true, true, true, true),
+		nobleChainSpec(ctx, &gw4, chainID_D, nv, nf, true, true, true, true, true, true),
 	})
 
 	chains, err := cf.Chains(t.Name())
