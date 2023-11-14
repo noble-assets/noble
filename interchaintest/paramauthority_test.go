@@ -89,7 +89,7 @@ func TestNobleParamAuthority(t *testing.T) {
 	var gw genesisWrapper
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", 1, 0, true, true, true, true),
+		nobleChainSpec(ctx, &gw, "noble-1", 1, 0, true, true, true, true, true, true),
 	})
 
 	chains, err := cf.Chains(t.Name())
