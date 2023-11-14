@@ -31,5 +31,4 @@ var USDLRMetadata = banktypes.Metadata{
 }
 
 // StableAddress is the address used by Stable initially.
-// TODO: Update with correct address.
-const StableAddress = "noble10uu75g7zl0gnzt0wz46htgqnl5ml27dnthcztx"
+const StableAddress = "noble1t340xkqg8709lkhw4t0ltrq4m8cypz5375660w"
