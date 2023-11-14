@@ -27,15 +27,6 @@ jobs:
           chain: noble
           dockerfile: cosmos
           build-target: make install
-          build-env: |
-            - GOPRIVATE=github.com/circlefin/noble-cctp
-          pre-build: |
-            mkdir -p ~/.ssh
-            echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
-            chmod 600 ~/.ssh/id_ed25519
-            apk add openssh
-            git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
           binaries: |
             - /go/bin/nobled
 
@@ -50,58 +41,40 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Go 1.21
-      uses: actions/setup-go@v4
-      with:
-        go-version: '^1.21'
+      - name: Set up Go 1.21
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.21'
 
-    - name: CCTP private repo auth
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan github.com >> ~/.ssh/known_hosts
-        export GOPRIVATE=github.com/circlefin/noble-cctp
-        git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
+      - name: Generate matrix
+        id: set-matrix
+        run: |
+          # Run the command and convert its output to a JSON array
+          TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
+          echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
 
-    - name: Generate matrix
-      id: set-matrix
-      run: |
-        # Run the command and convert its output to a JSON array
-        TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
-        echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
-  
   e2e-tests:
-    needs: 
+    needs:
       - build-docker
       - prepare-e2e-tests
     runs-on: ubuntu-latest
     strategy:
-        matrix:
-            # names of `make` commands to run tests
-          test: ${{fromJson(needs.prepare-e2e-tests.outputs.matrix)}}
-        fail-fast: false
+      matrix:
+        # names of `make` commands to run tests
+        test: ${{fromJson(needs.prepare-e2e-tests.outputs.matrix)}}
+      fail-fast: false
 
     steps:
       - name: Set up Go 1.21
         uses: actions/setup-go@v4
         with:
           go-version: '^1.21'
-              
+
       - name: checkout chain
         uses: actions/checkout@v4
-
-      - name: CCTP private repo auth
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GITAUTH }}" | base64 -d > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          export GOPRIVATE=github.com/circlefin/noble-cctp
-          git config --global --add url."git@github.com:circlefin/noble-cctp.git".insteadOf "https://github.com/circlefin/noble-cctp"
 
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v3
