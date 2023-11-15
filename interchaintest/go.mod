@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	cosmossdk.io/math v1.0.1
-	github.com/circlefin/noble-cctp v0.0.0-20231027180137-dce662fac8c2
+	github.com/circlefin/noble-cctp v0.0.0-20231110151013-86f425e6fac9
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20231026180023-32fd993c1f60
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v4 v4.5.1
@@ -185,9 +185,6 @@ require (
 replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
-
-	// temporarily replace circlefin/noble-cctp before open sourcing
-	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20231108011259-7c5206df02dc
 
 	// use ics compatible cosmos/cosmos-sdk
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics

@@ -43,7 +43,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, true, false),
+		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, true, false, false),
 	})
 
 	chains, err := cf.Chains(t.Name())

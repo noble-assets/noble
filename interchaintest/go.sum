@@ -191,8 +191,8 @@ github.com/cespare/xxhash/v2 v2.2.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
-github.com/circlefin/noble-cctp-private v0.0.0-20231108011259-7c5206df02dc h1:FWkEwL+lIIQa8pM8pk0fPSzjgelrUimtspG6RGh0YGs=
-github.com/circlefin/noble-cctp-private v0.0.0-20231108011259-7c5206df02dc/go.mod h1:ssEHJqFI1f4a5sLtZ7qeYJ7/75LzDgzbBv4C9as3y3w=
+github.com/circlefin/noble-cctp v0.0.0-20231110151013-86f425e6fac9 h1:PvJ69AgxzoVX6UyHbCrWe6oDWRgEL3DQ3r7SGmmUoMY=
+github.com/circlefin/noble-cctp v0.0.0-20231110151013-86f425e6fac9/go.mod h1:ssEHJqFI1f4a5sLtZ7qeYJ7/75LzDgzbBv4C9as3y3w=
 github.com/circlefin/noble-fiattokenfactory v0.0.0-20231026180023-32fd993c1f60 h1:jzokwZGplxSR9eQ231Sd83sAKo/08l4Ew8i+6qyJAKs=
 github.com/circlefin/noble-fiattokenfactory v0.0.0-20231026180023-32fd993c1f60/go.mod h1:rcUYSPnkN4M+epaMh2Y31V16rMDFQiY+OjRF+dwHDxE=
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=

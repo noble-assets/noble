@@ -73,7 +73,7 @@ func testNobleChainUpgrade(
 
 	var gw genesisWrapper
 
-	cs := nobleChainSpec(ctx, &gw, chainID, numberOfValidators, numberOfFullNodes, false, false, false, false)
+	cs := nobleChainSpec(ctx, &gw, chainID, numberOfValidators, numberOfFullNodes, false, false, false, false, false, false)
 
 	cs.ChainConfig.PreGenesis = func(cc ibc.ChainConfig) error {
 		val := gw.chain.Validators[0]
