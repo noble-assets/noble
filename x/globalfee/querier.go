@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+	"github.com/strangelove-ventures/noble/v5/x/globalfee/types"
 )
 
 var _ types.QueryServer = &GrpcQuerier{}

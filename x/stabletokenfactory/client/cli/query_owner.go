@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 )
 
 func CmdShowOwner() *cobra.Command {

@@ -9,10 +9,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-	"github.com/strangelove-ventures/noble/v4/testutil/network"
-	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/testutil/network"
+	"github.com/strangelove-ventures/noble/v5/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 )
 
 func networkWithOwnerObjects(t *testing.T) (*network.Network, types.Owner) {

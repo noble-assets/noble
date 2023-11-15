@@ -5,7 +5,7 @@ import "globalfee/genesis.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/strangelove-ventures/noble/v4/x/globalfee/types";
+option go_package = "github.com/strangelove-ventures/noble/v5/x/globalfee/types";
 
 // Query defines the gRPC querier service.
 service Query {

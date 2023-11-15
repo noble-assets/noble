@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/strangelove-ventures/noble/v4/testutil/sample"
+	"github.com/strangelove-ventures/noble/v5/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
 

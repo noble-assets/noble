@@ -16,9 +16,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/client/cli"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 )
 
 var (

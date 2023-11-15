@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 )
 
 // GetTxCmd returns the transaction commands for this module
