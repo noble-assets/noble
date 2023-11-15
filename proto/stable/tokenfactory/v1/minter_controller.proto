@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package stable.tokenfactory.v1;
+
+option go_package = "github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types";
+
+message MinterController {
+  string minter = 1;
+  string controller = 2;
+}

@@ -64,6 +64,10 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			image:       ghcrImage("v4.0.0-rc0"),
 			postUpgrade: testPostArgonUpgrade,
 		},
+		{
+			upgradeName: "v4.1.0-rc.0",
+			image:       nobleImageInfo[0],
+		},
 	}
 
 	testNobleChainUpgrade(t, grand1ChainID, grand1Genesis, denomMetadataUsdc, numVals, numFullNodes, grand1Upgrades)
