@@ -381,9 +381,7 @@ func New(
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *app.StakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
-	)
+	app.StakingKeeper = *app.StakingKeeper.SetHooks(app.SlashingKeeper.Hooks())
 
 	// ... other modules keepers
 
