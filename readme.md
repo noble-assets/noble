@@ -3,7 +3,7 @@
 
 ## Overview
 
-[Noble](https://nobleassets.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers onthe Noble blockchain.
+[Noble](https://nobleassets.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers on the Noble blockchain.
 
 ## Noble App-Chain Design 
 
@@ -56,7 +56,7 @@ Noble intends to monitor developments in shared security across the blockchain e
 
 ## Connecting to Noble
 
-App-chains are able to permissionlessly connect to Noble [via IBC](https://medium.com/the-interchain-foundation/eli5-what-is-ibc-def44d7b5b4c), a universal interoperability protocol that allows two different blockchains to communicate with one another, garaunteeing reliable, ordered, and authenticated communication.
+App-chains are able to permissionlessly connect to Noble [via IBC](https://medium.com/the-interchain-foundation/eli5-what-is-ibc-def44d7b5b4c), a universal interoperability protocol that allows two different blockchains to communicate with one another, guaranteeing reliable, ordered, and authenticated communication.
 
 How to integrate with Noble? 
 
@@ -199,7 +199,7 @@ nobled start
 
 ## Running Nodes
 
-- See [`noble-networks`](https://github.com/strangelove-ventures/noble-networks/tree/main) for all info around validating for mainnet and testent
+- See [`noble-networks`](https://github.com/strangelove-ventures/noble-networks/tree/main) for all info around validating for mainnet and testnet
 
 ## Testing
 
