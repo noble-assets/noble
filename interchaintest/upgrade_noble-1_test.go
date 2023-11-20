@@ -1,21 +1,34 @@
 package interchaintest_test
 
 import (
+	"context"
+	"encoding/json"
 	"testing"
+	"time"
+
+	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+	"github.com/strangelove-ventures/interchaintest/v4/testutil"
+	"github.com/stretchr/testify/require"
 )
+
+type QueryValidatorsResponse struct {
+	Validators []Validator `json:"validators"`
+}
+type Validator struct {
+	Jailed bool `json:"jailed"`
+}
 
 // run `make local-image`to rebuild updated binary before running test
 func TestNoble1ChainUpgrade(t *testing.T) {
-
 	const (
-		noble1ChainID = "noble-1"
-		numVals       = 4
+		numValidators = 4
 		numFullNodes  = 0
 	)
 
-	var noble1Genesis = ghcrImage("v1.0.0")
+	genesis := ghcrImage("v1.0.0")
 
-	var noble1Upgrades = []chainUpgrade{
+	upgrades := []chainUpgrade{
 		{
 			upgradeName: "neon",
 			// this is a mock image that gives us control of the
@@ -46,7 +59,43 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			image:       ghcrImage("mock-v4.0.0"),
 			postUpgrade: testPostArgonUpgrade,
 		},
+		{
+			// v4.0.1 is a patch release to fix a consensus failure caused by a validator going offline.
+			// The preUpgrade logic replicates this failure by bringing one validator offline.
+			// The postUpgrade logic verifies that after applying the emergency upgrade, the offline validator is jailed.
+			emergency: true,
+			image:     ghcrImage("v4.0.1"),
+			preUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet) {
+				// Select one validator to go offline.
+				validator := noble.Validators[numValidators-1]
+
+				// Take the selected validator offline.
+				require.NoError(t, validator.StopContainer(ctx))
+
+				// Wait 5 blocks (+1) to exceed the downtime window.
+				timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, 42*time.Second)
+				defer timeoutCtxCancel()
+
+				_ = testutil.WaitForBlocks(timeoutCtx, 6, noble)
+			},
+			postUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet) {
+				raw, _, err := noble.Validators[0].ExecQuery(ctx, "staking", "validators")
+				require.NoError(t, err)
+
+				var res QueryValidatorsResponse
+				require.NoError(t, json.Unmarshal(raw, &res))
+
+				numJailed := 0
+				for _, validator := range res.Validators {
+					if validator.Jailed {
+						numJailed += 1
+					}
+				}
+
+				require.Equal(t, numJailed, 1)
+			},
+		},
 	}
 
-	testNobleChainUpgrade(t, noble1ChainID, noble1Genesis, denomMetadataFrienzies, numVals, numFullNodes, noble1Upgrades)
+	testNobleChainUpgrade(t, "noble-1", genesis, denomMetadataFrienzies, numValidators, numFullNodes, upgrades)
 }

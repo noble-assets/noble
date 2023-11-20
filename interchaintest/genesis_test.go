@@ -628,3 +628,7 @@ func modifyGenesisTariff(
 	}
 	return nil
 }
+
+func modifyGenesisDowntimeWindow(bz map[string]interface{}) error {
+	return dyno.Set(bz, "5", "app_state", "slashing", "params", "signed_blocks_window")
+}
