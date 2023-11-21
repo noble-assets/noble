@@ -9,6 +9,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"
+	tarifftypes "github.com/strangelove-ventures/noble/x/tariff/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -93,6 +94,18 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 				}
 
 				require.Equal(t, numJailed, 1)
+			},
+		},
+		{
+			// v4.0.2 is a patch release that introduces a new query to the tariff module.
+			// It is non-consensus breaking, and therefore is applied as a rolling upgrade.
+			image: nobleImageInfo[0],
+			postUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet) {
+				raw, _, err := noble.Validators[0].ExecQuery(ctx, "tariff", "params")
+				require.NoError(t, err)
+
+				var res tarifftypes.QueryParamsResponse
+				require.NoError(t, json.Unmarshal(raw, &res))
 			},
 		},
 	}
