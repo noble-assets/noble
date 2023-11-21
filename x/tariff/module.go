@@ -10,18 +10,13 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/x/tariff/keeper"
-	"github.com/strangelove-ventures/noble/v4/x/tariff/types"
-=======
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v5/x/tariff/client/cli"
-	"github.com/strangelove-ventures/noble/v5/x/tariff/keeper"
-	"github.com/strangelove-ventures/noble/v5/x/tariff/types"
+	"github.com/strangelove-ventures/noble/v4/x/tariff/client/cli"
+	"github.com/strangelove-ventures/noble/v4/x/tariff/keeper"
+	"github.com/strangelove-ventures/noble/v4/x/tariff/types"
 	abci "github.com/tendermint/tendermint/abci/types"
->>>>>>> c8829e9 (feat: add param query to `x/tariff` module (#277))
 )
 
 var (
