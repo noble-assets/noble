@@ -45,8 +45,6 @@ func CreateUpgradeHandler(
 
 		consumerKeeper.InitGenesis(ctx, &genesis)
 
-		// TODO: Should we set the distribution channel?
-
 		return vm, nil
 	}
 }

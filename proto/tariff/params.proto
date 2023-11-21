@@ -9,12 +9,6 @@ option (gogoproto.equal_all) = true;
 // Params defines the set of params for the distribution module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  // share is % of tx fees or rewards allocated to distribution_entities
-  string share = 1 [
-    (gogoproto.moretags) = "yaml:\"share\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable) = false
-  ];
 
   // % of tx fees or rewards allocated to a set of global distribution entities
   // these shares must add up to 1

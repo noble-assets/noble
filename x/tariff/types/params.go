@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	KeyShare                = []byte("Share")
 	KeyDistributionEntities = []byte("DistributionEntities")
 	KeyTransferFees         = []byte("TransferFees")
 )
@@ -29,7 +28,6 @@ func DefaultParams() Params {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyShare, &p.Share, validateShare),
 		paramtypes.NewParamSetPair(KeyDistributionEntities, &p.DistributionEntities, validateDistributionEntityParams),
 		paramtypes.NewParamSetPair(KeyTransferFees, &p.TransferFees, validateTransferFees),
 	}
@@ -68,17 +66,6 @@ func validateDistributionEntityParams(i interface{}) error {
 		return fmt.Errorf("sum of distribution entity shares don't equal 100%%: %s", sum.String())
 	}
 
-	return nil
-}
-
-func validateShare(i interface{}) error {
-	share, ok := i.(sdk.Dec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	if share.LT(sdk.ZeroDec()) || share.GT(sdk.OneDec()) {
-		return fmt.Errorf("share is outside of the range of 0 to 100%%: %s", share.String())
-	}
 	return nil
 }
 
@@ -140,10 +127,6 @@ func validateTransferFeeDenom(i interface{}) error {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
-	if err := validateShare(p.Share); err != nil {
-		return err
-	}
-
 	if err := validateDistributionEntityParams(p.DistributionEntities); err != nil {
 		return err
 	}

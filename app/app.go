@@ -390,7 +390,7 @@ func New(
 		app.GetSubspace(tarifftypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		authtypes.FeeCollectorName,
+		consumertypes.ConsumerRedistributeName,
 		app.IBCKeeper.ChannelKeeper,
 	)
 
