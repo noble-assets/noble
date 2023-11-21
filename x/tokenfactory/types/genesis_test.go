@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/noble/v4/testutil/sample"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/testutil/sample"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 
 	"github.com/stretchr/testify/require"
 )

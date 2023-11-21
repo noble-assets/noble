@@ -14,8 +14,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer/rly"
-	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	tarifftypes "github.com/strangelove-ventures/noble/v5/x/tariff/types"
+	tokenfactorytypes "github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
@@ -624,4 +624,8 @@ func modifyGenesisTariff(
 		return fmt.Errorf("failed to set tariff transfer fees in genesis json: %w", err)
 	}
 	return nil
+}
+
+func modifyGenesisDowntimeWindow(bz map[string]interface{}) error {
+	return dyno.Set(bz, "5", "app_state", "slashing", "params", "signed_blocks_window")
 }

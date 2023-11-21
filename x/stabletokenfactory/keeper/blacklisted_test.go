@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keepertest "github.com/strangelove-ventures/noble/v4/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v4/testutil/sample"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	keepertest "github.com/strangelove-ventures/noble/v5/testutil/keeper"
+	"github.com/strangelove-ventures/noble/v5/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v5/testutil/sample"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 	"github.com/stretchr/testify/require"
 )
 

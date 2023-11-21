@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 )
 
 // GetParams get all parameters as types.Params

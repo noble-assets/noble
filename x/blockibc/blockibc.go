@@ -11,10 +11,10 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v4/modules/core/exported"
-	stabletokenfactorykeeper "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
-	stabletokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	stabletokenfactorykeeper "github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/keeper"
+	stabletokenfactorytypes "github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/keeper"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}

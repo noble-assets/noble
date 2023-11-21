@@ -1,7 +1,7 @@
 syntax = "proto3";
 package noble.tokenfactory;
 
-option go_package = "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types";
+option go_package = "github.com/strangelove-ventures/noble/v5/x/tokenfactory/types";
 
 message Owner {
   string address = 1;

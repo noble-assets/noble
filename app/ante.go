@@ -6,10 +6,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	consumerante "github.com/cosmos/interchain-security/v2/app/consumer/ante"
 	consumerkeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
-	stabletokenfactorykeeper "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
-	stabletokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
-	tokenfactory "github.com/strangelove-ventures/noble/v4/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	stabletokenfactorykeeper "github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/keeper"
+	stabletokenfactorytypes "github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
+	tokenfactory "github.com/strangelove-ventures/noble/v5/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -20,7 +20,7 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
-	feeante "github.com/strangelove-ventures/noble/v4/x/globalfee/ante"
+	feeante "github.com/strangelove-ventures/noble/v5/x/globalfee/ante"
 )
 
 type HandlerOptions struct {

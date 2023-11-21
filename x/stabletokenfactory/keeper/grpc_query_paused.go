@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"

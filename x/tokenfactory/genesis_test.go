@@ -3,10 +3,10 @@ package tokenfactory_test
 import (
 	"testing"
 
-	keepertest "github.com/strangelove-ventures/noble/v4/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	keepertest "github.com/strangelove-ventures/noble/v5/testutil/keeper"
+	"github.com/strangelove-ventures/noble/v5/testutil/nullify"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory"
+	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
 
 	"github.com/stretchr/testify/require"
 )

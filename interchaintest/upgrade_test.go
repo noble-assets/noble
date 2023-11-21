@@ -13,7 +13,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"
-	"github.com/strangelove-ventures/noble/v4/cmd"
+	"github.com/strangelove-ventures/noble/v5/cmd"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -37,6 +37,7 @@ type ParamsQueryResponse struct {
 type chainUpgrade struct {
 	image       ibc.DockerImage
 	upgradeName string // if upgradeName is empty, assumes patch/rolling update
+	emergency   bool
 	preUpgrade  func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet)
 	postUpgrade func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, paramAuthority ibc.Wallet)
 }
@@ -97,6 +98,9 @@ func testNobleChainUpgrade(
 		if err := modifyGenesisParamAuthority(g, gw.paramAuthority.FormattedAddress()); err != nil {
 			return nil, err
 		}
+		if err := modifyGenesisDowntimeWindow(g); err != nil {
+			return nil, err
+		}
 		out, err := json.Marshal(&g)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal genesis bytes to json: %w", err)
@@ -141,51 +145,66 @@ func testNobleChainUpgrade(
 
 		if upgrade.upgradeName == "" {
 			// patch/rolling upgrade
+			if upgrade.emergency {
+				err = noble.StopAllNodes(ctx)
+				require.NoError(t, err, "could not stop nodes for emergency upgrade")
 
-			// stage new version
-			for _, n := range noble.Nodes() {
-				n.Image = upgrade.image
-			}
-			noble.UpgradeVersion(ctx, client, upgrade.image.Repository, upgrade.image.Version)
+				noble.UpgradeVersion(ctx, client, upgrade.image.Repository, upgrade.image.Version)
 
-			// do rolling update on half the vals
-			for i, n := range noble.Validators {
-				if i%2 == 0 {
-					continue
-				}
-				// shutdown
-				require.NoError(t, n.StopContainer(ctx))
-				require.NoError(t, n.RemoveContainer(ctx))
-
-				// startup
-				require.NoError(t, n.CreateNodeContainer(ctx))
-				require.NoError(t, n.StartContainer(ctx))
+				err = noble.StartAllNodes(ctx)
+				require.NoError(t, err, "could not start nodes for emergency upgrade")
 
 				timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*45)
 				defer timeoutCtxCancel()
 
-				require.NoError(t, testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble))
+				err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
+				require.NoError(t, err, "chain did not produce blocks after emergency upgrade")
+			} else {
+				// stage new version
+				for _, n := range noble.Nodes() {
+					n.Image = upgrade.image
+				}
+				noble.UpgradeVersion(ctx, client, upgrade.image.Repository, upgrade.image.Version)
+
+				// do rolling update on half the vals
+				for i, n := range noble.Validators {
+					if i%2 == 0 {
+						continue
+					}
+					// shutdown
+					require.NoError(t, n.StopContainer(ctx))
+					require.NoError(t, n.RemoveContainer(ctx))
+
+					// startup
+					require.NoError(t, n.CreateNodeContainer(ctx))
+					require.NoError(t, n.StartContainer(ctx))
+
+					timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*45)
+					defer timeoutCtxCancel()
+
+					require.NoError(t, testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble))
+				}
+
+				// blocks should still be produced after rolling update
+				timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*45)
+				defer timeoutCtxCancel()
+
+				err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
+				require.NoError(t, err, "chain did not produce blocks after upgrade")
+
+				// stop all nodes to bring rest of vals up to date
+				err = noble.StopAllNodes(ctx)
+				require.NoError(t, err, "error stopping node(s)")
+
+				err = noble.StartAllNodes(ctx)
+				require.NoError(t, err, "error starting upgraded node(s)")
+
+				timeoutCtx, timeoutCtxCancel = context.WithTimeout(ctx, time.Second*45)
+				defer timeoutCtxCancel()
+
+				err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
+				require.NoError(t, err, "chain did not produce blocks after upgrade")
 			}
-
-			// blocks should still be produced after rolling update
-			timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*45)
-			defer timeoutCtxCancel()
-
-			err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
-			require.NoError(t, err, "chain did not produce blocks after upgrade")
-
-			// stop all nodes to bring rest of vals up to date
-			err = noble.StopAllNodes(ctx)
-			require.NoError(t, err, "error stopping node(s)")
-
-			err = noble.StartAllNodes(ctx)
-			require.NoError(t, err, "error starting upgraded node(s)")
-
-			timeoutCtx, timeoutCtxCancel = context.WithTimeout(ctx, time.Second*45)
-			defer timeoutCtxCancel()
-
-			err = testutil.WaitForBlocks(timeoutCtx, int(blocksAfterUpgrade), noble)
-			require.NoError(t, err, "chain did not produce blocks after upgrade")
 		} else {
 			// halt upgrade
 			height, err := noble.Height(ctx)
