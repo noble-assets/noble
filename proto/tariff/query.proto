@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package noble.tariff;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "tariff/params.proto";
+
+option go_package = "github.com/strangelove-ventures/noble/v4/x/tariff/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/noble/tariff/v1/params";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
