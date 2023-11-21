@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v4.0.2
+
+*Nov 21, 2023*
+
+This is the second patch release to the v4 Argon line.
+
+### IMPROVEMENTS
+
+- Implement a parameter query for the `x/tariff` module. ([#277](https://github.com/strangelove-ventures/noble/pull/277))
+
+## v4.0.1
+
+*Nov 16, 2023*
+
+This is the first patch release to the v4 Argon line.
+
+### BUG FIXES
+
+- Unregister `x/distribution` hooks to address consensus failure. ([#274](https://github.com/strangelove-ventures/noble/pull/274))
+
 ## v4.0.0
 
 *Nov 6, 2023*
