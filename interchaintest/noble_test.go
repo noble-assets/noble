@@ -5,11 +5,15 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+=======
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )

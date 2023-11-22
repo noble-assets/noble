@@ -12,10 +12,17 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory"
 	stabletokenfactorykeeper "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
 	stabletokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
 	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory"
+	stabletokenfactorykeeper "github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	stabletokenfactorytypes "github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 func CreateUpgradeHandler(

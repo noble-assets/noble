@@ -2,7 +2,11 @@ syntax = "proto3";
 
 package stable.tokenfactory.v1;
 
+<<<<<<< HEAD
 option go_package = "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types";
+=======
+option go_package = "github.com/noble-assets/noble/v5/x/stabletokenfactory/types";
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 message Paused {
   bool paused = 1;

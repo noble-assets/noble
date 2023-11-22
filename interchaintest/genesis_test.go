@@ -9,13 +9,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
+	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
+	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer/rly"
+<<<<<<< HEAD
 	tarifftypes "github.com/strangelove-ventures/noble/v4/x/tariff/types"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+=======
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	proposaltypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )

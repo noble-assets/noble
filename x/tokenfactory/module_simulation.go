@@ -10,9 +10,15 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/v4/testutil/sample"
 	tokenfactorysimulation "github.com/strangelove-ventures/noble/v4/x/tokenfactory/simulation"
 	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/testutil/sample"
+	tokenfactorysimulation "github.com/noble-assets/noble/v5/x/tokenfactory/simulation"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 // avoid unused import issue

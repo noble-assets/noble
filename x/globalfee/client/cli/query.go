@@ -5,7 +5,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+=======
+	"github.com/noble-assets/noble/v5/x/globalfee/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 func GetQueryCmd() *cobra.Command {

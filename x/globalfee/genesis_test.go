@@ -17,7 +17,11 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+=======
+	"github.com/noble-assets/noble/v5/x/globalfee/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 func TestValidateGenesis(t *testing.T) {

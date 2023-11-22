@@ -4,7 +4,11 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+<<<<<<< HEAD
 	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+=======
+	globalfeetypes "github.com/noble-assets/noble/v5/x/globalfee/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 

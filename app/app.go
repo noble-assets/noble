@@ -93,6 +93,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+<<<<<<< HEAD
 	v4m1p0rc0 "github.com/strangelove-ventures/noble/v4/app/upgrades/v4.1.0-rc.0"
 	"github.com/strangelove-ventures/noble/v4/cmd"
 	"github.com/strangelove-ventures/noble/v4/docs"
@@ -107,6 +108,22 @@ import (
 	tokenfactorymodule "github.com/strangelove-ventures/noble/v4/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/strangelove-ventures/noble/v4/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+=======
+	v4m1p0rc0 "github.com/noble-assets/noble/v5/app/upgrades/v4.1.0-rc.0"
+	"github.com/noble-assets/noble/v5/cmd"
+	"github.com/noble-assets/noble/v5/docs"
+	"github.com/noble-assets/noble/v5/x/blockibc"
+	"github.com/noble-assets/noble/v5/x/globalfee"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory"
+	stabletokenfactorykeeper "github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	stabletokenfactorytypes "github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+	tariff "github.com/noble-assets/noble/v5/x/tariff"
+	tariffkeeper "github.com/noble-assets/noble/v5/x/tariff/keeper"
+	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
+	tokenfactorymodule "github.com/noble-assets/noble/v5/x/tokenfactory"
+	tokenfactorymodulekeeper "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
+	tokenfactorymoduletypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 	cctp "github.com/circlefin/noble-cctp/x/cctp"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
