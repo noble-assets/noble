@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"testing"
 
-	keepertest "github.com/strangelove-ventures/noble/v5/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v5/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
+	keepertest "github.com/noble-assets/noble/v5/testutil/keeper"
+	"github.com/noble-assets/noble/v5/testutil/nullify"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"

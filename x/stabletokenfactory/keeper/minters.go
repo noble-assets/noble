@@ -3,7 +3,7 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
 )
 
 // SetMinters set a specific minters in the store from its index
