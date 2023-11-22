@@ -6,10 +6,10 @@ import (
 
 	"github.com/circlefin/noble-cctp/x/cctp/types"
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/noble-assets/noble/v5/cmd"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
-	"github.com/strangelove-ventures/noble/v5/cmd"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )

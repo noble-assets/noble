@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 )
 
 func CmdListMinters() *cobra.Command {

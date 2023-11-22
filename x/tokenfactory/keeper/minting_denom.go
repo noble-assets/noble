@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
