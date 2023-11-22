@@ -2,8 +2,8 @@ package stabletokenfactory
 
 import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/keeper"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

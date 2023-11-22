@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v4/x/tokenfactory/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

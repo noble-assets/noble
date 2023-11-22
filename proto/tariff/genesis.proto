@@ -4,7 +4,7 @@ package noble.tariff;
 import "gogoproto/gogo.proto";
 import "tariff/params.proto";
 
-option go_package = "github.com/strangelove-ventures/noble/v4/x/tariff/types";
+option go_package = "github.com/noble-assets/noble/v4/x/tariff/types";
 
 // GenesisState defines the tariff module's genesis state.
 message GenesisState {

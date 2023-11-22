@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	keepertest "github.com/strangelove-ventures/noble/v4/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
+	keepertest "github.com/noble-assets/noble/v4/testutil/keeper"
+	"github.com/noble-assets/noble/v4/testutil/nullify"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/types"
 )
 
 func TestMintingDenomQuery(t *testing.T) {

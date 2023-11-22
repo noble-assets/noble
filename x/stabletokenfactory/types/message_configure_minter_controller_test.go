@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/strangelove-ventures/noble/v4/testutil/sample"
+	"github.com/noble-assets/noble/v4/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
 

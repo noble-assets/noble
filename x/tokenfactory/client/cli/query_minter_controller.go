@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v4/x/tokenfactory/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"

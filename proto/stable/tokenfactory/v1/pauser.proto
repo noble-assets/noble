@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stable.tokenfactory.v1;
 
-option go_package = "github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types";
+option go_package = "github.com/noble-assets/noble/v4/x/stabletokenfactory/types";
 
 message Pauser {
   string address = 1;

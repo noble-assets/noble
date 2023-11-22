@@ -8,12 +8,12 @@ import (
 	"time"
 
 	sdkupgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/noble-assets/noble/v4/cmd"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"
-	"github.com/strangelove-ventures/noble/v4/cmd"
 	upgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

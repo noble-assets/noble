@@ -6,8 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/noble-assets/noble/v4/x/tariff/types"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v4/x/tariff/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

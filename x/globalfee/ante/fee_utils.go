@@ -4,7 +4,7 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+	globalfeetypes "github.com/noble-assets/noble/v4/x/globalfee/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 

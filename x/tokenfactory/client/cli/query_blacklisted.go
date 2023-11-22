@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/noble-assets/noble/v4/x/tokenfactory/types"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
 )
 
 func CmdListBlacklisted() *cobra.Command {

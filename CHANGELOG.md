@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v4.1.0-rc.1
+
+*Nov 16, 2023*
+
+This is the second release candidate for a minor release to the v4 Argon line.
+
+### BUG FIXES
+
+- Unregister `x/distribution` hooks to address consensus failure. ([#275](https://github.com/noble-assets/noble/pull/275))
+
 ## v4.1.0-rc.0
 
 *Nov 15, 2023*
@@ -8,17 +18,37 @@ This is the first release candidate for a minor release to the v4 Argon line.
 
 ### DEPENDENCIES
 
-- Bump CCTP from [`dc81b3e`](https://github.com/circlefin/noble-cctp/commit/dc81b3e0d566d195c869a213519fcecd38b020a5) to [`86f425e`](https://github.com/circlefin/noble-cctp/commit/86f425e6fac94ff57865dd11b42c95de303e0d96) ([#259](https://github.com/strangelove-ventures/noble/pull/259))
+- Bump CCTP from [`dc81b3e`](https://github.com/circlefin/noble-cctp/commit/dc81b3e0d566d195c869a213519fcecd38b020a5) to [`86f425e`](https://github.com/circlefin/noble-cctp/commit/86f425e6fac94ff57865dd11b42c95de303e0d96) ([#259](https://github.com/noble-assets/noble/pull/259))
 
 ### FEATURES
 
-- Introduce a new `x/stabletokenfactory` module for issuing [USDLR by Stable](https://withstable.com). ([#269](https://github.com/strangelove-ventures/noble/pull/269))
+- Introduce a new `x/stabletokenfactory` module for issuing [USDLR by Stable](https://withstable.com). ([#269](https://github.com/noble-assets/noble/pull/269))
 
 ### IMPROVEMENTS
 
-- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/strangelove-ventures/noble/pull/249))
-- Remove `x/fiattokenfactory` module from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#259](https://github.com/strangelove-ventures/noble/pull/259))
-- Add multiple fee denom support to the `x/tariff` module. ([#269](https://github.com/strangelove-ventures/noble/pull/269))
+- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/noble-assets/noble/pull/249))
+- Remove `x/fiattokenfactory` module from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#259](https://github.com/noble-assets/noble/pull/259))
+- Add multiple fee denom support to the `x/tariff` module. ([#269](https://github.com/noble-assets/noble/pull/269))
+
+## v4.0.2
+
+*Nov 21, 2023*
+
+This is a non-consensus breaking patch release to the v4 Argon line.
+
+### IMPROVEMENTS
+
+- Implement a parameter query for the `x/tariff` module. ([#277](https://github.com/noble-assets/noble/pull/277))
+
+## v4.0.1
+
+*Nov 16, 2023*
+
+This is a consensus breaking patch release to the v4 Argon line.
+
+### BUG FIXES
+
+- Unregister `x/distribution` hooks to address consensus failure. ([#274](https://github.com/noble-assets/noble/pull/274))
 
 ## v4.0.0
 
@@ -30,21 +60,21 @@ Along with the integration of the CCTP module, the following changes were made.
 
 ### BUG FIXES
 
-- Fix simulation tests. ([#252](https://github.com/strangelove-ventures/noble/pull/252))
-- Fix Ledger support for macOS Sonoma. ([#253](https://github.com/strangelove-ventures/noble/pull/253))
+- Fix simulation tests. ([#252](https://github.com/noble-assets/noble/pull/252))
+- Fix Ledger support for macOS Sonoma. ([#253](https://github.com/noble-assets/noble/pull/253))
 
 ### DEPENDENCIES
 
-- Bump IBC to [`v4.5.1`](https://github.com/cosmos/ibc-go/releases/tag/v4.5.1) ([#250](https://github.com/strangelove-ventures/noble/pull/250))
-- Bump Packet Forward Middleware to [`v4.1.1`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1) ([#250](https://github.com/strangelove-ventures/noble/pull/250), [#258](https://github.com/strangelove-ventures/noble/pull/258))
+- Bump IBC to [`v4.5.1`](https://github.com/cosmos/ibc-go/releases/tag/v4.5.1) ([#250](https://github.com/noble-assets/noble/pull/250))
+- Bump Packet Forward Middleware to [`v4.1.1`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1) ([#250](https://github.com/noble-assets/noble/pull/250), [#258](https://github.com/noble-assets/noble/pull/258))
 
 ### FEATURES
 
-- Include support for Coinbase's [Rosetta API](https://docs.cloud.coinbase.com/rosetta/docs/welcome). ([#215](https://github.com/strangelove-ventures/noble/pull/215))
+- Include support for Coinbase's [Rosetta API](https://docs.cloud.coinbase.com/rosetta/docs/welcome). ([#215](https://github.com/noble-assets/noble/pull/215))
 
 ### IMPROVEMENTS
 
-- Add `x/fiattokenfactory` interface changes required for CCTP. ([#241](https://github.com/strangelove-ventures/noble/pull/241))
+- Add `x/fiattokenfactory` interface changes required for CCTP. ([#241](https://github.com/noble-assets/noble/pull/241))
 
 ## v3.1.0
 
@@ -56,11 +86,11 @@ In response to multiple IBC channels expiring on Noble's mainnet network, it was
 
 ### FEATURES
 
-- Include support for IBC inside the ParamAuthority. ([#235](https://github.com/strangelove-ventures/noble/pull/235))
+- Include support for IBC inside the ParamAuthority. ([#235](https://github.com/noble-assets/noble/pull/235))
 
 ### IMPROVEMENTS
 
-- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#234](https://github.com/strangelove-ventures/noble/pull/234))
+- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#234](https://github.com/noble-assets/noble/pull/234))
 
 ---
 

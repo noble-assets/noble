@@ -1,4 +1,4 @@
-![Noble banner](https://raw.githubusercontent.com/strangelove-ventures/noble-networks/main/Twitter_Banner.png)
+![Noble banner](https://raw.githubusercontent.com/noble-assets/networks/main/Twitter_Banner.png)
 # ✨✨ Noble ✨✨
 
 ## Overview
@@ -199,7 +199,7 @@ nobled start
 
 ## Running Nodes
 
-- See [`noble-networks`](https://github.com/strangelove-ventures/noble-networks/tree/main) for all info around validating for mainnet and testent
+- See [`noble-networks`](https://github.com/noble-assets/networks/tree/main) for all info around validating for mainnet and testent
 
 ## Testing
 
