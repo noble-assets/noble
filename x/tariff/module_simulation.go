@@ -4,7 +4,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/tariff/types"
+=======
+	"github.com/noble-assets/noble/v5/x/tariff/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	"math/rand"
 )
 

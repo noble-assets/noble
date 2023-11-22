@@ -12,10 +12,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/noble-assets/noble/v5/x/tariff/client/cli"
+	"github.com/noble-assets/noble/v5/x/tariff/keeper"
+	"github.com/noble-assets/noble/v5/x/tariff/types"
 	"github.com/spf13/cobra"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/tariff/client/cli"
 	"github.com/strangelove-ventures/noble/x/tariff/keeper"
 	"github.com/strangelove-ventures/noble/x/tariff/types"
+=======
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 

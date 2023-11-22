@@ -122,11 +122,16 @@ endif
 ###############################################################################
 ###                               Protobuf                                  ###
 ###############################################################################
+<<<<<<< HEAD
 containerProtoVer=v0.2
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
 containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
 containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
 containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+=======
+
+BUF_VERSION=1.28.1
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 proto-all: proto-format proto-lint proto-gen
 

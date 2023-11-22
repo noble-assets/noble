@@ -4,7 +4,11 @@ import (
 	"fmt"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"

@@ -9,10 +9,17 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v4/modules/core/exported"
+<<<<<<< HEAD
 	fiatKeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiat_types "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+=======
+	stabletokenfactorykeeper "github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	stabletokenfactorytypes "github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}

@@ -1,7 +1,13 @@
 syntax = "proto3";
 package noble.tariff;
 
+<<<<<<< HEAD
 option go_package            = "github.com/strangelove-ventures/noble/x/tariff/types";
+=======
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/noble-assets/noble/v5/x/tariff/types";
+>>>>>>> a4ad980 (chore: rename module path (#283))
 option (gogoproto.equal_all) = true;
 
 import "gogoproto/gogo.proto";

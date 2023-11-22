@@ -16,9 +16,15 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+<<<<<<< HEAD:x/fiattokenfactory/module.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/client/cli"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/client/cli"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/module.go
 )
 
 var (

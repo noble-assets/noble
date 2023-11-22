@@ -10,7 +10,11 @@ import (
 	chantypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 	"github.com/cosmos/ibc-go/v4/modules/core/exported"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/tariff/types"
+=======
+	"github.com/noble-assets/noble/v5/x/tariff/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 var _ porttypes.ICS4Wrapper = Keeper{}

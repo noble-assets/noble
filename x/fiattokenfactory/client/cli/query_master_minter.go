@@ -5,8 +5,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
 	"github.com/spf13/cobra"
+<<<<<<< HEAD:x/fiattokenfactory/client/cli/query_master_minter.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/client/cli/query_master_minter.go
 )
 
 func CmdShowMasterMinter() *cobra.Command {

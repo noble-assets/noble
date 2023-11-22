@@ -6,7 +6,11 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "tariff/params.proto";
 
+<<<<<<< HEAD
 option go_package = "github.com/strangelove-ventures/noble/x/tariff/types";
+=======
+option go_package = "github.com/noble-assets/noble/v5/x/tariff/types";
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {

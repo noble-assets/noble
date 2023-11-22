@@ -5,7 +5,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+<<<<<<< HEAD:x/fiattokenfactory/types/message_configure_minter_test.go
 	"github.com/strangelove-ventures/noble/testutil/sample"
+=======
+	"github.com/noble-assets/noble/v5/testutil/sample"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/types/message_configure_minter_test.go
 	"github.com/stretchr/testify/require"
 )
 

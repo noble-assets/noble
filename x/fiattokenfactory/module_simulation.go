@@ -11,9 +11,15 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+<<<<<<< HEAD:x/fiattokenfactory/module_simulation.go
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	tokenfactorysimulation "github.com/strangelove-ventures/noble/x/fiattokenfactory/simulation"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/testutil/sample"
+	tokenfactorysimulation "github.com/noble-assets/noble/v5/x/stabletokenfactory/simulation"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/module_simulation.go
 )
 
 // avoid unused import issue

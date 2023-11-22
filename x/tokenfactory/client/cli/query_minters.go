@@ -5,8 +5,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
 	"github.com/spf13/cobra"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+=======
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 func CmdListMinters() *cobra.Command {

@@ -1,8 +1,13 @@
 package tariff
 
 import (
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/tariff/keeper"
 	"github.com/strangelove-ventures/noble/x/tariff/types"
+=======
+	"github.com/noble-assets/noble/v5/x/tariff/keeper"
+	"github.com/noble-assets/noble/v5/x/tariff/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

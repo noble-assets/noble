@@ -6,10 +6,14 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	globalfeetypes "github.com/noble-assets/noble/v5/x/globalfee/types"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
+<<<<<<< HEAD
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	globalfeetypes "github.com/strangelove-ventures/noble/x/globalfee/types"
+=======
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	"github.com/stretchr/testify/require"
 )
 

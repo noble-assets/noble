@@ -4,7 +4,11 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+<<<<<<< HEAD:x/fiattokenfactory/keeper/grpc_query_master_minter.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/keeper/grpc_query_master_minter.go
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

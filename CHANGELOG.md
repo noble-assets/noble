@@ -4,21 +4,37 @@
 
 *Nov 21, 2023*
 
+<<<<<<< HEAD
 This is the second patch release to the v4 Argon line.
 
 ### IMPROVEMENTS
 
 - Implement a parameter query for the `x/tariff` module. ([#277](https://github.com/strangelove-ventures/noble/pull/277))
+=======
+This is a non-consensus breaking patch release to the v4 Argon line.
+
+### IMPROVEMENTS
+
+- Implement a parameter query for the `x/tariff` module. ([#277](https://github.com/noble-assets/noble/pull/277))
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 ## v4.0.1
 
 *Nov 16, 2023*
 
+<<<<<<< HEAD
 This is the first patch release to the v4 Argon line.
 
 ### BUG FIXES
 
 - Unregister `x/distribution` hooks to address consensus failure. ([#274](https://github.com/strangelove-ventures/noble/pull/274))
+=======
+This is a consensus breaking patch release to the v4 Argon line.
+
+### BUG FIXES
+
+- Unregister `x/distribution` hooks to address consensus failure. ([#274](https://github.com/noble-assets/noble/pull/274))
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 ## v4.0.0
 
@@ -30,21 +46,21 @@ Along with the integration of the CCTP module, the following changes were made.
 
 ### BUG FIXES
 
-- Fix simulation tests. ([#252](https://github.com/strangelove-ventures/noble/pull/252))
-- Fix Ledger support for macOS Sonoma. ([#253](https://github.com/strangelove-ventures/noble/pull/253))
+- Fix simulation tests. ([#252](https://github.com/noble-assets/noble/pull/252))
+- Fix Ledger support for macOS Sonoma. ([#253](https://github.com/noble-assets/noble/pull/253))
 
 ### DEPENDENCIES
 
-- Bump IBC to [`v4.5.1`](https://github.com/cosmos/ibc-go/releases/tag/v4.5.1) ([#250](https://github.com/strangelove-ventures/noble/pull/250))
-- Bump Packet Forward Middleware to [`v4.1.1`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1) ([#250](https://github.com/strangelove-ventures/noble/pull/250), [#258](https://github.com/strangelove-ventures/noble/pull/258))
+- Bump IBC to [`v4.5.1`](https://github.com/cosmos/ibc-go/releases/tag/v4.5.1) ([#250](https://github.com/noble-assets/noble/pull/250))
+- Bump Packet Forward Middleware to [`v4.1.1`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1) ([#250](https://github.com/noble-assets/noble/pull/250), [#258](https://github.com/noble-assets/noble/pull/258))
 
 ### FEATURES
 
-- Include support for Coinbase's [Rosetta API](https://docs.cloud.coinbase.com/rosetta/docs/welcome). ([#215](https://github.com/strangelove-ventures/noble/pull/215))
+- Include support for Coinbase's [Rosetta API](https://docs.cloud.coinbase.com/rosetta/docs/welcome). ([#215](https://github.com/noble-assets/noble/pull/215))
 
 ### IMPROVEMENTS
 
-- Add `x/fiattokenfactory` interface changes required for CCTP. ([#241](https://github.com/strangelove-ventures/noble/pull/241))
+- Add `x/fiattokenfactory` interface changes required for CCTP. ([#241](https://github.com/noble-assets/noble/pull/241))
 
 ## v3.1.0
 
@@ -56,11 +72,11 @@ In response to multiple IBC channels expiring on Noble's mainnet network, it was
 
 ### FEATURES
 
-- Include support for IBC inside the ParamAuthority. ([#235](https://github.com/strangelove-ventures/noble/pull/235))
+- Include support for IBC inside the ParamAuthority. ([#235](https://github.com/noble-assets/noble/pull/235))
 
 ### IMPROVEMENTS
 
-- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#234](https://github.com/strangelove-ventures/noble/pull/234))
+- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#234](https://github.com/noble-assets/noble/pull/234))
 
 ---
 

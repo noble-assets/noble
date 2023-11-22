@@ -16,8 +16,13 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/globalfee/client/cli"
 	"github.com/strangelove-ventures/noble/x/globalfee/types"
+=======
+	"github.com/noble-assets/noble/v5/x/globalfee/client/cli"
+	"github.com/noble-assets/noble/v5/x/globalfee/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 var (

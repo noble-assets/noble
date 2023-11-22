@@ -6,8 +6,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+<<<<<<< HEAD:x/fiattokenfactory/simulation/mint.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/simulation/mint.go
 )
 
 func SimulateMsgMint(

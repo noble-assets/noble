@@ -9,10 +9,17 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/testutil/network"
 	"github.com/strangelove-ventures/noble/testutil/nullify"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/client/cli"
 	"github.com/strangelove-ventures/noble/x/tokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/testutil/network"
+	"github.com/noble-assets/noble/v5/testutil/nullify"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/client/cli"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 func networkWithPausedObjects(t *testing.T) (*network.Network, types.Paused) {

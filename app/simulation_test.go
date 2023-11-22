@@ -4,8 +4,13 @@ import (
 	"os"
 	"testing"
 
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
+=======
+	"github.com/noble-assets/noble/v5/app"
+	"github.com/noble-assets/noble/v5/cmd"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

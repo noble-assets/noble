@@ -2,10 +2,17 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+<<<<<<< HEAD
 	fiattokenfactory "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
+=======
+	stabletokenfactorykeeper "github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	stabletokenfactorytypes "github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+	tokenfactory "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -16,7 +23,11 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
+<<<<<<< HEAD
 	feeante "github.com/strangelove-ventures/noble/x/globalfee/ante"
+=======
+	feeante "github.com/noble-assets/noble/v5/x/globalfee/ante"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 type HandlerOptions struct {

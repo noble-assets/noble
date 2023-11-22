@@ -6,7 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/x/globalfee/ante"
+=======
+	"github.com/noble-assets/noble/v5/x/globalfee/ante"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 type feeUtilsTestSuite struct {

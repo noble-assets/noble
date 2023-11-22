@@ -24,9 +24,15 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+<<<<<<< HEAD
 	"github.com/strangelove-ventures/noble/app"
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/testutil/sample"
+=======
+	"github.com/noble-assets/noble/v5/app"
+	"github.com/noble-assets/noble/v5/cmd"
+	"github.com/noble-assets/noble/v5/testutil/sample"
+>>>>>>> a4ad980 (chore: rename module path (#283))
 	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )

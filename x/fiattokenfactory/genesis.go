@@ -2,8 +2,13 @@ package fiattokenfactory
 
 import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+<<<<<<< HEAD:x/fiattokenfactory/genesis.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/genesis.go
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

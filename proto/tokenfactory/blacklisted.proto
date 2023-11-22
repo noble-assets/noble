@@ -1,6 +1,10 @@
 syntax = "proto3";
 package noble.tokenfactory;
 
+<<<<<<< HEAD
 option go_package = "github.com/strangelove-ventures/noble/x/tokenfactory/types";
+=======
+option go_package = "github.com/noble-assets/noble/v5/x/tokenfactory/types";
+>>>>>>> a4ad980 (chore: rename module path (#283))
 
 message Blacklisted { bytes addressBz = 1; }

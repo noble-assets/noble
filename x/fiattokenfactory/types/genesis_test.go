@@ -4,8 +4,13 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+<<<<<<< HEAD:x/fiattokenfactory/types/genesis_test.go
 	"github.com/strangelove-ventures/noble/testutil/sample"
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/testutil/sample"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/types/genesis_test.go
 
 	"github.com/stretchr/testify/require"
 )

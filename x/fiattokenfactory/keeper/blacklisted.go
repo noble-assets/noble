@@ -3,7 +3,11 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+<<<<<<< HEAD:x/fiattokenfactory/keeper/blacklisted.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/keeper/blacklisted.go
 )
 
 // SetBlacklisted set a specific blacklisted in the store from its index

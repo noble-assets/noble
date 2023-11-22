@@ -6,7 +6,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+<<<<<<< HEAD:x/fiattokenfactory/keeper/grpc_query_minters.go
 	"github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
+>>>>>>> a4ad980 (chore: rename module path (#283)):x/stabletokenfactory/keeper/grpc_query_minters.go
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
