@@ -1,6 +1,15 @@
 # CHANGELOG
 
-<<<<<<< HEAD
+## v4.1.0-rc.1
+
+*Nov 16, 2023*
+
+This is the second release candidate for a minor release to the v4 Argon line.
+
+### BUG FIXES
+
+- Unregister `x/distribution` hooks to address consensus failure. ([#275](https://github.com/noble-assets/noble/pull/275))
+
 ## v4.1.0-rc.0
 
 *Nov 15, 2023*
@@ -9,18 +18,18 @@ This is the first release candidate for a minor release to the v4 Argon line.
 
 ### DEPENDENCIES
 
-- Bump CCTP from [`dc81b3e`](https://github.com/circlefin/noble-cctp/commit/dc81b3e0d566d195c869a213519fcecd38b020a5) to [`86f425e`](https://github.com/circlefin/noble-cctp/commit/86f425e6fac94ff57865dd11b42c95de303e0d96) ([#259](https://github.com/strangelove-ventures/noble/pull/259))
+- Bump CCTP from [`dc81b3e`](https://github.com/circlefin/noble-cctp/commit/dc81b3e0d566d195c869a213519fcecd38b020a5) to [`86f425e`](https://github.com/circlefin/noble-cctp/commit/86f425e6fac94ff57865dd11b42c95de303e0d96) ([#259](https://github.com/noble-assets/noble/pull/259))
 
 ### FEATURES
 
-- Introduce a new `x/stabletokenfactory` module for issuing [USDLR by Stable](https://withstable.com). ([#269](https://github.com/strangelove-ventures/noble/pull/269))
+- Introduce a new `x/stabletokenfactory` module for issuing [USDLR by Stable](https://withstable.com). ([#269](https://github.com/noble-assets/noble/pull/269))
 
 ### IMPROVEMENTS
 
-- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/strangelove-ventures/noble/pull/249))
-- Remove `x/fiattokenfactory` module from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#259](https://github.com/strangelove-ventures/noble/pull/259))
-- Add multiple fee denom support to the `x/tariff` module. ([#269](https://github.com/strangelove-ventures/noble/pull/269))
-=======
+- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/noble-assets/noble/pull/249))
+- Remove `x/fiattokenfactory` module from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#259](https://github.com/noble-assets/noble/pull/259))
+- Add multiple fee denom support to the `x/tariff` module. ([#269](https://github.com/noble-assets/noble/pull/269))
+
 ## v4.0.2
 
 *Nov 21, 2023*
@@ -40,7 +49,6 @@ This is a consensus breaking patch release to the v4 Argon line.
 ### BUG FIXES
 
 - Unregister `x/distribution` hooks to address consensus failure. ([#274](https://github.com/noble-assets/noble/pull/274))
->>>>>>> a4ad980 (chore: rename module path (#283))
 
 ## v4.0.0
 

@@ -9,17 +9,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/testutil/network"
-	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
-=======
-	"github.com/noble-assets/noble/v5/testutil/network"
-	"github.com/noble-assets/noble/v5/testutil/nullify"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/client/cli"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	"github.com/noble-assets/noble/v4/testutil/network"
+	"github.com/noble-assets/noble/v4/testutil/nullify"
+	"github.com/noble-assets/noble/v4/x/tokenfactory/client/cli"
+	"github.com/noble-assets/noble/v4/x/tokenfactory/types"
 )
 
 func networkWithBlacklisterObjects(t *testing.T) (*network.Network, types.Blacklister) {

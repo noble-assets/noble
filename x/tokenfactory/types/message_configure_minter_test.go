@@ -5,11 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/testutil/sample"
-=======
-	"github.com/noble-assets/noble/v5/testutil/sample"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	"github.com/noble-assets/noble/v4/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
 

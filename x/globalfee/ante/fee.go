@@ -7,15 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/x/globalfee/types"
+	"github.com/noble-assets/noble/v4/x/globalfee/types"
 
-	"github.com/strangelove-ventures/noble/v4/x/globalfee"
-=======
-	"github.com/noble-assets/noble/v5/x/globalfee/types"
-
-	"github.com/noble-assets/noble/v5/x/globalfee"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	"github.com/noble-assets/noble/v4/x/globalfee"
 )
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large

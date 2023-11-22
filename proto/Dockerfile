@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-FROM bufbuild/buf:1.27.2 as BUILDER
-=======
 FROM bufbuild/buf:1.28.1 as BUILDER
->>>>>>> a4ad980 (chore: rename module path (#283))
 FROM golang:1.21-alpine
 
 RUN apk add --no-cache \

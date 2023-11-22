@@ -16,11 +16,7 @@ import "tokenfactory/params.proto";
 import "tokenfactory/paused.proto";
 import "tokenfactory/pauser.proto";
 
-<<<<<<< HEAD
-option go_package = "github.com/strangelove-ventures/noble/v4/x/tokenfactory/types";
-=======
-option go_package = "github.com/noble-assets/noble/v5/x/tokenfactory/types";
->>>>>>> a4ad980 (chore: rename module path (#283))
+option go_package = "github.com/noble-assets/noble/v4/x/tokenfactory/types";
 
 // Query defines the gRPC querier service.
 service Query {

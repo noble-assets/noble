@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
+	tarifftypes "github.com/noble-assets/noble/v4/x/tariff/types"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"

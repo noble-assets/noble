@@ -3,11 +3,7 @@ package cli
 import (
 	"strconv"
 
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/x/tokenfactory/types"
-=======
-	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	"github.com/noble-assets/noble/v4/x/tokenfactory/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"

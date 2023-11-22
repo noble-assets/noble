@@ -3,17 +3,10 @@ package stabletokenfactory_test
 import (
 	"testing"
 
-<<<<<<< HEAD
-	keepertest "github.com/strangelove-ventures/noble/v4/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v4/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
-=======
-	keepertest "github.com/noble-assets/noble/v5/testutil/keeper"
-	"github.com/noble-assets/noble/v5/testutil/nullify"
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory"
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	keepertest "github.com/noble-assets/noble/v4/testutil/keeper"
+	"github.com/noble-assets/noble/v4/testutil/nullify"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/types"
 
 	"github.com/stretchr/testify/require"
 )

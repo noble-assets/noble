@@ -12,11 +12,7 @@ require (
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231026153934-334934f17a68
-<<<<<<< HEAD
-	github.com/strangelove-ventures/noble/v4 v4.0.0
-=======
-	github.com/noble-assets/noble/v5 v5.0.0
->>>>>>> a4ad980 (chore: rename module path (#283))
+	github.com/noble-assets/noble/v4 v4.0.0
 	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
@@ -194,11 +190,7 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	// use local version of noble
-<<<<<<< HEAD
-	github.com/strangelove-ventures/noble/v4 => ./..
-=======
-	github.com/noble-assets/noble/v5 => ./..
->>>>>>> a4ad980 (chore: rename module path (#283))
+	github.com/noble-assets/noble/v4 => ./..
 
 	// use cosmos compatible syndtr/goleveldb
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

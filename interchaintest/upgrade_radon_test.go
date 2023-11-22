@@ -7,13 +7,9 @@ import (
 
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	globalfeetypes "github.com/noble-assets/noble/v5/x/globalfee/types"
+	globalfeetypes "github.com/noble-assets/noble/v4/x/globalfee/types"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
-<<<<<<< HEAD
-	globalfeetypes "github.com/strangelove-ventures/noble/v4/x/globalfee/types"
-=======
->>>>>>> a4ad980 (chore: rename module path (#283))
 	"github.com/stretchr/testify/require"
 )
 

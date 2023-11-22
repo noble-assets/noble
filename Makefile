@@ -123,11 +123,7 @@ endif
 ###                                Protobuf                                 ###
 ###############################################################################
 
-<<<<<<< HEAD
-BUF_VERSION=1.27.2
-=======
 BUF_VERSION=1.28.1
->>>>>>> a4ad980 (chore: rename module path (#283))
 
 proto-all: proto-format proto-lint proto-gen
 

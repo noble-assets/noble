@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-module github.com/strangelove-ventures/noble/v4
-=======
-module github.com/noble-assets/noble/v5
->>>>>>> a4ad980 (chore: rename module path (#283))
+module github.com/noble-assets/noble/v4
 
 go 1.21
 

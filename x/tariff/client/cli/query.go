@@ -6,12 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/noble-assets/noble/v5/x/tariff/types"
+	"github.com/noble-assets/noble/v4/x/tariff/types"
 	"github.com/spf13/cobra"
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/x/tariff/types"
-=======
->>>>>>> a4ad980 (chore: rename module path (#283))
 )
 
 // GetQueryCmd returns the cli query commands for this module

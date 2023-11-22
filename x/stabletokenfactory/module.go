@@ -16,15 +16,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/client/cli"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
-=======
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory/client/cli"
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/client/cli"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/keeper"
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/types"
 )
 
 var (

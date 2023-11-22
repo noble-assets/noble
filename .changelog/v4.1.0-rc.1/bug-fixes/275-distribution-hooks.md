@@ -1,0 +1,1 @@
+- Unregister `x/distribution` hooks to address consensus failure. ([#275](https://github.com/noble-assets/noble/pull/275))

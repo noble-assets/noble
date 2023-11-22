@@ -2,11 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-<<<<<<< HEAD
-	"github.com/strangelove-ventures/noble/v4/x/stabletokenfactory/types"
-=======
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
->>>>>>> a4ad980 (chore: rename module path (#283))
+	"github.com/noble-assets/noble/v4/x/stabletokenfactory/types"
 )
 
 // GetParams get all parameters as types.Params
