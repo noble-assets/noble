@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"testing"
 
-	testkeeper "github.com/strangelove-ventures/noble/v5/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v5/x/tokenfactory/types"
+	testkeeper "github.com/noble-assets/noble/v5/testutil/keeper"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
 )
 

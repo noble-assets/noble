@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
 	"github.com/spf13/cobra"
-	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
 )
 
 var _ = strconv.Itoa(0)

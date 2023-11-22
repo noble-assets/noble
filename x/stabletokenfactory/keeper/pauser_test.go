@@ -6,10 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/strangelove-ventures/noble/v5/testutil/keeper"
-	"github.com/strangelove-ventures/noble/v5/testutil/nullify"
-	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/keeper"
-	"github.com/strangelove-ventures/noble/v5/x/stabletokenfactory/types"
+	keepertest "github.com/noble-assets/noble/v5/testutil/keeper"
+	"github.com/noble-assets/noble/v5/testutil/nullify"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
 )
 
 func createTestPauser(keeper *keeper.Keeper, ctx sdk.Context) types.Pauser {
