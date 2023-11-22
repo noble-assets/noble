@@ -1,1 +1,0 @@
-- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/strangelove-ventures/noble/pull/249))
