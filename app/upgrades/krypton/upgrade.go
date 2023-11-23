@@ -1,6 +1,7 @@
 package krypton
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -24,6 +25,10 @@ func CreateUpgradeHandler(
 	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		if ctx.ChainID() != RehearsalChainID {
+			return vm, errors.New(fmt.Sprintf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID()))
+		}
+
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vm, err

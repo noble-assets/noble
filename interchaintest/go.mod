@@ -9,6 +9,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/cosmos/interchain-security/v2 v2.0.0
+	github.com/docker/docker v24.0.1+incompatible
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
@@ -64,7 +65,6 @@ require (
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
-	github.com/docker/docker v24.0.1+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -195,6 +195,9 @@ replace (
 
 	// use local version of noble
 	github.com/noble-assets/noble/v5 => ./..
+
+	// use noble version of interchaintest
+	github.com/strangelove-ventures/interchaintest/v4 => github.com/noble-assets/interchaintest/v4 v4.0.0-20231123134450-0c502bc002dc
 
 	// use cosmos compatible syndtr/goleveldb
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

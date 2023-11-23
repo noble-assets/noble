@@ -8,7 +8,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/icza/dyno"
-	"github.com/noble-assets/noble/v5/cmd"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
@@ -80,98 +79,77 @@ func TestNobleParamAuthority(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", 1, 0, true, true, true, true),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		true, true, true, true,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: false,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
-
-	chainCfg := noble.Config()
-
-	cmd.SetPrefixes(chainCfg.Bech32Prefix)
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
-	var orderedTestCases = []ParamsCase{
+	orderedTestCases := []ParamsCase{
 		{
 			title:         "change authority to alice from incorrect msg authority and signer",
 			description:   "change params and upgrade authority to alice's address",
-			newAuthority:  gw.extraWallets.Alice.FormattedAddress(),
-			msgAuthority:  gw.extraWallets.User.FormattedAddress(), // matches signer, but this is not the params authority.
-			signer:        gw.extraWallets.User,
+			newAuthority:  wrapper.extraWallets.Alice.FormattedAddress(),
+			msgAuthority:  wrapper.extraWallets.User.FormattedAddress(), // matches signer, but this is not the params authority.
+			signer:        wrapper.extraWallets.User,
 			shouldSucceed: false,
 		},
 		{
 			title:         "change authority to alice from correct signer but incorrect msg authority",
 			description:   "change params and upgrade authority to alice's address",
-			newAuthority:  gw.extraWallets.Alice.FormattedAddress(),
-			msgAuthority:  gw.extraWallets.User.FormattedAddress(), // this is not the params authority.
-			signer:        gw.paramAuthority,                       // this is the params authority, but does not match msgAuthority
+			newAuthority:  wrapper.extraWallets.Alice.FormattedAddress(),
+			msgAuthority:  wrapper.extraWallets.User.FormattedAddress(), // this is not the params authority.
+			signer:        wrapper.paramAuthority,                       // this is the params authority, but does not match msgAuthority
 			shouldSucceed: false,
 		},
 		{
 			title:         "change authority to alice from correct msg authority but incorrect signer",
 			description:   "change params and upgrade authority to alice's address",
-			newAuthority:  gw.extraWallets.Alice.FormattedAddress(),
-			msgAuthority:  gw.paramAuthority.FormattedAddress(), // this is the params authority.
-			signer:        gw.extraWallets.User,                 // this is not the params authority.
+			newAuthority:  wrapper.extraWallets.Alice.FormattedAddress(),
+			msgAuthority:  wrapper.paramAuthority.FormattedAddress(), // this is the params authority.
+			signer:        wrapper.extraWallets.User,                 // this is not the params authority.
 			shouldSucceed: false,
 		},
 		{
 			title:         "change authority to alice from correct signer and msg authority",
 			description:   "change params and upgrade authority to alice's address",
-			newAuthority:  gw.extraWallets.Alice.FormattedAddress(),
-			msgAuthority:  gw.paramAuthority.FormattedAddress(), // this is the params authority.
-			signer:        gw.paramAuthority,                    // this is the params authority.
+			newAuthority:  wrapper.extraWallets.Alice.FormattedAddress(),
+			msgAuthority:  wrapper.paramAuthority.FormattedAddress(), // this is the params authority.
+			signer:        wrapper.paramAuthority,                    // this is the params authority.
 			shouldSucceed: true,
 		},
 		{
 			title:         "change authority to user2 from prior authority",
 			description:   "change params and upgrade authority to user2's address",
-			newAuthority:  gw.extraWallets.User2.FormattedAddress(),
-			msgAuthority:  gw.paramAuthority.FormattedAddress(), // this account is no longer the params authority.
-			signer:        gw.paramAuthority,                    // this account is no longer the params authority.
+			newAuthority:  wrapper.extraWallets.User2.FormattedAddress(),
+			msgAuthority:  wrapper.paramAuthority.FormattedAddress(), // this account is no longer the params authority.
+			signer:        wrapper.paramAuthority,                    // this account is no longer the params authority.
 			shouldSucceed: false,
 		},
 		{
 			title:         "change authority to user2 from new authority",
 			description:   "change params and upgrade authority to user2's address",
-			newAuthority:  gw.extraWallets.User2.FormattedAddress(),
-			msgAuthority:  gw.extraWallets.Alice.FormattedAddress(), // this account is the new params authority.
-			signer:        gw.extraWallets.Alice,                    // this account is the new params authority.
+			newAuthority:  wrapper.extraWallets.User2.FormattedAddress(),
+			msgAuthority:  wrapper.extraWallets.Alice.FormattedAddress(), // this account is the new params authority.
+			signer:        wrapper.extraWallets.Alice,                    // this account is the new params authority.
 			shouldSucceed: true,
 		},
 	}
 
 	for _, testCase := range orderedTestCases {
 		t.Run(testCase.title, func(t *testing.T) {
-			testParamsCase(t, ctx, broadcaster, testCase, chainCfg)
+			testParamsCase(t, ctx, broadcaster, testCase, noble.Config())
 		})
 	}
 
@@ -191,6 +169,5 @@ func TestNobleParamAuthority(t *testing.T) {
 	authority, err := dyno.Get(gs, "app_state", "params", "params", "authority")
 	require.NoError(t, err, "failed to get authority from state export")
 
-	require.Equal(t, gw.extraWallets.User2.FormattedAddress(), authority, "authority does not match")
-
+	require.Equal(t, wrapper.extraWallets.User2.FormattedAddress(), authority, "authority does not match")
 }

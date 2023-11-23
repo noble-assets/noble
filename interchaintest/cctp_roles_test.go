@@ -6,7 +6,6 @@ import (
 
 	"github.com/circlefin/noble-cctp/x/cctp/types"
 	"github.com/gogo/protobuf/jsonpb"
-	"github.com/noble-assets/noble/v5/cmd"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
@@ -22,49 +21,28 @@ func TestCCTP_UpdateOwner(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	nv := 1
-	nf := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		false, false, false, false,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	cmd.SetPrefixes(noble.Config().Bech32Prefix)
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: true,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
 
+	var err error
 	nobleValidator := noble.Validators[0]
 
 	//
 
-	currentOwner := gw.fiatTfRoles.Owner
-	newOwner := gw.extraWallets.User
+	currentOwner := wrapper.fiatTfRoles.Owner
+	newOwner := wrapper.extraWallets.User
 
 	_, err = nobleValidator.ExecTx(ctx, currentOwner.KeyName(),
 		"cctp", "update-owner", newOwner.FormattedAddress(),
@@ -93,49 +71,28 @@ func TestCCTP_UpdateAttesterManager(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	nv := 1
-	nf := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		false, false, false, false,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	cmd.SetPrefixes(noble.Config().Bech32Prefix)
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: true,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
 
+	var err error
 	nobleValidator := noble.Validators[0]
 
 	//
 
-	currentAttesterManager := gw.fiatTfRoles.Owner
-	newAttesterManager := gw.extraWallets.User
+	currentAttesterManager := wrapper.fiatTfRoles.Owner
+	newAttesterManager := wrapper.extraWallets.User
 
 	_, err = nobleValidator.ExecTx(ctx, currentAttesterManager.KeyName(),
 		"cctp", "update-attester-manager", newAttesterManager.FormattedAddress(),
@@ -155,49 +112,28 @@ func TestCCTP_UpdatePauser(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	nv := 1
-	nf := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		false, false, false, false,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	cmd.SetPrefixes(noble.Config().Bech32Prefix)
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: true,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
 
+	var err error
 	nobleValidator := noble.Validators[0]
 
 	//
 
-	currentPauser := gw.fiatTfRoles.Owner
-	newPauser := gw.extraWallets.User
+	currentPauser := wrapper.fiatTfRoles.Owner
+	newPauser := wrapper.extraWallets.User
 
 	_, err = nobleValidator.ExecTx(ctx, currentPauser.KeyName(),
 		"cctp", "update-pauser", newPauser.FormattedAddress(),
@@ -217,49 +153,28 @@ func TestCCTP_UpdateTokenController(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	nv := 1
-	nf := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		false, false, false, false,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	cmd.SetPrefixes(noble.Config().Bech32Prefix)
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: true,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
 
+	var err error
 	nobleValidator := noble.Validators[0]
 
 	//
 
-	currentTokenController := gw.fiatTfRoles.Owner
-	newTokenController := gw.extraWallets.User
+	currentTokenController := wrapper.fiatTfRoles.Owner
+	newTokenController := wrapper.extraWallets.User
 
 	_, err = nobleValidator.ExecTx(ctx, currentTokenController.KeyName(),
 		"cctp", "update-token-controller", newTokenController.FormattedAddress(),

@@ -384,6 +384,7 @@ func New(
 		app.GetSubspace(tarifftypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
+		authtypes.FeeCollectorName,
 		consumertypes.ConsumerRedistributeName,
 		app.IBCKeeper.ChannelKeeper,
 	)
@@ -394,7 +395,7 @@ func New(
 		app.GetSubspace(packetforwardtypes.ModuleName),
 		app.TransferKeeper, // will be zero-value here. reference set later on with SetTransferKeeper.
 		app.IBCKeeper.ChannelKeeper,
-		nil, // TODO: Why is this needed
+		nil,
 		app.BankKeeper,
 		app.TariffKeeper,
 	)

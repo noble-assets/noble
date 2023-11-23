@@ -19,8 +19,11 @@ import (
 )
 
 var nobleImageInfo = []ibc.DockerImage{
-	// TODO: Revert to local image once post ICS testing has been solved.
-	ghcrImage("v4.0.0"),
+	{
+		Repository: "noble",
+		Version:    "local",
+		UidGid:     "1025:1025",
+	},
 }
 
 var (
