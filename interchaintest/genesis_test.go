@@ -437,11 +437,6 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 			return err
 		}
 
-		gw.stableTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdlr, val, minSetupStableTf)
-		if err != nil {
-			return err
-		}
-
 		gw.extraWallets, err = createExtraWalletsAtGenesis(ctx, val)
 		if err != nil {
 			return err
@@ -465,10 +460,6 @@ func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf, minSetupSt
 		}
 
 		if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataUsdc, gw.fiatTfRoles, minSetupFiatTf); err != nil {
-			return nil, err
-		}
-
-		if err := modifyGenesisTokenfactory(g, "stable-tokenfactory", denomMetadataUsdlr, gw.stableTfRoles, minSetupStableTf); err != nil {
 			return nil, err
 		}
 

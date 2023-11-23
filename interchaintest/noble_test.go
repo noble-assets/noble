@@ -64,11 +64,6 @@ func TestNobleChain(t *testing.T) {
 		t.Parallel()
 		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataUsdc.Base, noble, gw.fiatTfRoles, gw.extraWallets)
 	})
-
-	t.Run("stable-tokenfactory", func(t *testing.T) {
-		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "stable-tokenfactory", denomMetadataUsdlr.Base, noble, gw.stableTfRoles, gw.extraWallets)
-	})
 }
 
 func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModName, mintingDenom string, noble *cosmos.CosmosChain, roles NobleRoles, extraWallets ExtraWallets) {
