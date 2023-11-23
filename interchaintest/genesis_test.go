@@ -7,9 +7,7 @@ import (
 
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
-	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
 	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
@@ -72,29 +70,11 @@ var (
 		},
 	}
 
-	denomMetadataUsdlr = DenomMetadata{
-		Display: "usdlr",
-		Name:    "usdlr",
-		Base:    "uusdlr",
-		DenomUnits: []DenomUnit{
-			{
-				Denom: "uusdlr",
-				Aliases: []string{
-					"microusdlr",
-				},
-				Exponent: "0",
-			},
-			{
-				Denom:    "usdlr",
-				Exponent: "6",
-			},
-		},
-	}
-
 	defaultShare                   = "0.8"
 	defaultDistributionEntityShare = "1.0"
-	defaultTransferBPSFee          = sdk.OneInt()
-	defaultTransferMaxFee          = sdk.NewInt(5_000_000)
+	defaultTransferBPSFee          = "1"
+	defaultTransferMaxFee          = "5000000"
+	defaultTransferFeeDenom        = denomMetadataUsdc.Base
 
 	relayerImage = relayer.CustomDockerImage("ghcr.io/cosmos/relayer", "v2.4.2", rly.RlyDefaultUidGid)
 )
@@ -384,7 +364,6 @@ type genesisWrapper struct {
 	chain          *cosmos.CosmosChain
 	tfRoles        NobleRoles
 	fiatTfRoles    NobleRoles
-	stableTfRoles  NobleRoles
 	paramAuthority ibc.Wallet
 	extraWallets   ExtraWallets
 }
@@ -394,8 +373,8 @@ func nobleChainSpec(
 	gw *genesisWrapper,
 	chainID string,
 	nv, nf int,
-	minSetupTf, minSetupFiatTf, minSetupStableTf bool,
-	minModifyTf, minModifyFiatTf, minModifyStableTf bool,
+	minSetupTf, minSetupFiatTf bool,
+	minModifyTf, minModifyFiatTf bool,
 ) *interchaintest.ChainSpec {
 	return &interchaintest.ChainSpec{
 		NumValidators: &nv,
@@ -414,13 +393,13 @@ func nobleChainSpec(
 			NoHostMount:    false,
 			Images:         nobleImageInfo,
 			EncodingConfig: NobleEncoding(),
-			PreGenesis:     preGenesisAll(ctx, gw, minSetupTf, minSetupFiatTf, minSetupStableTf),
-			ModifyGenesis:  modifyGenesisAll(gw, minModifyTf, minModifyFiatTf, minModifyStableTf),
+			PreGenesis:     preGenesisAll(ctx, gw, minSetupTf, minSetupFiatTf),
+			ModifyGenesis:  modifyGenesisAll(gw, minModifyTf, minModifyFiatTf),
 		},
 	}
 }
 
-func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetupFiatTf, minSetupStableTf bool) func(ibc.ChainConfig) error {
+func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(ibc.ChainConfig) error {
 	return func(cc ibc.ChainConfig) (err error) {
 		val := gw.chain.Validators[0]
 
@@ -430,11 +409,6 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 		}
 
 		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdc, val, minSetupFiatTf)
-		if err != nil {
-			return err
-		}
-
-		gw.stableTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdlr, val, minSetupStableTf)
 		if err != nil {
 			return err
 		}
@@ -449,7 +423,7 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupTf, minSetup
 	}
 }
 
-func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf, minSetupStableTf bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 		g := make(map[string]interface{})
 
@@ -462,10 +436,6 @@ func modifyGenesisAll(gw *genesisWrapper, minSetupTf, minSetupFiatTf, minSetupSt
 		}
 
 		if err := modifyGenesisTokenfactory(g, "fiat-tokenfactory", denomMetadataUsdc, gw.fiatTfRoles, minSetupFiatTf); err != nil {
-			return nil, err
-		}
-
-		if err := modifyGenesisTokenfactory(g, "stable-tokenfactory", denomMetadataUsdlr, gw.stableTfRoles, minSetupStableTf); err != nil {
 			return nil, err
 		}
 
@@ -585,20 +555,8 @@ func modifyGenesisTariffDefaults(
 	genbz map[string]interface{},
 	distributionEntity string,
 ) error {
-	transferFees := []tarifftypes.TransferFee{
-		{
-			Bps:   defaultTransferBPSFee,
-			Max:   defaultTransferMaxFee,
-			Denom: denomMetadataUsdc.Base,
-		},
-		{
-			Bps:   defaultTransferBPSFee,
-			Max:   defaultTransferMaxFee,
-			Denom: denomMetadataUsdlr.Base,
-		},
-	}
-
-	return modifyGenesisTariff(genbz, defaultShare, distributionEntity, defaultDistributionEntityShare, transferFees)
+	return modifyGenesisTariff(genbz, defaultShare, distributionEntity,
+		defaultDistributionEntityShare, defaultTransferBPSFee, defaultTransferMaxFee, defaultTransferFeeDenom)
 }
 
 func modifyGenesisTariff(
@@ -606,7 +564,9 @@ func modifyGenesisTariff(
 	share string,
 	distributionEntity string,
 	distributionEntityShare string,
-	transferFees []tarifftypes.TransferFee,
+	transferBPSFee string,
+	transferMaxFee string,
+	transferDenom string,
 ) error {
 	if err := dyno.Set(genbz, share, "app_state", "tariff", "params", "share"); err != nil {
 		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
@@ -620,8 +580,14 @@ func modifyGenesisTariff(
 	if err := dyno.Set(genbz, distributionEntities, "app_state", "tariff", "params", "distribution_entities"); err != nil {
 		return fmt.Errorf("failed to set upgrade authority address in genesis json: %w", err)
 	}
-	if err := dyno.Set(genbz, transferFees, "app_state", "tariff", "params", "transfer_fees"); err != nil {
-		return fmt.Errorf("failed to set tariff transfer fees in genesis json: %w", err)
+	if err := dyno.Set(genbz, transferBPSFee, "app_state", "tariff", "params", "transfer_fee_bps"); err != nil {
+		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, transferMaxFee, "app_state", "tariff", "params", "transfer_fee_max"); err != nil {
+		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
+	}
+	if err := dyno.Set(genbz, transferDenom, "app_state", "tariff", "params", "transfer_fee_denom"); err != nil {
+		return fmt.Errorf("failed to set params authority in genesis json: %w", err)
 	}
 	return nil
 }

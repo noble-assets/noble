@@ -17,7 +17,19 @@ message Params {
     (gogoproto.nullable) = false
   ];
 
-  repeated TransferFee transfer_fees = 3 [(gogoproto.nullable) = false];
+  string transfer_fee_bps = 3 [
+    (gogoproto.moretags) = "yaml:\"transfer_fee_bps\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  string transfer_fee_max = 4 [
+    (gogoproto.moretags) = "yaml:\"transfer_fee_max\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  string transfer_fee_denom = 5 [(gogoproto.moretags) = "yaml:\"transfer_fee_denom\""];
 }
 
 // DistributionEntity defines a distribution entity
@@ -28,19 +40,4 @@ message DistributionEntity {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-}
-
-// TransferFee defines the fee configuration for a specific denom.
-message TransferFee {
-  string bps = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable) = false
-  ];
-
-  string max = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable) = false
-  ];
-
-  string denom = 3;
 }

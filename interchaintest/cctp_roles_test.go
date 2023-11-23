@@ -34,7 +34,7 @@ func TestCCTP_UpdateOwner(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false, false, false),
+		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -105,7 +105,7 @@ func TestCCTP_UpdateAttesterManager(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false, false, false),
+		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -167,7 +167,7 @@ func TestCCTP_UpdatePauser(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false, false, false),
+		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -229,7 +229,7 @@ func TestCCTP_UpdateTokenController(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false, false, false),
+		nobleChainSpec(ctx, &gw, "grand-1", nv, nf, false, false, false, false),
 	})
 
 	chains, err := cf.Chains(t.Name())

@@ -98,9 +98,6 @@ import (
 	"github.com/noble-assets/noble/v5/docs"
 	"github.com/noble-assets/noble/v5/x/blockibc"
 	"github.com/noble-assets/noble/v5/x/globalfee"
-	"github.com/noble-assets/noble/v5/x/stabletokenfactory"
-	stabletokenfactorykeeper "github.com/noble-assets/noble/v5/x/stabletokenfactory/keeper"
-	stabletokenfactorytypes "github.com/noble-assets/noble/v5/x/stabletokenfactory/types"
 	tariff "github.com/noble-assets/noble/v5/x/tariff"
 	tariffkeeper "github.com/noble-assets/noble/v5/x/tariff/keeper"
 	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
@@ -147,7 +144,6 @@ var (
 		vesting.AppModuleBasic{},
 		tokenfactorymodule.AppModuleBasic{},
 		fiattokenfactorymodule.AppModuleBasic{},
-		stabletokenfactory.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
 		globalfee.AppModuleBasic{},
 		tariff.AppModuleBasic{},
@@ -163,7 +159,6 @@ var (
 		ibctransfertypes.ModuleName:                {authtypes.Minter, authtypes.Burner},
 		tokenfactorymoduletypes.ModuleName:         {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		fiattokenfactorymoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner, authtypes.Staking},
-		stabletokenfactorytypes.ModuleName:         {authtypes.Burner, authtypes.Minter},
 		stakingtypes.BondedPoolName:                {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName:             {authtypes.Burner, authtypes.Staking},
 		cctptypes.ModuleName:                       nil,
@@ -228,11 +223,10 @@ type App struct {
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 	ScopedConsumerKeeper capabilitykeeper.ScopedKeeper
 
-	TokenFactoryKeeper       *tokenfactorymodulekeeper.Keeper
-	FiatTokenFactoryKeeper   *fiattokenfactorymodulekeeper.Keeper
-	StableTokenFactoryKeeper *stabletokenfactorykeeper.Keeper
-	TariffKeeper             tariffkeeper.Keeper
-	CCTPKeeper               *cctpkeeper.Keeper
+	TokenFactoryKeeper     *tokenfactorymodulekeeper.Keeper
+	FiatTokenFactoryKeeper *fiattokenfactorymodulekeeper.Keeper
+	TariffKeeper           tariffkeeper.Keeper
+	CCTPKeeper             *cctpkeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -270,8 +264,8 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
-		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, stabletokenfactorytypes.StoreKey,
-		packetforwardtypes.StoreKey, stakingtypes.StoreKey, cctptypes.StoreKey, consumertypes.StoreKey,
+		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
+		cctptypes.StoreKey, consumertypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -484,14 +478,6 @@ func New(
 	)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.StableTokenFactoryKeeper = stabletokenfactorykeeper.NewKeeper(
-		appCodec,
-		keys[stabletokenfactorytypes.StoreKey],
-		app.GetSubspace(stabletokenfactorytypes.ModuleName),
-		app.BankKeeper,
-	)
-	stabletokenfactorymodule := stabletokenfactory.NewAppModule(appCodec, app.StableTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
-
 	app.CCTPKeeper = cctpkeeper.NewKeeper(
 		appCodec,
 		keys[cctptypes.StoreKey],
@@ -509,7 +495,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.FiatTokenFactoryKeeper, app.StableTokenFactoryKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.FiatTokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -550,7 +536,6 @@ func New(
 		icaModule,
 		tokenfactoryModule,
 		fiattokenfactorymodule,
-		stabletokenfactorymodule,
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
@@ -585,7 +570,6 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
-		stabletokenfactorytypes.ModuleName,
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
 		consumertypes.ModuleName,
@@ -611,7 +595,6 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
-		stabletokenfactorytypes.ModuleName,
 		globalfee.ModuleName,
 		tarifftypes.ModuleName,
 		cctptypes.ModuleName,
@@ -644,7 +627,6 @@ func New(
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
 		fiattokenfactorymoduletypes.ModuleName,
-		stabletokenfactorytypes.ModuleName,
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
 		consumertypes.ModuleName,
@@ -689,9 +671,8 @@ func New(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			tokenFactoryKeeper:       app.TokenFactoryKeeper,
-			fiatTokenFactoryKeeper:   app.FiatTokenFactoryKeeper,
-			stableTokenFactoryKeeper: app.StableTokenFactoryKeeper,
+			tokenFactoryKeeper:     app.TokenFactoryKeeper,
+			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
 
 			IBCKeeper:         app.IBCKeeper,
 			ConsumerKeeper:    app.ConsumerKeeper,
@@ -879,7 +860,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(tokenfactorymoduletypes.ModuleName)
 	paramsKeeper.Subspace(fiattokenfactorymoduletypes.ModuleName)
-	paramsKeeper.Subspace(stabletokenfactorytypes.ModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(cctptypes.ModuleName)

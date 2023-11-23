@@ -29,4 +29,4 @@ pull_request_rules:
     actions:
       backport:
         branches:
-          - release/v4.0.x
+          - release/v5.0.x
