@@ -8,12 +8,7 @@ import (
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
-<<<<<<< HEAD
-	tarifftypes "github.com/noble-assets/noble/v4/x/tariff/types"
 	tokenfactorytypes "github.com/noble-assets/noble/v4/x/tokenfactory/types"
-=======
-	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
->>>>>>> 8b0eb68 (chore: revert #269 (#289))
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"

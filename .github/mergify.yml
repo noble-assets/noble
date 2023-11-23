@@ -22,14 +22,3 @@ pull_request_rules:
       backport:
         branches:
           - release/v4.1.x
-<<<<<<< HEAD
-=======
-  - name: backport patches to v5.0.x branch
-    conditions:
-      - base=main
-      - label=backport/v5.0.x
-    actions:
-      backport:
-        branches:
-          - release/v5.0.x
->>>>>>> 8b0eb68 (chore: revert #269 (#289))

@@ -93,7 +93,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-<<<<<<< HEAD
 	v4m1p0 "github.com/noble-assets/noble/v4/app/upgrades/v4.1.0"
 	"github.com/noble-assets/noble/v4/cmd"
 	"github.com/noble-assets/noble/v4/docs"
@@ -105,18 +104,6 @@ import (
 	tokenfactorymodule "github.com/noble-assets/noble/v4/x/tokenfactory"
 	tokenfactorymodulekeeper "github.com/noble-assets/noble/v4/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/noble-assets/noble/v4/x/tokenfactory/types"
-=======
-	"github.com/noble-assets/noble/v5/cmd"
-	"github.com/noble-assets/noble/v5/docs"
-	"github.com/noble-assets/noble/v5/x/blockibc"
-	"github.com/noble-assets/noble/v5/x/globalfee"
-	tariff "github.com/noble-assets/noble/v5/x/tariff"
-	tariffkeeper "github.com/noble-assets/noble/v5/x/tariff/keeper"
-	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
-	tokenfactorymodule "github.com/noble-assets/noble/v5/x/tokenfactory"
-	tokenfactorymodulekeeper "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
-	tokenfactorymoduletypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
->>>>>>> 8b0eb68 (chore: revert #269 (#289))
 
 	cctp "github.com/circlefin/noble-cctp/x/cctp"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
@@ -276,13 +263,8 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey, distrtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
-<<<<<<< HEAD
-		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey,
-		packetforwardtypes.StoreKey, stakingtypes.StoreKey, cctptypes.StoreKey,
-=======
 		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
 		cctptypes.StoreKey,
->>>>>>> 8b0eb68 (chore: revert #269 (#289))
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -869,7 +851,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 }
 
 func (app *App) setupUpgradeHandlers() {
-<<<<<<< HEAD
 	// v4.1.0 upgrade
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v4m1p0.UpgradeName,
@@ -879,8 +860,6 @@ func (app *App) setupUpgradeHandlers() {
 		),
 	)
 
-=======
->>>>>>> 8b0eb68 (chore: revert #269 (#289))
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -892,11 +871,8 @@ func (app *App) setupUpgradeHandlers() {
 	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
-<<<<<<< HEAD
 	case v4m1p0.UpgradeName:
 		storeLoader = v4m1p0.CreateStoreLoader(upgradeInfo.Height)
-=======
->>>>>>> 8b0eb68 (chore: revert #269 (#289))
 	}
 
 	if storeLoader != nil {
