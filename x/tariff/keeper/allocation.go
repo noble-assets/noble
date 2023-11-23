@@ -5,7 +5,7 @@ import (
 )
 
 func (k Keeper) AllocateTokens(ctx sdk.Context) {
-	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
+	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.consumerRedistributeName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	foundAmountGreaterThanZero := false
 	for _, coin := range feesCollectedInt {
@@ -21,10 +21,9 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 
 	params := k.GetParams(ctx)
-	feesToDistribute := feesCollected.MulDecTruncate(params.Share)
 
 	foundAmountGreaterThanZero = false
-	for _, coin := range feesToDistribute {
+	for _, coin := range feesCollected {
 		truncated, _ := coin.TruncateDecimal()
 		if truncated.Amount.GT(sdk.ZeroInt()) {
 			foundAmountGreaterThanZero = true
@@ -37,7 +36,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 	}
 
 	for _, d := range params.DistributionEntities {
-		entityShare := feesToDistribute.MulDecTruncate(d.Share)
+		entityShare := feesCollected.MulDecTruncate(d.Share)
 
 		var coins sdk.Coins
 
@@ -55,7 +54,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 		acc := sdk.MustAccAddressFromBech32(d.Address)
 
 		// transfer collected fees to the distribution entity account
-		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.feeCollectorName, acc, coins)
+		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.consumerRedistributeName, acc, coins)
 		if err != nil {
 			ctx.Logger().Error("Error allocating tokens to distribution entity: %s "+err.Error(), d.Address)
 		}

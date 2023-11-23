@@ -4,6 +4,8 @@ import (
 	fiattokenfactory "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	consumerante "github.com/cosmos/interchain-security/v2/app/consumer/ante"
+	consumerkeeper "github.com/cosmos/interchain-security/v2/x/ccv/consumer/keeper"
 	tokenfactory "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
 
@@ -24,6 +26,7 @@ type HandlerOptions struct {
 	tokenFactoryKeeper     *tokenfactory.Keeper
 	fiatTokenFactoryKeeper *fiattokenfactory.Keeper
 	IBCKeeper              *ibckeeper.Keeper
+	ConsumerKeeper         consumerkeeper.Keeper
 	GlobalFeeSubspace      paramtypes.Subspace
 	StakingSubspace        paramtypes.Subspace
 }
@@ -226,6 +229,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
+		consumerante.NewMsgFilterDecorator(options.ConsumerKeeper),
+		consumerante.NewDisabledModulesDecorator("/cosmos.evidence", "/cosmos.slashing"),
 		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
 		NewIsPausedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
 		ante.NewMempoolFeeDecorator(),

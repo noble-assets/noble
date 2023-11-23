@@ -23,46 +23,29 @@ func TestNobleChain(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", 2, 1, false, false, true, true),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		false, false, true, true,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: false,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
 
 	t.Run("tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataFrienzies.Base, noble, gw.tfRoles, gw.extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "tokenfactory", denomMetadataFrienzies.Base, noble, wrapper.tfRoles, wrapper.extraWallets)
 	})
 
 	t.Run("fiat-tokenfactory", func(t *testing.T) {
 		t.Parallel()
-		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataUsdc.Base, noble, gw.fiatTfRoles, gw.extraWallets)
+		nobleTokenfactory_e2e(t, ctx, "fiat-tokenfactory", denomMetadataUsdc.Base, noble, wrapper.fiatTfRoles, wrapper.extraWallets)
 	})
 }
 

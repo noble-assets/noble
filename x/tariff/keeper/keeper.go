@@ -17,11 +17,12 @@ var _ porttypes.ICS4Wrapper = Keeper{}
 
 type (
 	Keeper struct {
-		paramstore       paramtypes.Subspace
-		authKeeper       types.AccountKeeper
-		bankKeeper       types.BankKeeper
-		feeCollectorName string // name of the FeeCollector ModuleAccount
-		ics4Wrapper      porttypes.ICS4Wrapper
+		paramstore               paramtypes.Subspace
+		authKeeper               types.AccountKeeper
+		bankKeeper               types.BankKeeper
+		feeCollectorName         string // name of the FeeCollector ModuleAccount
+		consumerRedistributeName string // name of the ConsumerRedistribute ModuleAccount
+		ics4Wrapper              porttypes.ICS4Wrapper
 	}
 )
 
@@ -31,6 +32,7 @@ func NewKeeper(
 	authKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	feeCollectorName string,
+	consumerRedistributeName string,
 	ics4Wrapper porttypes.ICS4Wrapper,
 ) Keeper {
 	// set KeyTable if it has not already been set
@@ -39,11 +41,12 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		paramstore:       ps,
-		authKeeper:       authKeeper,
-		bankKeeper:       bankKeeper,
-		feeCollectorName: feeCollectorName,
-		ics4Wrapper:      ics4Wrapper,
+		paramstore:               ps,
+		authKeeper:               authKeeper,
+		bankKeeper:               bankKeeper,
+		feeCollectorName:         feeCollectorName,
+		consumerRedistributeName: consumerRedistributeName,
+		ics4Wrapper:              ics4Wrapper,
 	}
 }
 

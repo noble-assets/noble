@@ -19,7 +19,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/noble-assets/noble/v5/cmd"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/testreporter"
@@ -36,44 +35,22 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
+	logger := zaptest.NewLogger(t)
+	reporter := testreporter.NewNopReporter()
+	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var gw genesisWrapper
+	var wrapper genesisWrapper
 
-	nv := 1
-	nf := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, false, true, false),
+	noble, _, interchain, _ := SetupInterchain(t, ctx, logger, execReporter, client, network, &wrapper, TokenFactoryConfiguration{
+		true, false, true, false,
 	})
 
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	gw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := gw.chain
-
-	ic := interchaintest.NewInterchain().AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-		// BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
-
-		SkipPathCreation: false,
-	}))
 	t.Cleanup(func() {
-		_ = ic.Close()
+		_ = interchain.Close()
 	})
 
-	nobleChainCfg := noble.Config()
-
-	cmd.SetPrefixes(nobleChainCfg.Bech32Prefix)
+	var err error
 
 	attesters := make([]*ecdsa.PrivateKey, 2)
 	msgs := make([]sdk.Msg, 2)
@@ -85,13 +62,13 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 		attesters[i] = p
 
-		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) //public key
+		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) // public key
 
 		attesterPub := hex.EncodeToString(pubKey)
 
 		// Adding an attester to protocal
 		msgs[i] = &cctptypes.MsgEnableAttester{
-			From:     gw.fiatTfRoles.Owner.FormattedAddress(),
+			From:     wrapper.fiatTfRoles.Owner.FormattedAddress(),
 			Attester: attesterPub,
 		}
 	}
@@ -108,7 +85,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 	// maps remote token on remote domain to a local token -- used for minting
 	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
-		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
+		From:         wrapper.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  burnToken,
 		LocalToken:   denomMetadataUsdc.Base,
@@ -120,7 +97,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	tx, err := cosmos.BroadcastTx(
 		bCtx,
 		broadcaster,
-		gw.fiatTfRoles.Owner,
+		wrapper.fiatTfRoles.Owner,
 		msgs...,
 	)
 	require.NoError(t, err, "error submitting add public keys tx")
@@ -135,22 +112,22 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 	cctpModuleAccount := authtypes.NewModuleAddress(cctptypes.ModuleName).String()
 
-	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(),
-		"fiat-tokenfactory", "configure-minter-controller", gw.fiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount, "-b", "block",
+	_, err = nobleValidator.ExecTx(ctx, wrapper.fiatTfRoles.MasterMinter.KeyName(),
+		"fiat-tokenfactory", "configure-minter-controller", wrapper.fiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
-	_, err = nobleValidator.ExecTx(ctx, gw.fiatTfRoles.MinterController.KeyName(),
+	_, err = nobleValidator.ExecTx(ctx, wrapper.fiatTfRoles.MinterController.KeyName(),
 		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+denomMetadataUsdc.Base, "-b", "block",
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
-	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" //account
+	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" // account
 
 	receiverBz, err := hex.DecodeString(receiver)
 	require.NoError(t, err)
 
-	nobleReceiver, err := bech32.ConvertAndEncode(nobleChainCfg.Bech32Prefix, receiverBz)
+	nobleReceiver, err := bech32.ConvertAndEncode(noble.Config().Bech32Prefix, receiverBz)
 	require.NoError(t, err)
 
 	burnRecipientPadded := append([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, receiverBz...)
@@ -166,7 +143,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	depositForBurnBz, err := depositForBurn.Bytes()
 	require.NoError(t, err)
 
-	var senderBurn = []byte("12345678901234567890123456789012")
+	senderBurn := []byte("12345678901234567890123456789012")
 
 	emptyDestinationCaller := make([]byte, 32)
 
@@ -186,7 +163,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 	digestBurn := crypto.Keccak256(wrappedDepositForBurnBz) // hashed message is the key to the attestation
 
-	attestationBurn := make([]byte, 0, len(attesters)*65) //65 byte
+	attestationBurn := make([]byte, 0, len(attesters)*65) // 65 byte
 
 	// CCTP requires attestations to have signatures sorted by address
 	sort.Slice(attesters, func(i, j int) bool {
@@ -210,9 +187,9 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	tx, err = cosmos.BroadcastTx(
 		bCtx,
 		broadcaster,
-		gw.fiatTfRoles.Owner,
-		&cctptypes.MsgReceiveMessage{ //note: all messages that go to noble go through MsgReceiveMessage
-			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
+		wrapper.fiatTfRoles.Owner,
+		&cctptypes.MsgReceiveMessage{ // note: all messages that go to noble go through MsgReceiveMessage
+			From:        wrapper.fiatTfRoles.Owner.FormattedAddress(),
 			Message:     wrappedDepositForBurnBz,
 			Attestation: attestationBurn,
 		},
