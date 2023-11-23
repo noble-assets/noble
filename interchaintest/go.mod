@@ -11,8 +11,8 @@ require (
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231026153934-334934f17a68
 	github.com/noble-assets/noble/v4 v4.0.0
+	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231026153934-334934f17a68
 	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0

@@ -263,8 +263,8 @@ func New(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, slashingtypes.StoreKey, distrtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
-		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey,
-		packetforwardtypes.StoreKey, stakingtypes.StoreKey, cctptypes.StoreKey,
+		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
+		cctptypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)

@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package stable.tokenfactory.v1;
-
-option go_package = "github.com/noble-assets/noble/v4/x/stabletokenfactory/types";
-
-message Owner {
-  string address = 1;
-}

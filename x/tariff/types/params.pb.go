@@ -30,8 +30,10 @@ type Params struct {
 	Share github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=share,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"share" yaml:"share"`
 	// % of tx fees or rewards allocated to a set of global distribution entities
 	// these shares must add up to 1
-	DistributionEntities []DistributionEntity `protobuf:"bytes,2,rep,name=distribution_entities,json=distributionEntities,proto3" json:"distribution_entities" yaml:"distribution_entities"`
-	TransferFees         []TransferFee        `protobuf:"bytes,3,rep,name=transfer_fees,json=transferFees,proto3" json:"transfer_fees"`
+	DistributionEntities []DistributionEntity                   `protobuf:"bytes,2,rep,name=distribution_entities,json=distributionEntities,proto3" json:"distribution_entities" yaml:"distribution_entities"`
+	TransferFeeBps       github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=transfer_fee_bps,json=transferFeeBps,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"transfer_fee_bps" yaml:"transfer_fee_bps"`
+	TransferFeeMax       github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=transfer_fee_max,json=transferFeeMax,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"transfer_fee_max" yaml:"transfer_fee_max"`
+	TransferFeeDenom     string                                 `protobuf:"bytes,5,opt,name=transfer_fee_denom,json=transferFeeDenom,proto3" json:"transfer_fee_denom,omitempty" yaml:"transfer_fee_denom"`
 }
 
 func (m *Params) Reset()      { *m = Params{} }
@@ -73,11 +75,11 @@ func (m *Params) GetDistributionEntities() []DistributionEntity {
 	return nil
 }
 
-func (m *Params) GetTransferFees() []TransferFee {
+func (m *Params) GetTransferFeeDenom() string {
 	if m != nil {
-		return m.TransferFees
+		return m.TransferFeeDenom
 	}
-	return nil
+	return ""
 }
 
 // DistributionEntity defines a distribution entity
@@ -126,89 +128,41 @@ func (m *DistributionEntity) GetAddress() string {
 	return ""
 }
 
-// TransferFee defines the fee configuration for a specific denom.
-type TransferFee struct {
-	Bps   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=bps,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bps"`
-	Max   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=max,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"max"`
-	Denom string                                 `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
-}
-
-func (m *TransferFee) Reset()         { *m = TransferFee{} }
-func (m *TransferFee) String() string { return proto.CompactTextString(m) }
-func (*TransferFee) ProtoMessage()    {}
-func (*TransferFee) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8101061d71eef07f, []int{2}
-}
-func (m *TransferFee) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *TransferFee) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_TransferFee.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *TransferFee) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TransferFee.Merge(m, src)
-}
-func (m *TransferFee) XXX_Size() int {
-	return m.Size()
-}
-func (m *TransferFee) XXX_DiscardUnknown() {
-	xxx_messageInfo_TransferFee.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_TransferFee proto.InternalMessageInfo
-
-func (m *TransferFee) GetDenom() string {
-	if m != nil {
-		return m.Denom
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*Params)(nil), "noble.tariff.Params")
 	proto.RegisterType((*DistributionEntity)(nil), "noble.tariff.DistributionEntity")
-	proto.RegisterType((*TransferFee)(nil), "noble.tariff.TransferFee")
 }
 
 func init() { proto.RegisterFile("tariff/params.proto", fileDescriptor_8101061d71eef07f) }
 
 var fileDescriptor_8101061d71eef07f = []byte{
-	// 408 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x52, 0x4d, 0xab, 0xd3, 0x40,
-	0x14, 0xcd, 0x34, 0xef, 0x3d, 0x71, 0x5e, 0xdd, 0x8c, 0x15, 0xa2, 0x48, 0x52, 0x82, 0xc8, 0xdb,
-	0xbc, 0x0c, 0xa8, 0xab, 0xb7, 0x10, 0x09, 0x55, 0x70, 0x21, 0x48, 0x78, 0x2b, 0x37, 0x65, 0xd2,
-	0x4c, 0xda, 0xc1, 0x26, 0x13, 0xe6, 0x4e, 0xa5, 0xc5, 0xad, 0x3f, 0xc0, 0xa5, 0x4b, 0x77, 0xf5,
-	0xa7, 0x74, 0xd9, 0xa5, 0xb8, 0x08, 0x92, 0xfe, 0x83, 0xfe, 0x02, 0xc9, 0x24, 0xd2, 0xf8, 0xb1,
-	0x29, 0xbc, 0xd5, 0xcc, 0x9d, 0x7b, 0xee, 0x39, 0x87, 0x33, 0x17, 0xdf, 0xd5, 0x4c, 0x89, 0x34,
-	0xa5, 0x05, 0x53, 0x2c, 0x83, 0xa0, 0x50, 0x52, 0x4b, 0xd2, 0xcf, 0x65, 0x3c, 0xe7, 0x41, 0xd3,
-	0x7a, 0x30, 0x98, 0xca, 0xa9, 0x34, 0x0d, 0x5a, 0xdf, 0x1a, 0x8c, 0xbf, 0xee, 0xe1, 0xb3, 0xb7,
-	0x66, 0x88, 0x5c, 0xe3, 0x53, 0x98, 0x31, 0xc5, 0x1d, 0x34, 0x44, 0x17, 0xb7, 0xc3, 0xe7, 0x9b,
-	0xd2, 0xb3, 0x7e, 0x94, 0xde, 0xe3, 0xa9, 0xd0, 0xb3, 0x45, 0x1c, 0x4c, 0x64, 0x46, 0x27, 0x12,
-	0x32, 0x09, 0xed, 0x71, 0x09, 0xc9, 0x7b, 0xaa, 0x57, 0x05, 0x87, 0x60, 0xc4, 0x27, 0xfb, 0xd2,
-	0xeb, 0xaf, 0x58, 0x36, 0xbf, 0xf2, 0x0d, 0x89, 0x1f, 0x35, 0x64, 0xe4, 0x23, 0xbe, 0x97, 0x08,
-	0xd0, 0x4a, 0xc4, 0x0b, 0x2d, 0x64, 0x3e, 0xe6, 0xb9, 0x16, 0x5a, 0x70, 0x70, 0x7a, 0x43, 0xfb,
-	0xe2, 0xfc, 0xc9, 0x30, 0xe8, 0x9a, 0x0c, 0x46, 0x1d, 0xe8, 0xcb, 0x1a, 0xb9, 0x0a, 0x1f, 0xd5,
-	0x3e, 0xf6, 0xa5, 0xf7, 0xb0, 0x61, 0xff, 0x2f, 0x99, 0x1f, 0x0d, 0x92, 0xbf, 0x27, 0x05, 0x07,
-	0x32, 0xc2, 0x77, 0xb4, 0x62, 0x39, 0xa4, 0x5c, 0x8d, 0x53, 0xce, 0xc1, 0xb1, 0x8d, 0xe8, 0xfd,
-	0x3f, 0x45, 0xaf, 0x5b, 0xc8, 0x2b, 0xce, 0xc3, 0x93, 0x5a, 0x2d, 0xea, 0xeb, 0xc3, 0x13, 0x5c,
-	0x9d, 0x7c, 0xf9, 0xea, 0x59, 0xfe, 0x27, 0x84, 0xc9, 0xbf, 0xf6, 0x88, 0x83, 0x6f, 0xb1, 0x24,
-	0x51, 0x1c, 0xa0, 0xc9, 0x2d, 0xfa, 0x5d, 0x1e, 0xf2, 0xec, 0xdd, 0x60, 0x9e, 0xfe, 0x1a, 0xe1,
-	0xf3, 0x8e, 0x61, 0xf2, 0x02, 0xdb, 0x71, 0xd1, 0x6a, 0x87, 0xc1, 0x11, 0x1a, 0xaf, 0x73, 0x1d,
-	0xd5, 0xa3, 0x35, 0x43, 0xc6, 0x96, 0xad, 0xcb, 0xa3, 0x19, 0x32, 0xb6, 0x24, 0x03, 0x7c, 0x9a,
-	0xf0, 0x5c, 0x66, 0x8e, 0x6d, 0x12, 0x68, 0x8a, 0xf0, 0xcd, 0xb7, 0xca, 0x45, 0x9b, 0xca, 0x45,
-	0xdb, 0xca, 0x45, 0x3f, 0x2b, 0x17, 0x7d, 0xde, 0xb9, 0xd6, 0x76, 0xe7, 0x5a, 0xdf, 0x77, 0xae,
-	0xf5, 0x8e, 0x76, 0x04, 0xcc, 0x6f, 0x5c, 0x32, 0x00, 0xae, 0xa1, 0x29, 0xe8, 0x87, 0x67, 0x74,
-	0x49, 0xdb, 0xa5, 0x36, 0x6a, 0xf1, 0x99, 0x59, 0xd8, 0xa7, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff,
-	0x1f, 0x6c, 0x84, 0x4b, 0xeb, 0x02, 0x00, 0x00,
+	// 416 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x93, 0x4f, 0x8b, 0xd3, 0x40,
+	0x18, 0xc6, 0x93, 0xdd, 0xee, 0x8a, 0xe3, 0x22, 0xcb, 0xb8, 0x62, 0x14, 0x4d, 0x4a, 0x10, 0xd9,
+	0xcb, 0x66, 0x40, 0x3d, 0xed, 0xc1, 0x43, 0xa8, 0xc2, 0x22, 0x0b, 0x12, 0x3c, 0x79, 0x29, 0x93,
+	0x66, 0xd2, 0x0e, 0x36, 0x99, 0x30, 0xef, 0x54, 0x52, 0xbc, 0xfa, 0x01, 0x3c, 0xf6, 0xe8, 0xd1,
+	0x8f, 0xd2, 0x63, 0x8f, 0xe2, 0x21, 0x48, 0xfa, 0x0d, 0xf2, 0x09, 0x24, 0x93, 0x16, 0xd3, 0x3f,
+	0x17, 0xa1, 0xa7, 0x64, 0xe6, 0x7d, 0xde, 0xdf, 0xf3, 0xbe, 0xe4, 0x09, 0x7a, 0xa0, 0xa8, 0xe4,
+	0x71, 0x4c, 0x32, 0x2a, 0x69, 0x02, 0x5e, 0x26, 0x85, 0x12, 0xf8, 0x2c, 0x15, 0xe1, 0x98, 0x79,
+	0x4d, 0xe9, 0xc9, 0xc5, 0x50, 0x0c, 0x85, 0x2e, 0x90, 0xfa, 0xad, 0xd1, 0xb8, 0xb3, 0x0e, 0x3a,
+	0xfd, 0xa0, 0x9b, 0xf0, 0x47, 0x74, 0x02, 0x23, 0x2a, 0x99, 0x65, 0x76, 0xcd, 0xcb, 0xbb, 0xfe,
+	0x9b, 0x79, 0xe1, 0x18, 0xbf, 0x0b, 0xe7, 0xc5, 0x90, 0xab, 0xd1, 0x24, 0xf4, 0x06, 0x22, 0x21,
+	0x03, 0x01, 0x89, 0x80, 0xd5, 0xe3, 0x0a, 0xa2, 0xcf, 0x44, 0x4d, 0x33, 0x06, 0x5e, 0x8f, 0x0d,
+	0xaa, 0xc2, 0x39, 0x9b, 0xd2, 0x64, 0x7c, 0xed, 0x6a, 0x88, 0x1b, 0x34, 0x30, 0xfc, 0x15, 0x3d,
+	0x8c, 0x38, 0x28, 0xc9, 0xc3, 0x89, 0xe2, 0x22, 0xed, 0xb3, 0x54, 0x71, 0xc5, 0x19, 0x58, 0x47,
+	0xdd, 0xe3, 0xcb, 0x7b, 0x2f, 0xbb, 0x5e, 0x7b, 0x48, 0xaf, 0xd7, 0x92, 0xbe, 0xad, 0x95, 0x53,
+	0xff, 0x79, 0x3d, 0x47, 0x55, 0x38, 0x4f, 0x1b, 0xfa, 0x5e, 0x98, 0x1b, 0x5c, 0x44, 0xdb, 0x9d,
+	0x9c, 0x01, 0x06, 0x74, 0xae, 0x24, 0x4d, 0x21, 0x66, 0xb2, 0x1f, 0x33, 0xd6, 0x0f, 0x33, 0xb0,
+	0x8e, 0xf5, 0x76, 0x37, 0xff, 0xb1, 0xdd, 0x4d, 0xaa, 0xaa, 0xc2, 0x79, 0xd4, 0xf8, 0x6f, 0xf3,
+	0xdc, 0xe0, 0xfe, 0xfa, 0xea, 0x1d, 0x63, 0x7e, 0xb6, 0x6b, 0x9a, 0xd0, 0xdc, 0xea, 0x1c, 0xd0,
+	0x34, 0xa1, 0xf9, 0xa6, 0xe9, 0x2d, 0xcd, 0xf1, 0x7b, 0x84, 0x37, 0x44, 0x11, 0x4b, 0x45, 0x62,
+	0x9d, 0x68, 0xdb, 0x67, 0x55, 0xe1, 0x3c, 0xde, 0x03, 0xd2, 0x1a, 0x37, 0x38, 0x6f, 0xa1, 0x7a,
+	0xf5, 0xd5, 0x75, 0x67, 0xf6, 0xc3, 0x31, 0xdc, 0x6f, 0x26, 0xc2, 0xbb, 0xdf, 0x03, 0x5b, 0xe8,
+	0x0e, 0x8d, 0x22, 0xc9, 0x00, 0x9a, 0xa0, 0x04, 0xeb, 0xe3, 0xbf, 0x00, 0x1d, 0x1d, 0x30, 0x40,
+	0xfe, 0xed, 0xcf, 0xd2, 0x36, 0xe7, 0xa5, 0x6d, 0x2e, 0x4a, 0xdb, 0xfc, 0x53, 0xda, 0xe6, 0xf7,
+	0xa5, 0x6d, 0x2c, 0x96, 0xb6, 0xf1, 0x6b, 0x69, 0x1b, 0x9f, 0x48, 0x0b, 0xae, 0x93, 0x74, 0x45,
+	0x01, 0x98, 0x82, 0xe6, 0x40, 0xbe, 0xbc, 0x26, 0x39, 0x59, 0xfd, 0x1b, 0xda, 0x29, 0x3c, 0xd5,
+	0xb9, 0x7f, 0xf5, 0x37, 0x00, 0x00, 0xff, 0xff, 0xac, 0x76, 0x41, 0x18, 0x32, 0x03, 0x00, 0x00,
 }
 
 func (this *Params) Equal(that interface{}) bool {
@@ -241,13 +195,14 @@ func (this *Params) Equal(that interface{}) bool {
 			return false
 		}
 	}
-	if len(this.TransferFees) != len(that1.TransferFees) {
+	if !this.TransferFeeBps.Equal(that1.TransferFeeBps) {
 		return false
 	}
-	for i := range this.TransferFees {
-		if !this.TransferFees[i].Equal(&that1.TransferFees[i]) {
-			return false
-		}
+	if !this.TransferFeeMax.Equal(that1.TransferFeeMax) {
+		return false
+	}
+	if this.TransferFeeDenom != that1.TransferFeeDenom {
+		return false
 	}
 	return true
 }
@@ -278,36 +233,6 @@ func (this *DistributionEntity) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *TransferFee) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*TransferFee)
-	if !ok {
-		that2, ok := that.(TransferFee)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !this.Bps.Equal(that1.Bps) {
-		return false
-	}
-	if !this.Max.Equal(that1.Max) {
-		return false
-	}
-	if this.Denom != that1.Denom {
-		return false
-	}
-	return true
-}
 func (m *Params) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -328,20 +253,33 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.TransferFees) > 0 {
-		for iNdEx := len(m.TransferFees) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.TransferFees[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintParams(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
+	if len(m.TransferFeeDenom) > 0 {
+		i -= len(m.TransferFeeDenom)
+		copy(dAtA[i:], m.TransferFeeDenom)
+		i = encodeVarintParams(dAtA, i, uint64(len(m.TransferFeeDenom)))
+		i--
+		dAtA[i] = 0x2a
 	}
+	{
+		size := m.TransferFeeMax.Size()
+		i -= size
+		if _, err := m.TransferFeeMax.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintParams(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
+	{
+		size := m.TransferFeeBps.Size()
+		i -= size
+		if _, err := m.TransferFeeBps.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintParams(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
 	if len(m.DistributionEntities) > 0 {
 		for iNdEx := len(m.DistributionEntities) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -409,56 +347,6 @@ func (m *DistributionEntity) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *TransferFee) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *TransferFee) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *TransferFee) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Denom) > 0 {
-		i -= len(m.Denom)
-		copy(dAtA[i:], m.Denom)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.Denom)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	{
-		size := m.Max.Size()
-		i -= size
-		if _, err := m.Max.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	{
-		size := m.Bps.Size()
-		i -= size
-		if _, err := m.Bps.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintParams(dAtA []byte, offset int, v uint64) int {
 	offset -= sovParams(v)
 	base := offset
@@ -484,11 +372,13 @@ func (m *Params) Size() (n int) {
 			n += 1 + l + sovParams(uint64(l))
 		}
 	}
-	if len(m.TransferFees) > 0 {
-		for _, e := range m.TransferFees {
-			l = e.Size()
-			n += 1 + l + sovParams(uint64(l))
-		}
+	l = m.TransferFeeBps.Size()
+	n += 1 + l + sovParams(uint64(l))
+	l = m.TransferFeeMax.Size()
+	n += 1 + l + sovParams(uint64(l))
+	l = len(m.TransferFeeDenom)
+	if l > 0 {
+		n += 1 + l + sovParams(uint64(l))
 	}
 	return n
 }
@@ -505,23 +395,6 @@ func (m *DistributionEntity) Size() (n int) {
 	}
 	l = m.Share.Size()
 	n += 1 + l + sovParams(uint64(l))
-	return n
-}
-
-func (m *TransferFee) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Bps.Size()
-	n += 1 + l + sovParams(uint64(l))
-	l = m.Max.Size()
-	n += 1 + l + sovParams(uint64(l))
-	l = len(m.Denom)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
-	}
 	return n
 }
 
@@ -630,9 +503,9 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TransferFees", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TransferFeeBps", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -642,25 +515,91 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthParams
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthParams
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TransferFees = append(m.TransferFees, TransferFee{})
-			if err := m.TransferFees[len(m.TransferFees)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.TransferFeeBps.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TransferFeeMax", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TransferFeeMax.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TransferFeeDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TransferFeeDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -777,156 +716,6 @@ func (m *DistributionEntity) Unmarshal(dAtA []byte) error {
 			if err := m.Share.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipParams(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthParams
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *TransferFee) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowParams
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: TransferFee: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: TransferFee: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Bps", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Bps.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Max", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Max.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Denom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
