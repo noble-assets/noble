@@ -11,8 +11,13 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v4/modules/core/exported"
+<<<<<<< HEAD
 	"github.com/noble-assets/noble/v4/x/tokenfactory/keeper"
 	"github.com/noble-assets/noble/v4/x/tokenfactory/types"
+=======
+	"github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
+	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> 8b0eb68 (chore: revert #269 (#289))
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}
@@ -164,6 +169,10 @@ func (im IBCMiddleware) OnRecvPacket(
 			ackErr = sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "sender address is blacklisted")
 			return channeltypes.NewErrorAcknowledgement(ackErr)
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b0eb68 (chore: revert #269 (#289))
 	}
 	return im.app.OnRecvPacket(ctx, packet, relayer)
 

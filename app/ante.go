@@ -4,9 +4,14 @@ import (
 	fiattokenfactory "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+<<<<<<< HEAD
 	stabletokenfactorykeeper "github.com/noble-assets/noble/v4/x/stabletokenfactory/keeper"
 	tokenfactory "github.com/noble-assets/noble/v4/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/noble-assets/noble/v4/x/tokenfactory/types"
+=======
+	tokenfactory "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
+>>>>>>> 8b0eb68 (chore: revert #269 (#289))
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -22,12 +27,11 @@ import (
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	tokenFactoryKeeper       *tokenfactory.Keeper
-	fiatTokenFactoryKeeper   *fiattokenfactory.Keeper
-	stableTokenFactoryKeeper *stabletokenfactorykeeper.Keeper
-	IBCKeeper                *ibckeeper.Keeper
-	GlobalFeeSubspace        paramtypes.Subspace
-	StakingSubspace          paramtypes.Subspace
+	tokenFactoryKeeper     *tokenfactory.Keeper
+	fiatTokenFactoryKeeper *fiattokenfactory.Keeper
+	IBCKeeper              *ibckeeper.Keeper
+	GlobalFeeSubspace      paramtypes.Subspace
+	StakingSubspace        paramtypes.Subspace
 }
 
 type IsPausedDecorator struct {

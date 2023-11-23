@@ -49,7 +49,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, false, false, true, false, false),
+		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, false, true, false),
 		{
 			Name:          "gaia",
 			Version:       "v10.0.2",

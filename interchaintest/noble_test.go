@@ -32,7 +32,7 @@ func TestNobleChain(t *testing.T) {
 	var gw genesisWrapper
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", 2, 1, false, false, false, true, true, true),
+		nobleChainSpec(ctx, &gw, "noble-1", 2, 1, false, false, true, true),
 	})
 
 	chains, err := cf.Chains(t.Name())

@@ -48,7 +48,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	nf := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, false, false, true, false, false),
+		nobleChainSpec(ctx, &gw, "noble-1", nv, nf, true, false, true, false),
 	})
 
 	chains, err := cf.Chains(t.Name())
