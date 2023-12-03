@@ -54,7 +54,7 @@ Bypass messages are messages that are exempt from paying fees. The above global 
 - The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`. Note: the current `MaxTotalBypassMinFeeMsgGasUsage` is set to `1,000,000`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
-The list of these messages is stored in module parameters and can be updated via governance proposals or the maintenence multisig. The following are default:
+The list of these messages is stored in module parameters and can be updated via governance proposals or the maintenance multisig. The following are default:
 
 ```go
 defaultBypassMinFeeMsgTypes := []string{

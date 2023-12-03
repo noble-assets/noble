@@ -6,7 +6,7 @@
 
 # This script is meant for quick experimentation of the Tokenfactory Module and Noble Chain functionality. 
 #   - Starts Noble chain
-#   - Delagates and funds all privledged accounts for the `tokenfactory`.
+#   - Delegates and funds all privledged accounts for the `tokenfactory`.
 #   - Only the "owner" account in the `fiat-tokenfactory` is set.
 #   - The "owner" account is both the `tokenfactory` Owner AND the Param Authority
 

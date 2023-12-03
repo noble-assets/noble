@@ -89,7 +89,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 		attesterPub := hex.EncodeToString(pubKey)
 
-		// Adding an attester to protocal
+		// Adding an attester to protocol
 		msgs[i] = &cctptypes.MsgEnableAttester{
 			From:     gw.fiatTfRoles.Owner.FormattedAddress(),
 			Attester: attesterPub,
