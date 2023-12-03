@@ -163,7 +163,7 @@ func nobleTokenfactory_e2e(t *testing.T, ctx context.Context, tokenfactoryModNam
 		Denom:   "token",
 		Amount:  100,
 	})
-	require.NoError(t, err, "The tx should have been successfull as that is no the minting denom")
+	require.NoError(t, err, "The tx should have been successful as that is no the minting denom")
 
 	_, err = nobleValidator.ExecTx(ctx, roles.Blacklister.KeyName(),
 		tokenfactoryModName, "unblacklist", extraWallets.User.FormattedAddress(), "-b", "block",
