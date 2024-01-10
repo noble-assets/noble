@@ -137,5 +137,4 @@ func TestGlobalFee(t *testing.T) {
 		"-b", "block",
 	)
 	require.NoError(t, err, "failed to execute tx to accept ownership with zero fees")
-
 }

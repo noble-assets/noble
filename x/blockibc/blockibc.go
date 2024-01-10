@@ -93,7 +93,6 @@ func (im IBCMiddleware) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
-
 	var data transfertypes.FungibleTokenPacketData
 	var ackErr error
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
@@ -167,7 +166,6 @@ func (im IBCMiddleware) OnRecvPacket(
 
 	}
 	return im.app.OnRecvPacket(ctx, packet, relayer)
-
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface.

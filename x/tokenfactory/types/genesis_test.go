@@ -26,7 +26,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
 				BlacklistedList: []types.Blacklisted{
 					{
 						AddressBz: sample.AddressBz(),
@@ -80,7 +79,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid privilege separation",
 			genState: &types.GenesisState{
-
 				BlacklistedList: []types.Blacklisted{
 					{
 						AddressBz: sample.AddressBz(),

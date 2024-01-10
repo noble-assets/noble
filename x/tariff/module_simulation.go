@@ -1,11 +1,12 @@
 package tariff
 
 import (
+	"math/rand"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/noble-assets/noble/v5/x/tariff/types"
-	"math/rand"
 )
 
 var _ module.AppModuleSimulation = AppModule{}

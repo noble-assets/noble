@@ -19,7 +19,6 @@ func (k Keeper) SetMinters(ctx sdk.Context, minters types.Minters) {
 func (k Keeper) GetMinters(
 	ctx sdk.Context,
 	address string,
-
 ) (val types.Minters, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintersKeyPrefix))
 
@@ -38,7 +37,6 @@ func (k Keeper) GetMinters(
 func (k Keeper) RemoveMinters(
 	ctx sdk.Context,
 	address string,
-
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintersKeyPrefix))
 	store.Delete(types.MintersKey(

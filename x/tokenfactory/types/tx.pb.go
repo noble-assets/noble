@@ -6,6 +6,10 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
@@ -13,15 +17,14 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	io "io"
-	math "math"
-	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ = proto.Marshal
-var _ = fmt.Errorf
-var _ = math.Inf
+var (
+	_ = proto.Marshal
+	_ = fmt.Errorf
+	_ = math.Inf
+)
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -40,9 +43,11 @@ func (*MsgUpdateMasterMinter) ProtoMessage()    {}
 func (*MsgUpdateMasterMinter) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{0}
 }
+
 func (m *MsgUpdateMasterMinter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdateMasterMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdateMasterMinter.Marshal(b, m, deterministic)
@@ -55,12 +60,15 @@ func (m *MsgUpdateMasterMinter) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdateMasterMinter) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdateMasterMinter.Merge(m, src)
 }
+
 func (m *MsgUpdateMasterMinter) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdateMasterMinter) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdateMasterMinter.DiscardUnknown(m)
 }
@@ -81,8 +89,7 @@ func (m *MsgUpdateMasterMinter) GetAddress() string {
 	return ""
 }
 
-type MsgUpdateMasterMinterResponse struct {
-}
+type MsgUpdateMasterMinterResponse struct{}
 
 func (m *MsgUpdateMasterMinterResponse) Reset()         { *m = MsgUpdateMasterMinterResponse{} }
 func (m *MsgUpdateMasterMinterResponse) String() string { return proto.CompactTextString(m) }
@@ -90,9 +97,11 @@ func (*MsgUpdateMasterMinterResponse) ProtoMessage()    {}
 func (*MsgUpdateMasterMinterResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{1}
 }
+
 func (m *MsgUpdateMasterMinterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdateMasterMinterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdateMasterMinterResponse.Marshal(b, m, deterministic)
@@ -105,12 +114,15 @@ func (m *MsgUpdateMasterMinterResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdateMasterMinterResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdateMasterMinterResponse.Merge(m, src)
 }
+
 func (m *MsgUpdateMasterMinterResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdateMasterMinterResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdateMasterMinterResponse.DiscardUnknown(m)
 }
@@ -128,9 +140,11 @@ func (*MsgUpdatePauser) ProtoMessage()    {}
 func (*MsgUpdatePauser) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{2}
 }
+
 func (m *MsgUpdatePauser) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdatePauser) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdatePauser.Marshal(b, m, deterministic)
@@ -143,12 +157,15 @@ func (m *MsgUpdatePauser) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdatePauser) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdatePauser.Merge(m, src)
 }
+
 func (m *MsgUpdatePauser) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdatePauser) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdatePauser.DiscardUnknown(m)
 }
@@ -169,8 +186,7 @@ func (m *MsgUpdatePauser) GetAddress() string {
 	return ""
 }
 
-type MsgUpdatePauserResponse struct {
-}
+type MsgUpdatePauserResponse struct{}
 
 func (m *MsgUpdatePauserResponse) Reset()         { *m = MsgUpdatePauserResponse{} }
 func (m *MsgUpdatePauserResponse) String() string { return proto.CompactTextString(m) }
@@ -178,9 +194,11 @@ func (*MsgUpdatePauserResponse) ProtoMessage()    {}
 func (*MsgUpdatePauserResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{3}
 }
+
 func (m *MsgUpdatePauserResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdatePauserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdatePauserResponse.Marshal(b, m, deterministic)
@@ -193,12 +211,15 @@ func (m *MsgUpdatePauserResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdatePauserResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdatePauserResponse.Merge(m, src)
 }
+
 func (m *MsgUpdatePauserResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdatePauserResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdatePauserResponse.DiscardUnknown(m)
 }
@@ -216,9 +237,11 @@ func (*MsgUpdateBlacklister) ProtoMessage()    {}
 func (*MsgUpdateBlacklister) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{4}
 }
+
 func (m *MsgUpdateBlacklister) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdateBlacklister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdateBlacklister.Marshal(b, m, deterministic)
@@ -231,12 +254,15 @@ func (m *MsgUpdateBlacklister) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdateBlacklister) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdateBlacklister.Merge(m, src)
 }
+
 func (m *MsgUpdateBlacklister) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdateBlacklister) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdateBlacklister.DiscardUnknown(m)
 }
@@ -257,8 +283,7 @@ func (m *MsgUpdateBlacklister) GetAddress() string {
 	return ""
 }
 
-type MsgUpdateBlacklisterResponse struct {
-}
+type MsgUpdateBlacklisterResponse struct{}
 
 func (m *MsgUpdateBlacklisterResponse) Reset()         { *m = MsgUpdateBlacklisterResponse{} }
 func (m *MsgUpdateBlacklisterResponse) String() string { return proto.CompactTextString(m) }
@@ -266,9 +291,11 @@ func (*MsgUpdateBlacklisterResponse) ProtoMessage()    {}
 func (*MsgUpdateBlacklisterResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{5}
 }
+
 func (m *MsgUpdateBlacklisterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdateBlacklisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdateBlacklisterResponse.Marshal(b, m, deterministic)
@@ -281,12 +308,15 @@ func (m *MsgUpdateBlacklisterResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdateBlacklisterResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdateBlacklisterResponse.Merge(m, src)
 }
+
 func (m *MsgUpdateBlacklisterResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdateBlacklisterResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdateBlacklisterResponse.DiscardUnknown(m)
 }
@@ -304,9 +334,11 @@ func (*MsgUpdateOwner) ProtoMessage()    {}
 func (*MsgUpdateOwner) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{6}
 }
+
 func (m *MsgUpdateOwner) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdateOwner) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdateOwner.Marshal(b, m, deterministic)
@@ -319,12 +351,15 @@ func (m *MsgUpdateOwner) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdateOwner) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdateOwner.Merge(m, src)
 }
+
 func (m *MsgUpdateOwner) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdateOwner) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdateOwner.DiscardUnknown(m)
 }
@@ -345,8 +380,7 @@ func (m *MsgUpdateOwner) GetAddress() string {
 	return ""
 }
 
-type MsgUpdateOwnerResponse struct {
-}
+type MsgUpdateOwnerResponse struct{}
 
 func (m *MsgUpdateOwnerResponse) Reset()         { *m = MsgUpdateOwnerResponse{} }
 func (m *MsgUpdateOwnerResponse) String() string { return proto.CompactTextString(m) }
@@ -354,9 +388,11 @@ func (*MsgUpdateOwnerResponse) ProtoMessage()    {}
 func (*MsgUpdateOwnerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{7}
 }
+
 func (m *MsgUpdateOwnerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUpdateOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUpdateOwnerResponse.Marshal(b, m, deterministic)
@@ -369,12 +405,15 @@ func (m *MsgUpdateOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUpdateOwnerResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUpdateOwnerResponse.Merge(m, src)
 }
+
 func (m *MsgUpdateOwnerResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUpdateOwnerResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUpdateOwnerResponse.DiscardUnknown(m)
 }
@@ -391,9 +430,11 @@ func (*MsgAcceptOwner) ProtoMessage()    {}
 func (*MsgAcceptOwner) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{8}
 }
+
 func (m *MsgAcceptOwner) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgAcceptOwner) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgAcceptOwner.Marshal(b, m, deterministic)
@@ -406,12 +447,15 @@ func (m *MsgAcceptOwner) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
+
 func (m *MsgAcceptOwner) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgAcceptOwner.Merge(m, src)
 }
+
 func (m *MsgAcceptOwner) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgAcceptOwner) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgAcceptOwner.DiscardUnknown(m)
 }
@@ -425,8 +469,7 @@ func (m *MsgAcceptOwner) GetFrom() string {
 	return ""
 }
 
-type MsgAcceptOwnerResponse struct {
-}
+type MsgAcceptOwnerResponse struct{}
 
 func (m *MsgAcceptOwnerResponse) Reset()         { *m = MsgAcceptOwnerResponse{} }
 func (m *MsgAcceptOwnerResponse) String() string { return proto.CompactTextString(m) }
@@ -434,9 +477,11 @@ func (*MsgAcceptOwnerResponse) ProtoMessage()    {}
 func (*MsgAcceptOwnerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{9}
 }
+
 func (m *MsgAcceptOwnerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgAcceptOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgAcceptOwnerResponse.Marshal(b, m, deterministic)
@@ -449,12 +494,15 @@ func (m *MsgAcceptOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
+
 func (m *MsgAcceptOwnerResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgAcceptOwnerResponse.Merge(m, src)
 }
+
 func (m *MsgAcceptOwnerResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgAcceptOwnerResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgAcceptOwnerResponse.DiscardUnknown(m)
 }
@@ -473,9 +521,11 @@ func (*MsgConfigureMinter) ProtoMessage()    {}
 func (*MsgConfigureMinter) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{10}
 }
+
 func (m *MsgConfigureMinter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgConfigureMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgConfigureMinter.Marshal(b, m, deterministic)
@@ -488,12 +538,15 @@ func (m *MsgConfigureMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
+
 func (m *MsgConfigureMinter) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgConfigureMinter.Merge(m, src)
 }
+
 func (m *MsgConfigureMinter) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgConfigureMinter) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgConfigureMinter.DiscardUnknown(m)
 }
@@ -521,8 +574,7 @@ func (m *MsgConfigureMinter) GetAllowance() types.Coin {
 	return types.Coin{}
 }
 
-type MsgConfigureMinterResponse struct {
-}
+type MsgConfigureMinterResponse struct{}
 
 func (m *MsgConfigureMinterResponse) Reset()         { *m = MsgConfigureMinterResponse{} }
 func (m *MsgConfigureMinterResponse) String() string { return proto.CompactTextString(m) }
@@ -530,9 +582,11 @@ func (*MsgConfigureMinterResponse) ProtoMessage()    {}
 func (*MsgConfigureMinterResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{11}
 }
+
 func (m *MsgConfigureMinterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgConfigureMinterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgConfigureMinterResponse.Marshal(b, m, deterministic)
@@ -545,12 +599,15 @@ func (m *MsgConfigureMinterResponse) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
+
 func (m *MsgConfigureMinterResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgConfigureMinterResponse.Merge(m, src)
 }
+
 func (m *MsgConfigureMinterResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgConfigureMinterResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgConfigureMinterResponse.DiscardUnknown(m)
 }
@@ -568,9 +625,11 @@ func (*MsgRemoveMinter) ProtoMessage()    {}
 func (*MsgRemoveMinter) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{12}
 }
+
 func (m *MsgRemoveMinter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgRemoveMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgRemoveMinter.Marshal(b, m, deterministic)
@@ -583,12 +642,15 @@ func (m *MsgRemoveMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
+
 func (m *MsgRemoveMinter) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgRemoveMinter.Merge(m, src)
 }
+
 func (m *MsgRemoveMinter) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgRemoveMinter) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgRemoveMinter.DiscardUnknown(m)
 }
@@ -609,8 +671,7 @@ func (m *MsgRemoveMinter) GetAddress() string {
 	return ""
 }
 
-type MsgRemoveMinterResponse struct {
-}
+type MsgRemoveMinterResponse struct{}
 
 func (m *MsgRemoveMinterResponse) Reset()         { *m = MsgRemoveMinterResponse{} }
 func (m *MsgRemoveMinterResponse) String() string { return proto.CompactTextString(m) }
@@ -618,9 +679,11 @@ func (*MsgRemoveMinterResponse) ProtoMessage()    {}
 func (*MsgRemoveMinterResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{13}
 }
+
 func (m *MsgRemoveMinterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgRemoveMinterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgRemoveMinterResponse.Marshal(b, m, deterministic)
@@ -633,12 +696,15 @@ func (m *MsgRemoveMinterResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
+
 func (m *MsgRemoveMinterResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgRemoveMinterResponse.Merge(m, src)
 }
+
 func (m *MsgRemoveMinterResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgRemoveMinterResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgRemoveMinterResponse.DiscardUnknown(m)
 }
@@ -657,9 +723,11 @@ func (*MsgMint) ProtoMessage()    {}
 func (*MsgMint) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{14}
 }
+
 func (m *MsgMint) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgMint) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgMint.Marshal(b, m, deterministic)
@@ -672,12 +740,15 @@ func (m *MsgMint) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
+
 func (m *MsgMint) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgMint.Merge(m, src)
 }
+
 func (m *MsgMint) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgMint) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgMint.DiscardUnknown(m)
 }
@@ -705,8 +776,7 @@ func (m *MsgMint) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
-type MsgMintResponse struct {
-}
+type MsgMintResponse struct{}
 
 func (m *MsgMintResponse) Reset()         { *m = MsgMintResponse{} }
 func (m *MsgMintResponse) String() string { return proto.CompactTextString(m) }
@@ -714,9 +784,11 @@ func (*MsgMintResponse) ProtoMessage()    {}
 func (*MsgMintResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{15}
 }
+
 func (m *MsgMintResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgMintResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgMintResponse.Marshal(b, m, deterministic)
@@ -729,12 +801,15 @@ func (m *MsgMintResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
+
 func (m *MsgMintResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgMintResponse.Merge(m, src)
 }
+
 func (m *MsgMintResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgMintResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgMintResponse.DiscardUnknown(m)
 }
@@ -752,9 +827,11 @@ func (*MsgBurn) ProtoMessage()    {}
 func (*MsgBurn) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{16}
 }
+
 func (m *MsgBurn) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgBurn) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgBurn.Marshal(b, m, deterministic)
@@ -767,12 +844,15 @@ func (m *MsgBurn) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
+
 func (m *MsgBurn) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgBurn.Merge(m, src)
 }
+
 func (m *MsgBurn) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgBurn) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgBurn.DiscardUnknown(m)
 }
@@ -793,8 +873,7 @@ func (m *MsgBurn) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
-type MsgBurnResponse struct {
-}
+type MsgBurnResponse struct{}
 
 func (m *MsgBurnResponse) Reset()         { *m = MsgBurnResponse{} }
 func (m *MsgBurnResponse) String() string { return proto.CompactTextString(m) }
@@ -802,9 +881,11 @@ func (*MsgBurnResponse) ProtoMessage()    {}
 func (*MsgBurnResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{17}
 }
+
 func (m *MsgBurnResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgBurnResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgBurnResponse.Marshal(b, m, deterministic)
@@ -817,12 +898,15 @@ func (m *MsgBurnResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
+
 func (m *MsgBurnResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgBurnResponse.Merge(m, src)
 }
+
 func (m *MsgBurnResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgBurnResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgBurnResponse.DiscardUnknown(m)
 }
@@ -840,9 +924,11 @@ func (*MsgBlacklist) ProtoMessage()    {}
 func (*MsgBlacklist) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{18}
 }
+
 func (m *MsgBlacklist) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgBlacklist) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgBlacklist.Marshal(b, m, deterministic)
@@ -855,12 +941,15 @@ func (m *MsgBlacklist) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
+
 func (m *MsgBlacklist) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgBlacklist.Merge(m, src)
 }
+
 func (m *MsgBlacklist) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgBlacklist) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgBlacklist.DiscardUnknown(m)
 }
@@ -881,8 +970,7 @@ func (m *MsgBlacklist) GetAddress() string {
 	return ""
 }
 
-type MsgBlacklistResponse struct {
-}
+type MsgBlacklistResponse struct{}
 
 func (m *MsgBlacklistResponse) Reset()         { *m = MsgBlacklistResponse{} }
 func (m *MsgBlacklistResponse) String() string { return proto.CompactTextString(m) }
@@ -890,9 +978,11 @@ func (*MsgBlacklistResponse) ProtoMessage()    {}
 func (*MsgBlacklistResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{19}
 }
+
 func (m *MsgBlacklistResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgBlacklistResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgBlacklistResponse.Marshal(b, m, deterministic)
@@ -905,12 +995,15 @@ func (m *MsgBlacklistResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
+
 func (m *MsgBlacklistResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgBlacklistResponse.Merge(m, src)
 }
+
 func (m *MsgBlacklistResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgBlacklistResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgBlacklistResponse.DiscardUnknown(m)
 }
@@ -928,9 +1021,11 @@ func (*MsgUnblacklist) ProtoMessage()    {}
 func (*MsgUnblacklist) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{20}
 }
+
 func (m *MsgUnblacklist) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUnblacklist) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUnblacklist.Marshal(b, m, deterministic)
@@ -943,12 +1038,15 @@ func (m *MsgUnblacklist) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUnblacklist) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUnblacklist.Merge(m, src)
 }
+
 func (m *MsgUnblacklist) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUnblacklist) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUnblacklist.DiscardUnknown(m)
 }
@@ -969,8 +1067,7 @@ func (m *MsgUnblacklist) GetAddress() string {
 	return ""
 }
 
-type MsgUnblacklistResponse struct {
-}
+type MsgUnblacklistResponse struct{}
 
 func (m *MsgUnblacklistResponse) Reset()         { *m = MsgUnblacklistResponse{} }
 func (m *MsgUnblacklistResponse) String() string { return proto.CompactTextString(m) }
@@ -978,9 +1075,11 @@ func (*MsgUnblacklistResponse) ProtoMessage()    {}
 func (*MsgUnblacklistResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{21}
 }
+
 func (m *MsgUnblacklistResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUnblacklistResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUnblacklistResponse.Marshal(b, m, deterministic)
@@ -993,12 +1092,15 @@ func (m *MsgUnblacklistResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUnblacklistResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUnblacklistResponse.Merge(m, src)
 }
+
 func (m *MsgUnblacklistResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUnblacklistResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUnblacklistResponse.DiscardUnknown(m)
 }
@@ -1015,9 +1117,11 @@ func (*MsgPause) ProtoMessage()    {}
 func (*MsgPause) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{22}
 }
+
 func (m *MsgPause) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgPause) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgPause.Marshal(b, m, deterministic)
@@ -1030,12 +1134,15 @@ func (m *MsgPause) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
+
 func (m *MsgPause) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgPause.Merge(m, src)
 }
+
 func (m *MsgPause) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgPause) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgPause.DiscardUnknown(m)
 }
@@ -1049,8 +1156,7 @@ func (m *MsgPause) GetFrom() string {
 	return ""
 }
 
-type MsgPauseResponse struct {
-}
+type MsgPauseResponse struct{}
 
 func (m *MsgPauseResponse) Reset()         { *m = MsgPauseResponse{} }
 func (m *MsgPauseResponse) String() string { return proto.CompactTextString(m) }
@@ -1058,9 +1164,11 @@ func (*MsgPauseResponse) ProtoMessage()    {}
 func (*MsgPauseResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{23}
 }
+
 func (m *MsgPauseResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgPauseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgPauseResponse.Marshal(b, m, deterministic)
@@ -1073,12 +1181,15 @@ func (m *MsgPauseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
+
 func (m *MsgPauseResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgPauseResponse.Merge(m, src)
 }
+
 func (m *MsgPauseResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgPauseResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgPauseResponse.DiscardUnknown(m)
 }
@@ -1095,9 +1206,11 @@ func (*MsgUnpause) ProtoMessage()    {}
 func (*MsgUnpause) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{24}
 }
+
 func (m *MsgUnpause) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUnpause) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUnpause.Marshal(b, m, deterministic)
@@ -1110,12 +1223,15 @@ func (m *MsgUnpause) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUnpause) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUnpause.Merge(m, src)
 }
+
 func (m *MsgUnpause) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUnpause) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUnpause.DiscardUnknown(m)
 }
@@ -1129,8 +1245,7 @@ func (m *MsgUnpause) GetFrom() string {
 	return ""
 }
 
-type MsgUnpauseResponse struct {
-}
+type MsgUnpauseResponse struct{}
 
 func (m *MsgUnpauseResponse) Reset()         { *m = MsgUnpauseResponse{} }
 func (m *MsgUnpauseResponse) String() string { return proto.CompactTextString(m) }
@@ -1138,9 +1253,11 @@ func (*MsgUnpauseResponse) ProtoMessage()    {}
 func (*MsgUnpauseResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{25}
 }
+
 func (m *MsgUnpauseResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgUnpauseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgUnpauseResponse.Marshal(b, m, deterministic)
@@ -1153,12 +1270,15 @@ func (m *MsgUnpauseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
+
 func (m *MsgUnpauseResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgUnpauseResponse.Merge(m, src)
 }
+
 func (m *MsgUnpauseResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgUnpauseResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgUnpauseResponse.DiscardUnknown(m)
 }
@@ -1177,9 +1297,11 @@ func (*MsgConfigureMinterController) ProtoMessage()    {}
 func (*MsgConfigureMinterController) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{26}
 }
+
 func (m *MsgConfigureMinterController) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgConfigureMinterController) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgConfigureMinterController.Marshal(b, m, deterministic)
@@ -1192,12 +1314,15 @@ func (m *MsgConfigureMinterController) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
+
 func (m *MsgConfigureMinterController) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgConfigureMinterController.Merge(m, src)
 }
+
 func (m *MsgConfigureMinterController) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgConfigureMinterController) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgConfigureMinterController.DiscardUnknown(m)
 }
@@ -1225,8 +1350,7 @@ func (m *MsgConfigureMinterController) GetMinter() string {
 	return ""
 }
 
-type MsgConfigureMinterControllerResponse struct {
-}
+type MsgConfigureMinterControllerResponse struct{}
 
 func (m *MsgConfigureMinterControllerResponse) Reset()         { *m = MsgConfigureMinterControllerResponse{} }
 func (m *MsgConfigureMinterControllerResponse) String() string { return proto.CompactTextString(m) }
@@ -1234,9 +1358,11 @@ func (*MsgConfigureMinterControllerResponse) ProtoMessage()    {}
 func (*MsgConfigureMinterControllerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{27}
 }
+
 func (m *MsgConfigureMinterControllerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgConfigureMinterControllerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgConfigureMinterControllerResponse.Marshal(b, m, deterministic)
@@ -1249,12 +1375,15 @@ func (m *MsgConfigureMinterControllerResponse) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
+
 func (m *MsgConfigureMinterControllerResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgConfigureMinterControllerResponse.Merge(m, src)
 }
+
 func (m *MsgConfigureMinterControllerResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgConfigureMinterControllerResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgConfigureMinterControllerResponse.DiscardUnknown(m)
 }
@@ -1272,9 +1401,11 @@ func (*MsgRemoveMinterController) ProtoMessage()    {}
 func (*MsgRemoveMinterController) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{28}
 }
+
 func (m *MsgRemoveMinterController) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgRemoveMinterController) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgRemoveMinterController.Marshal(b, m, deterministic)
@@ -1287,12 +1418,15 @@ func (m *MsgRemoveMinterController) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
+
 func (m *MsgRemoveMinterController) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgRemoveMinterController.Merge(m, src)
 }
+
 func (m *MsgRemoveMinterController) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgRemoveMinterController) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgRemoveMinterController.DiscardUnknown(m)
 }
@@ -1313,8 +1447,7 @@ func (m *MsgRemoveMinterController) GetController() string {
 	return ""
 }
 
-type MsgRemoveMinterControllerResponse struct {
-}
+type MsgRemoveMinterControllerResponse struct{}
 
 func (m *MsgRemoveMinterControllerResponse) Reset()         { *m = MsgRemoveMinterControllerResponse{} }
 func (m *MsgRemoveMinterControllerResponse) String() string { return proto.CompactTextString(m) }
@@ -1322,9 +1455,11 @@ func (*MsgRemoveMinterControllerResponse) ProtoMessage()    {}
 func (*MsgRemoveMinterControllerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_51ab120c97d57038, []int{29}
 }
+
 func (m *MsgRemoveMinterControllerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
+
 func (m *MsgRemoveMinterControllerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_MsgRemoveMinterControllerResponse.Marshal(b, m, deterministic)
@@ -1337,12 +1472,15 @@ func (m *MsgRemoveMinterControllerResponse) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
+
 func (m *MsgRemoveMinterControllerResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgRemoveMinterControllerResponse.Merge(m, src)
 }
+
 func (m *MsgRemoveMinterControllerResponse) XXX_Size() int {
 	return m.Size()
 }
+
 func (m *MsgRemoveMinterControllerResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgRemoveMinterControllerResponse.DiscardUnknown(m)
 }
@@ -1439,8 +1577,10 @@ var fileDescriptor_51ab120c97d57038 = []byte{
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
+var (
+	_ context.Context
+	_ grpc.ClientConn
+)
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
@@ -1630,51 +1770,64 @@ type MsgServer interface {
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
-}
+type UnimplementedMsgServer struct{}
 
 func (*UnimplementedMsgServer) UpdateMasterMinter(ctx context.Context, req *MsgUpdateMasterMinter) (*MsgUpdateMasterMinterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMasterMinter not implemented")
 }
+
 func (*UnimplementedMsgServer) UpdatePauser(ctx context.Context, req *MsgUpdatePauser) (*MsgUpdatePauserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePauser not implemented")
 }
+
 func (*UnimplementedMsgServer) UpdateBlacklister(ctx context.Context, req *MsgUpdateBlacklister) (*MsgUpdateBlacklisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBlacklister not implemented")
 }
+
 func (*UnimplementedMsgServer) UpdateOwner(ctx context.Context, req *MsgUpdateOwner) (*MsgUpdateOwnerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOwner not implemented")
 }
+
 func (*UnimplementedMsgServer) AcceptOwner(ctx context.Context, req *MsgAcceptOwner) (*MsgAcceptOwnerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptOwner not implemented")
 }
+
 func (*UnimplementedMsgServer) ConfigureMinter(ctx context.Context, req *MsgConfigureMinter) (*MsgConfigureMinterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfigureMinter not implemented")
 }
+
 func (*UnimplementedMsgServer) RemoveMinter(ctx context.Context, req *MsgRemoveMinter) (*MsgRemoveMinterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveMinter not implemented")
 }
+
 func (*UnimplementedMsgServer) Mint(ctx context.Context, req *MsgMint) (*MsgMintResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Mint not implemented")
 }
+
 func (*UnimplementedMsgServer) Burn(ctx context.Context, req *MsgBurn) (*MsgBurnResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Burn not implemented")
 }
+
 func (*UnimplementedMsgServer) Blacklist(ctx context.Context, req *MsgBlacklist) (*MsgBlacklistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Blacklist not implemented")
 }
+
 func (*UnimplementedMsgServer) Unblacklist(ctx context.Context, req *MsgUnblacklist) (*MsgUnblacklistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unblacklist not implemented")
 }
+
 func (*UnimplementedMsgServer) Pause(ctx context.Context, req *MsgPause) (*MsgPauseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Pause not implemented")
 }
+
 func (*UnimplementedMsgServer) Unpause(ctx context.Context, req *MsgUnpause) (*MsgUnpauseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unpause not implemented")
 }
+
 func (*UnimplementedMsgServer) ConfigureMinterController(ctx context.Context, req *MsgConfigureMinterController) (*MsgConfigureMinterControllerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfigureMinterController not implemented")
 }
+
 func (*UnimplementedMsgServer) RemoveMinterController(ctx context.Context, req *MsgRemoveMinterController) (*MsgRemoveMinterControllerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveMinterController not implemented")
 }
@@ -2942,6 +3095,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+
 func (m *MsgUpdateMasterMinter) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3329,9 +3483,11 @@ func (m *MsgRemoveMinterControllerResponse) Size() (n int) {
 func sovTx(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
+
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
+
 func (m *MsgUpdateMasterMinter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3446,6 +3602,7 @@ func (m *MsgUpdateMasterMinter) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdateMasterMinterResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3496,6 +3653,7 @@ func (m *MsgUpdateMasterMinterResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdatePauser) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3610,6 +3768,7 @@ func (m *MsgUpdatePauser) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdatePauserResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3660,6 +3819,7 @@ func (m *MsgUpdatePauserResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdateBlacklister) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3774,6 +3934,7 @@ func (m *MsgUpdateBlacklister) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdateBlacklisterResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3824,6 +3985,7 @@ func (m *MsgUpdateBlacklisterResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdateOwner) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3938,6 +4100,7 @@ func (m *MsgUpdateOwner) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUpdateOwnerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3988,6 +4151,7 @@ func (m *MsgUpdateOwnerResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgAcceptOwner) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4070,6 +4234,7 @@ func (m *MsgAcceptOwner) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgAcceptOwnerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4120,6 +4285,7 @@ func (m *MsgAcceptOwnerResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgConfigureMinter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4267,6 +4433,7 @@ func (m *MsgConfigureMinter) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgConfigureMinterResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4317,6 +4484,7 @@ func (m *MsgConfigureMinterResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgRemoveMinter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4431,6 +4599,7 @@ func (m *MsgRemoveMinter) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgRemoveMinterResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4481,6 +4650,7 @@ func (m *MsgRemoveMinterResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgMint) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4628,6 +4798,7 @@ func (m *MsgMint) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgMintResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4678,6 +4849,7 @@ func (m *MsgMintResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgBurn) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4793,6 +4965,7 @@ func (m *MsgBurn) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgBurnResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4843,6 +5016,7 @@ func (m *MsgBurnResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgBlacklist) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -4957,6 +5131,7 @@ func (m *MsgBlacklist) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgBlacklistResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5007,6 +5182,7 @@ func (m *MsgBlacklistResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUnblacklist) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5121,6 +5297,7 @@ func (m *MsgUnblacklist) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUnblacklistResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5171,6 +5348,7 @@ func (m *MsgUnblacklistResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgPause) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5253,6 +5431,7 @@ func (m *MsgPause) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgPauseResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5303,6 +5482,7 @@ func (m *MsgPauseResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUnpause) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5385,6 +5565,7 @@ func (m *MsgUnpause) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgUnpauseResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5435,6 +5616,7 @@ func (m *MsgUnpauseResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgConfigureMinterController) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5581,6 +5763,7 @@ func (m *MsgConfigureMinterController) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgConfigureMinterControllerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5631,6 +5814,7 @@ func (m *MsgConfigureMinterControllerResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgRemoveMinterController) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5745,6 +5929,7 @@ func (m *MsgRemoveMinterController) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func (m *MsgRemoveMinterControllerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5795,6 +5980,7 @@ func (m *MsgRemoveMinterControllerResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+
 func skipTx(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0

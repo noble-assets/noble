@@ -93,7 +93,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 
 		attesters[i] = p
 
-		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) //public key
+		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) // public key
 
 		attesterPub := hex.EncodeToString(pubKey)
 
@@ -150,7 +150,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
-	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" //account
+	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" // account
 
 	receiverBz, err := hex.DecodeString(receiver)
 	require.NoError(t, err)
@@ -189,7 +189,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 
 	digestBurn := crypto.Keccak256(wrappedDepositForBurnBz) // hashed message is the key to the attestation
 
-	attestationBurn := make([]byte, 0, len(attesters)*65) //65 byte
+	attestationBurn := make([]byte, 0, len(attesters)*65) // 65 byte
 
 	// CCTP requires attestations to have signatures sorted by address
 	sort.Slice(attesters, func(i, j int) bool {

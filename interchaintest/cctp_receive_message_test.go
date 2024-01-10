@@ -85,7 +85,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 		attesters[i] = p
 
-		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) //public key
+		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) // public key
 
 		attesterPub := hex.EncodeToString(pubKey)
 
@@ -145,7 +145,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
-	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" //account
+	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" // account
 
 	receiverBz, err := hex.DecodeString(receiver)
 	require.NoError(t, err)
@@ -166,7 +166,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 	depositForBurnBz, err := depositForBurn.Bytes()
 	require.NoError(t, err)
 
-	var senderBurn = []byte("12345678901234567890123456789012")
+	senderBurn := []byte("12345678901234567890123456789012")
 
 	emptyDestinationCaller := make([]byte, 32)
 
@@ -186,7 +186,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 
 	digestBurn := crypto.Keccak256(wrappedDepositForBurnBz) // hashed message is the key to the attestation
 
-	attestationBurn := make([]byte, 0, len(attesters)*65) //65 byte
+	attestationBurn := make([]byte, 0, len(attesters)*65) // 65 byte
 
 	// CCTP requires attestations to have signatures sorted by address
 	sort.Slice(attesters, func(i, j int) bool {
@@ -211,7 +211,7 @@ func TestCCTP_ReceiveMessage(t *testing.T) {
 		bCtx,
 		broadcaster,
 		gw.fiatTfRoles.Owner,
-		&cctptypes.MsgReceiveMessage{ //note: all messages that go to noble go through MsgReceiveMessage
+		&cctptypes.MsgReceiveMessage{ // note: all messages that go to noble go through MsgReceiveMessage
 			From:        gw.fiatTfRoles.Owner.FormattedAddress(),
 			Message:     wrappedDepositForBurnBz,
 			Attestation: attestationBurn,
