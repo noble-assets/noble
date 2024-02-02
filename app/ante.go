@@ -115,48 +115,53 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			switch m := m.(type) {
 			case *banktypes.MsgSend:
 				for _, c := range m.Amount {
-					addresses := []string{m.ToAddress, m.FromAddress}
-					blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.fiattokenfactory)
-					if blacklisted {
-						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+					err := checkForBlacklistedAddressByTokenFactory(ctx, m.ToAddress, c, ad.tokenfactory, ad.fiattokenfactory)
+					if err == tokenfactorytypes.ErrUnauthorized {
+						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not receive tokens", m.ToAddress)
+					} else if err != nil {
+						return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", m.ToAddress)
 					}
-					if err != nil {
-						return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
+					err = checkForBlacklistedAddressByTokenFactory(ctx, m.FromAddress, c, ad.tokenfactory, ad.fiattokenfactory)
+					if err == tokenfactorytypes.ErrUnauthorized {
+						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send tokens", m.FromAddress)
+					} else if err != nil {
+						return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", m.FromAddress)
 					}
 				}
 			case *banktypes.MsgMultiSend:
 				for _, i := range m.Inputs {
 					for _, c := range i.Coins {
-						addresses := []string{i.Address}
-						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.fiattokenfactory)
-						if blacklisted {
-							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
-						}
-						if err != nil {
-							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
+						err := checkForBlacklistedAddressByTokenFactory(ctx, i.Address, c, ad.tokenfactory, ad.fiattokenfactory)
+						if err == tokenfactorytypes.ErrUnauthorized {
+							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", i.Address)
+						} else if err != nil {
+							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", i.Address)
 						}
 					}
 				}
 				for _, o := range m.Outputs {
 					for _, c := range o.Coins {
-						addresses := []string{o.Address}
-						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.fiattokenfactory)
-						if blacklisted {
-							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
-						}
-						if err != nil {
-							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
+						err := checkForBlacklistedAddressByTokenFactory(ctx, o.Address, c, ad.tokenfactory, ad.fiattokenfactory)
+						if err == tokenfactorytypes.ErrUnauthorized {
+							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", o.Address)
+						} else if err != nil {
+							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", o.Address)
 						}
 					}
 				}
 			case *transfertypes.MsgTransfer:
-				addresses := []string{m.Sender, m.Receiver}
-				blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, m.Token, ad.tokenfactory, ad.fiattokenfactory)
-				if blacklisted {
-					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
+				err := checkForBlacklistedAddressByTokenFactory(ctx, m.Sender, m.Token, ad.tokenfactory, ad.fiattokenfactory)
+				if err == tokenfactorytypes.ErrUnauthorized {
+					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send tokens", m.Sender)
+				} else if err != nil {
+					return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", m.Sender)
 				}
-				if err != nil {
-					return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
+				err = checkForBlacklistedAddressByTokenFactory(ctx, m.Receiver, m.Token, ad.tokenfactory, ad.fiattokenfactory)
+				if err == tokenfactorytypes.ErrUnauthorized {
+					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not receive tokens", m.Receiver)
+				} else if err != nil {
+					// Ignore the decoding error because the receiver address could be a non-cosmos address and the destination chain should be in charge of minting the token
+					continue
 				}
 			}
 		default:
@@ -167,35 +172,31 @@ func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 }
 
 // checkForBlacklistedAddressByTokenFactory first checks if the denom being transacted is a mintable asset from a TokenFactory,
-// if it is, it checks if the addresses involved in the tx are blacklisted by that specific TokenFactory.
-func checkForBlacklistedAddressByTokenFactory(ctx sdk.Context, addresses []string, c sdk.Coin, tf *tokenfactory.Keeper, ctf *fiattokenfactory.Keeper) (blacklisted bool, blacklistedAddress string, err error) {
+// if it is, it checks if the address involved in the tx is blacklisted by that specific TokenFactory.
+func checkForBlacklistedAddressByTokenFactory(ctx sdk.Context, address string, c sdk.Coin, tf *tokenfactory.Keeper, ctf *fiattokenfactory.Keeper) error {
 	tfMintingDenom := tf.GetMintingDenom(ctx)
 	if c.Denom == tfMintingDenom.Denom {
-		for _, address := range addresses {
-			_, addressBz, err := bech32.DecodeAndConvert(address)
-			if err != nil {
-				return false, address, err
-			}
-			_, found := tf.GetBlacklisted(ctx, addressBz)
-			if found {
-				return true, address, tokenfactorytypes.ErrUnauthorized
-			}
+		_, addressBz, err := bech32.DecodeAndConvert(address)
+		if err != nil {
+			return err
+		}
+		_, found := tf.GetBlacklisted(ctx, addressBz)
+		if found {
+			return tokenfactorytypes.ErrUnauthorized
 		}
 	}
 	ctfMintingDenom := ctf.GetMintingDenom(ctx)
 	if c.Denom == ctfMintingDenom.Denom {
-		for _, address := range addresses {
-			_, addressBz, err := bech32.DecodeAndConvert(address)
-			if err != nil {
-				return false, address, err
-			}
-			_, found := ctf.GetBlacklisted(ctx, addressBz)
-			if found {
-				return true, address, fiattokenfactorytypes.ErrUnauthorized
-			}
+		_, addressBz, err := bech32.DecodeAndConvert(address)
+		if err != nil {
+			return err
+		}
+		_, found := ctf.GetBlacklisted(ctx, addressBz)
+		if found {
+			return fiattokenfactorytypes.ErrUnauthorized
 		}
 	}
-	return false, "", nil
+	return nil
 }
 
 // maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
