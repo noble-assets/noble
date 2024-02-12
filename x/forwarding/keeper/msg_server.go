@@ -16,9 +16,7 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 	address := types.GenerateAddress(msg.Channel, msg.Recipient)
 
 	if k.authKeeper.HasAccount(ctx, address) {
-		rawAccount := k.authKeeper.GetAccount(ctx, address)
-
-		switch account := rawAccount.(type) {
+		switch account := k.authKeeper.GetAccount(ctx, address).(type) {
 		case *authtypes.BaseAccount:
 			k.authKeeper.SetAccount(ctx, &types.ForwardingAccount{
 				BaseAccount: account,
@@ -35,6 +33,7 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 		}
 
 		if !k.bankKeeper.GetAllBalances(ctx, address).IsZero() {
+			rawAccount := k.authKeeper.GetAccount(ctx, address)
 			account, ok := rawAccount.(*types.ForwardingAccount)
 
 			if ok {
