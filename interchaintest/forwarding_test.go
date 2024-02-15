@@ -181,12 +181,11 @@ func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper,
 		spec,
 		{
 			Name:          "gaia",
-			Version:       "latest",
+			Version:       "v14.1.0",
 			NumValidators: &numValidators,
 			NumFullNodes:  &numFullNodes,
 			ChainConfig: ibc.ChainConfig{
-				ChainID:                "cosmoshub-4",
-				UsingNewGenesisCommand: true,
+				ChainID: "cosmoshub-4",
 			},
 		},
 	})
