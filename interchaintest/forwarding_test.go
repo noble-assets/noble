@@ -185,7 +185,8 @@ func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper,
 			NumValidators: &numValidators,
 			NumFullNodes:  &numFullNodes,
 			ChainConfig: ibc.ChainConfig{
-				ChainID: "cosmoshub-4",
+				ChainID:                "cosmoshub-4",
+				UsingNewGenesisCommand: true,
 			},
 		},
 	})

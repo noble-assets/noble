@@ -69,9 +69,14 @@ func (m Middleware) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, re
 		var memo types.RegisterAccountMemo
 		if err := types.ModuleCdc.UnmarshalJSON([]byte(transferData.GetMemo()), &memo); err == nil {
 			if memo.Noble != nil && memo.Noble.Forwarding != nil {
+				channel := packet.DestinationChannel
+				if memo.Noble.Forwarding.Channel != nil {
+					channel = memo.Noble.Forwarding.Channel.Value
+				}
+
 				req := &types.MsgRegisterAccount{
 					Recipient: memo.Noble.Forwarding.Recipient,
-					Channel:   packet.DestinationChannel,
+					Channel:   channel,
 				}
 
 				_, err := m.keeper.RegisterAccount(sdk.WrapSDKContext(ctx), req)
@@ -101,9 +106,14 @@ func (m Middleware) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, re
 		return m.app.OnRecvPacket(ctx, packet, relayer)
 	}
 
+	channel := packet.DestinationChannel
+	if data.Channel != nil {
+		channel = data.Channel.Value
+	}
+
 	req := &types.MsgRegisterAccount{
 		Recipient: data.Recipient,
-		Channel:   packet.DestinationChannel,
+		Channel:   channel,
 	}
 
 	res, err := m.keeper.RegisterAccount(sdk.WrapSDKContext(ctx), req)

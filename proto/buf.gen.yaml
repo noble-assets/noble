@@ -3,6 +3,6 @@ plugins:
   - name: gocosmos
     out: ..
     opt:
-      - plugins=grpc
+      - plugins=grpc,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types
   - name: grpc-gateway
     out: ..

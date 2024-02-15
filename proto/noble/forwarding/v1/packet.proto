@@ -2,10 +2,13 @@ syntax = "proto3";
 
 package noble.forwarding.v1;
 
+import "google/protobuf/wrappers.proto";
+
 option go_package = "github.com/noble-assets/noble/v5/x/forwarding/types";
 
 message RegisterAccountData {
   string recipient = 1;
+  google.protobuf.StringValue channel = 2;
 }
 
 message RegisterAccountMemo {
