@@ -19,6 +19,7 @@ type Keeper struct {
 
 	authKeeper     types.AccountKeeper
 	bankKeeper     types.BankKeeper
+	channelKeeper  types.ChannelKeeper
 	transferKeeper types.TransferKeeper
 }
 
@@ -28,6 +29,7 @@ func NewKeeper(
 	transientKey *storetypes.TransientStoreKey,
 	authKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	channelKeeper types.ChannelKeeper,
 	transferKeeper types.TransferKeeper,
 ) *Keeper {
 	return &Keeper{
@@ -37,6 +39,7 @@ func NewKeeper(
 
 		authKeeper:     authKeeper,
 		bankKeeper:     bankKeeper,
+		channelKeeper:  channelKeeper,
 		transferKeeper: transferKeeper,
 	}
 }

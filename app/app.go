@@ -489,6 +489,7 @@ func New(
 		tkeys[forwardingtypes.TransientStoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.IBCKeeper.ChannelKeeper,
 		app.TransferKeeper,
 	)
 
