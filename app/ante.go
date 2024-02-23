@@ -4,6 +4,8 @@ import (
 	fiattokenfactory "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/noble-assets/noble/v5/x/forwarding"
+	forwardingkeeper "github.com/noble-assets/noble/v5/x/forwarding/keeper"
 	tokenfactory "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
 
@@ -26,6 +28,7 @@ type HandlerOptions struct {
 	IBCKeeper              *ibckeeper.Keeper
 	GlobalFeeSubspace      paramtypes.Subspace
 	StakingSubspace        paramtypes.Subspace
+	ForwardingKeeper       *forwardingkeeper.Keeper
 }
 
 type IsPausedDecorator struct {
@@ -228,6 +231,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewRejectExtensionOptionsDecorator(),
 		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
 		NewIsPausedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
+		forwarding.NewAnteDecorator(options.ForwardingKeeper, options.AccountKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
