@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package noble.forwarding.v1;
 
-option go_package = "github.com/noble-assets/noble/v5/x/forwarding/types";
+option go_package = "github.com/noble-assets/noble/v4/x/forwarding/types";
 
 message RegisterAccountData {
   string recipient = 1;

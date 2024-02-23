@@ -2,8 +2,8 @@ package forwarding
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/noble-assets/noble/v5/x/forwarding/keeper"
-	"github.com/noble-assets/noble/v5/x/forwarding/types"
+	"github.com/noble-assets/noble/v4/x/forwarding/keeper"
+	"github.com/noble-assets/noble/v4/x/forwarding/types"
 )
 
 func InitGenesis(ctx sdk.Context, k *keeper.Keeper, genesis types.GenesisState) {

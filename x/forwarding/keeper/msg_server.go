@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	"github.com/noble-assets/noble/v5/x/forwarding/types"
+	"github.com/noble-assets/noble/v4/x/forwarding/types"
 )
 
 var _ types.MsgServer = &Keeper{}

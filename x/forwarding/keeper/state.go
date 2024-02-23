@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/noble-assets/noble/v5/x/forwarding/types"
+	"github.com/noble-assets/noble/v4/x/forwarding/types"
 )
 
 // PERSISTENT STATE

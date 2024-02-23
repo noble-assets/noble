@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	"github.com/noble-assets/noble/v5/x/forwarding/types"
+	"github.com/noble-assets/noble/v4/x/forwarding/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 

@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/noble-assets/noble/v5/x/forwarding/client/cli"
-	"github.com/noble-assets/noble/v5/x/forwarding/keeper"
-	"github.com/noble-assets/noble/v5/x/forwarding/types"
+	"github.com/noble-assets/noble/v4/x/forwarding/client/cli"
+	"github.com/noble-assets/noble/v4/x/forwarding/keeper"
+	"github.com/noble-assets/noble/v4/x/forwarding/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

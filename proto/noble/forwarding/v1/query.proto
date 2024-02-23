@@ -6,7 +6,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/noble-assets/noble/v5/x/forwarding/types";
+option go_package = "github.com/noble-assets/noble/v4/x/forwarding/types";
 
 service Query {
   rpc Address(QueryAddress) returns (QueryAddressResponse) {

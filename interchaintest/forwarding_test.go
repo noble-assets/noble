@@ -6,7 +6,7 @@ import (
 	"fmt"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	"github.com/icza/dyno"
-	forwardingtypes "github.com/noble-assets/noble/v5/x/forwarding/types"
+	forwardingtypes "github.com/noble-assets/noble/v4/x/forwarding/types"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
