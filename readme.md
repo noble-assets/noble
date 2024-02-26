@@ -92,7 +92,7 @@ The NMM is a 5/7 multisig for passing a Noble Multisig proposal to fulfill the t
 - Chorus One: Switzerland
 - Binary Holdings: Switzerland 
 - Cosmostation: Korea  
-- EverStake: Ukraine/ Austria 
+- Luganodes: Switzerland 
 
 Stakeholders on the NMM will be able to be rotated in and out of the mulitisg over time. 
 
