@@ -1,7 +1,7 @@
 name: Simulation Tests
 
 on:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   simulation-tests:
@@ -15,5 +15,5 @@ jobs:
         with:
           go-version: 1.21
 
-      - name: Run Unit Tests
+      - name: Run Simulation Tests
         run: go test -bench BenchmarkSimulation ./app
