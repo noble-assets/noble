@@ -112,7 +112,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		},
 		{
 			upgradeName: "v4.1.0-rc.2",
-			image:       nobleImageInfo[0],
+			image:       ghcrImage("v4.1.0-rc.2"),
 		},
 	}
 
