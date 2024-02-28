@@ -18,8 +18,6 @@ func CreateUpgradeHandler(
 			return vm, errors.New(fmt.Sprintf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID()))
 		}
 
-		// TODO: Ensure tariff module state is intact.
-
 		return mm.RunMigrations(ctx, cfg, vm)
 	}
 }
