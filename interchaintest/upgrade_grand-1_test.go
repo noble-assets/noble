@@ -110,6 +110,10 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 				require.Equal(t, numJailed, 1)
 			},
 		},
+		{
+			upgradeName: "v4.1.0-rc.2",
+			image:       nobleImageInfo[0],
+		},
 	}
 
 	testNobleChainUpgrade(t, "grand-1", genesis, denomMetadataUsdc, numValidators, numFullNodes, upgrades)

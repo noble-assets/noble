@@ -1,5 +1,5 @@
 ---
 
-## Previous Changes
+## Other Releases
 
-This changelog has yet to be fully initialized. For previous versions please refer to the release notes for a summary of changes.
+This changelog is specific to the v4.1 Argon release line. For other versions please refer to their release notes for a summary of changes.
