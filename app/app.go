@@ -93,7 +93,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	v4m1p0 "github.com/noble-assets/noble/v4/app/upgrades/v4.1.0"
+	v4m1p0rc2 "github.com/noble-assets/noble/v4/app/upgrades/v4.1.0-rc.2"
 	"github.com/noble-assets/noble/v4/cmd"
 	"github.com/noble-assets/noble/v4/docs"
 	"github.com/noble-assets/noble/v4/x/blockibc"
@@ -877,10 +877,10 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 }
 
 func (app *App) setupUpgradeHandlers() {
-	// v4.1.0 upgrade
+	// v4.1.0-rc.2 upgrade
 	app.UpgradeKeeper.SetUpgradeHandler(
-		v4m1p0.UpgradeName,
-		v4m1p0.CreateUpgradeHandler(
+		v4m1p0rc2.UpgradeName,
+		v4m1p0rc2.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
 		),
@@ -897,8 +897,8 @@ func (app *App) setupUpgradeHandlers() {
 	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
-	case v4m1p0.UpgradeName:
-		storeLoader = v4m1p0.CreateStoreLoader(upgradeInfo.Height)
+	case v4m1p0rc2.UpgradeName:
+		storeLoader = v4m1p0rc2.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {

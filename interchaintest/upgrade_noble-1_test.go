@@ -108,10 +108,6 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 				require.NoError(t, json.Unmarshal(raw, &res))
 			},
 		},
-		{
-			upgradeName: "v4.1.0",
-			image:       nobleImageInfo[0],
-		},
 	}
 
 	testNobleChainUpgrade(t, "noble-1", genesis, denomMetadataFrienzies, numValidators, numFullNodes, upgrades)
