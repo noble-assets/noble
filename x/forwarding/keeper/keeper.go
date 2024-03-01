@@ -60,6 +60,9 @@ func (k *Keeper) ExecuteForwards(ctx sdk.Context) {
 			if err != nil {
 				// TODO: Consider moving to persistent store in order to retry in future blocks?
 				k.Logger(ctx).Error("unable to execute automatic forward", "channel", forward.Channel, "address", forward.GetAddress().String(), "amount", balance.String(), "err", err)
+			} else {
+				k.IncrementNumOfForwards(ctx, forward.Channel)
+				k.IncrementTotalForwarded(ctx, forward.Channel, balance)
 			}
 		}
 	}
