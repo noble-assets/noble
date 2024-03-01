@@ -4,7 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/icza/dyno"
 	forwardingtypes "github.com/noble-assets/noble/v4/x/forwarding/types"
 	"github.com/strangelove-ventures/interchaintest/v4"
@@ -15,7 +19,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
-	"testing"
 )
 
 func TestForwarding_RegisterOnNoble(t *testing.T) {
@@ -54,6 +57,11 @@ func TestForwarding_RegisterOnNoble(t *testing.T) {
 	}.IBCDenom())
 	require.NoError(t, err)
 	require.Equal(t, int64(1_000_000), receiverBalance)
+
+	stats := ForwardingStats(t, ctx, validator)
+	require.Equal(t, uint64(1), stats.NumOfAccounts)
+	require.Equal(t, uint64(1), stats.NumOfForwards)
+	require.Equal(t, sdk.NewCoins(sdk.NewCoin("uusdc", sdk.NewInt(1_000_000))), stats.TotalForwarded)
 }
 
 func TestForwarding_RegisterViaTransfer(t *testing.T) {
@@ -68,7 +76,7 @@ func TestForwarding_RegisterViaTransfer(t *testing.T) {
 	_, err := gaia.SendIBCTransfer(ctx, "channel-0", receiver.KeyName(), ibc.WalletAmount{
 		Address: address,
 		Denom:   "uatom",
-		Amount:  100000,
+		Amount:  100_000,
 	}, ibc.TransferOptions{
 		Memo: fmt.Sprintf("{\"noble\":{\"forwarding\":{\"recipient\":\"%s\"}}}", receiver.FormattedAddress()),
 	})
@@ -85,7 +93,15 @@ func TestForwarding_RegisterViaTransfer(t *testing.T) {
 
 	receiverBalance, err := gaia.GetBalance(ctx, receiver.FormattedAddress(), "uatom")
 	require.NoError(t, err)
-	require.Equal(t, int64(998000), receiverBalance)
+	require.Equal(t, int64(998_000), receiverBalance)
+
+	stats := ForwardingStats(t, ctx, validator)
+	require.Equal(t, uint64(1), stats.NumOfAccounts)
+	require.Equal(t, uint64(1), stats.NumOfForwards)
+	require.Equal(t, sdk.NewCoins(sdk.NewCoin(transfertypes.DenomTrace{
+		Path:      "transfer/channel-0",
+		BaseDenom: "uatom",
+	}.IBCDenom(), sdk.NewInt(100_000))), stats.TotalForwarded)
 }
 
 func TestForwarding_FrontRunAccount(t *testing.T) {
@@ -128,6 +144,11 @@ func TestForwarding_FrontRunAccount(t *testing.T) {
 	}.IBCDenom())
 	require.NoError(t, err)
 	require.Equal(t, int64(1_000_000), receiverBalance)
+
+	stats := ForwardingStats(t, ctx, validator)
+	require.Equal(t, uint64(1), stats.NumOfAccounts)
+	require.Equal(t, uint64(1), stats.NumOfForwards)
+	require.Equal(t, sdk.NewCoins(sdk.NewCoin("uusdc", sdk.NewInt(1_000_000))), stats.TotalForwarded)
 }
 
 func TestForwarding_RegisterViaPacket(t *testing.T) {
@@ -146,6 +167,16 @@ func ForwardingAccount(t *testing.T, ctx context.Context, validator *cosmos.Chai
 	return res.Address, res.Exists
 }
 
+func ForwardingStats(t *testing.T, ctx context.Context, validator *cosmos.ChainNode) forwardingtypes.QueryStatsByChannelResponse {
+	raw, _, err := validator.ExecQuery(ctx, "forwarding", "stats", "channel-0")
+	require.NoError(t, err)
+
+	var res forwardingtypes.QueryStatsByChannelResponse
+	require.NoError(t, jsonpb.UnmarshalString(string(raw), &res))
+
+	return res
+}
+
 func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper, gaia *cosmos.CosmosChain, sender ibc.Wallet, receiver ibc.Wallet) {
 	ctx = context.Background()
 	logger := zaptest.NewLogger(t)
@@ -153,7 +184,7 @@ func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper,
 	execReporter := reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
-	var numValidators, numFullNodes = 1, 0
+	numValidators, numFullNodes := 1, 0
 
 	spec := nobleChainSpec(ctx, &wrapper, "noble-1", numValidators, numFullNodes, false, false, false, false)
 	spec.ModifyGenesis = func(cfg ibc.ChainConfig, bz []byte) ([]byte, error) {
