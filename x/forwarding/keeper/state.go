@@ -124,11 +124,11 @@ func (k *Keeper) GetAllTotalForwarded(ctx sdk.Context) map[string]string {
 	return totals
 }
 
-func (k *Keeper) IncrementTotalForwarded(ctx sdk.Context, channel string, coins sdk.Coins) {
+func (k *Keeper) IncrementTotalForwarded(ctx sdk.Context, channel string, coin sdk.Coin) {
 	total := k.GetTotalForwarded(ctx, channel)
 
 	key := types.TotalForwardedKey(channel)
-	bz := []byte(total.Add(coins...).String())
+	bz := []byte(total.Add(coin).String())
 
 	ctx.KVStore(k.storeKey).Set(key, bz)
 }
