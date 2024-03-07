@@ -44,3 +44,43 @@ func (msg *MsgRegisterAccount) Route() string {
 func (msg *MsgRegisterAccount) Type() string {
 	return "noble/forwarding/RegisterAccount"
 }
+
+//
+
+var _ legacytx.LegacyMsg = &MsgClearAccount{}
+
+func (msg *MsgClearAccount) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return errors.New("invalid signer")
+	}
+
+	_, err = sdk.AccAddressFromBech32(msg.Address)
+	if err != nil {
+		return errors.New("invalid address")
+	}
+
+	return nil
+}
+
+func (msg *MsgClearAccount) GetSigners() []sdk.AccAddress {
+	signer, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{signer}
+}
+
+func (msg *MsgClearAccount) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgClearAccount) Route() string {
+	return ModuleName
+}
+
+func (msg *MsgClearAccount) Type() string {
+	return "noble/forwarding/ClearAccount"
+}

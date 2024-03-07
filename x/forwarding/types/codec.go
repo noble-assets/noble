@@ -20,11 +20,13 @@ func init() {
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRegisterAccount{}, "noble/forwarding/RegisterAccount", nil)
+	cdc.RegisterConcrete(&MsgClearAccount{}, "noble/forwarding/ClearAccount", nil)
 }
 
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*authtypes.AccountI)(nil), &ForwardingAccount{})
 
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgRegisterAccount{})
+	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgClearAccount{})
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
