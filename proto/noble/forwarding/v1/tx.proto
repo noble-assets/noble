@@ -6,6 +6,7 @@ option go_package = "github.com/noble-assets/noble/v4/x/forwarding/types";
 
 service Msg {
   rpc RegisterAccount(noble.forwarding.v1.MsgRegisterAccount) returns (noble.forwarding.v1.MsgRegisterAccountResponse);
+  rpc ClearAccount(noble.forwarding.v1.MsgClearAccount) returns (noble.forwarding.v1.MsgClearAccountResponse);
 }
 
 //
@@ -19,3 +20,10 @@ message MsgRegisterAccount {
 message MsgRegisterAccountResponse {
   string address = 1;
 }
+
+message MsgClearAccount {
+  string signer = 1;
+  string address = 2;
+}
+
+message MsgClearAccountResponse {}
