@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v4.1.0-rc.3
+
+*Mar 11, 2024*
+
+This is the fourth release candidate for a minor release to the v4 Argon line.
+
+### BUG FIXES
+
+- Correctly track `NumOfForwards` and `TotalForwarded` when forwarding. ([#310](https://github.com/noble-assets/noble/pull/310))
+
+### DEPENDENCIES
+
+- Bump FiatTokenFactory to [`14edf83`](https://github.com/circlefin/noble-fiattokenfactory/commit/14edf83ee1c96055e2c17ea56ca9dd303d3c14f6) to enable `x/authz` support.
+- Bump PFM to [`455757b`](https://github.com/cosmos/ibc-apps/commit/455757bb5771c29cf2f83b59e37f6513e07c92be) to resolve Mandrake disclosure.
+
 ## v4.1.0-rc.2
 
 *Feb 29, 2024*

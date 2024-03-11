@@ -1,0 +1,1 @@
+- Correctly track `NumOfForwards` and `TotalForwarded` when forwarding. ([#310](https://github.com/noble-assets/noble/pull/310))
