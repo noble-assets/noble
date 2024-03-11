@@ -57,9 +57,9 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	packetforward "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
-	packetforwardkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/keeper"
-	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward"
+	packetforwardkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/keeper"
+	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
@@ -87,6 +87,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	fiattokenfactorymodule "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
+	fiattokenfactorymodulekeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+	fiattokenfactorymoduletypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -99,9 +102,6 @@ import (
 	"github.com/strangelove-ventures/noble/cmd"
 	"github.com/strangelove-ventures/noble/docs"
 	"github.com/strangelove-ventures/noble/x/blockibc"
-	fiattokenfactorymodule "github.com/strangelove-ventures/noble/x/fiattokenfactory"
-	fiattokenfactorymodulekeeper "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiattokenfactorymoduletypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
 	"github.com/strangelove-ventures/noble/x/globalfee"
 	tariff "github.com/strangelove-ventures/noble/x/tariff"
 	tariffkeeper "github.com/strangelove-ventures/noble/x/tariff/keeper"
@@ -662,7 +662,6 @@ func New(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			tokenFactoryKeeper:     app.TokenFactoryKeeper,
 			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
 
 			IBCKeeper:         app.IBCKeeper,
