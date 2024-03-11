@@ -1,201 +1,23 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/bech32"
-	fiattokenfactory "github.com/strangelove-ventures/noble/x/fiattokenfactory/keeper"
-	fiattokenfactorytypes "github.com/strangelove-ventures/noble/x/fiattokenfactory/types"
-	tokenfactory "github.com/strangelove-ventures/noble/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/strangelove-ventures/noble/x/tokenfactory/types"
-
+	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
+	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
-
 	feeante "github.com/strangelove-ventures/noble/x/globalfee/ante"
 )
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	tokenFactoryKeeper     *tokenfactory.Keeper
-	fiatTokenFactoryKeeper *fiattokenfactory.Keeper
+	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper
 	IBCKeeper              *ibckeeper.Keeper
 	GlobalFeeSubspace      paramtypes.Subspace
 	StakingSubspace        paramtypes.Subspace
-}
-
-type IsPausedDecorator struct {
-	tokenFactory     *tokenfactory.Keeper
-	fiatTokenFactory *fiattokenfactory.Keeper
-}
-
-func NewIsPausedDecorator(tf *tokenfactory.Keeper, ctf *fiattokenfactory.Keeper) IsPausedDecorator {
-	return IsPausedDecorator{
-		tokenFactory:     tf,
-		fiatTokenFactory: ctf,
-	}
-}
-
-func (ad IsPausedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	msgs := tx.GetMsgs()
-	for _, m := range msgs {
-		switch m := m.(type) {
-		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
-			switch m := m.(type) {
-			case *banktypes.MsgSend:
-				for _, c := range m.Amount {
-					paused, err := checkPausedStatebyTokenFactory(ctx, c, ad.tokenFactory, ad.fiatTokenFactory)
-					if paused {
-						return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
-					}
-				}
-			case *banktypes.MsgMultiSend:
-				for _, i := range m.Inputs {
-					for _, c := range i.Coins {
-						paused, err := checkPausedStatebyTokenFactory(ctx, c, ad.tokenFactory, ad.fiatTokenFactory)
-						if paused {
-							return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
-						}
-					}
-				}
-			case *transfertypes.MsgTransfer:
-				paused, err := checkPausedStatebyTokenFactory(ctx, m.Token, ad.tokenFactory, ad.fiatTokenFactory)
-				if paused {
-					return ctx, sdkerrors.Wrapf(err, "can not perform token transfers")
-				}
-			default:
-				continue
-			}
-		default:
-			continue
-		}
-	}
-	return next(ctx, tx, simulate)
-}
-
-func checkPausedStatebyTokenFactory(ctx sdk.Context, c sdk.Coin, tf *tokenfactory.Keeper, ctf *fiattokenfactory.Keeper) (bool, *sdkerrors.Error) {
-	tfMintingDenom := tf.GetMintingDenom(ctx)
-	if c.Denom == tfMintingDenom.Denom {
-		paused := tf.GetPaused(ctx)
-		if paused.Paused {
-			return true, tokenfactorytypes.ErrPaused
-		}
-	}
-	ctfMintingDenom := ctf.GetMintingDenom(ctx)
-	if c.Denom == ctfMintingDenom.Denom {
-		paused := ctf.GetPaused(ctx)
-		if paused.Paused {
-			return true, fiattokenfactorytypes.ErrPaused
-		}
-	}
-	return false, nil
-}
-
-type IsBlacklistedDecorator struct {
-	tokenfactory     *tokenfactory.Keeper
-	fiattokenfactory *fiattokenfactory.Keeper
-}
-
-func NewIsBlacklistedDecorator(tf *tokenfactory.Keeper, ctf *fiattokenfactory.Keeper) IsBlacklistedDecorator {
-	return IsBlacklistedDecorator{
-		tokenfactory:     tf,
-		fiattokenfactory: ctf,
-	}
-}
-
-func (ad IsBlacklistedDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	msgs := tx.GetMsgs()
-	for _, m := range msgs {
-		switch m := m.(type) {
-		case *banktypes.MsgSend, *banktypes.MsgMultiSend, *transfertypes.MsgTransfer:
-			switch m := m.(type) {
-			case *banktypes.MsgSend:
-				for _, c := range m.Amount {
-					addresses := []string{m.ToAddress, m.FromAddress}
-					blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.fiattokenfactory)
-					if blacklisted {
-						return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
-					}
-					if err != nil {
-						return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
-					}
-				}
-			case *banktypes.MsgMultiSend:
-				for _, i := range m.Inputs {
-					for _, c := range i.Coins {
-						addresses := []string{i.Address}
-						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.fiattokenfactory)
-						if blacklisted {
-							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
-						}
-						if err != nil {
-							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
-						}
-					}
-				}
-				for _, o := range m.Outputs {
-					for _, c := range o.Coins {
-						addresses := []string{o.Address}
-						blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, c, ad.tokenfactory, ad.fiattokenfactory)
-						if blacklisted {
-							return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
-						}
-						if err != nil {
-							return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
-						}
-					}
-				}
-			case *transfertypes.MsgTransfer:
-				addresses := []string{m.Sender, m.Receiver}
-				blacklisted, address, err := checkForBlacklistedAddressByTokenFactory(ctx, addresses, m.Token, ad.tokenfactory, ad.fiattokenfactory)
-				if blacklisted {
-					return ctx, sdkerrors.Wrapf(err, "an address (%s) is blacklisted and can not send or receive tokens", address)
-				}
-				if err != nil {
-					return ctx, sdkerrors.Wrapf(err, "error decoding address (%s)", address)
-				}
-			}
-		default:
-			continue
-		}
-	}
-	return next(ctx, tx, simulate)
-}
-
-// checkForBlacklistedAddressByTokenFactory first checks if the denom being transacted is a mintable asset from a TokenFactory,
-// if it is, it checks if the addresses involved in the tx are blacklisted by that specific TokenFactory.
-func checkForBlacklistedAddressByTokenFactory(ctx sdk.Context, addresses []string, c sdk.Coin, tf *tokenfactory.Keeper, ctf *fiattokenfactory.Keeper) (blacklisted bool, blacklistedAddress string, err error) {
-	tfMintingDenom := tf.GetMintingDenom(ctx)
-	if c.Denom == tfMintingDenom.Denom {
-		for _, address := range addresses {
-			_, addressBz, err := bech32.DecodeAndConvert(address)
-			if err != nil {
-				return false, address, err
-			}
-			_, found := tf.GetBlacklisted(ctx, addressBz)
-			if found {
-				return true, address, tokenfactorytypes.ErrUnauthorized
-			}
-		}
-	}
-	ctfMintingDenom := ctf.GetMintingDenom(ctx)
-	if c.Denom == ctfMintingDenom.Denom {
-		for _, address := range addresses {
-			_, addressBz, err := bech32.DecodeAndConvert(address)
-			if err != nil {
-				return false, address, err
-			}
-			_, found := ctf.GetBlacklisted(ctx, addressBz)
-			if found {
-				return true, address, fiattokenfactorytypes.ErrUnauthorized
-			}
-		}
-	}
-	return false, "", nil
 }
 
 // maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
@@ -226,8 +48,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
-		NewIsBlacklistedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
-		NewIsPausedDecorator(options.tokenFactoryKeeper, options.fiatTokenFactoryKeeper),
+		fiattokenfactory.NewIsBlacklistedDecorator(options.fiatTokenFactoryKeeper),
+		fiattokenfactory.NewIsPausedDecorator(options.fiatTokenFactoryKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
