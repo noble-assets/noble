@@ -62,3 +62,25 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 
 	return &types.MsgRegisterAccountResponse{Address: address.String()}, nil
 }
+
+func (k *Keeper) ClearAccount(goCtx context.Context, msg *types.MsgClearAccount) (*types.MsgClearAccountResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	address := sdk.MustAccAddressFromBech32(msg.Address)
+
+	rawAccount := k.authKeeper.GetAccount(ctx, address)
+	if rawAccount == nil {
+		return nil, errors.New("account does not exist")
+	}
+	account, ok := rawAccount.(*types.ForwardingAccount)
+	if !ok {
+		return nil, errors.New("account is not a forwarding account")
+	}
+
+	if k.bankKeeper.GetAllBalances(ctx, address).IsZero() {
+		return nil, errors.New("account does not require clearing")
+	}
+
+	k.SetPendingForward(ctx, account)
+
+	return &types.MsgClearAccountResponse{}, nil
+}

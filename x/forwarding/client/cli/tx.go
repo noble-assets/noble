@@ -15,6 +15,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(TxRegisterAccount())
+	cmd.AddCommand(TxClearAccount())
 
 	return cmd
 }
@@ -33,6 +34,30 @@ func TxRegisterAccount() *cobra.Command {
 				Signer:    clientCtx.GetFromAddress().String(),
 				Recipient: args[1],
 				Channel:   args[0],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func TxClearAccount() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "clear-account [address]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := &types.MsgClearAccount{
+				Signer:  clientCtx.GetFromAddress().String(),
+				Address: args[0],
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

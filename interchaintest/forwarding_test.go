@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
@@ -24,7 +25,7 @@ import (
 func TestForwarding_RegisterOnNoble(t *testing.T) {
 	t.Parallel()
 
-	ctx, wrapper, gaia, sender, receiver := ForwardingSuite(t)
+	ctx, wrapper, gaia, _, _, sender, receiver := ForwardingSuite(t)
 	validator := wrapper.chain.Validators[0]
 
 	address, exists := ForwardingAccount(t, ctx, validator, receiver)
@@ -67,7 +68,7 @@ func TestForwarding_RegisterOnNoble(t *testing.T) {
 func TestForwarding_RegisterViaTransfer(t *testing.T) {
 	t.Parallel()
 
-	ctx, wrapper, gaia, _, receiver := ForwardingSuite(t)
+	ctx, wrapper, gaia, _, _, _, receiver := ForwardingSuite(t)
 	validator := wrapper.chain.Validators[0]
 
 	address, exists := ForwardingAccount(t, ctx, validator, receiver)
@@ -104,10 +105,14 @@ func TestForwarding_RegisterViaTransfer(t *testing.T) {
 	}.IBCDenom(), sdk.NewInt(100_000))), stats.TotalForwarded)
 }
 
+func TestForwarding_RegisterViaPacket(t *testing.T) {
+	t.Skip()
+}
+
 func TestForwarding_FrontRunAccount(t *testing.T) {
 	t.Parallel()
 
-	ctx, wrapper, gaia, sender, receiver := ForwardingSuite(t)
+	ctx, wrapper, gaia, _, _, sender, receiver := ForwardingSuite(t)
 	validator := wrapper.chain.Validators[0]
 
 	address, exists := ForwardingAccount(t, ctx, validator, receiver)
@@ -151,8 +156,70 @@ func TestForwarding_FrontRunAccount(t *testing.T) {
 	require.Equal(t, sdk.NewCoins(sdk.NewCoin("uusdc", sdk.NewInt(1_000_000))), stats.TotalForwarded)
 }
 
-func TestForwarding_RegisterViaPacket(t *testing.T) {
-	t.Skip()
+func TestForwarding_ClearAccount(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx, wrapper, gaia, rly, execReporter, sender, receiver := ForwardingSuite(t)
+	validator := wrapper.chain.Validators[0]
+
+	require.NoError(t, rly.StopRelayer(ctx, execReporter))
+
+	address, exists := ForwardingAccount(t, ctx, validator, receiver)
+	require.False(t, exists)
+
+	_, err := validator.ExecTx(ctx, sender.KeyName(), "forwarding", "register-account", "channel-0", receiver.FormattedAddress())
+	require.NoError(t, err)
+
+	_, exists = ForwardingAccount(t, ctx, validator, receiver)
+	require.True(t, exists)
+
+	require.NoError(t, validator.SendFunds(ctx, sender.KeyName(), ibc.WalletAmount{
+		Address: address,
+		Denom:   "uusdc",
+		Amount:  1_000_000,
+	}))
+
+	time.Sleep(10 * time.Minute)
+
+	require.NoError(t, rly.StartRelayer(ctx, execReporter))
+	require.NoError(t, testutil.WaitForBlocks(ctx, 10, wrapper.chain, gaia))
+
+	senderBalance, err := wrapper.chain.AllBalances(ctx, sender.FormattedAddress())
+	require.NoError(t, err)
+	require.True(t, senderBalance.IsZero())
+
+	balance, err := wrapper.chain.GetBalance(ctx, address, "uusdc")
+	require.NoError(t, err)
+	require.Equal(t, int64(1_000_000), balance)
+
+	receiverBalance, err := gaia.GetBalance(ctx, receiver.FormattedAddress(), transfertypes.DenomTrace{
+		Path:      "transfer/channel-0",
+		BaseDenom: "uusdc",
+	}.IBCDenom())
+	require.NoError(t, err)
+	require.Equal(t, int64(0), receiverBalance)
+
+	_, err = validator.ExecTx(ctx, sender.KeyName(), "forwarding", "clear-account", address)
+	require.NoError(t, err)
+	require.NoError(t, testutil.WaitForBlocks(ctx, 10, wrapper.chain, gaia))
+
+	senderBalance, err = wrapper.chain.AllBalances(ctx, sender.FormattedAddress())
+	require.NoError(t, err)
+	require.True(t, senderBalance.IsZero())
+
+	balance, err = wrapper.chain.GetBalance(ctx, address, "uusdc")
+	require.NoError(t, err)
+	require.Equal(t, int64(0), balance)
+
+	receiverBalance, err = gaia.GetBalance(ctx, receiver.FormattedAddress(), transfertypes.DenomTrace{
+		Path:      "transfer/channel-0",
+		BaseDenom: "uusdc",
+	}.IBCDenom())
+	require.NoError(t, err)
+	require.Equal(t, int64(1_000_000), receiverBalance)
 }
 
 //
@@ -177,11 +244,11 @@ func ForwardingStats(t *testing.T, ctx context.Context, validator *cosmos.ChainN
 	return res
 }
 
-func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper, gaia *cosmos.CosmosChain, sender ibc.Wallet, receiver ibc.Wallet) {
+func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper, gaia *cosmos.CosmosChain, rly *hermes.Relayer, execReporter *testreporter.RelayerExecReporter, sender ibc.Wallet, receiver ibc.Wallet) {
 	ctx = context.Background()
 	logger := zaptest.NewLogger(t)
 	reporter := testreporter.NewNopReporter()
-	execReporter := reporter.RelayerExecReporter(t)
+	execReporter = reporter.RelayerExecReporter(t)
 	client, network := interchaintest.DockerSetup(t)
 
 	numValidators, numFullNodes := 1, 0
@@ -228,7 +295,7 @@ func ForwardingSuite(t *testing.T) (ctx context.Context, wrapper genesisWrapper,
 	gaia = chains[1].(*cosmos.CosmosChain)
 	wrapper.chain = noble
 
-	rly := interchaintest.NewBuiltinRelayerFactory(
+	rly = interchaintest.NewBuiltinRelayerFactory(
 		ibc.Hermes,
 		logger,
 	).Build(t, client, network).(*hermes.Relayer)
