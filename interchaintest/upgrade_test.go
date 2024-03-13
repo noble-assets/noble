@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	ghcrRepo        = "ghcr.io/strangelove-ventures/heighliner/noble"
+	ghcrRepo        = "ghcr.io/strangelove-ventures/noble"
 	containerUidGid = "1025:1025"
 
 	haltHeightDelta    = uint64(10) // will propose upgrade this many blocks in the future
