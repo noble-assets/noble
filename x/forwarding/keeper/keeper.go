@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/noble-assets/noble/v5/x/forwarding/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -52,6 +53,11 @@ func (k *Keeper) ExecuteForwards(ctx sdk.Context) {
 	}
 
 	for _, forward := range forwards {
+		channel, _ := k.channelKeeper.GetChannel(ctx, transfertypes.PortID, forward.Channel)
+		if channel.State != channeltypes.OPEN {
+			continue
+		}
+
 		balances := k.bankKeeper.GetAllBalances(ctx, forward.GetAddress())
 
 		for _, balance := range balances {
