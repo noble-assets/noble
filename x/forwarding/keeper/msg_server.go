@@ -24,7 +24,7 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 	if k.authKeeper.HasAccount(ctx, address) {
 		rawAccount := k.authKeeper.GetAccount(ctx, address)
 		if rawAccount.GetPubKey() != nil || rawAccount.GetSequence() != 0 {
-			return nil, errors.New("attempting to register an existing user account")
+			return nil, fmt.Errorf("attempting to register an existing user account with address: %s", address.String())
 		}
 
 		switch account := rawAccount.(type) {
@@ -41,7 +41,7 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 		case *types.ForwardingAccount:
 			return nil, errors.New("account has already been registered")
 		default:
-			break
+			return nil, fmt.Errorf("unsupported account type: %T", rawAccount)
 		}
 
 		if !k.bankKeeper.GetAllBalances(ctx, address).IsZero() {
