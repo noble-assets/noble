@@ -2,6 +2,7 @@ package forwarding
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
@@ -75,8 +76,13 @@ func (m Middleware) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, re
 				}
 
 				req := &types.MsgRegisterAccount{
+					Signer:    authtypes.NewModuleAddress(types.ModuleName).String(),
 					Recipient: memo.Noble.Forwarding.Recipient,
 					Channel:   channel,
+				}
+
+				if err := req.ValidateBasic(); err != nil {
+					return channeltypes.NewErrorAcknowledgement(err)
 				}
 
 				_, err := m.keeper.RegisterAccount(sdk.WrapSDKContext(ctx), req)
