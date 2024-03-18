@@ -55,6 +55,7 @@ func (k *Keeper) ExecuteForwards(ctx sdk.Context) {
 	for _, forward := range forwards {
 		channel, _ := k.channelKeeper.GetChannel(ctx, transfertypes.PortID, forward.Channel)
 		if channel.State != channeltypes.OPEN {
+			k.Logger(ctx).Error("skipped automatic forward due to non open channel", "channel", forward.Channel, "address", forward.GetAddress().String(), "state", channel.State.String())
 			continue
 		}
 
