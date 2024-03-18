@@ -22,14 +22,20 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 	}
 
 	if k.authKeeper.HasAccount(ctx, address) {
-		switch account := k.authKeeper.GetAccount(ctx, address).(type) {
+		rawAccount := k.authKeeper.GetAccount(ctx, address)
+		if rawAccount.GetPubKey() != nil || rawAccount.GetSequence() != 0 {
+			return nil, errors.New("attempting to register an existing user account")
+		}
+
+		switch account := rawAccount.(type) {
 		case *authtypes.BaseAccount:
-			k.authKeeper.SetAccount(ctx, &types.ForwardingAccount{
+			rawAccount = &types.ForwardingAccount{
 				BaseAccount: account,
 				Channel:     msg.Channel,
 				Recipient:   msg.Recipient,
 				CreatedAt:   ctx.BlockHeight(),
-			})
+			}
+			k.authKeeper.SetAccount(ctx, rawAccount)
 
 			k.IncrementNumOfAccounts(ctx, msg.Channel)
 		case *types.ForwardingAccount:
@@ -39,9 +45,7 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 		}
 
 		if !k.bankKeeper.GetAllBalances(ctx, address).IsZero() {
-			rawAccount := k.authKeeper.GetAccount(ctx, address)
 			account, ok := rawAccount.(*types.ForwardingAccount)
-
 			if ok {
 				k.SetPendingForward(ctx, account)
 			}
