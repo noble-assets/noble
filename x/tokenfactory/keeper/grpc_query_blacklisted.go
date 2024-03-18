@@ -32,7 +32,6 @@ func (k Keeper) BlacklistedAll(c context.Context, req *types.QueryAllBlacklisted
 		blacklisteds = append(blacklisteds, blacklisted)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

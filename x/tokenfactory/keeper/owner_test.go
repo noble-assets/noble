@@ -11,7 +11,6 @@ import (
 )
 
 func TestOwnerGet(t *testing.T) {
-
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 
 	owner := types.Owner{Address: "1"}

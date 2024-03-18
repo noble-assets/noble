@@ -1,0 +1,37 @@
+run:
+  tests: true
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    - depguard
+    - dogsled
+    - errcheck
+    - exportloopref
+    - goconst
+    - gofumpt
+    # - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - nolintlint
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+
+issues:
+  max-issues-per-linter: 10000
+  max-same-issues: 10000
+
+linters-settings:
+  nolintlint:
+    allow-unused: false
+    allow-leading-space: true
+    require-explanation: false
+    require-specific: 

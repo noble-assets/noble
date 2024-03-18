@@ -39,6 +39,7 @@ func TestMintersGet(t *testing.T) {
 		)
 	}
 }
+
 func TestMintersRemove(t *testing.T) {
 	keeper, ctx := keepertest.TokenfactoryKeeper(t)
 	items := createNMinters(keeper, ctx, 10)

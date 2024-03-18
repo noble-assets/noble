@@ -31,7 +31,6 @@ func (k Keeper) MintersAll(c context.Context, req *types.QueryAllMintersRequest)
 		minters = append(minters, minter)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

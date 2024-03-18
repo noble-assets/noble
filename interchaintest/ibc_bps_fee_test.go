@@ -171,5 +171,4 @@ func TestICS20BPSFees(t *testing.T) {
 	distributionEntityBalance, err = noble.GetBalance(ctx, gw.paramAuthority.FormattedAddress(), denomMetadataUsdc.Base)
 	require.NoError(t, err, "failed to get distribution entity balance")
 	require.Equal(t, int64(4008000), distributionEntityBalance, "distribution entity balance incorrect")
-
 }

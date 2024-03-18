@@ -43,9 +43,5 @@ func (k Keeper) MintingDenomSet(ctx sdk.Context) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MintingDenomKey))
 
 	b := store.Get(types.KeyPrefix(types.MintingDenomKey))
-	if b == nil {
-		return false
-	}
-
-	return true
+	return b != nil
 }

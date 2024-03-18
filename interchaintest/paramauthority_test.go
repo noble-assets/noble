@@ -118,7 +118,7 @@ func TestNobleParamAuthority(t *testing.T) {
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
 
-	var orderedTestCases = []ParamsCase{
+	orderedTestCases := []ParamsCase{
 		{
 			title:         "change authority to alice from incorrect msg authority and signer",
 			description:   "change params and upgrade authority to alice's address",
@@ -192,5 +192,4 @@ func TestNobleParamAuthority(t *testing.T) {
 	require.NoError(t, err, "failed to get authority from state export")
 
 	require.Equal(t, gw.extraWallets.User2.FormattedAddress(), authority, "authority does not match")
-
 }
