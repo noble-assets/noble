@@ -22,8 +22,9 @@ func GetTxCmd() *cobra.Command {
 
 func TxRegisterAccount() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "register-account [channel] [recipient]",
-		Args: cobra.ExactArgs(2),
+		Use:   "register-account [channel] [recipient]",
+		Short: "Register a forwarding account for a channel and recipient",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -47,8 +48,9 @@ func TxRegisterAccount() *cobra.Command {
 
 func TxClearAccount() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "clear-account [address]",
-		Args: cobra.ExactArgs(1),
+		Use:   "clear-account [address]",
+		Short: "Manually clear funds inside forwarding account",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
