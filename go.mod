@@ -4,10 +4,10 @@ go 1.21
 
 require (
 	cosmossdk.io/errors v1.0.0
-	github.com/circlefin/noble-cctp v0.0.0-20231110151013-86f425e6fac9
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20231026180023-32fd993c1f60
+	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240311150858-14edf83ee1c9
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.1
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.2-0.20240228222021-455757bb5771
 	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3

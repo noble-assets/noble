@@ -4,8 +4,8 @@ go 1.21
 
 require (
 	cosmossdk.io/math v1.0.1
-	github.com/circlefin/noble-cctp v0.0.0-20231110151013-86f425e6fac9
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20231026180023-32fd993c1f60
+	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240311150858-14edf83ee1c9
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/ethereum/go-ethereum v1.12.2
@@ -113,7 +113,6 @@ require (
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
-	github.com/onsi/gomega v1.20.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
