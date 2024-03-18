@@ -8,7 +8,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+<<<<<<< HEAD
 	"github.com/noble-assets/noble/v4/x/forwarding/types"
+=======
+	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	"github.com/noble-assets/noble/v5/x/forwarding/types"
+>>>>>>> 33dc4aa (fix: check channel state (#328))
 )
 
 var _ types.MsgServer = &Keeper{}
@@ -17,8 +22,12 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	address := types.GenerateAddress(msg.Channel, msg.Recipient)
 
-	if _, found := k.channelKeeper.GetChannel(ctx, transfertypes.PortID, msg.Channel); !found {
+	channel, found := k.channelKeeper.GetChannel(ctx, transfertypes.PortID, msg.Channel)
+	if !found {
 		return nil, fmt.Errorf("channel does not exist: %s", msg.Channel)
+	}
+	if channel.State != channeltypes.OPEN {
+		return nil, fmt.Errorf("channel is not open: %s, %s", msg.Channel, channel.State)
 	}
 
 	if k.authKeeper.HasAccount(ctx, address) {
