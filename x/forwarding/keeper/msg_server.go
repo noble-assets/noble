@@ -8,12 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-<<<<<<< HEAD
-	"github.com/noble-assets/noble/v4/x/forwarding/types"
-=======
 	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	"github.com/noble-assets/noble/v5/x/forwarding/types"
->>>>>>> 33dc4aa (fix: check channel state (#328))
+	"github.com/noble-assets/noble/v4/x/forwarding/types"
 )
 
 var _ types.MsgServer = &Keeper{}
