@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/noble-assets/noble/v5/x/forwarding/types"
 )
 
@@ -17,31 +18,39 @@ func (k *Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAc
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	address := types.GenerateAddress(msg.Channel, msg.Recipient)
 
-	if _, found := k.channelKeeper.GetChannel(ctx, transfertypes.PortID, msg.Channel); !found {
+	channel, found := k.channelKeeper.GetChannel(ctx, transfertypes.PortID, msg.Channel)
+	if !found {
 		return nil, fmt.Errorf("channel does not exist: %s", msg.Channel)
+	}
+	if channel.State != channeltypes.OPEN {
+		return nil, fmt.Errorf("channel is not open: %s, %s", msg.Channel, channel.State)
 	}
 
 	if k.authKeeper.HasAccount(ctx, address) {
-		switch account := k.authKeeper.GetAccount(ctx, address).(type) {
+		rawAccount := k.authKeeper.GetAccount(ctx, address)
+		if rawAccount.GetPubKey() != nil || rawAccount.GetSequence() != 0 {
+			return nil, fmt.Errorf("attempting to register an existing user account with address: %s", address.String())
+		}
+
+		switch account := rawAccount.(type) {
 		case *authtypes.BaseAccount:
-			k.authKeeper.SetAccount(ctx, &types.ForwardingAccount{
+			rawAccount = &types.ForwardingAccount{
 				BaseAccount: account,
 				Channel:     msg.Channel,
 				Recipient:   msg.Recipient,
 				CreatedAt:   ctx.BlockHeight(),
-			})
+			}
+			k.authKeeper.SetAccount(ctx, rawAccount)
 
 			k.IncrementNumOfAccounts(ctx, msg.Channel)
 		case *types.ForwardingAccount:
 			return nil, errors.New("account has already been registered")
 		default:
-			break
+			return nil, fmt.Errorf("unsupported account type: %T", rawAccount)
 		}
 
 		if !k.bankKeeper.GetAllBalances(ctx, address).IsZero() {
-			rawAccount := k.authKeeper.GetAccount(ctx, address)
 			account, ok := rawAccount.(*types.ForwardingAccount)
-
 			if ok {
 				k.SetPendingForward(ctx, account)
 			}

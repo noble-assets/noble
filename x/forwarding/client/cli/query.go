@@ -23,8 +23,9 @@ func GetQueryCmd() *cobra.Command {
 
 func QueryAddress() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "address [channel] [recipient]",
-		Args: cobra.ExactArgs(2),
+		Use:   "address [channel] [recipient]",
+		Short: "Query forwarding address by channel and recipient",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := types.NewQueryClient(clientCtx)
@@ -47,8 +48,9 @@ func QueryAddress() *cobra.Command {
 
 func QueryStats() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "stats [channel]",
-		Args: cobra.ExactArgs(1),
+		Use:   "stats [channel]",
+		Short: "Query forwarding stats by channel",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := types.NewQueryClient(clientCtx)
