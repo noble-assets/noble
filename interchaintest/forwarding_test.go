@@ -8,7 +8,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/icza/dyno"
 	forwardingtypes "github.com/noble-assets/noble/v5/x/forwarding/types"

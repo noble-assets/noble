@@ -7,10 +7,10 @@ import (
 	"github.com/noble-assets/noble/v5/app"
 	"github.com/noble-assets/noble/v5/cmd"
 
+	"cosmossdk.io/simapp"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"

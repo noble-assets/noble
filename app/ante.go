@@ -5,8 +5,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	"github.com/noble-assets/noble/v5/x/forwarding"
 	forwardingkeeper "github.com/noble-assets/noble/v5/x/forwarding/keeper"
 	feeante "github.com/noble-assets/noble/v5/x/globalfee/ante"
@@ -65,5 +65,4 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ibcante.NewAnteDecorator(options.IBCKeeper),
 	}
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
-
 }

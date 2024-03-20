@@ -6,10 +6,12 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.5
 	cosmossdk.io/api v0.7.2
 	cosmossdk.io/collections v0.4.0
+	cosmossdk.io/simapp v0.0.0-20230620040119-e078f1a49e8b
 	cosmossdk.io/core v0.11.0
 	cosmossdk.io/depinject v1.0.0-alpha.4
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/log v1.2.1
+	github.com/tendermint/go-amino v0.16.0
 	cosmossdk.io/math v1.2.0
 	cosmossdk.io/store v1.0.1
 	cosmossdk.io/x/tx v0.12.0
@@ -21,8 +23,8 @@ require (
 	github.com/cosmos/ledger-cosmos-go v0.13.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20231012201019-e917dd12ba7a
 	github.com/cometbft/cometbft v0.38.2
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.2-0.20240228222021-455757bb5771
-	github.com/cosmos/ibc-go/v4 v4.5.1
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.1
+	github.com/cosmos/ibc-go/v8 v8.0.0
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/spf13/cast v1.5.1
@@ -172,4 +174,6 @@ replace (
 
 	// use cosmos compatible google.golang.org/grpc
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
+
+	github.com/cosmos/cosmos-sdk => /Users/aleksbez/code/cosmos/cosmos-sdk
 )
