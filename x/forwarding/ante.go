@@ -1,8 +1,6 @@
 package forwarding
 
 import (
-	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
-	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/authz"
@@ -48,29 +46,7 @@ func (d Decorator) CheckMessages(ctx sdk.Context, msgs []sdk.Msg) error {
 		}
 
 		switch msg := raw.(type) {
-		case *cctptypes.MsgReceiveMessage:
-			cctpMessage, err := new(cctptypes.Message).Parse(msg.Message)
-			if err != nil {
-				return nil
-			}
-			burnMessage, err := new(cctptypes.BurnMessage).Parse(cctpMessage.MessageBody)
-			if err != nil {
-				return nil
-			}
-
-			address := sdk.AccAddress(burnMessage.MintRecipient[12:])
-
-			rawAccount := d.authKeeper.GetAccount(ctx, address)
-			if rawAccount == nil {
-				return nil
-			}
-
-			account, ok := rawAccount.(*types.ForwardingAccount)
-			if !ok {
-				return nil
-			}
-
-			d.keeper.SetPendingForward(ctx, account)
+		// TODO: Add CCTP message check back!
 		case *banktypes.MsgMultiSend:
 			for _, output := range msg.Outputs {
 				address := sdk.MustAccAddressFromBech32(output.Address)
@@ -101,20 +77,7 @@ func (d Decorator) CheckMessages(ctx sdk.Context, msgs []sdk.Msg) error {
 			}
 
 			d.keeper.SetPendingForward(ctx, account)
-		case *fiattokenfactorytypes.MsgMint:
-			address := sdk.MustAccAddressFromBech32(msg.Address)
-
-			rawAccount := d.authKeeper.GetAccount(ctx, address)
-			if rawAccount == nil {
-				return nil
-			}
-
-			account, ok := rawAccount.(*types.ForwardingAccount)
-			if !ok {
-				return nil
-			}
-
-			d.keeper.SetPendingForward(ctx, account)
+			// TODO: Add FiatTokenFactory message check back!
 		}
 	}
 

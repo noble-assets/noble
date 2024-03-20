@@ -1,8 +1,6 @@
 package app
 
 import (
-	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
-	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -16,11 +14,10 @@ import (
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper
-	IBCKeeper              *ibckeeper.Keeper
-	GlobalFeeSubspace      paramtypes.Subspace
-	StakingSubspace        paramtypes.Subspace
-	ForwardingKeeper       *forwardingkeeper.Keeper
+	IBCKeeper         *ibckeeper.Keeper
+	GlobalFeeSubspace paramtypes.Subspace
+	StakingSubspace   paramtypes.Subspace
+	ForwardingKeeper  *forwardingkeeper.Keeper
 }
 
 // maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
@@ -51,8 +48,6 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
-		fiattokenfactory.NewIsBlacklistedDecorator(options.fiatTokenFactoryKeeper),
-		fiattokenfactory.NewIsPausedDecorator(options.fiatTokenFactoryKeeper),
 		forwarding.NewAnteDecorator(options.ForwardingKeeper, options.AccountKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),

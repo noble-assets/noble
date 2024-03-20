@@ -1,8 +1,0 @@
-syntax = "proto3";
-package noble.tokenfactory;
-
-option go_package = "github.com/noble-assets/noble/v5/x/tokenfactory/types";
-
-message Blacklisted {
-  bytes addressBz = 1;
-}
