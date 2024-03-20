@@ -25,6 +25,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/address"
@@ -37,6 +38,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	sigtypes "github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -45,6 +47,7 @@ import (
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
+	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -108,9 +111,12 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "noble"
-	Name                 = "noble"
-	ChainID              = "noble-1"
+	Bech32MainPrefix     = "noble"
+	Bech32PrefixValAddr  = Bech32MainPrefix + sdk.PrefixValidator + sdk.PrefixOperator
+	Bech32PrefixConsAddr = Bech32MainPrefix + sdk.PrefixValidator + sdk.PrefixConsensus
+
+	Name    = "noble"
+	ChainID = "noble-1"
 )
 
 var (
@@ -196,12 +202,12 @@ type App struct {
 	AuthzKeeper           authzkeeper.Keeper
 	BankKeeper            bankkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
-	StakingKeeper         stakingkeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
 	CapabilityKeeper      *capabilitykeeper.Keeper
 	SlashingKeeper        slashingkeeper.Keeper
 	DistrKeeper           distrkeeper.Keeper
-	CrisisKeeper          crisiskeeper.Keeper
-	UpgradeKeeper         upgradekeeper.Keeper
+	CrisisKeeper          *crisiskeeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper        evidencekeeper.Keeper
@@ -338,88 +344,114 @@ func New(
 		runtime.NewKVStoreService(keys[authtypes.StoreKey]),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		authcodec.NewBech32Codec(AccountAddressPrefix),
-		AccountAddressPrefix,
+		authcodec.NewBech32Codec(Bech32MainPrefix),
+		Bech32MainPrefix,
 		DefaultAuthority.String(),
 	)
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(
-		keys[authz.ModuleName],
+		runtime.NewKVStoreService(keys[authzkeeper.StoreKey]),
 		appCodec,
 		app.MsgServiceRouter(),
+		app.AccountKeeper,
 	)
 
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec,
-		keys[banktypes.StoreKey],
+		runtime.NewKVStoreService(keys[banktypes.StoreKey]),
 		app.AccountKeeper,
-		app.GetSubspace(banktypes.ModuleName),
 		app.BlockedModuleAccountAddrs(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		logger,
 	)
+
+	// Optional: enable sign mode textual by overwriting the default tx config
+	// (after setting the bank keeper).
+	enabledSignModes := append(tx.DefaultSignModes, sigtypes.SignMode_SIGN_MODE_TEXTUAL)
+	txConfigOpts := tx.ConfigOptions{
+		EnabledSignModes:           enabledSignModes,
+		TextualCoinMetadataQueryFn: txmodule.NewBankKeeperCoinMetadataQueryFn(app.BankKeeper),
+	}
+	txConfig, err := tx.NewTxConfigWithOptions(
+		appCodec,
+		txConfigOpts,
+	)
+	if err != nil {
+		panic(err)
+	}
+	app.txConfig = txConfig
 
 	app.StakingKeeper = stakingkeeper.NewKeeper(
 		appCodec,
-		keys[stakingtypes.StoreKey],
+		runtime.NewKVStoreService(keys[stakingtypes.StoreKey]),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.GetSubspace(stakingtypes.ModuleName),
+		DefaultAuthority.String(),
+		authcodec.NewBech32Codec(Bech32PrefixValAddr),
+		authcodec.NewBech32Codec(Bech32PrefixConsAddr),
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
-		app.keys[distrtypes.StoreKey],
-		app.GetSubspace(distrtypes.ModuleName),
+		runtime.NewKVStoreService(keys[distrtypes.StoreKey]),
 		app.AccountKeeper,
 		app.BankKeeper,
-		&app.StakingKeeper,
+		app.StakingKeeper,
 		authtypes.FeeCollectorName,
-		app.ModuleAccountAddrs(),
+		DefaultAuthority.String(),
 	)
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
-		keys[slashingtypes.StoreKey],
-		&app.StakingKeeper,
-		app.GetSubspace(slashingtypes.ModuleName),
+		legacyAmino,
+		runtime.NewKVStoreService(keys[slashingtypes.StoreKey]),
+		app.StakingKeeper,
+		DefaultAuthority.String(),
 	)
 
+	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
-		app.GetSubspace(crisistypes.ModuleName),
+		appCodec,
+		runtime.NewKVStoreService(keys[crisistypes.StoreKey]),
 		invCheckPeriod,
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		app.AccountKeeper.AddressCodec(),
 	)
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(
 		appCodec,
-		keys[feegrant.StoreKey],
+		runtime.NewKVStoreService(keys[feegrant.StoreKey]),
 		app.AccountKeeper,
 	)
 
+	// get skipUpgradeHeights from the app options
+	homePath := cast.ToString(appOpts.Get(flags.FlagHome))
+	skipUpgradeHeights := map[int64]bool{}
+	for _, h := range cast.ToIntSlice(appOpts.Get(server.FlagUnsafeSkipUpgrades)) {
+		skipUpgradeHeights[int64(h)] = true
+	}
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
-		keys[upgradetypes.StoreKey],
+		runtime.NewKVStoreService(keys[upgradetypes.StoreKey]),
 		appCodec,
 		homePath,
 		app.BaseApp,
+		DefaultAuthority.String(),
 	)
 
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *app.StakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
-	)
+	app.StakingKeeper.SetHooks(stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()))
 
 	// ... other modules keepers
 
-	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibcexported.StoreKey],
 		app.GetSubspace(ibcexported.ModuleName),
-		&app.StakingKeeper,
+		app.StakingKeeper,
 		app.UpgradeKeeper,
 		scopedIBCKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		DefaultAuthority.String(),
 	)
 
 	app.TariffKeeper = tariffkeeper.NewKeeper(
@@ -433,12 +465,12 @@ func New(
 	app.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		keys[packetforwardtypes.StoreKey],
-		app.GetSubspace(packetforwardtypes.ModuleName),
-		app.TransferKeeper, // will be zero-value here. reference set later on with SetTransferKeeper.
+		app.TransferKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.DistrKeeper,
 		app.BankKeeper,
 		app.TariffKeeper,
+		DefaultAuthority.String(),
 	)
 
 	// Create Transfer Keepers
@@ -448,34 +480,40 @@ func New(
 		app.GetSubspace(ibctransfertypes.ModuleName),
 		app.PacketForwardKeeper,
 		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
+		app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
 		scopedTransferKeeper,
+		DefaultAuthority.String(),
 	)
 
 	app.PacketForwardKeeper.SetTransferKeeper(app.TransferKeeper)
-
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
-		appCodec, keys[icahosttypes.StoreKey],
+		appCodec,
+		keys[icahosttypes.StoreKey],
 		app.GetSubspace(icahosttypes.SubModuleName),
 		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
 		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
+		DefaultAuthority.String(),
 	)
+
 	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
 		appCodec,
-		keys[evidencetypes.StoreKey],
-		&app.StakingKeeper,
+		runtime.NewKVStoreService(keys[evidencetypes.StoreKey]),
+		app.StakingKeeper,
 		app.SlashingKeeper,
+		app.AccountKeeper.AddressCodec(),
+		runtime.ProvideCometInfoService(),
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
@@ -519,27 +557,24 @@ func New(
 	// must be passed by reference here.
 
 	app.mm = module.NewManager(
-		genutil.NewAppModule(
-			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
-			encodingConfig.TxConfig,
-		),
-		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
+		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app, txConfig),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		upgrade.NewAppModule(app.UpgradeKeeper),
+		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
-		packetforward.NewAppModule(app.PacketForwardKeeper),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		packetforward.NewAppModule(app.PacketForwardKeeper, app.GetSubspace(packetforwardtypes.ModuleName)),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
 		forwarding.NewAppModule(app.ForwardingKeeper),
@@ -614,7 +649,7 @@ func New(
 		slashingtypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		icatypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		evidencetypes.ModuleName,
