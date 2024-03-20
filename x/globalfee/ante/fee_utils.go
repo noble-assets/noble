@@ -3,9 +3,9 @@ package ante
 import (
 	"math"
 
+	tmstrings "github.com/cometbft/cometbft/libs/strings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	globalfeetypes "github.com/noble-assets/noble/v5/x/globalfee/types"
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
 // getMinGasPrice will also return sorted coins
