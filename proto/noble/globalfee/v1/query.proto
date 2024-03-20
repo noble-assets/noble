@@ -1,9 +1,9 @@
 syntax = "proto3";
-package noble.globalfee;
+package noble.globalfee.v1;
 
-import "globalfee/genesis.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "noble/globalfee/v1/genesis.proto";
 
 option go_package = "github.com/noble-assets/noble/v5/x/globalfee/types";
 

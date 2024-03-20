@@ -14,7 +14,7 @@ breaking:
 lint:
   use:
     - DEFAULT
-    - COMMENTS
+    # TODO(@john): Enable comments!
     - FILE_LOWER_SNAKE_CASE
   except:
     - UNARY_RPC

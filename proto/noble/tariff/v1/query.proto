@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package noble.tariff;
+package noble.tariff.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "tariff/params.proto";
+import "noble/tariff/v1/params.proto";
 
 option go_package = "github.com/noble-assets/noble/v5/x/tariff/types";
 
