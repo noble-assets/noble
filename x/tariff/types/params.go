@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
@@ -44,31 +45,34 @@ func validateDistributionEntityParams(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
+
 	// ensure each denom is only registered one time.
-	sum := sdk.ZeroDec()
+	sum := sdkmath.LegacyZeroDec()
 	for _, d := range distributionEntities {
 		adr, err := sdk.AccAddressFromBech32(d.Address)
 		if err != nil {
 			return fmt.Errorf("failed to parse bech32 address: %s", d.Address)
 		}
+
 		count := 0
 		for _, dd := range distributionEntities {
 			if dd.Address == adr.String() {
 				count++
 			}
 		}
+
 		if count > 1 {
 			return fmt.Errorf("address is already added as a distribution entity: %s", adr)
 		}
 
-		if d.Share.LTE(sdk.ZeroDec()) || d.Share.GT(sdk.OneDec()) {
+		if d.Share.LTE(sdkmath.LegacyZeroDec()) || d.Share.GT(sdkmath.LegacyOneDec()) {
 			return fmt.Errorf("distribution entity share must be greater than 0 and less than or equal to 100%%: %s", d.Share.String())
 		}
 
 		sum = sum.Add(d.Share)
 	}
 
-	if len(distributionEntities) > 0 && !sum.Equal(sdk.OneDec()) {
+	if len(distributionEntities) > 0 && !sum.Equal(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("sum of distribution entity shares don't equal 100%%: %s", sum.String())
 	}
 
@@ -76,33 +80,33 @@ func validateDistributionEntityParams(i interface{}) error {
 }
 
 func validateShare(i interface{}) error {
-	share, ok := i.(sdk.Dec)
+	share, ok := i.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if share.LT(sdk.ZeroDec()) || share.GT(sdk.OneDec()) {
+	if share.LT(sdkmath.LegacyZeroDec()) || share.GT(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("share is outside of the range of 0 to 100%%: %s", share.String())
 	}
 	return nil
 }
 
 func validateTransferFeeBPS(i interface{}) error {
-	transferFeeBPS, ok := i.(sdk.Int)
+	transferFeeBPS, ok := i.(sdkmath.Int)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if transferFeeBPS.LT(sdk.ZeroInt()) || transferFeeBPS.GT(sdk.NewInt(10000)) {
+	if transferFeeBPS.LT(sdkmath.ZeroInt()) || transferFeeBPS.GT(sdkmath.NewInt(10000)) {
 		return fmt.Errorf("ibc transfer basis points fee is outside of the range of 0 to 10000: %s", transferFeeBPS.String())
 	}
 	return nil
 }
 
 func validateTransferFeeMax(i interface{}) error {
-	transferFeeMax, ok := i.(sdk.Int)
+	transferFeeMax, ok := i.(sdkmath.Int)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if transferFeeMax.LT(sdk.ZeroInt()) {
+	if transferFeeMax.LT(sdkmath.ZeroInt()) {
 		return fmt.Errorf("ibc transfer max fee is less than 0: %s", transferFeeMax.String())
 	}
 	return nil

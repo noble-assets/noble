@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
@@ -48,11 +49,7 @@ func NewKeeper(
 }
 
 // SendPacket implements the ICS4Wrapper interface.
-func (k Keeper) SendPacket(
-	ctx sdk.Context,
-	chanCap *capabilitytypes.Capability,
-	packet exported.PacketI,
-) error {
+func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI) error {
 	chanPacket, ok := packet.(chantypes.Packet)
 	if !ok {
 		// not channel packet, forward to next middleware
@@ -73,15 +70,15 @@ func (k Keeper) SendPacket(
 		return k.ics4Wrapper.SendPacket(ctx, chanCap, packet)
 	}
 
-	fullAmount, ok := sdk.NewIntFromString(data.Amount)
+	fullAmount, ok := sdkmath.NewIntFromString(data.Amount)
 	if !ok {
 		return fmt.Errorf("failed to parse packet amount to sdk.Int %s", data.Amount)
 	}
 
-	feeDec := fullAmount.ToDec().Mul(sdk.NewDecWithPrec(1, 4)).MulInt(bpsFee)
+	feeDec := fullAmount.ToLegacyDec().Mul(sdkmath.LegacyNewDecWithPrec(1, 4)).MulInt(bpsFee)
 	feeInt := feeDec.TruncateInt()
 
-	if feeInt.Equal(sdk.ZeroInt()) {
+	if feeInt.Equal(sdkmath.ZeroInt()) {
 		// fees are zero, forward to next middleware
 		return k.ics4Wrapper.SendPacket(ctx, chanCap, packet)
 	}
