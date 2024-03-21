@@ -179,7 +179,7 @@ var (
 )
 
 var (
-	_ cmd.App                 = (*App)(nil)
+	_ runtime.AppI            = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 )
 
