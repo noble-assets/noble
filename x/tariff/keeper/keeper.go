@@ -49,7 +49,15 @@ func NewKeeper(
 }
 
 // SendPacket implements the ICS4Wrapper interface.
-func (k Keeper) SendPacket(ctx sdk.Context, chanCap *capabilitytypes.Capability, packet exported.PacketI) error {
+func (k Keeper) SendPacket(
+	ctx sdk.Context,
+	chanCap *capabilitytypes.Capability,
+	sourcePort string,
+	sourceChannel string,
+	timeoutHeight clienttypes.Height,
+	timeoutTimestamp uint64,
+	data []byte,
+) (uint64, error)
 	chanPacket, ok := packet.(chantypes.Packet)
 	if !ok {
 		// not channel packet, forward to next middleware
