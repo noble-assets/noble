@@ -5,8 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/simapp"
-	pruningtypes "cosmossdk.io/store/types"
+	pruningtypes "cosmossdk.io/store/pruning/types"
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	tmdb "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -17,6 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/stretchr/testify/require"
 
 	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -33,16 +33,18 @@ type (
 // New creates instance with fully configured cosmos network.
 // Accepts optional config, that will be used in place of the DefaultConfig() if provided.
 func New(t *testing.T, configs ...network.Config) *network.Network {
-	if len(configs) > 1 {
-		panic("at most one config should be provided")
-	}
+	require.LessOrEqual(t, len(configs), 1)
+
 	var cfg network.Config
 	if len(configs) == 0 {
 		cfg = DefaultConfig()
 	} else {
 		cfg = configs[0]
 	}
-	net := network.New(t, cfg)
+
+	net, err := network.New(t, t.TempDir(), cfg)
+	require.NoError(t, err)
+
 	t.Cleanup(net.Cleanup)
 	return net
 }
@@ -61,13 +63,14 @@ func DefaultConfig() network.Config {
 		LegacyAmino:       encoding.Amino,
 		InterfaceRegistry: encoding.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
-		AppConstructor: func(val network.Validator) servertypes.Application {
+		AppConstructor: func(val network.ValidatorI) servertypes.Application {
 			return app.New(
-				val.Ctx.Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.Ctx.Config.RootDir, 0,
-				encoding,
-				simapp.EmptyAppOptions{},
-				baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-				baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
+				val.GetCtx().Logger,
+				tmdb.NewMemDB(),
+				nil,
+				true,
+				nil,
+				baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 			)
 		},
 		GenesisState:  app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
