@@ -28,9 +28,8 @@ var (
 	_ module.AppModuleSimulation = AppModule{}
 	_ module.HasGenesis          = AppModule{}
 	_ module.HasServices         = AppModule{}
-
-	_ appmodule.AppModule       = AppModule{}
-	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.AppModule        = AppModule{}
+	_ appmodule.HasBeginBlocker  = AppModule{}
 )
 
 // ----------------------------------------------------------------------------
@@ -54,7 +53,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterLegacyAminoCodec(cdc)
 }
 
-func (a AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {}
+func (a AppModuleBasic) RegisterInterfaces(_ cdctypes.InterfaceRegistry) {}
 
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesis())

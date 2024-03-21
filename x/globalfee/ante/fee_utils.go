@@ -3,6 +3,7 @@ package ante
 import (
 	"math"
 
+	sdkmath "cosmossdk.io/math"
 	tmstrings "github.com/cometbft/cometbft/libs/strings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	globalfeetypes "github.com/noble-assets/noble/v5/x/globalfee/types"
@@ -18,7 +19,7 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	if !minGasPrices.IsZero() {
 		// Determine the required fees by multiplying each required minimum gas
 		// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-		glDec := sdk.NewDec(int64(gas))
+		glDec := sdkmath.LegacyNewDec(int64(gas))
 		for i, gp := range minGasPrices {
 			fee := gp.Amount.Mul(glDec)
 			requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())

@@ -3,10 +3,10 @@ package antetest
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/suite"
-
 	"github.com/noble-assets/noble/v5/x/globalfee/ante"
+	"github.com/stretchr/testify/suite"
 )
 
 type feeUtilsTestSuite struct {
@@ -18,11 +18,11 @@ func TestFeeUtilsTestSuite(t *testing.T) {
 }
 
 func (s *feeUtilsTestSuite) TestContainZeroCoins() {
-	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
-	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
-	coin1 := sdk.NewCoin("photon", sdk.NewInt(1))
-	coin2 := sdk.NewCoin("stake", sdk.NewInt(2))
-	coin3 := sdk.NewCoin("quark", sdk.NewInt(3))
+	zeroCoin1 := sdk.NewCoin("photon", sdkmath.ZeroInt())
+	zeroCoin2 := sdk.NewCoin("stake", sdkmath.ZeroInt())
+	coin1 := sdk.NewCoin("photon", sdkmath.NewInt(1))
+	coin2 := sdk.NewCoin("stake", sdkmath.NewInt(2))
+	coin3 := sdk.NewCoin("quark", sdkmath.NewInt(3))
 	// coins must be valid !!!
 	coinsEmpty := sdk.Coins{}
 	coinsNonEmpty := sdk.Coins{coin1, coin2}
@@ -63,15 +63,15 @@ func (s *feeUtilsTestSuite) TestContainZeroCoins() {
 }
 
 func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
-	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
-	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
-	zeroCoin3 := sdk.NewCoin("quark", sdk.ZeroInt())
-	coin1 := sdk.NewCoin("photon", sdk.NewInt(1))
-	coin2 := sdk.NewCoin("stake", sdk.NewInt(2))
-	coin1High := sdk.NewCoin("photon", sdk.NewInt(10))
-	coin2High := sdk.NewCoin("stake", sdk.NewInt(20))
-	coinNewDenom1 := sdk.NewCoin("Newphoton", sdk.NewInt(1))
-	coinNewDenom2 := sdk.NewCoin("Newstake", sdk.NewInt(1))
+	zeroCoin1 := sdk.NewCoin("photon", sdkmath.ZeroInt())
+	zeroCoin2 := sdk.NewCoin("stake", sdkmath.ZeroInt())
+	zeroCoin3 := sdk.NewCoin("quark", sdkmath.ZeroInt())
+	coin1 := sdk.NewCoin("photon", sdkmath.NewInt(1))
+	coin2 := sdk.NewCoin("stake", sdkmath.NewInt(2))
+	coin1High := sdk.NewCoin("photon", sdkmath.NewInt(10))
+	coin2High := sdk.NewCoin("stake", sdkmath.NewInt(20))
+	coinNewDenom1 := sdk.NewCoin("Newphoton", sdkmath.NewInt(1))
+	coinNewDenom2 := sdk.NewCoin("Newstake", sdkmath.NewInt(1))
 	// coins must be valid !!! and sorted!!!
 	coinsEmpty := sdk.Coins{}
 	coinsNonEmpty := sdk.Coins{coin1, coin2}.Sort()
@@ -171,18 +171,18 @@ func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
 func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
 	emptyCoins := sdk.Coins{}
 
-	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
-	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
-	zeroCoin3 := sdk.NewCoin("quark", sdk.ZeroInt())
+	zeroCoin1 := sdk.NewCoin("photon", sdkmath.ZeroInt())
+	zeroCoin2 := sdk.NewCoin("stake", sdkmath.ZeroInt())
+	zeroCoin3 := sdk.NewCoin("quark", sdkmath.ZeroInt())
 
-	coin1 := sdk.NewCoin("photon", sdk.NewInt(1))
-	coin2 := sdk.NewCoin("stake", sdk.NewInt(2))
-	coin3 := sdk.NewCoin("quark", sdk.NewInt(3))
+	coin1 := sdk.NewCoin("photon", sdkmath.NewInt(1))
+	coin2 := sdk.NewCoin("stake", sdkmath.NewInt(2))
+	coin3 := sdk.NewCoin("quark", sdkmath.NewInt(3))
 
-	coinNewDenom1 := sdk.NewCoin("newphoton", sdk.NewInt(1))
-	coinNewDenom2 := sdk.NewCoin("newstake", sdk.NewInt(2))
-	coinNewDenom3 := sdk.NewCoin("newquark", sdk.NewInt(3))
-	coinNewDenom1Zero := sdk.NewCoin("newphoton", sdk.ZeroInt())
+	coinNewDenom1 := sdk.NewCoin("newphoton", sdkmath.NewInt(1))
+	coinNewDenom2 := sdk.NewCoin("newstake", sdkmath.NewInt(2))
+	coinNewDenom3 := sdk.NewCoin("newquark", sdkmath.NewInt(3))
+	coinNewDenom1Zero := sdk.NewCoin("newphoton", sdkmath.ZeroInt())
 	// coins must be valid !!! and sorted!!!
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2, zeroCoin3}.Sort()
 	coinsAllZeroShort := sdk.Coins{zeroCoin1, zeroCoin2}.Sort()
@@ -276,24 +276,24 @@ func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
 func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 	emptyCoins := sdk.Coins{}
 
-	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
-	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
-	zeroCoin3 := sdk.NewCoin("quark", sdk.ZeroInt())
+	zeroCoin1 := sdk.NewCoin("photon", sdkmath.ZeroInt())
+	zeroCoin2 := sdk.NewCoin("stake", sdkmath.ZeroInt())
+	zeroCoin3 := sdk.NewCoin("quark", sdkmath.ZeroInt())
 
-	coin1 := sdk.NewCoin("photon", sdk.NewInt(10))
-	coin1Low := sdk.NewCoin("photon", sdk.NewInt(1))
-	coin1High := sdk.NewCoin("photon", sdk.NewInt(100))
-	coin2 := sdk.NewCoin("stake", sdk.NewInt(20))
-	coin2Low := sdk.NewCoin("stake", sdk.NewInt(2))
-	coin2High := sdk.NewCoin("stake", sdk.NewInt(200))
-	coin3 := sdk.NewCoin("quark", sdk.NewInt(30))
+	coin1 := sdk.NewCoin("photon", sdkmath.NewInt(10))
+	coin1Low := sdk.NewCoin("photon", sdkmath.NewInt(1))
+	coin1High := sdk.NewCoin("photon", sdkmath.NewInt(100))
+	coin2 := sdk.NewCoin("stake", sdkmath.NewInt(20))
+	coin2Low := sdk.NewCoin("stake", sdkmath.NewInt(2))
+	coin2High := sdk.NewCoin("stake", sdkmath.NewInt(200))
+	coin3 := sdk.NewCoin("quark", sdkmath.NewInt(30))
 
-	coinNewDenom1 := sdk.NewCoin("newphoton", sdk.NewInt(10))
-	coinNewDenom2 := sdk.NewCoin("newstake", sdk.NewInt(20))
-	coinNewDenom3 := sdk.NewCoin("newquark", sdk.NewInt(30))
-	zeroCoinNewDenom1 := sdk.NewCoin("newphoton", sdk.NewInt(10))
-	zeroCoinNewDenom2 := sdk.NewCoin("newstake", sdk.NewInt(20))
-	zeroCoinNewDenom3 := sdk.NewCoin("newquark", sdk.NewInt(30))
+	coinNewDenom1 := sdk.NewCoin("newphoton", sdkmath.NewInt(10))
+	coinNewDenom2 := sdk.NewCoin("newstake", sdkmath.NewInt(20))
+	coinNewDenom3 := sdk.NewCoin("newquark", sdkmath.NewInt(30))
+	zeroCoinNewDenom1 := sdk.NewCoin("newphoton", sdkmath.NewInt(10))
+	zeroCoinNewDenom2 := sdk.NewCoin("newstake", sdkmath.NewInt(20))
+	zeroCoinNewDenom3 := sdk.NewCoin("newquark", sdkmath.NewInt(30))
 	// coins must be valid !!! and sorted!!!
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2, zeroCoin3}.Sort()
 	coinsAllNewDenomAllZero := sdk.Coins{zeroCoinNewDenom1, zeroCoinNewDenom2, zeroCoinNewDenom3}.Sort()

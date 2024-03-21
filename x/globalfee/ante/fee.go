@@ -3,6 +3,8 @@ package ante
 import (
 	"errors"
 
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -51,7 +53,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// please note: after parsing feeflag, the zero fees are removed already
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+		return ctx, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 	feeCoins := feeTx.GetFee().Sort()
 	gas := feeTx.GetGas()
@@ -90,13 +92,13 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// Check that the fees are in expected denominations. Note that a zero fee
 		// is accepted if the global fee has an entry with a zero amount, e.g., 0uatoms.
 		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, allFees)
+			return ctx, errorsmod.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, allFees)
 		}
 		// Check that the amounts of the fees are greater or equal than
 		// the expected amounts, i.e., at least one feeCoin amount must
 		// be greater or equal to one of the combined required fees.
 		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
+			return ctx, errorsmod.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
 		}
 	} else {
 		// Transactions with zero fees are accepted
@@ -106,7 +108,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// If the transaction fee is non-zero, then check that the fees are in
 		// expected denominations.
 		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
+			return ctx, errorsmod.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
 		}
 	}
 
@@ -130,7 +132,7 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
 	// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-	glDec := sdk.NewDec(int64(feeTx.GetGas()))
+	glDec := sdkmath.LegacyNewDec(int64(feeTx.GetGas()))
 	for i, gp := range globalMinGasPrices {
 		fee := gp.Amount.Mul(glDec)
 		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
@@ -145,7 +147,7 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 		return nil, errors.New("empty staking bond denomination")
 	}
 
-	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
+	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdkmath.LegacyNewDec(0))}, nil
 }
 
 func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {

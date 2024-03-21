@@ -3,27 +3,32 @@ package globalfee
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	gwruntime "github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
 	"github.com/noble-assets/noble/v5/x/globalfee/client/cli"
 	"github.com/noble-assets/noble/v5/x/globalfee/types"
 )
 
+const (
+	// ConsensusVersion defines the current module's consensus version.
+	ConsensusVersion = 1
+)
+
 var (
-	_ module.AppModuleBasic   = AppModuleBasic{}
-	_ module.AppModuleGenesis = AppModule{}
-	_ module.AppModule        = AppModule{}
+	_ module.AppModuleBasic = AppModule{}
+	_ module.HasGenesis     = AppModule{}
+	_ module.HasServices    = AppModule{}
+	_ appmodule.AppModule   = AppModule{}
 )
 
 // AppModuleBasic defines the basic application module used by the wasm module.
@@ -34,50 +39,40 @@ func (a AppModuleBasic) Name() string {
 }
 
 func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(&types.GenesisState{
-		Params: types.DefaultParams(),
-	})
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, config client.TxEncodingConfig, message json.RawMessage) error {
-	var data types.GenesisState
-	err := marshaler.UnmarshalJSON(message, &data)
-	if err != nil {
-		return err
+func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
+	var genState types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &genState); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
-	if err := data.Params.ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "params")
+
+	return types.ValidateGenesis(genState)
+}
+
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(cdc)
+}
+
+func (a AppModuleBasic) RegisterInterfaces(_ cdctypes.InterfaceRegistry) {}
+
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *gwruntime.ServeMux) {
+	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
 	}
-	return nil
-}
-
-func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
-}
-
-func (a AppModuleBasic) RegisterRESTRoutes(context client.Context, router *mux.Router) {
-}
-
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
-}
-
-func (a AppModuleBasic) GetTxCmd() *cobra.Command {
-	return nil
 }
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
-}
-
 type AppModule struct {
 	AppModuleBasic
+
 	paramSpace paramstypes.Subspace
 }
 
-// NewAppModule constructor
 func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -86,49 +81,27 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 	return &AppModule{paramSpace: paramSpace}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
+func (AppModule) IsOnePerModuleType() {}
+
+func (AppModule) IsAppModule() {}
+
+func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) {
 	var genesisState types.GenesisState
-	marshaler.MustUnmarshalJSON(message, &genesisState)
+	cdc.MustUnmarshalJSON(data, &genesisState)
 	a.paramSpace.SetParamSet(ctx, &genesisState.Params)
-	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) json.RawMessage {
+func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	var genState types.GenesisState
 	a.paramSpace.GetParamSet(ctx, &genState.Params)
-	return marshaler.MustMarshalJSON(&genState)
-}
 
-func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {
-}
-
-func (a AppModule) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (a AppModule) QuerierRoute() string {
-	return types.QuerierRoute
-}
-
-func (a AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
-	return nil
+	return cdc.MustMarshalJSON(&genState)
 }
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
 }
 
-func (a AppModule) BeginBlock(context sdk.Context, block abci.RequestBeginBlock) {
-}
-
-func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return nil
-}
-
-// ConsensusVersion is a sequence number for state-breaking change of the
-// module. It should be incremented on each consensus-breaking change
-// introduced by the module. To avoid wrong/empty versions, the initial version
-// should be set to 1.
-func (a AppModule) ConsensusVersion() uint64 {
-	return 1
+func (AppModule) ConsensusVersion() uint64 {
+	return ConsensusVersion
 }
