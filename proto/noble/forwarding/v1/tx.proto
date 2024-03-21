@@ -2,19 +2,29 @@ syntax = "proto3";
 
 package noble.forwarding.v1;
 
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+
 option go_package = "github.com/noble-assets/noble/v5/x/forwarding/types";
 
 service Msg {
-  rpc RegisterAccount(noble.forwarding.v1.MsgRegisterAccount) returns (noble.forwarding.v1.MsgRegisterAccountResponse);
-  rpc ClearAccount(noble.forwarding.v1.MsgClearAccount) returns (noble.forwarding.v1.MsgClearAccountResponse);
+  option (cosmos.msg.v1.service) = true;
+
+  rpc RegisterAccount(noble.forwarding.v1.MsgRegisterAccount)
+      returns (noble.forwarding.v1.MsgRegisterAccountResponse);
+  rpc ClearAccount(noble.forwarding.v1.MsgClearAccount)
+      returns (noble.forwarding.v1.MsgClearAccountResponse);
 }
 
-//
-
 message MsgRegisterAccount {
-  string signer = 1;
-  string recipient = 2;
-  string channel = 3;
+  option (cosmos.msg.v1.signer) = "signer";
+  option (amino.name)           = "noble/MsgRegisterAccount";
+
+  string signer    = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string recipient = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string channel   = 3;
 }
 
 message MsgRegisterAccountResponse {
@@ -22,8 +32,11 @@ message MsgRegisterAccountResponse {
 }
 
 message MsgClearAccount {
-  string signer = 1;
-  string address = 2;
+  option (cosmos.msg.v1.signer) = "signer";
+  option (amino.name)           = "noble/MsgClearAccount";
+
+  string signer  = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string address = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 message MsgClearAccountResponse {}
