@@ -66,7 +66,17 @@ func (k *Keeper) ExecuteForwards(ctx context.Context) {
 
 		for _, balance := range balances {
 			timeout := uint64(sdkCtx.BlockTime().UnixNano()) + transfertypes.DefaultRelativePacketTimeoutTimestamp
-			err := k.transferKeeper.SendTransfer(sdkCtx, transfertypes.PortID, forward.Channel, balance, forward.GetAddress(), forward.Recipient, clienttypes.ZeroHeight(), timeout)
+
+			_, err := k.transferKeeper.Transfer(ctx, &transfertypes.MsgTransfer{
+				SourcePort:       transfertypes.PortID,
+				SourceChannel:    forward.Channel,
+				Token:            balance,
+				Sender:           forward.GetAddress().String(),
+				Receiver:         forward.Recipient,
+				TimeoutHeight:    clienttypes.ZeroHeight(),
+				TimeoutTimestamp: timeout,
+				Memo:             "",
+			})
 			if err != nil {
 				// TODO: Consider moving to persistent store in order to retry in future blocks?
 				k.Logger(sdkCtx).Error("unable to execute automatic forward", "channel", forward.Channel, "address", forward.GetAddress().String(), "amount", balance.String(), "err", err)
