@@ -110,7 +110,6 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-	"github.com/noble-assets/noble/v5/cmd"
 	"github.com/noble-assets/noble/v5/docs"
 	"github.com/noble-assets/noble/v5/x/forwarding"
 	forwardingkeeper "github.com/noble-assets/noble/v5/x/forwarding/keeper"
@@ -255,7 +254,7 @@ func New(
 	loadLatest bool,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) cmd.App {
+) runtime.AppI {
 	interfaceRegistry, _ := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
 		ProtoFiles: proto.HybridResolver,
 		SigningOptions: signing.Options{
