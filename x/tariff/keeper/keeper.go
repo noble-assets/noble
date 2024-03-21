@@ -3,13 +3,14 @@ package keeper
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	chantypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
-	"github.com/cosmos/ibc-go/v4/modules/core/exported"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	chantypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v8/modules/core/exported"
 	"github.com/noble-assets/noble/v5/x/tariff/types"
 )
 
@@ -51,8 +52,12 @@ func NewKeeper(
 func (k Keeper) SendPacket(
 	ctx sdk.Context,
 	chanCap *capabilitytypes.Capability,
-	packet exported.PacketI,
-) error {
+	sourcePort string,
+	sourceChannel string,
+	timeoutHeight clienttypes.Height,
+	timeoutTimestamp uint64,
+	data []byte,
+) (uint64, error)
 	chanPacket, ok := packet.(chantypes.Packet)
 	if !ok {
 		// not channel packet, forward to next middleware
@@ -73,15 +78,15 @@ func (k Keeper) SendPacket(
 		return k.ics4Wrapper.SendPacket(ctx, chanCap, packet)
 	}
 
-	fullAmount, ok := sdk.NewIntFromString(data.Amount)
+	fullAmount, ok := sdkmath.NewIntFromString(data.Amount)
 	if !ok {
 		return fmt.Errorf("failed to parse packet amount to sdk.Int %s", data.Amount)
 	}
 
-	feeDec := fullAmount.ToDec().Mul(sdk.NewDecWithPrec(1, 4)).MulInt(bpsFee)
+	feeDec := fullAmount.ToLegacyDec().Mul(sdkmath.LegacyNewDecWithPrec(1, 4)).MulInt(bpsFee)
 	feeInt := feeDec.TruncateInt()
 
-	if feeInt.Equal(sdk.ZeroInt()) {
+	if feeInt.Equal(sdkmath.ZeroInt()) {
 		// fees are zero, forward to next middleware
 		return k.ics4Wrapper.SendPacket(ctx, chanCap, packet)
 	}

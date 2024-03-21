@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -9,7 +10,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	foundAmountGreaterThanZero := false
 	for _, coin := range feesCollectedInt {
-		if coin.Amount.GT(sdk.ZeroInt()) {
+		if coin.Amount.GT(sdkmath.ZeroInt()) {
 			foundAmountGreaterThanZero = true
 			break
 		}
@@ -26,7 +27,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 	foundAmountGreaterThanZero = false
 	for _, coin := range feesToDistribute {
 		truncated, _ := coin.TruncateDecimal()
-		if truncated.Amount.GT(sdk.ZeroInt()) {
+		if truncated.Amount.GT(sdkmath.ZeroInt()) {
 			foundAmountGreaterThanZero = true
 			break
 		}
@@ -43,7 +44,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context) {
 
 		for _, s := range entityShare {
 			truncated, _ := s.TruncateDecimal()
-			if truncated.Amount.GT(sdk.ZeroInt()) {
+			if truncated.Amount.GT(sdkmath.ZeroInt()) {
 				coins = append(coins, truncated)
 			}
 		}

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/icza/dyno"
 	tokenfactorytypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
@@ -171,5 +171,4 @@ func TestICS20BPSFees(t *testing.T) {
 	distributionEntityBalance, err = noble.GetBalance(ctx, gw.paramAuthority.FormattedAddress(), denomMetadataUsdc.Base)
 	require.NoError(t, err, "failed to get distribution entity balance")
 	require.Equal(t, int64(4008000), distributionEntityBalance, "distribution entity balance incorrect")
-
 }
