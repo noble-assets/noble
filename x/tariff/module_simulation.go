@@ -7,8 +7,6 @@ import (
 	"github.com/noble-assets/noble/v5/x/tariff/types"
 )
 
-var _ module.AppModuleSimulation = AppModule{}
-
 func (am AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	genesis := types.DefaultGenesis()
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(genesis)

@@ -5,74 +5,31 @@ import (
 	"encoding/json"
 	"fmt"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	gwruntime "github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/noble-assets/noble/v5/x/forwarding/client/cli"
 	"github.com/noble-assets/noble/v5/x/forwarding/keeper"
 	"github.com/noble-assets/noble/v5/x/forwarding/types"
 	"github.com/spf13/cobra"
 )
 
-var (
-	_ module.EndBlockAppModule = AppModule{}
-	_ module.AppModuleBasic    = AppModuleBasic{}
+const (
+	// ConsensusVersion defines the current module's consensus version.
+	ConsensusVersion = 1
 )
 
-type AppModule struct {
-	AppModuleBasic
-
-	keeper *keeper.Keeper
-}
-
-func NewAppModule(keeper *keeper.Keeper) AppModule {
-	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(),
-		keeper:         keeper,
-	}
-}
-
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []abci.ValidatorUpdate {
-	var genesis types.GenesisState
-	cdc.MustUnmarshalJSON(bz, &genesis)
-
-	InitGenesis(ctx, am.keeper, genesis)
-
-	return []abci.ValidatorUpdate{}
-}
-
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	genesis := ExportGenesis(ctx, am.keeper)
-	return cdc.MustMarshalJSON(genesis)
-}
-
-func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-func (AppModule) Route() sdk.Route { return sdk.Route{} }
-
-func (AppModule) QuerierRoute() string { return types.ModuleName }
-
-func (AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
-
-func (am AppModule) RegisterServices(cfg module.Configurator) {
-	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
-	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
-}
-
-func (AppModule) ConsensusVersion() uint64 { return 1 }
-
-func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	am.keeper.ExecuteForwards(ctx)
-
-	return []abci.ValidatorUpdate{}
-}
-
-//
+var (
+	_ module.AppModuleBasic   = AppModule{}
+	_ module.HasGenesis       = AppModule{}
+	_ module.HasServices      = AppModule{}
+	_ appmodule.AppModule     = AppModule{}
+	_ appmodule.HasEndBlocker = AppModule{}
+)
 
 type AppModuleBasic struct{}
 
@@ -105,12 +62,55 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, cfg client.TxEncoding
 	return genesis.Validate()
 }
 
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
-
-func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *gwruntime.ServeMux) {
+	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
 }
 
 func (AppModuleBasic) GetTxCmd() *cobra.Command { return cli.GetTxCmd() }
 
 func (AppModuleBasic) GetQueryCmd() *cobra.Command { return cli.GetQueryCmd() }
+
+type AppModule struct {
+	AppModuleBasic
+
+	keeper *keeper.Keeper
+}
+
+func NewAppModule(keeper *keeper.Keeper) AppModule {
+	return AppModule{
+		AppModuleBasic: NewAppModuleBasic(),
+		keeper:         keeper,
+	}
+}
+
+func (AppModule) IsOnePerModuleType() {}
+
+func (AppModule) IsAppModule() {}
+
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) {
+	var genesis types.GenesisState
+	cdc.MustUnmarshalJSON(data, &genesis)
+
+	InitGenesis(ctx, am.keeper, genesis)
+}
+
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	genesis := ExportGenesis(ctx, am.keeper)
+	return cdc.MustMarshalJSON(genesis)
+}
+
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
+	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+}
+
+func (AppModule) ConsensusVersion() uint64 {
+	return ConsensusVersion
+}
+
+func (am AppModule) EndBlock(ctx context.Context) error {
+	am.keeper.ExecuteForwards(ctx)
+	return nil
+}

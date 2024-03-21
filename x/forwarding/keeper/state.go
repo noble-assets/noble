@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/noble-assets/noble/v5/x/forwarding/types"
 )
@@ -26,7 +27,7 @@ func (k *Keeper) GetAllNumOfAccounts(ctx sdk.Context) map[string]uint64 {
 	counts := make(map[string]uint64)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.NumOfAccountsPrefix)
-	iterator := sdk.KVStorePrefixIterator(store, nil)
+	iterator := storetypes.KVStorePrefixIterator(store, nil)
 
 	for ; iterator.Valid(); iterator.Next() {
 		channel := string(iterator.Key())
@@ -72,7 +73,7 @@ func (k *Keeper) GetAllNumOfForwards(ctx sdk.Context) map[string]uint64 {
 	counts := make(map[string]uint64)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.NumOfForwardsPrefix)
-	iterator := sdk.KVStorePrefixIterator(store, nil)
+	iterator := storetypes.KVStorePrefixIterator(store, nil)
 
 	for ; iterator.Valid(); iterator.Next() {
 		channel := string(iterator.Key())
@@ -112,7 +113,7 @@ func (k *Keeper) GetAllTotalForwarded(ctx sdk.Context) map[string]string {
 	totals := make(map[string]string)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.TotalForwardedPrefix)
-	iterator := sdk.KVStorePrefixIterator(store, nil)
+	iterator := storetypes.KVStorePrefixIterator(store, nil)
 
 	for ; iterator.Valid(); iterator.Next() {
 		channel := string(iterator.Key())
