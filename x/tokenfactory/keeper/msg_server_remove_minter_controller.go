@@ -21,9 +21,15 @@ func (k msgServer) RemoveMinterController(goCtx context.Context, msg *types.MsgR
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the master minter")
 	}
 
-	_, found = k.GetMinterController(ctx, msg.Controller)
+	mc, found := k.GetMinterController(ctx, msg.Controller)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrUserNotFound, "minter controller with a given address (%s) doesn't exist", msg.Controller)
+	}
+
+	// check if the assigned minter has non-zero allowance
+	minter, found := k.GetMinters(ctx, mc.Minter)
+	if found && !minter.Allowance.IsZero() {
+		return nil, sdkerrors.Wrapf(types.ErrRemoveController, "its assigned minter still has allowance")
 	}
 
 	k.DeleteMinterController(ctx, msg.Controller)
