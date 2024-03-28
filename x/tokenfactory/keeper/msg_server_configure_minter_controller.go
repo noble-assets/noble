@@ -21,6 +21,15 @@ func (k msgServer) ConfigureMinterController(goCtx context.Context, msg *types.M
 		return nil, sdkerrors.Wrapf(types.ErrUnauthorized, "you are not the master minter")
 	}
 
+	// check if controller has already been assigned to a minter and the minter has non-zero allowance
+	mc, found := k.GetMinterController(ctx, msg.Controller)
+	if found {
+		m, f := k.GetMinters(ctx, mc.Minter)
+		if f && mc.Minter != msg.Minter && !m.Allowance.IsZero() {
+			return nil, sdkerrors.Wrapf(types.ErrConfigureController, "its assigned minter still has allowance")
+		}
+	}
+
 	controller := types.MinterController{
 		Minter:     msg.Minter,
 		Controller: msg.Controller,
