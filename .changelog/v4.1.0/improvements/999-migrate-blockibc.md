@@ -1,0 +1,1 @@
+- Remove `x/blockibc` middleware from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#XXX](https://github.com/noble-assets/noble/pull/XXX))

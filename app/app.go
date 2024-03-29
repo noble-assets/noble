@@ -87,16 +87,16 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/circlefin/noble-fiattokenfactory/x/blockibc"
 	fiattokenfactorymodule "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	fiattokenfactorymodulekeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	fiattokenfactorymoduletypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	v4m1p0rc2 "github.com/noble-assets/noble/v4/app/upgrades/v4.1.0-rc.2"
+	"github.com/noble-assets/noble/v4/app/upgrades/fusion"
 	"github.com/noble-assets/noble/v4/cmd"
 	"github.com/noble-assets/noble/v4/docs"
-	"github.com/noble-assets/noble/v4/x/blockibc"
 	"github.com/noble-assets/noble/v4/x/globalfee"
 	tariff "github.com/noble-assets/noble/v4/x/tariff"
 	tariffkeeper "github.com/noble-assets/noble/v4/x/tariff/keeper"
@@ -502,7 +502,7 @@ func New(
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
-	transferStack = blockibc.NewIBCMiddleware(transferStack, app.TokenFactoryKeeper, app.FiatTokenFactoryKeeper)
+	transferStack = blockibc.NewIBCMiddleware(transferStack, app.FiatTokenFactoryKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -681,6 +681,7 @@ func New(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
+			cdc:                    appCodec,
 			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
 
 			IBCKeeper:         app.IBCKeeper,
@@ -876,10 +877,10 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 }
 
 func (app *App) setupUpgradeHandlers() {
-	// v4.1.0-rc.2 upgrade
+	// fusion upgrade
 	app.UpgradeKeeper.SetUpgradeHandler(
-		v4m1p0rc2.UpgradeName,
-		v4m1p0rc2.CreateUpgradeHandler(
+		fusion.UpgradeName,
+		fusion.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
 		),
@@ -896,8 +897,8 @@ func (app *App) setupUpgradeHandlers() {
 	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
-	case v4m1p0rc2.UpgradeName:
-		storeLoader = v4m1p0rc2.CreateStoreLoader(upgradeInfo.Height)
+	case fusion.UpgradeName:
+		storeLoader = fusion.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {

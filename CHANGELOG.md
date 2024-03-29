@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v4.1.0
+
+*Mar 29, 2024*
+
+TODO
+
+### DEPENDENCIES
+
+- Bump FiatTokenFactory to [`TODO`](https://github.com/circlefin/noble-fiattokenfactory/commit/TODO).
+- Bump PFM from Mandrake patch commit ([`455757b`](https://github.com/cosmos/ibc-apps/commit/455757bb5771c29cf2f83b59e37f6513e07c92be)) to release tag ([`v4.1.2`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.2)).
+
+### FEATURES
+
+- Introduce a new `x/forwarding` module for accounts that automatically forward cross-chain. ([#302](https://github.com/noble-assets/noble/pull/302))
+
+### IMPROVEMENTS
+
+- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/noble-assets/noble/pull/249))
+- Remove `x/blockibc` middleware from codebase and switch to migrated version under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory) ([#XXX](https://github.com/noble-assets/noble/pull/XXX))
+
 ## v4.1.0-rc.3
 
 *Mar 11, 2024*

@@ -1,4 +1,4 @@
-package v4m1p0rc2
+package fusion
 
 import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -9,8 +9,8 @@ import (
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 	storeUpgrades := storetypes.StoreUpgrades{
-		Added:   []string{forwardingtypes.StoreKey},
-		Deleted: []string{"stabletokenfactory"},
+		// TODO(@john): Ensure this is safe for testnet.
+		Added: []string{forwardingtypes.StoreKey},
 	}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)

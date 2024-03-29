@@ -108,6 +108,16 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 				require.NoError(t, json.Unmarshal(raw, &res))
 			},
 		},
+		{
+			// v4.0.3 is a patch release that upgraded two core dependencies.
+			// It is consensus breaking, and therefore is applied as an emergency upgrade.
+			emergency: true,
+			image:     ghcrImage("v4.0.3"),
+		},
+		{
+			upgradeName: "fusion",
+			image:       nobleImageInfo[0],
+		},
 	}
 
 	testNobleChainUpgrade(t, "noble-1", genesis, denomMetadataFrienzies, numValidators, numFullNodes, upgrades)
