@@ -7,7 +7,7 @@ require (
 	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240311150858-14edf83ee1c9
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/cosmos/ibc-go/v4 v4.5.1
+	github.com/cosmos/ibc-go/v4 v4.6.0
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
