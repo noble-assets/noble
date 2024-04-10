@@ -9,19 +9,14 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-	"github.com/noble-assets/noble/v5/x/forwarding"
-	forwardingkeeper "github.com/noble-assets/noble/v5/x/forwarding/keeper"
-	feeante "github.com/noble-assets/noble/v5/x/globalfee/ante"
 )
 
 type HandlerOptions struct {
 	ante.HandlerOptions
 
-	IBCKeeper         *ibckeeper.Keeper
-	CircuitKeeper     circuitante.CircuitBreaker
-	GlobalFeeSubspace paramtypes.Subspace
-	StakingSubspace   paramtypes.Subspace
-	ForwardingKeeper  *forwardingkeeper.Keeper
+	IBCKeeper       *ibckeeper.Keeper
+	CircuitKeeper   circuitante.CircuitBreaker
+	StakingSubspace paramtypes.Subspace
 }
 
 // maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
@@ -54,13 +49,10 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		circuitante.NewCircuitBreakerDecorator(options.CircuitKeeper),
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
-		forwarding.NewAnteDecorator(options.ForwardingKeeper, options.AccountKeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		feeante.NewFeeDecorator(options.GlobalFeeSubspace, options.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
-
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),

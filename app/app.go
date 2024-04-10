@@ -111,13 +111,6 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	"github.com/noble-assets/noble/v5/docs"
-	"github.com/noble-assets/noble/v5/x/forwarding"
-	forwardingkeeper "github.com/noble-assets/noble/v5/x/forwarding/keeper"
-	forwardingtypes "github.com/noble-assets/noble/v5/x/forwarding/types"
-	"github.com/noble-assets/noble/v5/x/globalfee"
-	"github.com/noble-assets/noble/v5/x/tariff"
-	tariffkeeper "github.com/noble-assets/noble/v5/x/tariff/keeper"
-	tarifftypes "github.com/noble-assets/noble/v5/x/tariff/types"
 	"github.com/spf13/cast"
 	"golang.org/x/exp/maps"
 )
@@ -161,9 +154,6 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
-		globalfee.AppModuleBasic{},
-		tariff.AppModuleBasic{},
-		forwarding.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -235,9 +225,6 @@ type App struct {
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
 	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
-	TariffKeeper     tariffkeeper.Keeper
-	ForwardingKeeper *forwardingkeeper.Keeper
-
 	ModuleManager      *module.Manager
 	BasicModuleManager module.BasicManager
 
@@ -297,11 +284,9 @@ func New(
 		capabilitytypes.StoreKey,
 		packetforwardtypes.StoreKey,
 		stakingtypes.StoreKey,
-		forwardingtypes.StoreKey,
 	)
 	tkeys := storetypes.NewTransientStoreKeys(
 		paramstypes.TStoreKey,
-		forwardingtypes.TransientStoreKey,
 	)
 	memKeys := storetypes.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
@@ -474,14 +459,6 @@ func New(
 		DefaultAuthority.String(),
 	)
 
-	app.TariffKeeper = tariffkeeper.NewKeeper(
-		app.GetSubspace(tarifftypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		authtypes.FeeCollectorName,
-		app.IBCKeeper.ChannelKeeper,
-	)
-
 	app.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		keys[packetforwardtypes.StoreKey],
@@ -489,7 +466,7 @@ func New(
 		app.IBCKeeper.ChannelKeeper,
 		app.DistrKeeper,
 		app.BankKeeper,
-		app.TariffKeeper,
+		app.IBCKeeper.ChannelKeeper,
 		DefaultAuthority.String(),
 	)
 
@@ -538,19 +515,8 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.ForwardingKeeper = forwardingkeeper.NewKeeper(
-		appCodec,
-		keys[forwardingtypes.StoreKey],
-		tkeys[forwardingtypes.TransientStoreKey],
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		app.TransferKeeper,
-	)
-
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
-	transferStack = forwarding.NewMiddleware(transferStack, app.AccountKeeper, app.ForwardingKeeper)
 	transferStack = packetforward.NewIBCMiddleware(
 		transferStack,
 		app.PacketForwardKeeper,
@@ -595,9 +561,6 @@ func New(
 		icaModule,
 		packetforward.NewAppModule(app.PacketForwardKeeper, app.GetSubspace(packetforwardtypes.ModuleName)),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
-		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
-		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
-		forwarding.NewAppModule(app.ForwardingKeeper),
 		circuit.NewAppModule(appCodec, app.CircuitKeeper),
 	)
 
@@ -627,7 +590,6 @@ func New(
 		// upgrades should be run first
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
-		tarifftypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -644,8 +606,6 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
-		forwardingtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -667,9 +627,6 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
-		tarifftypes.ModuleName,
-		forwardingtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -683,7 +640,6 @@ func New(
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		stakingtypes.ModuleName,
-		tarifftypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		crisistypes.ModuleName,
@@ -697,8 +653,6 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
-		forwardingtypes.ModuleName,
 		circuittypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
@@ -749,11 +703,9 @@ func New(
 				SignModeHandler: txConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			IBCKeeper:         app.IBCKeeper,
-			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
-			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
-			ForwardingKeeper:  app.ForwardingKeeper,
-			CircuitKeeper:     &app.CircuitKeeper,
+			IBCKeeper:       app.IBCKeeper,
+			StakingSubspace: app.GetSubspace(stakingtypes.ModuleName),
+			CircuitKeeper:   &app.CircuitKeeper,
 		},
 	)
 	if err != nil {
@@ -976,7 +928,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
-	paramsKeeper.Subspace(tarifftypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
@@ -985,7 +936,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(upgradetypes.ModuleName)
-	paramsKeeper.Subspace(globalfee.ModuleName)
 
 	return paramsKeeper
 }
