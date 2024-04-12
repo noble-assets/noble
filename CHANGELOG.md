@@ -2,13 +2,13 @@
 
 ## v4.1.0
 
-*Mar 29, 2024*
+*Apr 12, 2024*
 
-TODO
+This is the first minor release to the v4 Argon release line. It introduces a new `x/forwarding` module, along with various improvements to blocklist and pause checks inside `x/fiattokenfactory`.
 
 ### DEPENDENCIES
 
-- Bump FiatTokenFactory to [`TODO`](https://github.com/circlefin/noble-fiattokenfactory/commit/TODO).
+- Bump FiatTokenFactory to [`0a7385d`](https://github.com/circlefin/noble-fiattokenfactory/commit/0a7385d9a37744ced1e4d61eae10de2b117f482b).
 - Bump PFM from Mandrake patch commit ([`455757b`](https://github.com/cosmos/ibc-apps/commit/455757bb5771c29cf2f83b59e37f6513e07c92be)) to release tag ([`v4.1.2`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.2)).
 
 ### FEATURES

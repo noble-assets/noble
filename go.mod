@@ -5,7 +5,7 @@ go 1.21
 require (
 	cosmossdk.io/errors v1.0.0
 	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240311150858-14edf83ee1c9
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240412141733-0a7385d9a377
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.2
 	github.com/cosmos/ibc-go/v4 v4.5.1
@@ -153,13 +153,8 @@ replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
-	// use internal circlefin/noble-fiattokenfactory
-	// TODO(@john): Switch to public commit hash.
-	github.com/circlefin/noble-fiattokenfactory => github.com/circlefin/noble-fiattokenfactory-private v0.0.0-20240322202725-eb8b9b321951
-
 	// use noble compatible cosmos/cosmos-sdk
-	// TODO(@john): Switch to release tag.
-	github.com/cosmos/cosmos-sdk => github.com/noble-assets/cosmos-sdk v0.45.17-0.20240313121500-4716abcf10d9
+	github.com/cosmos/cosmos-sdk => github.com/noble-assets/cosmos-sdk v0.45.16-noble
 
 	// use macos sonoma compatible cosmos/ledger-cosmos-go
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4

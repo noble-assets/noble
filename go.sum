@@ -185,8 +185,8 @@ github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5P
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
 github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc h1:vm2CZfO8sjxPFKzguuZl1FjHHdbgRUWvF3x2lw6NyEU=
 github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc/go.mod h1:ssEHJqFI1f4a5sLtZ7qeYJ7/75LzDgzbBv4C9as3y3w=
-github.com/circlefin/noble-fiattokenfactory-private v0.0.0-20240322202725-eb8b9b321951 h1:P07K+nvFDpb+oSKu0FbwZQYQ8cupaEIGbSeCvQCUujI=
-github.com/circlefin/noble-fiattokenfactory-private v0.0.0-20240322202725-eb8b9b321951/go.mod h1:pWbZhxq9IBFK9d24ZdmSKdG3LgFbp97r18IbF56QwnE=
+github.com/circlefin/noble-fiattokenfactory v0.0.0-20240412141733-0a7385d9a377 h1:6oyw7h/UnsWBrNcH+Nv1VAeyKqjraM9TADsIMgBywjs=
+github.com/circlefin/noble-fiattokenfactory v0.0.0-20240412141733-0a7385d9a377/go.mod h1:pWbZhxq9IBFK9d24ZdmSKdG3LgFbp97r18IbF56QwnE=
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec/go.mod h1:jMjuTZXRI4dUb/I5gc9Hdhagfvm9+RyrPryS/auMzxE=
@@ -772,8 +772,8 @@ github.com/nats-io/nkeys v0.1.3/go.mod h1:xpnFELMwJABBLVhffcfd1MZx6VsNRFpEugbxzi
 github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OSON2c=
 github.com/neilotoole/errgroup v0.1.6/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/noble-assets/cosmos-sdk v0.45.17-0.20240313121500-4716abcf10d9 h1:+u+JKXtPc4oG1BRAdctn+YA9A0v7UPDoS/Exxe7C6o0=
-github.com/noble-assets/cosmos-sdk v0.45.17-0.20240313121500-4716abcf10d9/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
+github.com/noble-assets/cosmos-sdk v0.45.16-noble h1:c0SUrD02hNPvE3y9SHEhkOWOmTtdll1PYxZDf8K6YLw=
+github.com/noble-assets/cosmos-sdk v0.45.16-noble/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
 github.com/nxadm/tail v1.4.4 h1:DQuhQpB1tVlglWS2hLQ5OV6B5r8aGxSrPc5Qo6uTN78=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/oklog/oklog v0.3.2/go.mod h1:FCV+B7mhrz4o+ueLpx+KqkyXRGMWOYEvfiXtdGtbWGs=
