@@ -1,1 +1,0 @@
-- Introduce a new `x/forwarding` module for accounts that automatically forward cross-chain. ([#302](https://github.com/noble-assets/noble/pull/302))

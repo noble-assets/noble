@@ -1,0 +1,1 @@
+- Pass a packet onto the next middleware if we fail to decode the receiver. ([#350](https://github.com/noble-assets/noble/pull/350))

@@ -1,0 +1,1 @@
+- Allow forwarding accounts to be manually cleared by any user. ([#312](https://github.com/noble-assets/noble/pull/312))

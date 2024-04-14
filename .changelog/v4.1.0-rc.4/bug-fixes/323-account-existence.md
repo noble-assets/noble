@@ -1,0 +1,1 @@
+- Improve checks around account existence when registering a new forwarding account. ([#323](https://github.com/noble-assets/noble/pull/323))
