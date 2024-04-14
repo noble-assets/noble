@@ -23,6 +23,10 @@ This is the fifth release candidate for a minor release to the v4 Argon line.
 
 - Allow forwarding accounts to be manually cleared by any user. ([#312](https://github.com/noble-assets/noble/pull/312))
 
+### IMPROVEMENTS
+
+- Switch to migrated `x/blockibc` under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory). ([#346](https://github.com/noble-assets/noble/pull/346))
+
 ## v4.1.0-rc.3
 
 *Mar 11, 2024*
