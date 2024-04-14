@@ -111,8 +111,20 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			},
 		},
 		{
+			// v4.1.0-rc.2 is a new release candidate that introduces a new
+			// forwarding module, among other changes.
 			upgradeName: "v4.1.0-rc.2",
 			image:       ghcrImage("v4.1.0-rc.2"),
+		},
+		{
+			// v4.1.0-rc.3 is a patch release that upgraded two core dependencies.
+			// It is consensus breaking, and therefore is applied as an emergency upgrade.
+			emergency: true,
+			image:     ghcrImage("v4.1.0-rc.3"),
+		},
+		{
+			upgradeName: "fusion",
+			image:       nobleImageInfo[0],
 		},
 	}
 

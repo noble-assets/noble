@@ -1,0 +1,1 @@
+- Implement channel state checks registering and clearing forwarding accounts. ([#328](https://github.com/noble-assets/noble/pull/328))

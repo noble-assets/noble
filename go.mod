@@ -5,10 +5,10 @@ go 1.21
 require (
 	cosmossdk.io/errors v1.0.0
 	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240311150858-14edf83ee1c9
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240412141733-0a7385d9a377
 	github.com/cosmos/cosmos-sdk v0.45.16
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.2-0.20240228222021-455757bb5771
-	github.com/cosmos/ibc-go/v4 v4.5.1
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.2
+	github.com/cosmos/ibc-go/v4 v4.6.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
@@ -152,6 +152,9 @@ require (
 replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
+
+	// use noble compatible cosmos/cosmos-sdk
+	github.com/cosmos/cosmos-sdk => github.com/noble-assets/cosmos-sdk v0.45.16-noble
 
 	// use macos sonoma compatible cosmos/ledger-cosmos-go
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4

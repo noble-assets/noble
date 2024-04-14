@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	fiattokenfactorykeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -16,6 +17,7 @@ import (
 
 type HandlerOptions struct {
 	ante.HandlerOptions
+	cdc                    codec.Codec
 	fiatTokenFactoryKeeper *fiattokenfactorykeeper.Keeper
 	IBCKeeper              *ibckeeper.Keeper
 	GlobalFeeSubspace      paramtypes.Subspace
@@ -52,7 +54,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),
 		fiattokenfactory.NewIsBlacklistedDecorator(options.fiatTokenFactoryKeeper),
-		fiattokenfactory.NewIsPausedDecorator(options.fiatTokenFactoryKeeper),
+		fiattokenfactory.NewIsPausedDecorator(options.cdc, options.fiatTokenFactoryKeeper),
 		forwarding.NewAnteDecorator(options.ForwardingKeeper, options.AccountKeeper),
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),

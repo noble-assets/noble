@@ -1,4 +1,4 @@
-package v4m1p0rc2
+package fusion
 
 import (
 	"fmt"
