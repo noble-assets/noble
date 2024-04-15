@@ -1,5 +1,35 @@
 # CHANGELOG
 
+## v4.1.0
+
+*Apr 15, 2024*
+
+This is a minor release to the v4 Argon line, codenamed Fusion.
+
+The main part of this release is the introduction of the `x/forwarding` module.
+It allows users to create a new account type, where the receipt of funds into
+that account triggers an automatic IBC transfer over a specified channel to a
+recipient address. This allows for one-click transfers to any IBC-enabled chain,
+and can be used in tandem with, for example, the receipt of funds from a
+[Circle Mint][mint] account or via [CCTP].
+
+Other notable changes include are documented below.
+
+[cctp]: https://www.circle.com/en/cross-chain-transfer-protocol
+[mint]: https://www.circle.com/en/circle-mint
+
+### DEPENDENCIES
+
+- Switch to Noble's Cosmos SDK fork ([`v0.45.16-noble`](https://github.com/noble-assets/cosmos-sdk/releases/tag/v0.45.16-noble)), allowing `DeliverTx` to be extended.
+- Bump PFM from Mandrake patch commit ([`455757b`](https://github.com/cosmos/ibc-apps/commit/455757bb5771c29cf2f83b59e37f6513e07c92be)) to release tag ([`v4.1.2`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.2)).
+- Bump IBC to [`v4.6.0`](https://github.com/cosmos/ibc-go/releases/tag/v4.6.0) to resolve [ASA-2024-007](https://github.com/cosmos/ibc-go/security/advisories/GHSA-j496-crgh-34mx) security advisory.
+- Bump FiatTokenFactory to [`0a7385d`](https://github.com/circlefin/noble-fiattokenfactory/commit/0a7385d9a37744ced1e4d61eae10de2b117f482b) for various blocklist and paused check improvements.
+
+### IMPROVEMENTS
+
+- Align module path with Go's [naming convention](https://go.dev/doc/modules/version-numbers#major-version). ([#249](https://github.com/noble-assets/noble/pull/249), [#283](https://github.com/noble-assets/noble/pull/283))
+- Switch to migrated `x/blockibc` under [`circlefin/noble-fiattokenfactory`](https://github.com/circlefin/noble-fiattokenfactory). ([#346](https://github.com/noble-assets/noble/pull/346))
+
 ## v4.1.0-rc.4
 
 *Apr 14, 2024*
