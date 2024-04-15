@@ -13,7 +13,7 @@ func CreateUpgradeHandler(
 	cfg module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		if ctx.ChainID() != TestnetChainID {
+		if ctx.ChainID() != MainnetChainID {
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}
 
