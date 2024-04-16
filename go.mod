@@ -153,9 +153,6 @@ replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
-	// use noble compatible cosmos/cosmos-sdk
-	github.com/cosmos/cosmos-sdk => github.com/noble-assets/cosmos-sdk v0.45.16-noble
-
 	// use macos sonoma compatible cosmos/ledger-cosmos-go
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 
@@ -172,3 +169,5 @@ replace (
 	// use cosmos compatible google.golang.org/grpc
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
+
+retract v4.1.0

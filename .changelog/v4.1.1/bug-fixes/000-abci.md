@@ -1,0 +1,1 @@
+- Remove custom ABCI logic inside `DeliverTx` that causes consensus failures. ([#XXX](https://github.com/noble-assets/noble/pull/XXX))
