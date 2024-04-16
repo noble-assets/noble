@@ -8,7 +8,7 @@ This is a consensus breaking patch release to the v4.1 Fusion line.
 
 ### BUG FIXES
 
-- Remove custom ABCI logic inside `DeliverTx` that causes consensus failures. ([#XXX](https://github.com/noble-assets/noble/pull/XXX))
+- Remove custom ABCI logic inside `DeliverTx` that causes consensus failures. ([#353](https://github.com/noble-assets/noble/pull/353))
 
 ## v4.1.1-rc.0
 
