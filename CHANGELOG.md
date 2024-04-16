@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v4.1.1
+
+*Apr 16, 2024*
+
+This is a consensus breaking patch release to the v4.1 Fusion line.
+
+### BUG FIXES
+
+- Remove custom ABCI logic inside `DeliverTx` that causes consensus failures. ([#353](https://github.com/noble-assets/noble/pull/353))
+
+## v4.1.1-rc.0
+
+*Apr 16, 2024*
+
+This is the release candidate for a consensus breaking patch release to the v4.1 Fusion line.
+
+### BUG FIXES
+
+- Remove custom ABCI logic inside `DeliverTx` that causes consensus failures. ([`8a4cf67`](https://github.com/noble-assets/noble/commit/8a4cf6768b3be88209c3fcdced146a0dfaf729e1))
+
 ## v4.1.0
 
 *Apr 15, 2024*
