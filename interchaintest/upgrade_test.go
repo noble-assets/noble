@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	sdkupgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	sdkupgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/noble-assets/noble/v5/cmd"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"

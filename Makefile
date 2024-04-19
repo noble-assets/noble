@@ -18,7 +18,7 @@ CHAIN_NAME = noble
 DAEMON_NAME = nobled
 
 LEDGER_ENABLED ?= true
-TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 BUILDDIR ?= $(CURDIR)/build
 
 export GO111MODULE = on
@@ -64,7 +64,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(CHAIN_NAME) \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+			-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
@@ -123,7 +123,8 @@ endif
 ###                                Protobuf                                 ###
 ###############################################################################
 
-BUF_VERSION=1.29.0
+BUF_VERSION=1.30.0
+BUILDER_VERSION=0.14.0
 
 proto-all: proto-format proto-lint proto-gen
 
@@ -136,7 +137,7 @@ proto-format:
 proto-gen:
 	@echo "🤖 Generating code from protobuf..."
 	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
-		noble-proto sh ./proto/generate.sh
+		ghcr.io/cosmos/proto-builder:$(BUILDER_VERSION) sh ./proto/generate.sh
 	@echo "✅ Completed code generation!"
 
 proto-lint:
@@ -144,8 +145,3 @@ proto-lint:
 	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
 		bufbuild/buf:$(BUF_VERSION) lint
 	@echo "✅ Completed protobuf linting!"
-
-proto-setup:
-	@echo "🤖 Setting up protobuf environment..."
-	@docker build --rm --tag noble-proto:latest --file proto/Dockerfile .
-	@echo "✅ Setup protobuf environment!"

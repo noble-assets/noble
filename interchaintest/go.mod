@@ -3,17 +3,19 @@ module github.com/noble-assets/noble/interchaintest
 go 1.21
 
 require (
-	cosmossdk.io/math v1.0.1
+	cosmossdk.io/math v1.2.0
 	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240311150858-14edf83ee1c9
-	github.com/cosmos/cosmos-sdk v0.45.16
+	github.com/cosmos/cosmos-sdk v0.50.5
 	github.com/cosmos/ibc-go/v4 v4.5.1
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
 	github.com/noble-assets/noble/v5 v5.0.0
+
 	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231026153934-334934f17a68
 	github.com/strangelove-ventures/paramauthority v1.1.0
+
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
 )
@@ -143,7 +145,7 @@ require (
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tendermint/tendermint v0.34.27 // indirect
-	github.com/tendermint/tm-db v0.6.7 // indirect
+	github.com/cosmos/cosmos-db v0.6.7 // indirect
 	github.com/tidwall/btree v1.5.0 // indirect
 	github.com/zondax/hid v0.9.2 // indirect
 	github.com/zondax/ledger-go v0.14.3 // indirect
@@ -184,16 +186,9 @@ replace (
 	// use cosmos compatible ChainSafe/go-schnorrkel
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
-	// use cosmos flavored gogo/protobuf
-	// https://github.com/cosmos/cosmos-sdk/issues/8469
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
 	// use local version of noble
 	github.com/noble-assets/noble/v5 => ./..
 
 	// use cosmos compatible syndtr/goleveldb
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-	// use cometbft
-	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
 )
