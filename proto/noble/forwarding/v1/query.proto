@@ -13,6 +13,10 @@ service Query {
     option (google.api.http).get = "/noble/forwarding/v1/address/{channel}/{recipient}";
   }
 
+  rpc Stats(QueryStats) returns (QueryStatsResponse) {
+    option (google.api.http).get = "/noble/forwarding/v1/stats";
+  }
+
   rpc StatsByChannel(QueryStatsByChannel) returns (QueryStatsByChannelResponse) {
     option (google.api.http).get = "/noble/forwarding/v1/stats/{channel}";
   }
@@ -30,6 +34,12 @@ message QueryAddressResponse {
   bool exists = 2;
 }
 
+message QueryStats {}
+
+message QueryStatsResponse {
+  map<string, Stats> stats = 1 [(gogoproto.nullable) = false];
+}
+
 message QueryStatsByChannel {
   string channel = 1;
 }
@@ -38,6 +48,18 @@ message QueryStatsByChannelResponse {
   uint64 num_of_accounts = 1;
   uint64 num_of_forwards = 2;
   repeated cosmos.base.v1beta1.Coin total_forwarded = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+//
+
+message Stats {
+  string chain = 1;
+  uint64 num_of_accounts = 2;
+  uint64 num_of_forwards = 3;
+  repeated cosmos.base.v1beta1.Coin total_forwarded = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];

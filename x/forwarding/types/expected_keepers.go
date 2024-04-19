@@ -5,6 +5,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	clienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	"github.com/cosmos/ibc-go/v4/modules/core/exported"
 )
 
 type AccountKeeper interface {
@@ -19,6 +20,7 @@ type BankKeeper interface {
 
 type ChannelKeeper interface {
 	GetChannel(ctx sdk.Context, portID, channelID string) (channeltypes.Channel, bool)
+	GetChannelClientState(ctx sdk.Context, portID string, channelID string) (string, exported.ClientState, error)
 }
 
 type TransferKeeper interface {
