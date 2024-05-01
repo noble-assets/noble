@@ -10,9 +10,15 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
+<<<<<<< HEAD
 	"github.com/noble-assets/noble/v4/x/forwarding"
 	forwardingkeeper "github.com/noble-assets/noble/v4/x/forwarding/keeper"
 	feeante "github.com/noble-assets/noble/v4/x/globalfee/ante"
+=======
+	"github.com/noble-assets/forwarding/x/forwarding"
+	forwardingkeeper "github.com/noble-assets/forwarding/x/forwarding/keeper"
+	feeante "github.com/noble-assets/noble/v5/x/globalfee/ante"
+>>>>>>> ee651ba (refactor: use migrated `x/forwarding` (#357))
 )
 
 type HandlerOptions struct {

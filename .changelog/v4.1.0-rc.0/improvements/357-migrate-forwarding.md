@@ -1,0 +1,1 @@
+- Switch to [migrated](https://github.com/noble-assets/forwarding) version of `x/forwarding` module. ([#357](https://github.com/noble-assets/noble/pull/357))
