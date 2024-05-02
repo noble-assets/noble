@@ -126,6 +126,14 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			upgradeName: "fusion",
 			image:       ghcrImage("v4.1.0-rc.4"),
 		},
+		{
+			emergency: true,
+			image:     ghcrImage("v4.1.1-rc.0"),
+		},
+		{
+			emergency: true,
+			image:     nobleImageInfo[0],
+		},
 	}
 
 	testNobleChainUpgrade(t, "grand-1", genesis, denomMetadataUsdc, numValidators, numFullNodes, upgrades)

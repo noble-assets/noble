@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v4.1.2
+
+*May 2, 2024*
+
+This is a consensus breaking patch release to the v4.1 Fusion line.
+
+### DEPENDENCIES
+
+- Bump `x/forwarding` module to [`v1.1.0`](https://github.com/noble-assets/forwarding/releases/tag/v1.1.0) ([#357](https://github.com/noble-assets/noble/pull/357))
+- Bump FiatTokenFactory to [`TODO`](https://github.com/circlefin/noble-fiattokenfactory/commit/TODO) ([#359](https://github.com/noble-assets/noble/pull/359))
+
+### IMPROVEMENTS
+
+- Switch to [migrated](https://github.com/noble-assets/forwarding) version of `x/forwarding` module. ([#357](https://github.com/noble-assets/noble/pull/357))
+
 ## v4.1.1
 
 *Apr 16, 2024*
