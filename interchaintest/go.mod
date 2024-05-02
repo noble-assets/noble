@@ -11,12 +11,8 @@ require (
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/icza/dyno v0.0.0-20220812133438-f0b6f8a18845
-<<<<<<< HEAD
-	github.com/noble-assets/noble/v4 v4.0.0
-=======
 	github.com/noble-assets/forwarding v1.1.0
-	github.com/noble-assets/noble/v5 v5.0.0
->>>>>>> ee651ba (refactor: use migrated `x/forwarding` (#357))
+	github.com/noble-assets/noble/v4 v4.0.0
 	github.com/strangelove-ventures/interchaintest/v4 v4.0.0-20231026153934-334934f17a68
 	github.com/strangelove-ventures/paramauthority v1.1.0
 	github.com/stretchr/testify v1.8.4

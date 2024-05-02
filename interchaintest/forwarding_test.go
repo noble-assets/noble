@@ -11,12 +11,7 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/icza/dyno"
-<<<<<<< HEAD
-	forwardingtypes "github.com/noble-assets/noble/v4/x/forwarding/types"
-=======
 	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
->>>>>>> ee651ba (refactor: use migrated `x/forwarding` (#357))
-	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer/hermes"
