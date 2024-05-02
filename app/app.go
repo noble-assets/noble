@@ -109,9 +109,9 @@ import (
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 
-	"github.com/noble-assets/noble/v4/x/forwarding"
-	forwardingkeeper "github.com/noble-assets/noble/v4/x/forwarding/keeper"
-	forwardingtypes "github.com/noble-assets/noble/v4/x/forwarding/types"
+	"github.com/noble-assets/forwarding/x/forwarding"
+	forwardingkeeper "github.com/noble-assets/forwarding/x/forwarding/keeper"
+	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
 )
 
 const (
