@@ -18,17 +18,17 @@ jobs:
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: strangelove-ventures/heighliner-build-action@v0.0.3
+        uses: strangelove-ventures/heighliner-build-action@v1.0.1
         with:
           chain: noble
           dockerfile: cosmos
