@@ -1,1 +1,1 @@
-- Bump FiatTokenFactory to [`TODO`](https://github.com/circlefin/noble-fiattokenfactory/commit/TODO) ([#359](https://github.com/noble-assets/noble/pull/359))
+- Bump FiatTokenFactory to [`738932c`](https://github.com/circlefin/noble-fiattokenfactory/commit/738932cb316d06f587c49dfb11a50515cce657d9) ([#359](https://github.com/noble-assets/noble/pull/359))

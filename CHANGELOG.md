@@ -9,7 +9,8 @@ This is a consensus breaking patch release to the v4.1 Fusion line.
 ### DEPENDENCIES
 
 - Bump `x/forwarding` module to [`v1.1.0`](https://github.com/noble-assets/forwarding/releases/tag/v1.1.0) ([#357](https://github.com/noble-assets/noble/pull/357))
-- Bump FiatTokenFactory to [`TODO`](https://github.com/circlefin/noble-fiattokenfactory/commit/TODO) ([#359](https://github.com/noble-assets/noble/pull/359))
+- Bump FiatTokenFactory to [`738932c`](https://github.com/circlefin/noble-fiattokenfactory/commit/738932cb316d06f587c49dfb11a50515cce657d9) ([#359](https://github.com/noble-assets/noble/pull/359))
+- Bump CCTP to [`69ee090`](https://github.com/circlefin/noble-cctp/commit/69ee090808c05987c504b383939e71ad491594e7) ([#359](https://github.com/noble-assets/noble/pull/359))
 
 ### IMPROVEMENTS
 
