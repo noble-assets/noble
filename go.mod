@@ -4,8 +4,8 @@ go 1.21
 
 require (
 	cosmossdk.io/errors v1.0.0
-	github.com/circlefin/noble-cctp v0.0.0-20231108011259-7c5206df02dc
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240412141733-0a7385d9a377
+	github.com/circlefin/noble-cctp v0.0.0-20240409141251-69ee090808c0
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20240502160322-738932cb316d
 	github.com/cosmos/cosmos-sdk v0.45.16
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.2
 	github.com/cosmos/ibc-go/v4 v4.6.0
