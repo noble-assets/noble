@@ -12,6 +12,7 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/icza/dyno"
 	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
+	"github.com/strangelove-ventures/interchaintest/v4"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/relayer/hermes"
