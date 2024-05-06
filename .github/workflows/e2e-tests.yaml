@@ -18,7 +18,7 @@ jobs:
         uses: strangelove-ventures/heighliner-build-action@v0.0.3
         with:
           registry: "" # empty registry, image only shared for e2e testing
-          tag: local # emulate local environment for consistency in interchaintest cases
+          tag: local # emulate local environment for consistency in e2e cases
           tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
@@ -85,4 +85,4 @@ jobs:
         run: docker image load -i ${{ env.TAR_PATH }}
 
       - name: run test
-        run: cd interchaintest && go test -race -v -timeout 30m -run ^${{ matrix.test }}$ .
+        run: cd e2e && go test -race -v -timeout 30m -run ^${{ matrix.test }}$ .

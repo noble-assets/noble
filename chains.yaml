@@ -1,5 +1,3 @@
-# This file is used to create docker images using the heighliner binary.
-
 - name: noble
   dockerfile: cosmos
   build-target: make install
