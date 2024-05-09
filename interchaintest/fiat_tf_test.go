@@ -330,7 +330,6 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 
 }
 
-// wip
 func TestFiatTFUpdatePauser(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -451,6 +450,318 @@ func TestFiatTFUpdatePauser(t *testing.T) {
 
 }
 
+func TestFiatTFUpdateBlacklister(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Update Blacklister while TF is paused -
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "new-blacklister-1", 1, noble)
+	newBlacklister1 := w[0]
+
+	_, err := val.ExecTx(ctx, gw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister1.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
+	require.NoError(t, err, "failed to query show-blacklister")
+
+	var getBlacklisterResponse fiattokenfactorytypes.QueryGetBlacklisterResponse
+	err = json.Unmarshal(res, &getBlacklisterResponse)
+	require.NoError(t, err, "failed to unmarshall show-blacklister response")
+
+	expectedGetBlacklisterResponse := fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: string(newBlacklister1.FormattedAddress()),
+		},
+	}
+
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, getBlacklisterResponse.Blacklister)
+
+	unpauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Update Blacklister from non owner account -
+	// Status:
+	// 	Blacklister: newBlacklister1
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-blacklister-2", 1, noble)
+	newBlacklister2 := w[0]
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister2.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the owner: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
+	require.NoError(t, err, "failed to query show-blacklister")
+
+	err = json.Unmarshal(res, &getBlacklisterResponse)
+	require.NoError(t, err, "failed to unmarshall show-blacklister response")
+
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, getBlacklisterResponse.Blacklister)
+
+	// - Update Blacklister from blacklisted owner account -
+	// Status:
+	// 	Blacklister: newBlacklister1
+
+	blacklistAccount(t, ctx, val, newBlacklister1, gw.fiatTfRoles.Owner)
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister2.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
+	require.NoError(t, err, "failed to query show-blacklister")
+
+	err = json.Unmarshal(res, &getBlacklisterResponse)
+	require.NoError(t, err, "failed to unmarshall show-blacklister response")
+
+	expectedGetBlacklisterResponse = fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: string(newBlacklister2.FormattedAddress()),
+		},
+	}
+
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, getBlacklisterResponse.Blacklister)
+
+	unblacklistAccount(t, ctx, val, newBlacklister2, gw.fiatTfRoles.Owner)
+
+	// - Update Blacklister to blacklisted Blacklister account -
+	// Status:
+	// 	Blacklister: newBlacklister2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-blacklister-3", 1, noble)
+	newBlacklister3 := w[0]
+
+	blacklistAccount(t, ctx, val, newBlacklister2, newBlacklister3)
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister3.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
+	require.NoError(t, err, "failed to query show-blacklister")
+
+	err = json.Unmarshal(res, &getBlacklisterResponse)
+	require.NoError(t, err, "failed to unmarshall show-blacklister response")
+
+	expectedGetBlacklisterResponse = fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: string(newBlacklister3.FormattedAddress()),
+		},
+	}
+
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, getBlacklisterResponse.Blacklister)
+
+}
+
+func TestFiatTFBlacklist(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Blacklist user while TF is paused -
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "to-blacklist-1", 1, noble)
+	toBlacklist1 := w[0]
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, toBlacklist1)
+
+	unpauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Blacklist user from non Blacklister account -
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "to-blacklist-2", 1, noble)
+	toBlacklist2 := w[0]
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+
+	var preFailedBlacklist, postFailedBlacklist fiattokenfactorytypes.QueryAllBlacklistedResponse
+	_ = json.Unmarshal(res, &preFailedBlacklist)
+	// ignore the error since `pagination` does not unmarshall)
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist2.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast blacklist message")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the blacklister: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+
+	_ = json.Unmarshal(res, &postFailedBlacklist)
+	// ignore the error since `pagination` does not unmarshall)
+
+	require.Equal(t, preFailedBlacklist.Blacklisted, postFailedBlacklist.Blacklisted)
+
+	// Blacklist an account while the blacklister is blacklisted
+	// Status:
+	// 	blacklisted: toBlacklist1
+	// 	not blacklisted: toBlacklist2
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Blacklister)
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, toBlacklist2)
+
+	unblacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Blacklister)
+
+	// Blacklist an already blacklisted account
+	// Status:
+	// 	blacklisted: toBlacklist1, toBlacklist2
+
+	hash, err = val.ExecTx(ctx, gw.fiatTfRoles.Blacklister.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist1.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast blacklist message")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "user is already blacklisted")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklisted", toBlacklist1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-blacklisted")
+
+	var showBlacklistedResponse fiattokenfactorytypes.QueryGetBlacklistedResponse
+	err = json.Unmarshal(res, &showBlacklistedResponse)
+	require.NoError(t, err, "failed to unmarshall show-blacklisted response")
+
+	expectedBlacklistResponse := fiattokenfactorytypes.QueryGetBlacklistedResponse{
+		Blacklisted: fiattokenfactorytypes.Blacklisted{
+			AddressBz: toBlacklist1.Address(),
+		},
+	}
+
+	require.Equal(t, expectedBlacklistResponse.Blacklisted, showBlacklistedResponse.Blacklisted)
+
+}
+
+func TestFiatTFUnblacklist(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Unblacklist user while TF is paused -
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "blacklist-user-1", 1, noble)
+	blacklistedUser1 := w[0]
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, blacklistedUser1)
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	unblacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, blacklistedUser1)
+
+	// - Unblacklist user from non Blacklister account -
+	// Status:
+	// 	not blacklisted: blacklistedUser1
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, blacklistedUser1)
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+
+	var preFailedUnblacklist, postFailedUnblacklist fiattokenfactorytypes.QueryAllBlacklistedResponse
+	_ = json.Unmarshal(res, &preFailedUnblacklist)
+	// ignore the error since `pagination` does not unmarshall)
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "unblacklist", blacklistedUser1.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast blacklist message")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the blacklister: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+
+	_ = json.Unmarshal(res, &postFailedUnblacklist)
+	// ignore the error since `pagination` does not unmarshall)
+
+	require.Equal(t, preFailedUnblacklist.Blacklisted, postFailedUnblacklist.Blacklisted)
+
+	// Unblacklist an account while the blacklister is blacklisted
+	// Status:
+	// 	not blacklisted: blacklistedUser1
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, blacklistedUser1)
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Blacklister)
+
+	unblacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, blacklistedUser1)
+
+	unblacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Blacklister)
+
+	// Unblacklist an account that is not blacklisted
+	// Status:
+	// 	not blacklisted: blacklistedUser1
+
+	hash, err = val.ExecTx(ctx, gw.fiatTfRoles.Blacklister.KeyName(), "fiat-tokenfactory", "unblacklist", blacklistedUser1.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast blacklist message")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "the specified address is not blacklisted")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklisted", blacklistedUser1.FormattedAddress())
+	require.Error(t, err, "query succeeded, blacklisted account should not exist")
+
+}
+
+// blacklistAccount blacklists an account and then runs the `show-blacklisted` query to ensure the
+// account was successfully blacklisted on chain
 func blacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, toBlacklist ibc.Wallet) {
 	_, err := val.ExecTx(ctx, blacklister.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist.FormattedAddress())
 	require.NoError(t, err, "failed to broadcast blacklist message")
@@ -471,6 +782,8 @@ func blacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, 
 	require.Equal(t, expectedBlacklistResponse.Blacklisted, showBlacklistedResponse.Blacklisted)
 }
 
+// unblacklistAccount unblacklists an account and then runs the `show-blacklisted` query to ensure the
+// account was successfully unblacklisted on chain
 func unblacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, unBlacklist ibc.Wallet) {
 	_, err := val.ExecTx(ctx, blacklister.KeyName(), "fiat-tokenfactory", "unblacklist", unBlacklist.FormattedAddress())
 	require.NoError(t, err, "failed to broadcast blacklist message")
@@ -517,7 +830,7 @@ func unpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pau
 	require.Equal(t, expectedUnpaused, showPausedResponse)
 }
 
-// starts noble chain and sets up all Fiat Token Factory Roles
+// nobleSpinUp starts noble chain and sets up all Fiat Token Factory Roles
 func nobleSpinUp(ctx context.Context, t *testing.T) (gw genesisWrapper) {
 	rep := testreporter.NewNopReporter()
 	eRep := rep.RelayerExecReporter(t)
