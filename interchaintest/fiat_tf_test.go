@@ -3,6 +3,7 @@ package interchaintest_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
@@ -727,7 +728,7 @@ func TestFiatTFUnblacklist(t *testing.T) {
 
 	require.Equal(t, preFailedUnblacklist.Blacklisted, postFailedUnblacklist.Blacklisted)
 
-	// Unblacklist an account while the blacklister is blacklisted
+	// - Unblacklist an account while the blacklister is blacklisted -
 	// Status:
 	// 	not blacklisted: blacklistedUser1
 
@@ -739,7 +740,7 @@ func TestFiatTFUnblacklist(t *testing.T) {
 
 	unblacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Blacklister)
 
-	// Unblacklist an account that is not blacklisted
+	// - Unblacklist an account that is not blacklisted -
 	// Status:
 	// 	not blacklisted: blacklistedUser1
 
@@ -757,6 +758,436 @@ func TestFiatTFUnblacklist(t *testing.T) {
 
 	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklisted", blacklistedUser1.FormattedAddress())
 	require.Error(t, err, "query succeeded, blacklisted account should not exist")
+
+}
+
+func TestFiatTFPause(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Pause TF from an account that is not the Pauser -
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "pause")
+	require.NoError(t, err, "error pausing fiat-tokenfactory")
+
+	res, _, err := val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the pauser: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-paused")
+	require.NoError(t, err, "error querying for paused state")
+
+	var showPausedResponse fiattokenfactorytypes.QueryGetPausedResponse
+	err = json.Unmarshal(res, &showPausedResponse)
+	require.NoError(t, err)
+
+	expectedPaused := fiattokenfactorytypes.QueryGetPausedResponse{
+		Paused: fiattokenfactorytypes.Paused{
+			Paused: false,
+		},
+	}
+	require.Equal(t, expectedPaused, showPausedResponse)
+
+	// - Pause TF from a blacklisted Pauser account
+	// Status:
+	// 	Paused: false
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Pauser)
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Pause TF while TF is already paused -
+	// Status:
+	// 	Paused: true
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+}
+
+func TestFiatTFUnpause(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Unpause TF from an account that is not a Pauser
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "unpause")
+	require.NoError(t, err, "error unpausing fiat-tokenfactory")
+
+	res, _, err := val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the pauser: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-paused")
+	require.NoError(t, err, "error querying for paused state")
+
+	var showPausedResponse fiattokenfactorytypes.QueryGetPausedResponse
+	err = json.Unmarshal(res, &showPausedResponse)
+	require.NoError(t, err)
+
+	expectedPaused := fiattokenfactorytypes.QueryGetPausedResponse{
+		Paused: fiattokenfactorytypes.Paused{
+			Paused: true,
+		},
+	}
+	require.Equal(t, expectedPaused, showPausedResponse)
+
+	// - Unpause TF from a blacklisted Pauser account
+	// Status:
+	// 	Paused: true
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.Pauser)
+
+	unpauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Pause TF while TF is already paused -
+	// Status:
+	// 	Paused: false
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	unpauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+}
+
+func TestFiatTFConfigureMinterController(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Configure Minter Controller while TF is paused -
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", 1, noble)
+	minterController1 := w[0]
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-1", 1, noble)
+	minter1 := w[0]
+
+	_, err := val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter1.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	var showMinterController fiattokenfactorytypes.QueryGetMinterControllerResponse
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController := fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter1.FormattedAddress(),
+			Controller: minterController1.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Configure Minter Controller from non Master Minter account -
+	// Status:
+	// 	minterController1 -> minter1
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-2", 1, noble)
+	minterController2 := w[0]
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-2", 1, noble)
+	minter2 := w[0]
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController2.FormattedAddress(), minter2.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the master minter: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController2.FormattedAddress())
+	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
+
+	// - Configure a blacklisted Minter Controller and Minter from blacklisted Master Minter account  -
+	// Status:
+	// 	minterController1 -> minter1
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.MasterMinter)
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, minterController2)
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, minter2)
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController2.FormattedAddress(), minter2.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController2.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter2.FormattedAddress(),
+			Controller: minterController2.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	unblacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.MasterMinter)
+
+	// - Configure an already configured Minter Controller with a new Minter -
+	// Status:
+	// 	minterController1 -> minter1
+	// 	minterController2 -> minter2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-3", 1, noble)
+	minter3 := w[0]
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter3.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter3.FormattedAddress(),
+			Controller: minterController1.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	// -- Configure an already configured Minter to another Minter Controller -
+	// Status:
+	// 	minterController1 -> minter3
+	// 	minterController2 -> minter2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-3", 1, noble)
+	minterController3 := w[0]
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController3.FormattedAddress(), minter3.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController3.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter3.FormattedAddress(),
+			Controller: minterController3.FormattedAddress(),
+		},
+	}
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter3.FormattedAddress(),
+			Controller: minterController1.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "list-minter-controller")
+	require.NoError(t, err, "failed to query list-minter-controller")
+
+	var listMinterController fiattokenfactorytypes.QueryAllMinterControllerResponse
+	_ = json.Unmarshal(res, &listMinterController)
+	// ignore error because `pagination` does not unmarshall
+
+	expectedListMinterController := fiattokenfactorytypes.QueryAllMinterControllerResponse{
+		MinterController: []fiattokenfactorytypes.MinterController{
+			{
+				Minter:     minter3.FormattedAddress(),
+				Controller: minterController1.FormattedAddress(),
+			},
+			{
+				Minter:     minter2.FormattedAddress(),
+				Controller: minterController2.FormattedAddress(),
+			},
+			{
+				Minter:     minter3.FormattedAddress(),
+				Controller: minterController3.FormattedAddress(),
+			},
+		},
+	}
+
+	require.ElementsMatch(t, expectedListMinterController.MinterController, listMinterController.MinterController)
+
+}
+
+func TestFiatTFRemoveMinterController(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	gw := nobleSpinUp(ctx, t)
+	noble := gw.chain
+	val := noble.Validators[0]
+
+	// - Remove Minter Controller if TF is paused -
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", 1, noble)
+	minterController1 := w[0]
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-1", 1, noble)
+	minter1 := w[0]
+
+	_, err := val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter1.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	var showMinterController fiattokenfactorytypes.QueryGetMinterControllerResponse
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController := fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter1.FormattedAddress(),
+			Controller: minterController1.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "remove-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "error removing minter controller")
+
+	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
+
+	unpauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Remove a Minter Controller from non Master Minter account -
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter1.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter1.FormattedAddress(),
+			Controller: minterController1.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	hash, err := val.ExecTx(ctx, gw.extraWallets.Alice.KeyName(), "fiat-tokenfactory", "remove-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "error removing minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	var txResponse sdktypes.TxResponse
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, "you are not the master minter: unauthorized")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "failed to query show-minter-controller")
+
+	err = json.Unmarshal(res, &showMinterController)
+	require.NoError(t, err)
+
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter1.FormattedAddress(),
+			Controller: minterController1.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMinterController.MinterController)
+
+	// - Remove Minter Controller while Minter and Minter Controller are blacklisted
+	// Status:
+	// 	minterController1 -> minter1
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, gw.fiatTfRoles.MasterMinter)
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, minterController1)
+
+	_, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "remove-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "error removing minter controller")
+
+	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController1.FormattedAddress())
+	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
+
+	// - Remove a a non existent Minter Controller -
+
+	hash, err = val.ExecTx(ctx, gw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "remove-minter-controller", minterController1.FormattedAddress())
+	require.NoError(t, err, "error removing minter controller")
+
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+
+	_ = json.Unmarshal(res, &txResponse)
+	// ignore the error since some types do not unmarshal (ex: height of int64 vs string)
+
+	require.Contains(t, txResponse.RawLog, fmt.Sprintf("minter controller with a given address (%s) doesn't exist: user not found", minterController1.FormattedAddress()))
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
 
 }
 
