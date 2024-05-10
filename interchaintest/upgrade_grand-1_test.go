@@ -132,6 +132,10 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		},
 		{
 			emergency: true,
+			image:     ghcrImage("v4.1.2"),
+		},
+		{
+			emergency: true,
 			image:     nobleImageInfo[0],
 		},
 	}
