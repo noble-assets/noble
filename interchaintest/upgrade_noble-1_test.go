@@ -124,6 +124,12 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			// v4.1.2 is a patch release that upgraded one core dependency.
 			// It is consensus breaking, and therefore is applied as an emergency upgrade.
 			emergency: true,
+			image:     ghcrImage("v4.1.2"),
+		},
+		{
+			// v4.1.3 is a patch release that upgraded one core dependency.
+			// It is consensus breaking, and therefore is applied as an emergency upgrade.
+			emergency: true,
 			image:     nobleImageInfo[0],
 		},
 	}

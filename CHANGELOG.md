@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v4.1.3
+
+*May 10, 2024*
+
+This is a consensus breaking patch release to the v4.1 Fusion line.
+
+### DEPENDENCIES
+
+- Bump CCTP to [`253cf7e`](https://github.com/circlefin/noble-cctp/commit/253cf7eb943669e283b4dcb25f83c7096080e67a) ([#363](https://github.com/noble-assets/noble/pull/363))
+
 ## v4.1.2
 
 *May 2, 2024*
