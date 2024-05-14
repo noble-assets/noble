@@ -1207,32 +1207,12 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 	require.NoError(t, err, "error configuring minter")
 	res, _, err = val.ExecQuery(ctx, "tx", hash)
 	require.NoError(t, err, "error querying for tx hash")
-	fmt.Println("RESPONSE!!!", string(res))
-	// _ = json.Unmarshal(res, &txResponse)
-	// require.Contains(t, txResponse.RawLog, "minting is paused")
-	// require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+	_ = json.Unmarshal(res, &txResponse)
+	require.Contains(t, txResponse.RawLog, "minting is paused")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
 
-	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minters", minter1.FormattedAddress())
+	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minters", minter1.FormattedAddress())
 	require.Error(t, err, "minter found; configuring minter should not have succeeded")
-	fmt.Println("RES!!", string(res))
-
-	var showMinterResponse fiattokenfactorytypes.QueryGetMintersResponse
-	err = json.Unmarshal(res, &showMinterResponse)
-	require.NoError(t, err, "failed to unmarshall")
-
-	expectedShowMinters := fiattokenfactorytypes.QueryGetMintersResponse{
-		Minters: fiattokenfactorytypes.Minters{
-			Address: minter1.FormattedAddress(),
-			Allowance: sdktypes.Coin{
-				Denom:  "uusdc",
-				Amount: sdktypes.NewInt(allowance),
-			},
-		},
-	}
-
-	// This should fail as these should not be be qual
-	require.Equal(t, expectedShowMinters.Minters, showMinterResponse.Minters)
-
 }
 
 func TestFiatTFRemoveMinter(t *testing.T) {
