@@ -105,13 +105,19 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 
 	burnToken := make([]byte, 32)
 	copy(burnToken[12:], common.FromHex("0x07865c6E87B9F70255377e024ace6630C1Eaa37F"))
-
-	// maps remote token on remote domain to a local token -- used for minting
 	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
 		From:         gw.fiatTfRoles.Owner.FormattedAddress(),
 		RemoteDomain: 0,
 		RemoteToken:  burnToken,
 		LocalToken:   denomMetadataUsdc.Base,
+	})
+
+	tokenMessenger := make([]byte, 32)
+	copy(tokenMessenger[12:], common.FromHex("0xBd3fa81B58Ba92a82136038B25aDec7066af3155"))
+	msgs = append(msgs, &cctptypes.MsgAddRemoteTokenMessenger{
+		From:     gw.fiatTfRoles.Owner.FormattedAddress(),
+		DomainId: 0,
+		Address:  tokenMessenger,
 	})
 
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
@@ -166,8 +172,6 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	depositForBurnBz, err := depositForBurn.Bytes()
 	require.NoError(t, err)
 
-	var senderBurn = []byte("12345678901234567890123456789012")
-
 	destinationCaller := make([]byte, 32)
 	copy(destinationCaller[12:], gw.fiatTfRoles.Owner.Address())
 
@@ -176,7 +180,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 		SourceDomain:      0,
 		DestinationDomain: 4, // Noble is 4
 		Nonce:             0, // dif per message
-		Sender:            senderBurn,
+		Sender:            tokenMessenger,
 		Recipient:         cctptypes.PaddedModuleAddress,
 		DestinationCaller: destinationCaller,
 		MessageBody:       depositForBurnBz,

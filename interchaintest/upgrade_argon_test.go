@@ -140,6 +140,9 @@ func testPostArgonUpgrade(
 	burnToken := make([]byte, 32)
 	copy(burnToken[12:], common.FromHex("0x07865c6E87B9F70255377e024ace6630C1Eaa37F"))
 
+	tokenMessenger := make([]byte, 32)
+	copy(tokenMessenger[12:], common.FromHex("0xBd3fa81B58Ba92a82136038B25aDec7066af3155"))
+
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
 
@@ -170,6 +173,21 @@ func testPostArgonUpgrade(
 	require.Zero(t, tx.Code, "cctp add token pair transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	t.Logf("Submitted add token pair tx: %s", tx.TxHash)
+
+	tx, err = cosmos.BroadcastTx(
+		bCtx,
+		broadcaster,
+		paramAuthority,
+		&cctptypes.MsgAddRemoteTokenMessenger{
+			From:     paramAuthority.FormattedAddress(),
+			DomainId: 0,
+			Address:  tokenMessenger,
+		},
+	)
+	require.NoError(t, err, "error submitting add remote token messenger tx")
+	require.Zero(t, tx.Code, "cctp add remote token messenger transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+
+	t.Logf("Submitted add remote token messenger tx: %s", tx.TxHash)
 
 	cctpModuleAccount := authtypes.NewModuleAddress(cctptypes.ModuleName).String()
 
@@ -209,8 +227,6 @@ func testPostArgonUpgrade(
 	depositForBurnBz, err := depositForBurn.Bytes()
 	require.NoError(t, err)
 
-	var sender = []byte("12345678901234567890123456789012")
-
 	const destinationCallerKeyName = "destination-caller"
 	destinationCallerUser := interchaintest.GetAndFundTestUsers(t, ctx, destinationCallerKeyName, 1, noble)
 
@@ -222,7 +238,7 @@ func testPostArgonUpgrade(
 		SourceDomain:      0,
 		DestinationDomain: 4, // Noble is 4
 		Nonce:             0, // dif per message
-		Sender:            sender,
+		Sender:            tokenMessenger,
 		Recipient:         cctptypes.PaddedModuleAddress,
 		DestinationCaller: destinationCaller,
 		MessageBody:       depositForBurnBz,
