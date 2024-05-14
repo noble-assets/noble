@@ -17,7 +17,6 @@ func (app *NobleApp) RegisterUpgradeHandlers() {
 			app.appCodec,
 			app.Logger(),
 			app.GetKey(capabilitytypes.StoreKey),
-			app.AccountKeeper,
 			app.AuthorityKeeper,
 			app.CapabilityKeeper,
 			app.IBCKeeper.ClientKeeper,

@@ -23,8 +23,8 @@ require (
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
 	github.com/cosmos/ibc-go/v8 v8.2.1
 	github.com/golangci/golangci-lint v1.58.0
-	github.com/noble-assets/authority v0.0.0-20240503223515-dfb231af25a2
-	github.com/noble-assets/forwarding/v2 v2.0.0-20240429110930-0884f39cf30c
+	github.com/noble-assets/authority v0.0.0-20240514100042-ba89b7610f02
+	github.com/noble-assets/forwarding/v2 v2.0.0-20240514101621-172acc02aac6
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	mvdan.cc/gofumpt v0.6.0

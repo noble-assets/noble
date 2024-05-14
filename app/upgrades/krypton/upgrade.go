@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
@@ -37,7 +36,6 @@ func CreateUpgradeHandler(
 	cdc codec.Codec,
 	logger log.Logger,
 	capabilityStoreKey *storetypes.KVStoreKey,
-	accountKeeper authkeeper.AccountKeeper,
 	authorityKeeper *authoritykeeper.Keeper,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	clientKeeper clientkeeper.Keeper,
@@ -115,13 +113,12 @@ func CreateUpgradeHandler(
 		// ----- Noble Specific Logic -----
 
 		// Migrate ParamAuthority address to x/authority module.
-		var address string
+		var authority string
 		subspace = paramsKeeper.Subspace(paramstypes.ModuleName).WithKeyTable(authoritytypes.ParamKeyTable()) //nolint:staticcheck
-		subspace.Get(sdkCtx, authoritytypes.AuthorityKey, &address)
-		authority, _ := accountKeeper.AddressCodec().StringToBytes(address)
-		err = authorityKeeper.Authority.Set(ctx, authority)
+		subspace.Get(sdkCtx, authoritytypes.AuthorityKey, &authority)
+		err = authorityKeeper.Owner.Set(ctx, authority)
 		if err != nil {
-			return vm, errors.Wrap(err, "failed to migrate underlying authority address")
+			return vm, errors.Wrap(err, "failed to migrate authority address")
 		}
 
 		logger.Info(UpgradeASCII)
