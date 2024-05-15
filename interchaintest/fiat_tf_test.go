@@ -1172,7 +1172,6 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 	noble := gw.chain
 	val := noble.Validators[0]
 
-	// @DAN: INVESTIGATE
 	// - Configure minter while TF is paused -
 
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", 1, noble)
@@ -1213,6 +1212,32 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 
 	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minters", minter1.FormattedAddress())
 	require.Error(t, err, "minter found; configuring minter should not have succeeded")
+
+	unpauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
+
+	// - Configure minter from a minter controller not associated with the minter -
+	// Status:
+	// 	minterController1 -> minter1 (un configured)
+
+	_, minterController2 := setupMinterAndController(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, 10)
+
+	hash, err = val.ExecTx(ctx, minterController2.KeyName(), "fiat-tokenfactory", "configure-minter", minter1.FormattedAddress(), fmt.Sprintf("%duusdc", allowance))
+	require.NoError(t, err, "error configuring minter")
+	res, _, err = val.ExecQuery(ctx, "tx", hash)
+	require.NoError(t, err, "error querying for tx hash")
+	_ = json.Unmarshal(res, &txResponse)
+	require.Contains(t, txResponse.RawLog, "minter address ≠ minter controller's minter address")
+	require.Greater(t, txResponse.Code, uint32(0), "got 'successful' code response")
+
+	// - Configure a minter that is blacklisted -\
+	// Status:
+	// 	minterController1 -> minter1 (un configured)
+	// 	minterController2 -> minter2 (allowance: 10)
+
+	blacklistAccount(t, ctx, val, gw.fiatTfRoles.Blacklister, minter1)
+
+	configureMinter(t, ctx, val, minterController1, minter1, 10)
+
 }
 
 func TestFiatTFRemoveMinter(t *testing.T) {
@@ -1231,7 +1256,7 @@ func TestFiatTFRemoveMinter(t *testing.T) {
 
 	allowance := int64(10)
 
-	minter1, minterController1 := setupMinter(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
+	minter1, minterController1 := setupMinterAndController(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
 
 	pauseFiatTF(t, ctx, val, gw.fiatTfRoles.Pauser)
 
@@ -1250,7 +1275,7 @@ func TestFiatTFRemoveMinter(t *testing.T) {
 	// reconfigure minter
 	configureMinter(t, ctx, val, minterController1, minter1, allowance)
 
-	_, minterController2 := setupMinter(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
+	_, minterController2 := setupMinterAndController(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
 
 	hash, err := val.ExecTx(ctx, minterController2.KeyName(), "fiat-tokenfactory", "remove-minter", minter1.FormattedAddress())
 	require.NoError(t, err, "error broadcasting removing minter")
@@ -1311,7 +1336,7 @@ func TestFiatTFMint(t *testing.T) {
 	// - Mint while TF is paused -
 
 	allowance := int64(10)
-	minter1, _ := setupMinter(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
+	minter1, _ := setupMinterAndController(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
 
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "receiver-1", 1, noble)
 	receiver1 := w[0]
@@ -1489,7 +1514,7 @@ func TestFiatTFBurn(t *testing.T) {
 
 	// setup
 	allowance := int64(15)
-	minter1, _ := setupMinter(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
+	minter1, _ := setupMinterAndController(t, ctx, noble, val, gw.fiatTfRoles.MasterMinter, allowance)
 
 	mintAmount := int64(10)
 	_, err := val.ExecTx(ctx, minter1.KeyName(), "fiat-tokenfactory", "mint", minter1.FormattedAddress(), fmt.Sprintf("%duusdc", mintAmount))
@@ -1653,8 +1678,8 @@ func unpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pau
 	require.Equal(t, expectedUnpaused, showPausedResponse)
 }
 
-// setupMinter creates a minter and minter controller. It also sets up a minter with an specified allowance of `uusdc`
-func setupMinter(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, val *cosmos.ChainNode, masterMinter ibc.Wallet, allowance int64) (minter ibc.Wallet, minterController ibc.Wallet) {
+// setupMinterAndController creates a minter controller and minter. It also sets up a minter with an specified allowance of `uusdc`
+func setupMinterAndController(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, val *cosmos.ChainNode, masterMinter ibc.Wallet, allowance int64) (minter ibc.Wallet, minterController ibc.Wallet) {
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", 1, noble)
 	minterController = w[0]
 	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-1", 1, noble)
@@ -1684,7 +1709,8 @@ func setupMinter(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, v
 	return minter, minterController
 }
 
-// configureMinter configures a minter with a specified allowance of `uusdc`
+// configureMinter configures a minter with a specified allowance of `uusdc`. It then runs the `show-minters` query to ensure
+// the minter was properly configured
 func configureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, minterController, minter ibc.Wallet, allowance int64) {
 	_, err := val.ExecTx(ctx, minterController.KeyName(), "fiat-tokenfactory", "configure-minter", minter.FormattedAddress(), fmt.Sprintf("%duusdc", allowance))
 	require.NoError(t, err, "error configuring minter")
