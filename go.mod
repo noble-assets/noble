@@ -1,6 +1,6 @@
 module github.com/noble-assets/noble/v5
 
-go 1.22
+go 1.22.2
 
 require (
 	cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
