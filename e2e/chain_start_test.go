@@ -25,8 +25,7 @@ func TestNobleStart(t *testing.T) {
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
 		nobleChainSpec(ctx, &gw, "noble-1", 2, 0, false, false),
-
-		{Name: "ibc-go-simd", Version: "v8.2.1"},
+		{Name: "gaia", Version: "latest"},
 	})
 
 	var ibcSimApp ibc.Chain
@@ -63,5 +62,5 @@ func TestNobleStart(t *testing.T) {
 		_ = ic.Close()
 	})
 
-	conformance.TestChainPair(t, ctx, client, network, noble, ibcSimApp, rf, rep, r)
+	conformance.TestChainPair(t, ctx, client, network, noble, ibcSimApp, rf, rep, r, ibcPath)
 }

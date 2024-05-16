@@ -111,19 +111,19 @@ func nobleChainSpec(
 }
 
 func modifyGenesisAll(gw *genesisWrapper, minModifyGenesisFiatTf bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+		//@Todo: minModifyGenesisFiatTf
 
-	//@Todo: minModifyGenesisFiatTf
+		fiatTokenfactoryGenesis := []cosmos.GenesisKV{
+			cosmos.NewGenesisKV("app_state.authority.owner", gw.authority.FormattedAddress()),
+			cosmos.NewGenesisKV("app_state.bank.denom_metadata", denomMetadataUsdc),
+			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.paused", fiattokenfactorytypes.Paused{Paused: false}),
+			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintingDenom", fiattokenfactorytypes.MintingDenom{Denom: denomMetadataUsdc[0].Base}),
+			cosmos.NewGenesisKV("app_state.staking.params.bond_denom", "utoken"),
+		}
 
-	fiatTokenfactoryGenesis := []cosmos.GenesisKV{
-		cosmos.NewGenesisKV("app_state.authority.owner", gw.authority.FormattedAddress()),
-		cosmos.NewGenesisKV("app_state.bank.denom_metadata", denomMetadataUsdc),
-		cosmos.NewGenesisKV("app_state.fiat-tokenfactory.paused", fiattokenfactorytypes.Paused{Paused: false}),
-		cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintingDenom", fiattokenfactorytypes.MintingDenom{Denom: denomMetadataUsdc[0].Base}),
-		cosmos.NewGenesisKV("app_state.staking.params.bond_denom", "utoken"),
+		return cosmos.ModifyGenesis(fiatTokenfactoryGenesis)(cc, b)
 	}
-
-	return cosmos.ModifyGenesis(fiatTokenfactoryGenesis)
-
 }
 
 func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupFiatTf bool) func(ibc.ChainConfig) error {
