@@ -28,6 +28,8 @@ modules:
           permissions: [ burner, minter ]
         - account: fiat-tokenfactory
           permissions: [ burner, minter ]
+        - account: upgrade
+          permissions: [ burner ]
       authority: authority # Utilize our custom x/authority module.
   - name: vesting
     config:

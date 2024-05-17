@@ -5,13 +5,17 @@ import (
 
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -19,6 +23,7 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	v6 "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/migrations/v6"
@@ -36,11 +41,14 @@ func CreateUpgradeHandler(
 	cdc codec.Codec,
 	logger log.Logger,
 	capabilityStoreKey *storetypes.KVStoreKey,
+	accountKeeper authkeeper.AccountKeeper,
 	authorityKeeper *authoritykeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	clientKeeper clientkeeper.Keeper,
 	consensusKeeper consensuskeeper.Keeper,
 	paramsKeeper paramskeeper.Keeper,
+	stakingKeeper *stakingkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -121,7 +129,72 @@ func CreateUpgradeHandler(
 			return vm, errors.Wrap(err, "failed to migrate authority address")
 		}
 
+		MigrateValidatorAccounts(ctx, accountKeeper, stakingKeeper)
+		err = BurnSurplusSupply(ctx, authority, accountKeeper, bankKeeper)
+		if err != nil {
+			return vm, err
+		}
+
 		logger.Info(UpgradeASCII)
 		return vm, nil
 	}
+}
+
+// MigrateValidatorAccounts performs a migration of all validator operators to
+// permanently locked vesting accounts. TODO: Handle inactive validators.
+func MigrateValidatorAccounts(ctx context.Context, accountKeeper authkeeper.AccountKeeper, stakingKeeper *stakingkeeper.Keeper) {
+	validators, _ := stakingKeeper.GetAllValidators(ctx)
+	for _, validator := range validators {
+		operator, _ := stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.OperatorAddress)
+		rawAccount := accountKeeper.GetAccount(ctx, operator)
+
+		switch account := rawAccount.(type) {
+		case *vestingtypes.ContinuousVestingAccount:
+			rawAccount = &vestingtypes.PermanentLockedAccount{
+				BaseVestingAccount: &vestingtypes.BaseVestingAccount{
+					BaseAccount:      account.BaseAccount,
+					OriginalVesting:  account.OriginalVesting,
+					DelegatedFree:    sdk.NewCoins(),
+					DelegatedVesting: account.OriginalVesting,
+					EndTime:          0,
+				},
+			}
+		case *vestingtypes.DelayedVestingAccount:
+			rawAccount = &vestingtypes.PermanentLockedAccount{
+				BaseVestingAccount: &vestingtypes.BaseVestingAccount{
+					BaseAccount:      account.BaseAccount,
+					OriginalVesting:  account.OriginalVesting,
+					DelegatedFree:    sdk.NewCoins(),
+					DelegatedVesting: account.OriginalVesting,
+					EndTime:          0,
+				},
+			}
+		}
+
+		accountKeeper.SetAccount(ctx, rawAccount)
+	}
+}
+
+// BurnSurplusSupply performs a burn of the surplus $STAKE supply.
+func BurnSurplusSupply(ctx context.Context, authority string, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.Keeper) error {
+	supply := bankKeeper.GetSupply(ctx, "ustake")
+	surplus := supply.Sub(sdk.NewCoin(
+		"ustake", math.NewInt(1_000_000_000_000_000),
+	))
+
+	if !surplus.IsPositive() {
+		return nil
+	}
+
+	address, err := accountKeeper.AddressCodec().StringToBytes(authority)
+	if err != nil {
+		return err
+	}
+	err = bankKeeper.SendCoinsFromAccountToModule(ctx, address, upgradetypes.ModuleName, sdk.NewCoins(surplus))
+	if err != nil {
+		return err
+	}
+
+	err = bankKeeper.BurnCoins(ctx, upgradetypes.ModuleName, sdk.NewCoins(surplus))
+	return err
 }
