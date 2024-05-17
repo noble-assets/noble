@@ -23,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -191,7 +192,23 @@ func NewNobleApp(
 		panic(err)
 	}
 
-	// TODO(@john): Register ante handler.
+	anteHandler, err := NewAnteHandler(HandlerOptions{
+		HandlerOptions: ante.HandlerOptions{
+			AccountKeeper:   app.AccountKeeper,
+			BankKeeper:      app.BankKeeper,
+			FeegrantKeeper:  app.FeeGrantKeeper,
+			SignModeHandler: app.txConfig.SignModeHandler(),
+			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			TxFeeChecker:    nil, // TODO
+		},
+		cdc:                    app.appCodec,
+		FiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
+		IBCKeeper:              app.IBCKeeper,
+	})
+	if err != nil {
+		return nil, err
+	}
+	app.SetAnteHandler(anteHandler)
 
 	app.RegisterUpgradeHandlers()
 
