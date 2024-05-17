@@ -24,7 +24,7 @@ func TestNobleStart(t *testing.T) {
 	var gw genesisWrapper
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", 2, 0, false, false),
+		nobleChainSpec(ctx, &gw, "noble-1", 2, 0, false),
 		{Name: "gaia", Version: "latest"},
 	})
 

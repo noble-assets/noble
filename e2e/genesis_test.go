@@ -25,29 +25,27 @@ var (
 		},
 	}
 
-	denomMetadataUsdc = []banktypes.Metadata{
-		{
-			Description: "USD Coin",
-			DenomUnits: []*banktypes.DenomUnit{
-				{
-					Denom:    "uusdc",
-					Exponent: 0,
-					Aliases: []string{
-						"microusdc",
-					},
-				},
-				{
-					Denom:    "usdc",
-					Exponent: 6,
-					Aliases:  []string{},
+	denomMetadataUsdc = banktypes.Metadata{
+		Description: "USD Coin",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "uusdc",
+				Exponent: 0,
+				Aliases: []string{
+					"microusdc",
 				},
 			},
-			Base: "uusdc",
-
-			Display: "usdc",
-			Name:    "usdc",
-			Symbol:  "USDC",
+			{
+				Denom:    "usdc",
+				Exponent: 6,
+				Aliases:  []string{},
+			},
 		},
+		Base: "uusdc",
+
+		Display: "usdc",
+		Name:    "usdc",
+		Symbol:  "USDC",
 	}
 )
 
@@ -84,8 +82,7 @@ func nobleChainSpec(
 	gw *genesisWrapper,
 	chainID string,
 	nv, nf int,
-	minSetupFiatTf bool,
-	minModifyGenesisFiatTf bool,
+	setupAllFiatTFRoles bool,
 ) *interchaintest.ChainSpec {
 	return &interchaintest.ChainSpec{
 		NumValidators: &nv,
@@ -95,42 +92,60 @@ func nobleChainSpec(
 			Name:           "noble",
 			ChainID:        chainID,
 			Bin:            "nobled",
-			Denom:          "utoken",
+			Denom:          "ustake",
 			Bech32Prefix:   "noble",
 			CoinType:       "118",
-			GasPrices:      "0.0utoken",
+			GasPrices:      "0.0ustake",
 			GasAdjustment:  1.1,
 			TrustingPeriod: "504h",
 			NoHostMount:    false,
 			Images:         nobleImageInfo,
 			EncodingConfig: NobleEncoding(),
-			PreGenesis:     preGenesisAll(ctx, gw, minSetupFiatTf),
-			ModifyGenesis:  modifyGenesisAll(gw, minModifyGenesisFiatTf),
+			PreGenesis:     preGenesisAll(ctx, gw, setupAllFiatTFRoles),
+			ModifyGenesis:  modifyGenesisAll(gw, setupAllFiatTFRoles),
+			// CometMock: ibc.CometMockConfig{
+			// 	Image:       ibc.NewDockerImage("ghcr.io/informalsystems/cometmock", "v0.38.x", "1025:1025"),
+			// 	BlockTimeMs: 200,
+			// },
 		},
 	}
 }
 
-func modifyGenesisAll(gw *genesisWrapper, minModifyGenesisFiatTf bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+// modifyGenesisAll modifies the genesis file to with fields needed to start chain
+// If setupAllFiatTFRoles = false, only the owner role will be created.
+func modifyGenesisAll(gw *genesisWrapper, setupAllFiatTFRoles bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-		//@Todo: minModifyGenesisFiatTf
 
-		fiatTokenfactoryGenesis := []cosmos.GenesisKV{
+		updatedGenesis := []cosmos.GenesisKV{
 			cosmos.NewGenesisKV("app_state.authority.owner", gw.authority.FormattedAddress()),
-			cosmos.NewGenesisKV("app_state.bank.denom_metadata", denomMetadataUsdc),
+			cosmos.NewGenesisKV("app_state.bank.denom_metadata", []banktypes.Metadata{denomMetadataUsdc}),
+			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.owner", fiattokenfactorytypes.Owner{Address: gw.fiatTfRoles.Owner.FormattedAddress()}),
 			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.paused", fiattokenfactorytypes.Paused{Paused: false}),
-			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintingDenom", fiattokenfactorytypes.MintingDenom{Denom: denomMetadataUsdc[0].Base}),
-			cosmos.NewGenesisKV("app_state.staking.params.bond_denom", "utoken"),
+			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintingDenom", fiattokenfactorytypes.MintingDenom{Denom: denomMetadataUsdc.Base}),
+			cosmos.NewGenesisKV("app_state.staking.params.bond_denom", "ustake"),
 		}
 
-		return cosmos.ModifyGenesis(fiatTokenfactoryGenesis)(cc, b)
+		if setupAllFiatTFRoles {
+			allFiatTFRoles := []cosmos.GenesisKV{
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: gw.fiatTfRoles.MasterMinter.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintersList", []fiattokenfactorytypes.Minters{{Address: gw.fiatTfRoles.Minter.FormattedAddress(), Allowance: sdktypes.Coin{Denom: denomMetadataUsdc.Base, Amount: math.NewInt(100_00_000)}}}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.pauser", fiattokenfactorytypes.Pauser{Address: gw.fiatTfRoles.Pauser.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.blacklister", fiattokenfactorytypes.Blacklister{Address: gw.fiatTfRoles.Blacklister.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: gw.fiatTfRoles.MasterMinter.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.minterControllerList", []fiattokenfactorytypes.MinterController{{Minter: gw.fiatTfRoles.Minter.FormattedAddress(), Controller: gw.fiatTfRoles.MinterController.FormattedAddress()}}),
+			}
+			updatedGenesis = append(updatedGenesis, allFiatTFRoles...)
+		}
+
+		return cosmos.ModifyGenesis(updatedGenesis)(cc, b)
 	}
 }
 
-func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupFiatTf bool) func(ibc.ChainConfig) error {
+func preGenesisAll(ctx context.Context, gw *genesisWrapper, setupAllFiatTFRoles bool) func(ibc.ChainConfig) error {
 	return func(cc ibc.ChainConfig) (err error) {
 		val := gw.chain.Validators[0]
 
-		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, denomMetadataUsdc, val, minSetupFiatTf)
+		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, val, setupAllFiatTFRoles)
 		if err != nil {
 			return err
 		}
@@ -145,10 +160,9 @@ func preGenesisAll(ctx context.Context, gw *genesisWrapper, minSetupFiatTf bool)
 }
 
 // Creates tokenfactory wallets with 0 amount. Meant to run pre-genesis.
-// If minsteup = true, only the owner wallet is created.
-// Having minsetup = failse is specifically usefull when wanting the noble roles to be assigned at chain launch.
+// If setupAllFiatTFRoles = false, only the owner role will be created.
 // After creating thw wallets, it recovers the key on the specified validator.
-func createTokenfactoryRoles(ctx context.Context, denomMetadata []banktypes.Metadata, val *cosmos.ChainNode, minSetup bool) (NobleRoles, error) {
+func createTokenfactoryRoles(ctx context.Context, val *cosmos.ChainNode, setupAllFiatTFRoles bool) (NobleRoles, error) {
 	chainCfg := val.Chain.Config()
 	nobleVal := val.Chain
 
@@ -174,7 +188,7 @@ func createTokenfactoryRoles(ctx context.Context, denomMetadata []banktypes.Meta
 	if err != nil {
 		return NobleRoles{}, err
 	}
-	if minSetup {
+	if !setupAllFiatTFRoles {
 		return nobleRoles, nil
 	}
 
