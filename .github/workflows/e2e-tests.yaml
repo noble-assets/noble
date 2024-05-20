@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Docker image
-        uses: strangelove-ventures/heighliner-build-action@v1.0.1
+        uses: strangelove-ventures/heighliner-build-action@v1.0.2
         with:
           registry: "" # empty registry, image only shared for e2e testing
           tag: local # emulate local environment for consistency in e2e cases
