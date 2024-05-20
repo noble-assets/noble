@@ -47,7 +47,7 @@ jobs:
       - name: Set up Go 1.21
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.21'
+          go-version: '>=1.22'
 
       - name: Generate matrix
         id: set-matrix
@@ -71,7 +71,7 @@ jobs:
       - name: Set up Go 1.21
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.21'
+          go-version: '>=1.22'
 
       - name: checkout chain
         uses: actions/checkout@v4
