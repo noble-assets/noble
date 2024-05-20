@@ -41,15 +41,14 @@ var (
 				Aliases:  []string{},
 			},
 		},
-		Base: "uusdc",
-
+		Base:    "uusdc",
 		Display: "usdc",
 		Name:    "usdc",
 		Symbol:  "USDC",
 	}
 )
 
-type genesisWrapper struct {
+type nobleWrapper struct {
 	chain       *cosmos.CosmosChain
 	fiatTfRoles NobleRoles
 	authority   ibc.Wallet
@@ -79,7 +78,7 @@ func NobleEncoding() *testutil.TestEncodingConfig {
 
 func nobleChainSpec(
 	ctx context.Context,
-	gw *genesisWrapper,
+	gw *nobleWrapper,
 	chainID string,
 	nv, nf int,
 	setupAllFiatTFRoles bool,
@@ -113,13 +112,13 @@ func nobleChainSpec(
 
 // modifyGenesisAll modifies the genesis file to with fields needed to start chain
 // If setupAllFiatTFRoles = false, only the owner role will be created.
-func modifyGenesisAll(gw *genesisWrapper, setupAllFiatTFRoles bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+func modifyGenesisAll(nw *nobleWrapper, setupAllFiatTFRoles bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 
 		updatedGenesis := []cosmos.GenesisKV{
-			cosmos.NewGenesisKV("app_state.authority.owner", gw.authority.FormattedAddress()),
+			cosmos.NewGenesisKV("app_state.authority.owner", nw.authority.FormattedAddress()),
 			cosmos.NewGenesisKV("app_state.bank.denom_metadata", []banktypes.Metadata{denomMetadataUsdc}),
-			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.owner", fiattokenfactorytypes.Owner{Address: gw.fiatTfRoles.Owner.FormattedAddress()}),
+			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.owner", fiattokenfactorytypes.Owner{Address: nw.fiatTfRoles.Owner.FormattedAddress()}),
 			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.paused", fiattokenfactorytypes.Paused{Paused: false}),
 			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintingDenom", fiattokenfactorytypes.MintingDenom{Denom: denomMetadataUsdc.Base}),
 			cosmos.NewGenesisKV("app_state.staking.params.bond_denom", "ustake"),
@@ -127,12 +126,12 @@ func modifyGenesisAll(gw *genesisWrapper, setupAllFiatTFRoles bool) func(cc ibc.
 
 		if setupAllFiatTFRoles {
 			allFiatTFRoles := []cosmos.GenesisKV{
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: gw.fiatTfRoles.MasterMinter.FormattedAddress()}),
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintersList", []fiattokenfactorytypes.Minters{{Address: gw.fiatTfRoles.Minter.FormattedAddress(), Allowance: sdktypes.Coin{Denom: denomMetadataUsdc.Base, Amount: math.NewInt(100_00_000)}}}),
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.pauser", fiattokenfactorytypes.Pauser{Address: gw.fiatTfRoles.Pauser.FormattedAddress()}),
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.blacklister", fiattokenfactorytypes.Blacklister{Address: gw.fiatTfRoles.Blacklister.FormattedAddress()}),
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: gw.fiatTfRoles.MasterMinter.FormattedAddress()}),
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.minterControllerList", []fiattokenfactorytypes.MinterController{{Minter: gw.fiatTfRoles.Minter.FormattedAddress(), Controller: gw.fiatTfRoles.MinterController.FormattedAddress()}}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: nw.fiatTfRoles.MasterMinter.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintersList", []fiattokenfactorytypes.Minters{{Address: nw.fiatTfRoles.Minter.FormattedAddress(), Allowance: sdktypes.Coin{Denom: denomMetadataUsdc.Base, Amount: math.NewInt(100_00_000)}}}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.pauser", fiattokenfactorytypes.Pauser{Address: nw.fiatTfRoles.Pauser.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.blacklister", fiattokenfactorytypes.Blacklister{Address: nw.fiatTfRoles.Blacklister.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: nw.fiatTfRoles.MasterMinter.FormattedAddress()}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.minterControllerList", []fiattokenfactorytypes.MinterController{{Minter: nw.fiatTfRoles.Minter.FormattedAddress(), Controller: nw.fiatTfRoles.MinterController.FormattedAddress()}}),
 			}
 			updatedGenesis = append(updatedGenesis, allFiatTFRoles...)
 		}
@@ -141,16 +140,16 @@ func modifyGenesisAll(gw *genesisWrapper, setupAllFiatTFRoles bool) func(cc ibc.
 	}
 }
 
-func preGenesisAll(ctx context.Context, gw *genesisWrapper, setupAllFiatTFRoles bool) func(ibc.ChainConfig) error {
+func preGenesisAll(ctx context.Context, nw *nobleWrapper, setupAllFiatTFRoles bool) func(ibc.ChainConfig) error {
 	return func(cc ibc.ChainConfig) (err error) {
-		val := gw.chain.Validators[0]
+		val := nw.chain.Validators[0]
 
-		gw.fiatTfRoles, err = createTokenfactoryRoles(ctx, val, setupAllFiatTFRoles)
+		nw.fiatTfRoles, err = createTokenfactoryRoles(ctx, val, setupAllFiatTFRoles)
 		if err != nil {
 			return err
 		}
 
-		gw.authority, err = createAuthorityRole(ctx, val)
+		nw.authority, err = createAuthorityRole(ctx, val)
 		if err != nil {
 			return err
 		}
@@ -167,14 +166,12 @@ func createTokenfactoryRoles(ctx context.Context, val *cosmos.ChainNode, setupAl
 	nobleVal := val.Chain
 
 	var err error
-
 	nobleRoles := NobleRoles{}
 
 	nobleRoles.Owner, err = nobleVal.BuildRelayerWallet(ctx, "owner-fiatTF")
 	if err != nil {
 		return NobleRoles{}, fmt.Errorf("failed to create wallet: %w", err)
 	}
-
 	if err := val.RecoverKey(ctx, nobleRoles.Owner.KeyName(), nobleRoles.Owner.Mnemonic()); err != nil {
 		return NobleRoles{}, fmt.Errorf("failed to restore %s wallet: %w", nobleRoles.Owner.KeyName(), err)
 	}
@@ -266,7 +263,6 @@ func createAuthorityRole(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet
 	if err != nil {
 		return nil, fmt.Errorf("failed to create wallet: %w", err)
 	}
-
 	if err := val.RecoverKey(ctx, authority.KeyName(), authority.Mnemonic()); err != nil {
 		return nil, fmt.Errorf("failed to restore %s wallet: %w", authority.KeyName(), err)
 	}

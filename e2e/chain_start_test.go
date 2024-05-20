@@ -21,10 +21,10 @@ func TestNobleStart(t *testing.T) {
 
 	ctx := context.Background()
 
-	var gw genesisWrapper
+	var nw nobleWrapper
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &gw, "noble-1", 2, 0, false),
+		nobleChainSpec(ctx, &nw, "noble-1", 2, 0, false),
 		{Name: "gaia", Version: "latest"},
 	})
 
@@ -32,8 +32,8 @@ func TestNobleStart(t *testing.T) {
 
 	chains, err := cf.Chains(t.Name())
 	require.NoError(t, err)
-	gw.chain, ibcSimApp = chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)
-	noble := gw.chain
+	nw.chain, ibcSimApp = chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)
+	noble := nw.chain
 
 	client, network := interchaintest.DockerSetup(t)
 	rf := interchaintest.NewBuiltinRelayerFactory(ibc.CosmosRly, zaptest.NewLogger(t))
