@@ -1785,23 +1785,15 @@ func TestFiatTFIBCOut(t *testing.T) {
 	require.NoError(t, sdktypes.VerifyAddressFormat(bz))
 
 	nobleBechOfGaiaWal := cosmos.NewWallet("default", bz, gaiaWallet.Mnemonic(), noble.Config())
-	fmt.Println("OUTSIDE BLACKLIST FUNC: ", nobleBechOfGaiaWal.Address())
-
-	// testadd, err := sdktypes.Bech32ifyAddressBytes(noble.Config().Bech32Prefix, gaiaWallet.Address())
-	// fmt.Println("TEST HERE:", nobleBechOfGaiaWal.FormattedAddress(), "SHOULD BE SAME: ", testadd)
-
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nobleBechOfGaiaWal)
-	// blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, gaiaWallet)
 
 	_, err = noble.SendIBCTransfer(ctx, nobleToGaiaChannelID, nobleWallet.KeyName(), transfer, ibc.TransferOptions{})
-	fmt.Println("ERR HERE: ", err)
-	// require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not receive tokens", gaiaWallet.FormattedAddress()))
+	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not receive tokens", gaiaWallet.FormattedAddress()))
 
 	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, nobleToGaiaChannelID))
 
 	gaiaWalletBal, err = gaia.GetBalance(ctx, gaiaWallet.FormattedAddress(), dstIbcDenom)
 	require.NoError(t, err)
-	fmt.Println("BAL:  ", gaiaWalletBal.Int64())
 	require.True(t, gaiaWalletBal.IsZero())
 
 }
@@ -1824,7 +1816,6 @@ func blacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, 
 			AddressBz: toBlacklist.Address(),
 		},
 	}
-	fmt.Println("IN BLACKLIST FUNC: ", toBlacklist.Address())
 
 	require.Equal(t, expectedBlacklistResponse.Blacklisted, showBlacklistedResponse.Blacklisted)
 }
