@@ -1,17 +1,21 @@
-package e2e_test
+package e2e
 
 import (
 	"context"
 	"fmt"
+	"testing"
 
 	"cosmossdk.io/math"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap/zaptest"
 
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 )
@@ -278,4 +282,101 @@ func createAuthorityRole(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet
 	}
 
 	return authority, nil
+}
+
+// nobleSpinUp starts noble chain
+// Args:
+//
+//	setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
+//		if false, only the Onwer role will be created
+func nobleSpinUp(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (nw nobleWrapper) {
+	rep := testreporter.NewNopReporter()
+	eRep := rep.RelayerExecReporter(t)
+
+	client, network := interchaintest.DockerSetup(t)
+
+	numValidators := 1
+	numFullNodes := 0
+
+	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
+		nobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, setupAllFiatTFRoles),
+	})
+
+	chains, err := cf.Chains(t.Name())
+	require.NoError(t, err)
+
+	nw.chain = chains[0].(*cosmos.CosmosChain)
+	noble := nw.chain
+
+	ic := interchaintest.NewInterchain().
+		AddChain(noble)
+
+	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
+		TestName:  t.Name(),
+		Client:    client,
+		NetworkID: network,
+
+		SkipPathCreation: true,
+	}))
+	t.Cleanup(func() {
+		_ = ic.Close()
+	})
+
+	return
+}
+
+// nobleSpinUpIBC is the same as nobleSpinUp but it also spins up a gaia chain and creates
+// an IBC path between them
+// Args:
+//
+//	setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
+//		if false, only the Onwer role will be created
+func nobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (nw nobleWrapper, gaia *cosmos.CosmosChain, r ibc.Relayer, ibcPathName string, eRep *testreporter.RelayerExecReporter) {
+	rep := testreporter.NewNopReporter()
+	eRep = rep.RelayerExecReporter(t)
+
+	client, network := interchaintest.DockerSetup(t)
+
+	numValidators := 1
+	numFullNodes := 0
+
+	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
+		nobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, setupAllFiatTFRoles),
+		{Name: "gaia", Version: "v16.0.0", NumValidators: &numValidators, NumFullNodes: &numFullNodes},
+	})
+
+	chains, err := cf.Chains(t.Name())
+	require.NoError(t, err)
+
+	nw.chain = chains[0].(*cosmos.CosmosChain)
+	noble := nw.chain
+	gaia = chains[1].(*cosmos.CosmosChain)
+
+	rf := interchaintest.NewBuiltinRelayerFactory(ibc.CosmosRly, zaptest.NewLogger(t))
+	r = rf.Build(t, client, network)
+
+	ibcPathName = "path"
+	ic := interchaintest.NewInterchain().
+		AddChain(noble).
+		AddChain(gaia).
+		AddRelayer(r, "relayer").
+		AddLink(interchaintest.InterchainLink{
+			Chain1:  noble,
+			Chain2:  gaia,
+			Relayer: r,
+			Path:    ibcPathName,
+		})
+
+	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
+		TestName:  t.Name(),
+		Client:    client,
+		NetworkID: network,
+
+		SkipPathCreation: false,
+	}))
+	t.Cleanup(func() {
+		_ = ic.Close()
+	})
+
+	return
 }

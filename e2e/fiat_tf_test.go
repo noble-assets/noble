@@ -1,4 +1,4 @@
-package e2e_test
+package e2e
 
 import (
 	"context"
@@ -10,14 +10,13 @@ import (
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
+
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap/zaptest"
 )
 
 func TestFiatTFUpdateOwner(t *testing.T) {
@@ -793,7 +792,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	alice := w[0]
 
 	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController2.FormattedAddress(), minter2.FormattedAddress())
-	require.ErrorContains(t, err, "error configuring minter controller")
+	require.ErrorContains(t, err, "you are not the master minter: unauthorized")
 
 	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController2.FormattedAddress())
 	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
@@ -825,13 +824,13 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MasterMinter)
 
 	// ACTION: Configure an already configured Minter Controller with a new Minter
-	// EXPECTED: Success; Minter Controller is configured with Minter. The old minter should be disascociated
+	// EXPECTED: Success; Minter Controller is configured with Minter. The old minter should be disassociated
 	// from Minter Controller but keep its status and allowance
 	// Status:
 	// 	minterController1 -> minter1
 	// 	minterController2 -> minter2
 
-	// configuring minter1 to ensure allownace stays the same after assiging mintercontroller1 a new minter
+	// configuring minter1 to ensure allowance stays the same after assigning minterController1 a new minter
 	_, err = val.ExecTx(ctx, minterController1.KeyName(), "fiat-tokenfactory", "configure-minter", minter1.FormattedAddress(), "1uusdc")
 	require.NoError(t, err, "error configuring minter controller")
 
@@ -1027,7 +1026,7 @@ func TestFiatTFRemoveMinterController(t *testing.T) {
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MasterMinter)
 
 	// ACTION: Remove a a non existent Minter Controller
-	// EXPECTED: Requst fails
+	// EXPECTED: Request fails
 	// Status:
 	// 	no minterController setup
 
@@ -1362,6 +1361,73 @@ func TestFiatTFMint(t *testing.T) {
 
 }
 
+func TestFiatTFAuth(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := nobleSpinUp(t, ctx, true)
+	noble := nw.chain
+	val := noble.Validators[0]
+
+	// ACTION: Send non TF token but pay fee in TF token while the TF is paused
+	// EXPECTED: Request fails; TF is paused
+
+	originalAmount := math.OneInt()
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", originalAmount, noble, noble)
+	alice := w[0] // 1ustake
+	bob := w[1]   // 1ustake
+
+	mintAmount := 100
+	_, err := val.ExecTx(ctx, nw.fiatTfRoles.Minter.KeyName(), "fiat-tokenfactory", "mint", alice.FormattedAddress(), fmt.Sprintf("%duusdc", mintAmount))
+	require.NoError(t, err)
+
+	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	sendAmount := 1
+	uusdcFee := 5
+	_, err = val.ExecTx(ctx, alice.KeyName(), "bank", "send", alice.KeyName(), bob.FormattedAddress(), fmt.Sprintf("%dustake", sendAmount), "--fees", fmt.Sprintf("%duusdc", uusdcFee))
+	require.ErrorContains(t, err, "the chain is paused")
+
+	bal, err := noble.GetBalance(ctx, alice.FormattedAddress(), "ustake")
+	require.NoError(t, err)
+	require.Equal(t, originalAmount, bal)
+
+	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	// ACTION: Send non TF token but pay fee in TF token while the sender is blacklisted
+	// EXPECTED: Request fails
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, alice)
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "bank", "send", alice.KeyName(), bob.FormattedAddress(), fmt.Sprintf("%dustake", sendAmount), "--fees", fmt.Sprintf("%duusdc", uusdcFee))
+	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not send tokens: unauthorized", alice.FormattedAddress()))
+
+	bal, err = noble.GetBalance(ctx, alice.FormattedAddress(), "ustake")
+	require.NoError(t, err)
+	require.Equal(t, originalAmount, bal)
+
+	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, alice)
+
+	// ACTION: Successfully send non TF token but pay fee in TF token
+	// EXPECTED: Success; Fee withdrawn from users balance
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "bank", "send", alice.KeyName(), bob.FormattedAddress(), fmt.Sprintf("%dustake", sendAmount), "--fees", fmt.Sprintf("%duusdc", uusdcFee))
+	require.NoError(t, err)
+
+	bobBalStake, err := noble.GetBalance(ctx, bob.FormattedAddress(), "ustake")
+	require.NoError(t, err)
+	require.Equal(t, originalAmount.Add(math.NewInt(int64(sendAmount))), bobBalStake)
+
+	aliceBalUusdc, err := noble.GetBalance(ctx, alice.FormattedAddress(), "uusdc")
+	require.NoError(t, err)
+	require.EqualValues(t, mintAmount-uusdcFee, aliceBalUusdc.Int64())
+
+}
+
 func TestFiatTFBurn(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -1469,7 +1535,7 @@ func TestFiatTFAuthzGrant(t *testing.T) {
 	val := noble.Validators[0]
 
 	// ACTION: Grant an authz SEND using a TF token while TF is paused
-	// EXPECTED: ??????
+	// EXPECTED: Request fails
 
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
 	granter1 := w[0]
@@ -1477,9 +1543,8 @@ func TestFiatTFAuthzGrant(t *testing.T) {
 
 	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
-	res, err := val.AuthzGrant(ctx, granter1, grantee1.FormattedAddress(), "send", "--spend-limit=100uusdc")
-	require.NoError(t, err)
-	require.Zero(t, res.Code)
+	_, err := val.AuthzGrant(ctx, granter1, grantee1.FormattedAddress(), "send", "--spend-limit=100uusdc")
+	require.ErrorContains(t, err, "can not perform token authorizations: the chain is paused")
 
 	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
@@ -1492,7 +1557,7 @@ func TestFiatTFAuthzGrant(t *testing.T) {
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, grantee2)
 
-	res, err = val.AuthzGrant(ctx, granter2, grantee2.FormattedAddress(), "send", "--spend-limit=100uusdc")
+	res, err := val.AuthzGrant(ctx, granter2, grantee2.FormattedAddress(), "send", "--spend-limit=100uusdc")
 	require.NoError(t, err)
 	require.Zero(t, res.Code)
 
@@ -1550,19 +1615,19 @@ func TestFiatTFAuthzSend(t *testing.T) {
 	}
 
 	// ACTION: Execute an authz SEND using a TF token from a grantee who is blacklisted
-	// EXPECTED: Succeed; Grantee is acting on behalf of Granter
+	// EXPECTED: Request fails; Even though grantee is acting on behalf of the granter,
+	// the granter still cannot execute `send` due to being blacklisted
 	// Status:
 	// 	Granter1 has authorized Grantee1 to send 100usdc from their wallet
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, grantee)
 
-	res, err = val.AuthzExec(ctx, grantee, nestedCmd)
-	require.NoError(t, err)
-	require.Zero(t, res.Code)
+	_, err = val.AuthzExec(ctx, grantee, nestedCmd)
+	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not receive tokens: unauthorized", grantee.FormattedAddress()))
 
 	bal, err := noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
-	require.EqualValues(t, sendAmount, bal.Int64())
+	require.True(t, bal.IsZero())
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, grantee)
 
@@ -1580,8 +1645,9 @@ func TestFiatTFAuthzSend(t *testing.T) {
 
 	bal, err = noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
+	require.True(t, bal.IsZero())
 	// bal should not change
-	require.Equal(t, preSendBal, bal)
+	// require.Equal(t, preSendBal, bal)
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, granter)
 
@@ -1713,7 +1779,6 @@ func TestFiatTFIBCOut(t *testing.T) {
 	noble := nw.chain
 	val := noble.Validators[0]
 
-	// setup
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, gaia)
 	nobleWallet := w[0]
 	gaiaWallet := w[1]
@@ -1726,7 +1791,6 @@ func TestFiatTFIBCOut(t *testing.T) {
 	nobleToGaiaChannelInfo, err := r.GetChannels(ctx, eRep, noble.Config().ChainID)
 	require.NoError(t, err)
 	nobleToGaiaChannelID := nobleToGaiaChannelInfo[0].ChannelID
-
 	// gaia -> noble channel info
 	gaiaToNobleChannelInfo, err := r.GetChannels(ctx, eRep, gaia.Config().ChainID)
 	require.NoError(t, err)
@@ -1739,7 +1803,7 @@ func TestFiatTFIBCOut(t *testing.T) {
 		Amount:  amountToSend,
 	}
 
-	// ACTION: IBC send TF token while TF is paused
+	// ACTION: IBC send out a TF token while TF is paused
 	// EXPECTED: Request fails;
 
 	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
@@ -1777,15 +1841,10 @@ func TestFiatTFIBCOut(t *testing.T) {
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nobleWallet)
 
-	// ACTION: IBC send TF token to a blacklisted user
+	// ACTION: IBC send out a TF token to a blacklisted user
 	// EXPECTED: Request fails;
 
-	_, bz, err := bech32.DecodeAndConvert(gaiaWallet.FormattedAddress())
-	require.NoError(t, err)
-	require.NoError(t, sdktypes.VerifyAddressFormat(bz))
-
-	nobleBechOfGaiaWal := cosmos.NewWallet("default", bz, gaiaWallet.Mnemonic(), noble.Config())
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nobleBechOfGaiaWal)
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, gaiaWallet)
 
 	_, err = noble.SendIBCTransfer(ctx, nobleToGaiaChannelID, nobleWallet.KeyName(), transfer, ibc.TransferOptions{})
 	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not receive tokens", gaiaWallet.FormattedAddress()))
@@ -1795,6 +1854,189 @@ func TestFiatTFIBCOut(t *testing.T) {
 	gaiaWalletBal, err = gaia.GetBalance(ctx, gaiaWallet.FormattedAddress(), dstIbcDenom)
 	require.NoError(t, err)
 	require.True(t, gaiaWalletBal.IsZero())
+
+	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, gaiaWallet)
+
+	// ACTION: IBC send out a TF token to malformed address
+	// EXPECTED: Request fails;
+
+	transfer.Address = "malformed-address1234"
+
+	_, err = noble.SendIBCTransfer(ctx, nobleToGaiaChannelID, nobleWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.ErrorContains(t, err, "decoding bech32 failed")
+
+	// ACTION: Successfully IBC send out a TF token to an address on another chain
+	// EXPECTED: Success;
+
+	transfer.Address = gaiaWallet.FormattedAddress()
+
+	_, err = noble.SendIBCTransfer(ctx, nobleToGaiaChannelID, nobleWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.NoError(t, err)
+
+	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, nobleToGaiaChannelID))
+
+	gaiaWalletBal, err = gaia.GetBalance(ctx, gaiaWallet.FormattedAddress(), dstIbcDenom)
+	require.NoError(t, err)
+	require.Equal(t, transfer.Amount, gaiaWalletBal)
+}
+
+func TestFiatTFIBCIn(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw, gaia, r, ibcPathName, eRep := nobleSpinUpIBC(t, ctx, true)
+	noble := nw.chain
+	val := noble.Validators[0]
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", math.NewInt(1_000_000), noble, gaia)
+	nobleWallet := w[0] // 1_000_000ustake
+	gaiaWallet := w[1]  // 1_000_000uatom
+
+	mintAmount := int64(100)
+	_, err := val.ExecTx(ctx, nw.fiatTfRoles.Minter.KeyName(), "fiat-tokenfactory", "mint", nobleWallet.FormattedAddress(), fmt.Sprintf("%duusdc", mintAmount))
+	require.NoError(t, err, "error minting")
+
+	// noble -> gaia channel info
+	nobleToGaiaChannelInfo, err := r.GetChannels(ctx, eRep, noble.Config().ChainID)
+	require.NoError(t, err)
+	nobleToGaiaChannelID := nobleToGaiaChannelInfo[0].ChannelID
+	// gaia -> noble channel info
+	gaiaToNobleChannelInfo, err := r.GetChannels(ctx, eRep, gaia.Config().ChainID)
+	require.NoError(t, err)
+	gaiaToNobleChannelID := gaiaToNobleChannelInfo[0].ChannelID
+
+	amountToSend := math.NewInt(mintAmount)
+	transfer := ibc.WalletAmount{
+		Address: gaiaWallet.FormattedAddress(),
+		Denom:   denomMetadataUsdc.Base,
+		Amount:  amountToSend,
+	}
+
+	// ibc transfer noble -> gaia
+	_, err = noble.SendIBCTransfer(ctx, nobleToGaiaChannelID, nobleWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.NoError(t, err)
+
+	// relay MsgRecvPacket & MsgAcknowledgement
+	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, nobleToGaiaChannelID))
+
+	// uusdc IBC denom on gaia
+	srcDenomTrace := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", gaiaToNobleChannelID, denomMetadataUsdc.Base))
+	dstIbcDenom := srcDenomTrace.IBCDenom()
+
+	gaiaWalletBal, err := gaia.GetBalance(ctx, gaiaWallet.FormattedAddress(), dstIbcDenom)
+	require.NoError(t, err)
+	require.Equal(t, transfer.Amount, gaiaWalletBal)
+
+	// ACTION: IBC send in a TF token while TF is paused
+	// EXPECTED: Request fails;
+
+	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	amountToSend = math.OneInt()
+	transfer = ibc.WalletAmount{
+		Address: nobleWallet.FormattedAddress(),
+		Denom:   dstIbcDenom,
+		Amount:  amountToSend,
+	}
+
+	height, err := noble.Height(ctx)
+	require.NoError(t, err)
+
+	tx, err := gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.NoError(t, err, "error broadcasting IBC send")
+
+	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
+
+	heightAfterFlush, err := noble.Height(ctx)
+	require.NoError(t, err)
+
+	ack, err := testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
+	require.NoError(t, err, "error polling for ack")
+	require.Contains(t, string(ack.Acknowledgement), "error handling packet")
+
+	nobleWalletBal, err := noble.GetBalance(ctx, nobleWallet.FormattedAddress(), denomMetadataUsdc.Base)
+	require.NoError(t, err)
+	require.True(t, nobleWalletBal.IsZero())
+
+	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	// ACTION: IBC send in a TF token FROM an address that is blacklisted
+	// EXPECTED: Request fails;
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, gaiaWallet)
+
+	height, err = noble.Height(ctx)
+	require.NoError(t, err)
+
+	tx, err = gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.NoError(t, err, "error broadcasting IBC send")
+
+	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
+
+	heightAfterFlush, err = noble.Height(ctx)
+	require.NoError(t, err)
+
+	ack, err = testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
+	require.NoError(t, err, "error polling for ack")
+	require.Contains(t, string(ack.Acknowledgement), "error handling packet")
+
+	nobleWalletBal, err = noble.GetBalance(ctx, nobleWallet.FormattedAddress(), denomMetadataUsdc.Base)
+	require.NoError(t, err)
+	require.True(t, nobleWalletBal.IsZero())
+
+	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, gaiaWallet)
+
+	// ACTION: IBC send in a TF token TO an address that is blacklisted
+	// EXPECTED: Request fails;
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nobleWallet)
+
+	height, err = noble.Height(ctx)
+	require.NoError(t, err)
+
+	tx, err = gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.NoError(t, err, "error broadcasting IBC send")
+
+	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
+
+	heightAfterFlush, err = noble.Height(ctx)
+	require.NoError(t, err)
+
+	ack, err = testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
+	require.NoError(t, err, "error polling for ack")
+	require.Contains(t, string(ack.Acknowledgement), "error handling packet")
+
+	nobleWalletBal, err = noble.GetBalance(ctx, nobleWallet.FormattedAddress(), denomMetadataUsdc.Base)
+	require.NoError(t, err)
+	require.True(t, nobleWalletBal.IsZero())
+
+	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nobleWallet)
+
+	// ACTION: Successfully IBC send in a TF token to an address on noble
+	// EXPECTED: Success;
+
+	height, err = noble.Height(ctx)
+	require.NoError(t, err)
+
+	tx, err = gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
+	require.NoError(t, err, "error broadcasting IBC send")
+
+	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
+
+	heightAfterFlush, err = noble.Height(ctx)
+	require.NoError(t, err)
+
+	ack, err = testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
+	require.NoError(t, err, "error polling for ack")
+	require.NotContains(t, string(ack.Acknowledgement), "error handling packet")
+
+	nobleWalletBal, err = noble.GetBalance(ctx, nobleWallet.FormattedAddress(), denomMetadataUsdc.Base)
+	require.NoError(t, err)
+	require.Equal(t, transfer.Amount, nobleWalletBal)
 
 }
 
@@ -1862,7 +2104,7 @@ func unpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pau
 
 	var showPausedResponse fiattokenfactorytypes.QueryGetPausedResponse
 	err = json.Unmarshal(res, &showPausedResponse)
-	require.NoError(t, err, "failed to unmarshall show-puased response")
+	require.NoError(t, err, "failed to unmarshall show-paused response")
 
 	expectedUnpaused := fiattokenfactorytypes.QueryGetPausedResponse{
 		Paused: fiattokenfactorytypes.Paused{
@@ -1927,101 +2169,4 @@ func configureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, m
 	}
 
 	require.Equal(t, expectedShowMinters.Minters, showMinterResponse.Minters)
-}
-
-// nobleSpinUp starts noble chain
-// Args:
-//
-//	setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
-//		if false, only the Onwer role will be created
-func nobleSpinUp(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (nw nobleWrapper) {
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
-	client, network := interchaintest.DockerSetup(t)
-
-	numValidators := 1
-	numFullNodes := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, setupAllFiatTFRoles),
-	})
-
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	nw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := nw.chain
-
-	ic := interchaintest.NewInterchain().
-		AddChain(noble)
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: true,
-	}))
-	t.Cleanup(func() {
-		_ = ic.Close()
-	})
-
-	return
-}
-
-// nobleSpinUpIBC is the same as nobleSpinUp except it also spins up gaia chain and creates
-// an IBC path between them
-// Args:
-//
-//	setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
-//		if false, only the Onwer role will be created
-func nobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (nw nobleWrapper, gaia *cosmos.CosmosChain, r ibc.Relayer, ibcPathName string, eRep *testreporter.RelayerExecReporter) {
-	rep := testreporter.NewNopReporter()
-	eRep = rep.RelayerExecReporter(t)
-
-	client, network := interchaintest.DockerSetup(t)
-
-	numValidators := 1
-	numFullNodes := 0
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, setupAllFiatTFRoles),
-		{Name: "gaia", Version: "latest", NumValidators: &numValidators, NumFullNodes: &numFullNodes},
-	})
-
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
-	nw.chain = chains[0].(*cosmos.CosmosChain)
-	noble := nw.chain
-	gaia = chains[1].(*cosmos.CosmosChain)
-
-	rf := interchaintest.NewBuiltinRelayerFactory(ibc.CosmosRly, zaptest.NewLogger(t))
-	r = rf.Build(t, client, network)
-
-	ibcPathName = "path"
-	ic := interchaintest.NewInterchain().
-		AddChain(noble).
-		AddChain(gaia).
-		AddRelayer(r, "relayer").
-		AddLink(interchaintest.InterchainLink{
-			Chain1:  noble,
-			Chain2:  gaia,
-			Relayer: r,
-			Path:    ibcPathName,
-		})
-
-	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
-		SkipPathCreation: false,
-	}))
-	t.Cleanup(func() {
-		_ = ic.Close()
-	})
-
-	return
 }

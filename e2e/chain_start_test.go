@@ -1,4 +1,4 @@
-package e2e_test
+package e2e
 
 import (
 	"context"
@@ -23,9 +23,12 @@ func TestNobleStart(t *testing.T) {
 
 	var nw nobleWrapper
 
+	numValidators := 1
+	numFullNodes := 0
+
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		nobleChainSpec(ctx, &nw, "noble-1", 2, 0, false),
-		{Name: "gaia", Version: "latest"},
+		nobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, false),
+		{Name: "gaia", Version: "v16.0.0", NumValidators: &numFullNodes, NumFullNodes: &numFullNodes},
 	})
 
 	var ibcSimApp ibc.Chain
