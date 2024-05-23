@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -72,11 +73,6 @@ func NobleEncoding() *testutil.TestEncodingConfig {
 
 	// register custom types
 	fiattokenfactorytypes.RegisterInterfaces(cfg.InterfaceRegistry)
-
-	// @TODO: do we need these?
-	// proposaltypes.RegisterInterfaces(cfg.InterfaceRegistry)
-	// upgradetypes.RegisterInterfaces(cfg.InterfaceRegistry)
-
 	return &cfg
 }
 
@@ -106,16 +102,14 @@ func nobleChainSpec(
 			EncodingConfig: NobleEncoding(),
 			PreGenesis:     preGenesisAll(ctx, gw, setupAllFiatTFRoles),
 			ModifyGenesis:  modifyGenesisAll(gw, setupAllFiatTFRoles),
-			// CometMock: ibc.CometMockConfig{
-			// 	Image:       ibc.NewDockerImage("ghcr.io/informalsystems/cometmock", "v0.38.x", "1025:1025"),
-			// 	BlockTimeMs: 200,
-			// },
 		},
 	}
 }
 
 // modifyGenesisAll modifies the genesis file to with fields needed to start chain
-// If setupAllFiatTFRoles = false, only the owner role will be created.
+//
+// setupAllFiatTFRoles: if true, all Tokenfactory roles will be setup and tied to a wallet at genesis,
+// if false, only the Owner role will be setup
 func modifyGenesisAll(nw *nobleWrapper, setupAllFiatTFRoles bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 
@@ -162,9 +156,11 @@ func preGenesisAll(ctx context.Context, nw *nobleWrapper, setupAllFiatTFRoles bo
 	}
 }
 
-// Creates tokenfactory wallets with 0 amount. Meant to run pre-genesis.
-// If setupAllFiatTFRoles = false, only the owner role will be created.
+// createTokenfactoryRoles Creates wallets to be tied to TF roles with 0 amount. Meant to run pre-genesis.
 // After creating thw wallets, it recovers the key on the specified validator.
+//
+// setupAllFiatTFRoles: if true, a wallet for all Tokenfactory roles will be created,
+// if false, only the Owner role will be created
 func createTokenfactoryRoles(ctx context.Context, val *cosmos.ChainNode, setupAllFiatTFRoles bool) (NobleRoles, error) {
 	chainCfg := val.Chain.Config()
 	nobleVal := val.Chain
@@ -189,6 +185,7 @@ func createTokenfactoryRoles(ctx context.Context, val *cosmos.ChainNode, setupAl
 	if err != nil {
 		return NobleRoles{}, err
 	}
+
 	if !setupAllFiatTFRoles {
 		return nobleRoles, nil
 	}
@@ -285,10 +282,9 @@ func createAuthorityRole(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet
 }
 
 // nobleSpinUp starts noble chain
-// Args:
 //
-//	setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
-//		if false, only the Onwer role will be created
+// setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
+// if false, only the Owner role will be created
 func nobleSpinUp(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (nw nobleWrapper) {
 	rep := testreporter.NewNopReporter()
 	eRep := rep.RelayerExecReporter(t)
@@ -327,10 +323,9 @@ func nobleSpinUp(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (n
 
 // nobleSpinUpIBC is the same as nobleSpinUp but it also spins up a gaia chain and creates
 // an IBC path between them
-// Args:
 //
-//	setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
-//		if false, only the Onwer role will be created
+// setupAllFiatTFRoles: if true, all Tokenfactory roles will be created and setup at genesis,
+// if false, only the Owner role will be created
 func nobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool) (nw nobleWrapper, gaia *cosmos.CosmosChain, r ibc.Relayer, ibcPathName string, eRep *testreporter.RelayerExecReporter) {
 	rep := testreporter.NewNopReporter()
 	eRep = rep.RelayerExecReporter(t)
@@ -379,4 +374,258 @@ func nobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllFiatTFRoles bool)
 	})
 
 	return
+}
+
+////////////////////////////////
+// Fiat Token Factory Helpers //
+////////////////////////////////
+
+// blacklistAccount blacklists an account and then runs the `show-blacklisted` query to ensure the
+// account was successfully blacklisted on chain
+func blacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, toBlacklist ibc.Wallet) {
+	_, err := val.ExecTx(ctx, blacklister.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast blacklist message")
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklisted", toBlacklist.FormattedAddress())
+	require.NoError(t, err, "failed to query show-blacklisted")
+
+	var showBlacklistedResponse fiattokenfactorytypes.QueryGetBlacklistedResponse
+	err = json.Unmarshal(res, &showBlacklistedResponse)
+	require.NoError(t, err, "failed to unmarshal show-blacklisted response")
+
+	expectedBlacklistResponse := fiattokenfactorytypes.QueryGetBlacklistedResponse{
+		Blacklisted: fiattokenfactorytypes.Blacklisted{
+			AddressBz: toBlacklist.Address(),
+		},
+	}
+
+	require.Equal(t, expectedBlacklistResponse.Blacklisted, showBlacklistedResponse.Blacklisted)
+}
+
+// unblacklistAccount unblacklists an account and then runs the `show-blacklisted` query to ensure the
+// account was successfully unblacklisted on chain
+func unblacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, unBlacklist ibc.Wallet) {
+	_, err := val.ExecTx(ctx, blacklister.KeyName(), "fiat-tokenfactory", "unblacklist", unBlacklist.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast blacklist message")
+
+	_, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklisted", unBlacklist.FormattedAddress())
+	require.Error(t, err, "query succeeded, blacklisted account should not exist")
+}
+
+// pauseFiatTF pauses the fiat tokenfactory. It then runs the `show-paused` query to ensure the
+// the tokenfactory was successfully paused
+func pauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pauser ibc.Wallet) {
+	_, err := val.ExecTx(ctx, pauser.KeyName(), "fiat-tokenfactory", "pause")
+	require.NoError(t, err, "error pausing fiat-tokenfactory")
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-paused")
+	require.NoError(t, err, "error querying for paused state")
+
+	var showPausedResponse fiattokenfactorytypes.QueryGetPausedResponse
+	err = json.Unmarshal(res, &showPausedResponse)
+	require.NoError(t, err)
+
+	expectedPaused := fiattokenfactorytypes.QueryGetPausedResponse{
+		Paused: fiattokenfactorytypes.Paused{
+			Paused: true,
+		},
+	}
+	require.Equal(t, expectedPaused, showPausedResponse)
+}
+
+// unpauseFiatTF pauses the fiat tokenfactory. It then runs the `show-paused` query to ensure the
+// the tokenfactory was successfully unpaused
+func unpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pauser ibc.Wallet) {
+	_, err := val.ExecTx(ctx, pauser.KeyName(), "fiat-tokenfactory", "unpause")
+	require.NoError(t, err, "error pausing fiat-tokenfactory")
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-paused")
+	require.NoError(t, err, "error querying for paused state")
+
+	var showPausedResponse fiattokenfactorytypes.QueryGetPausedResponse
+	err = json.Unmarshal(res, &showPausedResponse)
+	require.NoError(t, err, "failed to unmarshal show-paused response")
+
+	expectedUnpaused := fiattokenfactorytypes.QueryGetPausedResponse{
+		Paused: fiattokenfactorytypes.Paused{
+			Paused: false,
+		},
+	}
+	require.Equal(t, expectedUnpaused, showPausedResponse)
+}
+
+// setupMinterAndController creates a minter controller and minter. It also sets up a minter with an specified allowance of `uusdc`
+func setupMinterAndController(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, val *cosmos.ChainNode, masterMinter ibc.Wallet, allowance int64) (minter ibc.Wallet, minterController ibc.Wallet) {
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
+	minterController = w[0]
+	minter = w[1]
+
+	_, err := val.ExecTx(ctx, masterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController.FormattedAddress(), minter.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	showMC, err := showMinterController(ctx, val, minterController)
+	require.NoError(t, err, "failed to query show-minter-controller")
+	expectedShowMinterController := fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter.FormattedAddress(),
+			Controller: minterController.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedShowMinterController.MinterController, showMC.MinterController)
+
+	configureMinter(t, ctx, val, minterController, minter, allowance)
+
+	return minter, minterController
+}
+
+// configureMinter configures a minter with a specified allowance of `uusdc`. It then runs the `show-minters` query to ensure
+// the minter was properly configured
+func configureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, minterController, minter ibc.Wallet, allowance int64) {
+	_, err := val.ExecTx(ctx, minterController.KeyName(), "fiat-tokenfactory", "configure-minter", minter.FormattedAddress(), fmt.Sprintf("%duusdc", allowance))
+	require.NoError(t, err, "error configuring minter")
+
+	showMinter, err := showMinters(ctx, val, minter)
+	require.NoError(t, err, "failed to query show-minter")
+	expectedShowMinters := fiattokenfactorytypes.QueryGetMintersResponse{
+		Minters: fiattokenfactorytypes.Minters{
+			Address: minter.FormattedAddress(),
+			Allowance: sdktypes.Coin{
+				Denom:  "uusdc",
+				Amount: math.NewInt(allowance),
+			},
+		},
+	}
+
+	require.Equal(t, expectedShowMinters.Minters, showMinter.Minters)
+}
+
+// showMinterController queries for a specific minter controller by running: `query fiat-tokenfactory show-minter-controller <address>`.
+// An error is returned if the minter controller does not exist
+func showMinterController(ctx context.Context, val *cosmos.ChainNode, minterController ibc.Wallet) (fiattokenfactorytypes.QueryGetMinterControllerResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController.FormattedAddress())
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetMinterControllerResponse{}, err
+	}
+
+	var showMinterController fiattokenfactorytypes.QueryGetMinterControllerResponse
+	err = json.Unmarshal(res, &showMinterController)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetMinterControllerResponse{}, err
+	}
+
+	return showMinterController, nil
+}
+
+// showMinters queries for a specific minter by running: `query fiat-tokenfactory show-minters <address>`.
+// An error is returned if the minter does not exist
+func showMinters(ctx context.Context, val *cosmos.ChainNode, minter ibc.Wallet) (fiattokenfactorytypes.QueryGetMintersResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minters", minter.FormattedAddress())
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetMintersResponse{}, err
+	}
+
+	var showMinters fiattokenfactorytypes.QueryGetMintersResponse
+	err = json.Unmarshal(res, &showMinters)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetMintersResponse{}, err
+	}
+
+	return showMinters, nil
+}
+
+// showOwner queries for the token factory Owner by running: `query fiat-tokenfactory show-owner`.
+func showOwner(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetOwnerResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-owner")
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetOwnerResponse{}, err
+	}
+
+	var showOwnerResponse fiattokenfactorytypes.QueryGetOwnerResponse
+	err = json.Unmarshal(res, &showOwnerResponse)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetOwnerResponse{}, err
+	}
+
+	return showOwnerResponse, nil
+}
+
+// showMasterMinter queries for the token factory Master Minter by running: `query fiat-tokenfactory show-master-minter`.
+func showMasterMinter(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetMasterMinterResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-master-minter")
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetMasterMinterResponse{}, err
+	}
+
+	var showMMResponse fiattokenfactorytypes.QueryGetMasterMinterResponse
+	err = json.Unmarshal(res, &showMMResponse)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetMasterMinterResponse{}, err
+	}
+
+	return showMMResponse, nil
+}
+
+// showPauser queries for the token factory Pauser by running: `query fiat-tokenfactory show-pauser`.
+func showPauser(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetPauserResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-pauser")
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetPauserResponse{}, err
+	}
+
+	var showPauserRes fiattokenfactorytypes.QueryGetPauserResponse
+	err = json.Unmarshal(res, &showPauserRes)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetPauserResponse{}, err
+	}
+
+	return showPauserRes, nil
+}
+
+// showBlacklister queries for the token factory Blacklister by running: `query fiat-tokenfactory show-blacklister`.
+func showBlacklister(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetBlacklisterResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetBlacklisterResponse{}, err
+	}
+
+	var showBlacklisterRes fiattokenfactorytypes.QueryGetBlacklisterResponse
+	err = json.Unmarshal(res, &showBlacklisterRes)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetBlacklisterResponse{}, err
+	}
+
+	return showBlacklisterRes, nil
+}
+
+// showBlacklisted queries for a specific blacklisted address by running: `query fiat-tokenfactory show-blacklisted <address>`.
+// An error is returned if the address is not blacklisted
+func showBlacklisted(ctx context.Context, val *cosmos.ChainNode, blacklistedWallet ibc.Wallet) (fiattokenfactorytypes.QueryGetBlacklistedResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minters", blacklistedWallet.FormattedAddress())
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetBlacklistedResponse{}, err
+	}
+
+	var showBlacklistedRes fiattokenfactorytypes.QueryGetBlacklistedResponse
+	err = json.Unmarshal(res, &showBlacklistedRes)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetBlacklistedResponse{}, err
+	}
+
+	return showBlacklistedRes, nil
+}
+
+// showPaused queries paused state the token factory by running: `query fiat-tokenfactory show-paused`.
+func showPaused(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetPausedResponse, error) {
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetPausedResponse{}, err
+	}
+
+	var showPausedRes fiattokenfactorytypes.QueryGetPausedResponse
+	err = json.Unmarshal(res, &showPausedRes)
+	if err != nil {
+		return fiattokenfactorytypes.QueryGetPausedResponse{}, err
+	}
+
+	return showPausedRes, nil
 }
