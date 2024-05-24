@@ -78,7 +78,7 @@ func NobleEncoding() *testutil.TestEncodingConfig {
 
 func nobleChainSpec(
 	ctx context.Context,
-	gw *nobleWrapper,
+	nw *nobleWrapper,
 	chainID string,
 	nv, nf int,
 	setupAllFiatTFRoles bool,
@@ -100,8 +100,8 @@ func nobleChainSpec(
 			NoHostMount:    false,
 			Images:         nobleImageInfo,
 			EncodingConfig: NobleEncoding(),
-			PreGenesis:     preGenesisAll(ctx, gw, setupAllFiatTFRoles),
-			ModifyGenesis:  modifyGenesisAll(gw, setupAllFiatTFRoles),
+			PreGenesis:     preGenesisAll(ctx, nw, setupAllFiatTFRoles),
+			ModifyGenesis:  modifyGenesisAll(nw, setupAllFiatTFRoles),
 		},
 	}
 }
