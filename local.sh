@@ -19,7 +19,7 @@ if ! [ -f .duke/data/priv_validator_state.json ]; then
   nobled genesis add-genesis-account authority 1000000uusdc --home .duke --keyring-backend test
 
   TEMP=.duke/genesis.json
-  touch $TEMP && jq '.app_state.authority.address = '$AUTHORITY'' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
+  touch $TEMP && jq '.app_state.authority.owner = '$AUTHORITY'' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
   touch $TEMP && jq '.app_state.bank.denom_metadata = [{"description":"USD Coin","denom_units":[{"denom":"uusdc","exponent":0,"aliases":["microusdc"]},{"denom":"usdc","exponent":6,"aliases":[]}],"base":"uusdc","display":"usdc","name":"usdc","symbol":"USDC"}]' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
   touch $TEMP && jq '.app_state."fiat-tokenfactory".paused = {"paused":true}' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
   touch $TEMP && jq '.app_state."fiat-tokenfactory".mintingDenom = {"denom":"uusdc"}' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json

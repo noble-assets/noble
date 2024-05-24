@@ -53,4 +53,9 @@ lint:
 ###                                 Testing                                 ###
 ###############################################################################
 
-# TODO(@john): Add "local-image" command!
+local-image:
+ifeq (,$(shell which heighliner))
+	echo 'heighliner' binary not found. Please install: https://github.com/strangelove-ventures/heighliner
+else
+	heighliner build -c noble --local
+endif
