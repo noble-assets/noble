@@ -1,5 +1,0 @@
-- name: noble
-  dockerfile: cosmos
-  build-target: make install
-  binaries:
-    - /go/bin/nobled
