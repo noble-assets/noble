@@ -1,4 +1,5 @@
 ![Noble banner](https://raw.githubusercontent.com/noble-assets/networks/main/Twitter_Banner.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnoble-assets%2Fnoble.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnoble-assets%2Fnoble?ref=badge_shield)
 # ✨✨ Noble ✨✨
 
 ## Overview
@@ -206,3 +207,7 @@ nobled start
 The [`interchaintest`](https://github.com/strangelove-ventures/interchaintest) test suite has been imported into the noble repo. Tests can be ran and written [here](./interchaintest/).
 
 To quickly spin up a standalone noble chain and setup all privileged accounts, run the [play.sh](play.sh) bash script.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnoble-assets%2Fnoble.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnoble-assets%2Fnoble?ref=badge_large)
