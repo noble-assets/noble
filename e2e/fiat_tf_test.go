@@ -74,7 +74,7 @@ func TestFiatTFAcceptOwner(t *testing.T) {
 	noble := nw.chain
 	val := noble.Validators[0]
 
-	// ACTION: Accept owner while TF is paused
+	// ACTION: Happy path: accept owner
 	// EXPECTED: Success; pending owner accepted
 
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "new-owner-1", math.OneInt(), noble)
@@ -82,8 +82,6 @@ func TestFiatTFAcceptOwner(t *testing.T) {
 
 	_, err := val.ExecTx(ctx, nw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-owner", newOwner1.FormattedAddress())
 	require.NoError(t, err, "error broadcasting update owner message")
-
-	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
 	_, err = val.ExecTx(ctx, newOwner1.KeyName(), "fiat-tokenfactory", "accept-owner")
 	require.NoError(t, err, "failed to accept owner")
@@ -97,18 +95,55 @@ func TestFiatTFAcceptOwner(t *testing.T) {
 	}
 	require.Equal(t, expectedOwnerResponse.Owner, showOwnerRes.Owner)
 
+	// ACTION: Accept owner when no pending owner is set
+	// EXPECTED: Request fails; pending owner not set
+	// Status:
+	// 	Owner: newOwner1
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-owner-1", math.OneInt(), noble)
+	newOwner2 := w[0]
+
+	_, err = val.ExecTx(ctx, newOwner2.KeyName(), "fiat-tokenfactory", "accept-owner")
+	require.ErrorContains(t, err, "pending owner is not set")
+
+	showOwnerRes, err = showOwner(ctx, val)
+	require.NoError(t, err, "failed to query show-owner")
+	require.Equal(t, expectedOwnerResponse.Owner, showOwnerRes.Owner)
+
+	// ACTION: Accept owner while TF is paused
+	// EXPECTED: Success; pending owner accepted
+	// Status:
+	// 	Owner: newOwner1
+
+	_, err = val.ExecTx(ctx, newOwner1.KeyName(), "fiat-tokenfactory", "update-owner", newOwner2.FormattedAddress())
+	require.NoError(t, err, "error broadcasting update owner message")
+
+	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	_, err = val.ExecTx(ctx, newOwner2.KeyName(), "fiat-tokenfactory", "accept-owner")
+	require.NoError(t, err, "failed to accept owner")
+
+	showOwnerRes, err = showOwner(ctx, val)
+	require.NoError(t, err, "failed to query show-owner")
+	expectedOwnerResponse = fiattokenfactorytypes.QueryGetOwnerResponse{
+		Owner: fiattokenfactorytypes.Owner{
+			Address: string(newOwner2.FormattedAddress()),
+		},
+	}
+	require.Equal(t, expectedOwnerResponse.Owner, showOwnerRes.Owner)
+
 	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
 	// ACTION: Accept owner from non pending owner
 	// EXPECTED: Request fails; pending owner not accepted
 	// Status:
-	// 	Owner: newOwner1
+	// 	Owner: newOwner2
 
 	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
-	newOwner2 := w[0]
+	newOwner3 := w[0]
 	alice := w[1]
 
-	_, err = val.ExecTx(ctx, newOwner1.KeyName(), "fiat-tokenfactory", "update-owner", newOwner2.FormattedAddress())
+	_, err = val.ExecTx(ctx, newOwner2.KeyName(), "fiat-tokenfactory", "update-owner", newOwner3.FormattedAddress())
 	require.NoError(t, err, "error broadcasting update owner message")
 
 	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "accept-owner")
@@ -121,19 +156,19 @@ func TestFiatTFAcceptOwner(t *testing.T) {
 	// ACTION: Accept owner from blacklisted pending owner
 	// EXPECTED: Success; pending owner accepted
 	// Status:
-	// 	Owner: newOwner1
-	// 	Pending: newOwner2
+	// 	Owner: newOwner2
+	// 	Pending: newOwner3
 
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, newOwner2)
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, newOwner3)
 
-	_, err = val.ExecTx(ctx, newOwner2.KeyName(), "fiat-tokenfactory", "accept-owner")
+	_, err = val.ExecTx(ctx, newOwner3.KeyName(), "fiat-tokenfactory", "accept-owner")
 	require.NoError(t, err, "failed to accept owner")
 
 	showOwnerRes, err = showOwner(ctx, val)
 	require.NoError(t, err, "failed to query show-owner")
 	expectedOwnerResponse = fiattokenfactorytypes.QueryGetOwnerResponse{
 		Owner: fiattokenfactorytypes.Owner{
-			Address: string(newOwner2.FormattedAddress()),
+			Address: string(newOwner3.FormattedAddress()),
 		},
 	}
 	require.Equal(t, expectedOwnerResponse.Owner, showOwnerRes.Owner)
