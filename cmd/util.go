@@ -2,13 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
-	"os"
-	"path"
-	"path/filepath"
-	"strings"
-	"time"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/config"
@@ -17,6 +10,12 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	tmcfg "github.com/tendermint/tendermint/config"
+	"io"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 func bindFlags(basename string, cmd *cobra.Command, v *viper.Viper) (err error) {
@@ -133,7 +132,7 @@ func interceptConfigs(rootViper *viper.Viper, customAppTemplate string, customCo
 		conf.RPC.PprofListenAddress = "localhost:6060"
 		conf.P2P.RecvRate = 5120000
 		conf.P2P.SendRate = 5120000
-		conf.Consensus.TimeoutCommit = 500 * time.Millisecond // NOBLE
+		conf.Consensus.TimeoutCommit = time.Second // NOBLE
 		tmcfg.WriteConfigFile(tmCfgFile, conf)
 
 	case err != nil:

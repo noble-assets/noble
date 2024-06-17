@@ -162,8 +162,8 @@ func NewRootCmd(
 
 			customAppTemplate, customAppConfig := initAppConfig()
 
-			// We have copied InterceptConfigsPreRunHandler from the server so
-			// that we can override the default commit timeout to 500ms.
+			// We have copied InterceptConfigsPreRunHandler from the Cosmos SDK
+			// so that we can override the default commit timeout to 1 second.
 			if err := InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig); err != nil {
 				return err
 			}
