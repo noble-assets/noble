@@ -163,7 +163,7 @@ func NewRootCmd(
 			customAppTemplate, customAppConfig := initAppConfig()
 
 			// We have copied InterceptConfigsPreRunHandler from the server so
-			// that we can override the default timeout commit value to 500ms.
+			// that we can override the default commit timeout to 500ms.
 			if err := InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig); err != nil {
 				return err
 			}
