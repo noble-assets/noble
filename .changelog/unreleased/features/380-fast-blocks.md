@@ -1,1 +1,1 @@
-- Update the default `commit_timeout` to `1s` to increase block time. ([#380](https://github.com/noble-assets/noble/pull/380))
+- Update the default `commit_timeout` to `500ms` to improve block time. ([#380](https://github.com/noble-assets/noble/pull/380))
