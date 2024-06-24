@@ -11,17 +11,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-docker:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Build Docker image
-        uses: strangelove-ventures/heighliner-build-action@v1.0.2
+      - name: Build Docker Image
+        uses: noble-assets/heighliner-build-action@d409c7b0dc2acc05a8218caad581bffae654c953
         with:
           registry: "" # empty registry, image only shared for e2e testing
           tag: local # emulate local environment for consistency in interchaintest cases
           tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
+          clone-key: ${{ secrets.AURA_SSH_KEY }}
 
           # Heighliner chains.yaml config
           chain: noble
@@ -36,45 +37,45 @@ jobs:
           name: noble-docker-image
           path: ${{ env.TAR_PATH }}
 
-  prepare-e2e-tests:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Go 1.21
+      - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.21'
+          go-version: '1.21'
 
-      - name: Generate matrix
+      - name: Generate Matrix
         id: set-matrix
         run: |
           # Run the command and convert its output to a JSON array
           TESTS=$(cd interchaintest && go test -list . | grep -v "^ok " | jq -R -s -c 'split("\n")[:-1]')
           echo "matrix=${TESTS}" >> $GITHUB_OUTPUT
-  
-  e2e-tests:
+
+  test:
     needs:
-      - build-docker
-      - prepare-e2e-tests
+      - build
+      - prepare
     runs-on: ubuntu-latest
     strategy:
       matrix:
         # names of `make` commands to run tests
-        test: ${{fromJson(needs.prepare-e2e-tests.outputs.matrix)}}
+        test: ${{fromJson(needs.prepare.outputs.matrix)}}
       fail-fast: false
 
     steps:
-      - name: Set up Go 1.21
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.21'
-
-      - name: checkout chain
-        uses: actions/checkout@v4
+          go-version: '1.21'
 
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v4
@@ -84,5 +85,5 @@ jobs:
       - name: Load Docker Image
         run: docker image load -i ${{ env.TAR_PATH }}
 
-      - name: run test
+      - name: Run Tests
         run: cd interchaintest && go test -race -v -timeout 30m -run ^${{ matrix.test }}$ .
