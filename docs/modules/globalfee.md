@@ -221,4 +221,4 @@ Also, the `1stake` in minimum-gas-prices is ignored.
 
 ## References
 
-- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/main/basics/gas-fees.html)
+- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/main/learn/beginner/gas-fees)
