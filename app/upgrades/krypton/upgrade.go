@@ -1,6 +1,8 @@
 package krypton
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -21,8 +23,13 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		auraKeeper.SetOwner(ctx, "")          // TODO
-		auraKeeper.SetBlocklistOwner(ctx, "") // TODO
+		switch ctx.ChainID() {
+		case TestnetChainID:
+			auraKeeper.SetOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
+			auraKeeper.SetBlocklistOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
+		default:
+			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
+		}
 
 		bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
 			Description: "Ondo US Dollar Yield",
