@@ -27,6 +27,9 @@ func CreateUpgradeHandler(
 		case TestnetChainID:
 			auraKeeper.SetOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
 			auraKeeper.SetBlocklistOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
+		case MainnetChainID:
+			auraKeeper.SetOwner(ctx, "")          // TODO
+			auraKeeper.SetBlocklistOwner(ctx, "") // TODO
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}
