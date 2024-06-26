@@ -1,1 +1,0 @@
-- Bump CCTP from [`dc81b3e`](https://github.com/circlefin/noble-cctp/commit/dc81b3e0d566d195c869a213519fcecd38b020a5) to [`86f425e`](https://github.com/circlefin/noble-cctp/commit/86f425e6fac94ff57865dd11b42c95de303e0d96) ([#259](https://github.com/noble-assets/noble/pull/259))

@@ -94,6 +94,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/noble-assets/noble/v5/app/upgrades/krypton"
 	"github.com/noble-assets/noble/v5/cmd"
 	"github.com/noble-assets/noble/v5/docs"
 	"github.com/noble-assets/noble/v5/x/globalfee"
@@ -104,13 +105,17 @@ import (
 	tokenfactorymodulekeeper "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
 
-	cctp "github.com/circlefin/noble-cctp/x/cctp"
+	"github.com/circlefin/noble-cctp/x/cctp"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 
 	"github.com/noble-assets/forwarding/x/forwarding"
 	forwardingkeeper "github.com/noble-assets/forwarding/x/forwarding/keeper"
 	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
+
+	"github.com/noble-assets/aura/x/aura"
+	aurakeeper "github.com/noble-assets/aura/x/aura/keeper"
+	auratypes "github.com/noble-assets/aura/x/aura/types"
 )
 
 const (
@@ -154,6 +159,7 @@ var (
 		cctp.AppModuleBasic{},
 		paramauthorityibc.AppModuleBasic{},
 		forwarding.AppModuleBasic{},
+		aura.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -167,6 +173,7 @@ var (
 		stakingtypes.BondedPoolName:            {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName:         {authtypes.Burner, authtypes.Staking},
 		cctptypes.ModuleName:                   nil,
+		auratypes.ModuleName:                   {authtypes.Burner, authtypes.Minter},
 	}
 )
 
@@ -231,6 +238,7 @@ type App struct {
 	TariffKeeper           tariffkeeper.Keeper
 	CCTPKeeper             *cctpkeeper.Keeper
 	ForwardingKeeper       *forwardingkeeper.Keeper
+	AuraKeeper             *aurakeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -269,7 +277,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
-		cctptypes.StoreKey, forwardingtypes.StoreKey,
+		cctptypes.StoreKey, forwardingtypes.StoreKey, auratypes.ModuleName,
 	)
 	tkeys := sdk.NewTransientStoreKeys(
 		paramstypes.TStoreKey,
@@ -326,13 +334,20 @@ func New(
 		app.MsgServiceRouter(),
 	)
 
+	app.AuraKeeper = aurakeeper.NewKeeper(
+		appCodec,
+		keys[auratypes.ModuleName],
+		"ausdy",
+		nil,
+	)
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
 		app.GetSubspace(banktypes.ModuleName),
 		app.BlockedModuleAccountAddrs(),
-	)
+	).WithSendCoinsRestriction(app.AuraKeeper.SendRestrictionFn)
+	app.AuraKeeper.SetBankKeeper(app.BankKeeper)
 
 	app.StakingKeeper = stakingkeeper.NewKeeper(
 		appCodec,
@@ -548,6 +563,7 @@ func New(
 		tariff.NewAppModule(appCodec, app.TariffKeeper, app.AccountKeeper, app.BankKeeper),
 		cctp.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.CCTPKeeper),
 		forwarding.NewAppModule(app.ForwardingKeeper),
+		aura.NewAppModule(app.AuraKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -580,6 +596,7 @@ func New(
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
 		forwardingtypes.ModuleName,
+		auratypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -607,6 +624,7 @@ func New(
 		tarifftypes.ModuleName,
 		cctptypes.ModuleName,
 		forwardingtypes.ModuleName,
+		auratypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -639,6 +657,7 @@ func New(
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
 		forwardingtypes.ModuleName,
+		auratypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -876,6 +895,16 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 }
 
 func (app *App) setupUpgradeHandlers() {
+	app.UpgradeKeeper.SetUpgradeHandler(
+		krypton.UpgradeName,
+		krypton.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
+			app.AuraKeeper,
+			app.BankKeeper,
+		),
+	)
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -887,6 +916,8 @@ func (app *App) setupUpgradeHandlers() {
 	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
+	case krypton.UpgradeName:
+		storeLoader = krypton.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {

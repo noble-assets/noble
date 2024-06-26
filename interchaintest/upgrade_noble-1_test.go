@@ -114,6 +114,29 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			emergency: true,
 			image:     ghcrImage("v4.0.3"),
 		},
+		{
+			// fusion is a minor release to the v4 argon line, that introduced a new forwarding module.
+			// v4.1.0 was retracted due to a consensus failure, and so we use v4.1.1.
+			upgradeName: "fusion",
+			image:       ghcrImage("v4.1.1"),
+		},
+		{
+			// v4.1.2 is a patch release that upgraded one core dependency.
+			// It is consensus breaking, and therefore is applied as an emergency upgrade.
+			emergency: true,
+			image:     ghcrImage("v4.1.2"),
+		},
+		{
+			// v4.1.3 is a patch release that upgraded one core dependency.
+			// It is consensus breaking, and therefore is applied as an emergency upgrade.
+			emergency: true,
+			image:     ghcrImage("v4.1.3"),
+		},
+		{
+			// krypton is a major release that introduced the aura module.
+			upgradeName: "krypton",
+			image:       nobleImageInfo[0],
+		},
 	}
 
 	testNobleChainUpgrade(t, "noble-1", genesis, denomMetadataFrienzies, numValidators, numFullNodes, upgrades)
