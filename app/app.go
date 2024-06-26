@@ -105,7 +105,7 @@ import (
 	tokenfactorymodulekeeper "github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
 	tokenfactorymoduletypes "github.com/noble-assets/noble/v5/x/tokenfactory/types"
 
-	cctp "github.com/circlefin/noble-cctp/x/cctp"
+	"github.com/circlefin/noble-cctp/x/cctp"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 
@@ -900,6 +900,8 @@ func (app *App) setupUpgradeHandlers() {
 		krypton.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.AuraKeeper,
+			app.BankKeeper,
 		),
 	)
 

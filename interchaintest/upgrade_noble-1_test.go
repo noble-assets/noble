@@ -133,6 +133,7 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			image:     ghcrImage("v4.1.3"),
 		},
 		{
+			// krypton is a major release that introduced the aura module.
 			upgradeName: "krypton",
 			image:       nobleImageInfo[0],
 		},
