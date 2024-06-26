@@ -125,7 +125,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		{
 			// fusion is a new release candidate that introduced audit fixes.
 			upgradeName: "fusion",
-			image:       ghcrImage("v4.1.0"),
+			image:       ghcrImage("v4.1.0-rc.4"),
 		},
 		{
 			// v4.1.1 is a patch release that resolved a consensus failure.

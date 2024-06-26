@@ -963,8 +963,8 @@ github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
 github.com/noble-assets/aura v0.0.0-20240626070642-d44856855756 h1:fi7ZrsKbcJ8Cte624tdTTw+x65eBtGLNjBgePGBhjQA=
 github.com/noble-assets/aura v0.0.0-20240626070642-d44856855756/go.mod h1:rZ7GxJm+p1nSIwolLf05l9jRgmEbpmPQf7N4Nw6i9VA=
-github.com/noble-assets/cosmos-sdk v0.45.17-0.20240525075530-8fac7fa77ac6 h1:OQaEHkr9WFtqM08NBFdYtazuH/OAreBhclte3QOekvc=
-github.com/noble-assets/cosmos-sdk v0.45.17-0.20240525075530-8fac7fa77ac6/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
+github.com/noble-assets/cosmos-sdk v0.45.17-0.20240626105200-928be03f1633 h1:ogvlGIWP3oTRqDSRV4V+QJAiQD0Sk+7iHMrtlZmgCno=
+github.com/noble-assets/cosmos-sdk v0.45.17-0.20240626105200-928be03f1633/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
 github.com/noble-assets/forwarding v1.1.0 h1:2TXBs2Y9vWqgHyDKtdcHht6i7OT+pLaVHE3bPvfpmJY=
 github.com/noble-assets/forwarding v1.1.0/go.mod h1:o64ZfzCHteRDhOlkpi7GeKAcjlcbWUihC7Y34Er2/3U=
 github.com/nunnatsa/ginkgolinter v0.14.0 h1:XQPNmw+kZz5cC/HbFK3mQutpjzAQv1dHregRA+4CGGg=
