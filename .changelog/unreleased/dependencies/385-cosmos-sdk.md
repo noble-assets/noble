@@ -1,0 +1,1 @@
+- Switch to Noble's Cosmos SDK fork ([`v0.45.16-send-restrictions`](https://github.com/noble-assets/cosmos-sdk/releases/tag/v0.45.16-send-restrictions)) that supports send restrictions. ([#385](https://github.com/noble-assets/noble/pull/385))
