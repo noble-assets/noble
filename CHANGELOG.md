@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## v5.0.0
+
+*Jul 5, 2024*
+
+This is the Krypton major release of Noble. It introduces a new `x/aura` module
+that enables the native issuance of [Ondo's US Dollar Yield (**USDY**)][usdy]
+asset. USDY is a tokenized note secured by short-term US Treasuries and bank
+demand deposits.
+
+Other notable changes are documented below.
+
+[usdy]: https://ondo.finance/usdy
+
+### DEPENDENCIES
+
+- Switch to Noble's Cosmos SDK fork ([`v0.45.16-send-restrictions`](https://github.com/noble-assets/cosmos-sdk/releases/tag/v0.45.16-send-restrictions)) that supports send restrictions. ([#385](https://github.com/noble-assets/noble/pull/385))
+
+### FEATURES
+
+- Update the default `commit_timeout` to `500ms` to improve block time. ([#380](https://github.com/noble-assets/noble/pull/380))
+
+### IMPROVEMENTS
+
+- Update module path for v5 release line. ([#271](https://github.com/noble-assets/noble/pull/271))
+
 ## v4.1.3
 
 *May 10, 2024*
