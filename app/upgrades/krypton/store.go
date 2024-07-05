@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	auratypes "github.com/noble-assets/aura/x/aura/types"
+	auratypes "github.com/ondoprotocol/usdy-noble/x/aura/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {

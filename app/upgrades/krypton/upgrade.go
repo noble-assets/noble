@@ -8,7 +8,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	aurakeeper "github.com/noble-assets/aura/x/aura/keeper"
+	aurakeeper "github.com/ondoprotocol/usdy-noble/x/aura/keeper"
 )
 
 func CreateUpgradeHandler(
@@ -28,8 +28,8 @@ func CreateUpgradeHandler(
 			auraKeeper.SetOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
 			auraKeeper.SetBlocklistOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
 		case MainnetChainID:
-			auraKeeper.SetOwner(ctx, "")          // TODO
-			auraKeeper.SetBlocklistOwner(ctx, "") // TODO
+			auraKeeper.SetOwner(ctx, "noble1t6ypyedl6ggvvlgx3cn6jvy9xpr3p2395m2dg5")
+			auraKeeper.SetBlocklistOwner(ctx, "noble1t6ypyedl6ggvvlgx3cn6jvy9xpr3p2395m2dg5")
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}

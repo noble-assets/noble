@@ -113,9 +113,9 @@ import (
 	forwardingkeeper "github.com/noble-assets/forwarding/x/forwarding/keeper"
 	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
 
-	"github.com/noble-assets/aura/x/aura"
-	aurakeeper "github.com/noble-assets/aura/x/aura/keeper"
-	auratypes "github.com/noble-assets/aura/x/aura/types"
+	"github.com/ondoprotocol/usdy-noble/x/aura"
+	aurakeeper "github.com/ondoprotocol/usdy-noble/x/aura/keeper"
+	auratypes "github.com/ondoprotocol/usdy-noble/x/aura/types"
 )
 
 const (
