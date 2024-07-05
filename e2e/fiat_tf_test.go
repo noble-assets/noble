@@ -25,10 +25,8 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 	noble := nw.chain
 	val := noble.Validators[0]
 
-	// ACTION: Update Master Minter while TF is paused
+	// ACTION: Happy Path: Update Master Minter
 	// EXPECTED: Success; Master Minter updated
-
-	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "new-masterMinter-1", math.OneInt(), noble)
 	newMM1 := w[0]
@@ -45,30 +43,15 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 	}
 	require.Equal(t, expectedGetMasterMinterResponse.MasterMinter, showMMRes.MasterMinter)
 
-	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
-
-	// ACTION: Update Master Minter from non owner account
-	// EXPECTED: Request fails; Master Minter not updated
-	// Status:
-	// 	Master Minter: newMM1
-
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
-	newMM2 := w[0]
-	alice := w[1]
-
-	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "update-master-minter", newMM2.FormattedAddress())
-	require.ErrorContains(t, err, "you are not the owner: unauthorized")
-
-	showMMRes, err = showMasterMinter(ctx, val)
-	require.NoError(t, err, "failed to query show-master-minter")
-	require.Equal(t, expectedGetMasterMinterResponse.MasterMinter, showMMRes.MasterMinter)
-
-	// ACTION: Update Master Minter from blacklisted owner account
+	// ACTION: Update Master Minter while TF is paused
 	// EXPECTED: Success; Master Minter updated
 	// Status:
 	// 	Master Minter: newMM1
 
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.Owner)
+	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-masterMinter-2", math.OneInt(), noble)
+	newMM2 := w[0]
 
 	_, err = val.ExecTx(ctx, nw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-master-minter", newMM2.FormattedAddress())
 	require.NoError(t, err, "failed to broadcast update-master-minter message")
@@ -80,20 +63,32 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 			Address: string(newMM2.FormattedAddress()),
 		},
 	}
-
 	require.Equal(t, expectedGetMasterMinterResponse.MasterMinter, showMMRes.MasterMinter)
 
-	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.Owner)
+	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
-	// ACTION: Update Master Minter to blacklisted Master Minter account
+	// ACTION: Update Master Minter from non owner account
+	// EXPECTED: Request fails; Master Minter not updated
+	// Status:
+	// 	Master Minter: newMM2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
+	newMM3 := w[0]
+	alice := w[1]
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "update-master-minter", newMM3.FormattedAddress())
+	require.ErrorContains(t, err, "you are not the owner: unauthorized")
+
+	showMMRes, err = showMasterMinter(ctx, val)
+	require.NoError(t, err, "failed to query show-master-minter")
+	require.Equal(t, expectedGetMasterMinterResponse.MasterMinter, showMMRes.MasterMinter)
+
+	// ACTION: Update Master Minter from blacklisted owner account
 	// EXPECTED: Success; Master Minter updated
 	// Status:
 	// 	Master Minter: newMM2
 
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-mm-3", math.OneInt(), noble)
-	newMM3 := w[0]
-
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, newMM3)
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.Owner)
 
 	_, err = val.ExecTx(ctx, nw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-master-minter", newMM3.FormattedAddress())
 	require.NoError(t, err, "failed to broadcast update-master-minter message")
@@ -103,6 +98,31 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 	expectedGetMasterMinterResponse = fiattokenfactorytypes.QueryGetMasterMinterResponse{
 		MasterMinter: fiattokenfactorytypes.MasterMinter{
 			Address: string(newMM3.FormattedAddress()),
+		},
+	}
+
+	require.Equal(t, expectedGetMasterMinterResponse.MasterMinter, showMMRes.MasterMinter)
+
+	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.Owner)
+
+	// ACTION: Update Master Minter to blacklisted Master Minter account
+	// EXPECTED: Success; Master Minter updated
+	// Status:
+	// 	Master Minter: newMM3
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-mm-3", math.OneInt(), noble)
+	newMM4 := w[0]
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, newMM4)
+
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-master-minter", newMM4.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-master-minter message")
+
+	showMMRes, err = showMasterMinter(ctx, val)
+	require.NoError(t, err, "failed to query show-master-minter")
+	expectedGetMasterMinterResponse = fiattokenfactorytypes.QueryGetMasterMinterResponse{
+		MasterMinter: fiattokenfactorytypes.MasterMinter{
+			Address: string(newMM4.FormattedAddress()),
 		},
 	}
 	require.Equal(t, expectedGetMasterMinterResponse.MasterMinter, showMMRes.MasterMinter)
@@ -120,15 +140,12 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	noble := nw.chain
 	val := noble.Validators[0]
 
-	// ACTION: Configure Minter Controller while TF is paused
+	// ACTION: Happy path: Configure Minter Controller
 	// EXPECTED: Success; Minter Controller is configured with Minter
 
-	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", math.OneInt(), noble)
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", math.OneInt(), noble, noble)
 	minterController1 := w[0]
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-1", math.OneInt(), noble)
-	minter1 := w[0]
-
-	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+	minter1 := w[1]
 
 	_, err := val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter1.FormattedAddress())
 	require.NoError(t, err, "error configuring minter controller")
@@ -143,32 +160,16 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	}
 	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
 
-	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
-
-	// ACTION: Configure Minter Controller from non Master Minter account
-	// EXPECTED: Request fails; Minter Controller not configured with Minter
-	// Status:
-	// 	minterController1 -> minter1
-
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble, noble)
-	minterController2 := w[0]
-	minter2 := w[1]
-	alice := w[2]
-
-	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController2.FormattedAddress(), minter2.FormattedAddress())
-	require.ErrorContains(t, err, "you are not the master minter: unauthorized")
-
-	_, err = showMinterController(ctx, val, minterController2)
-	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
-
-	// ACTION: Configure a blacklisted Minter Controller and Minter from blacklisted Master Minter account
+	// ACTION: Configure Minter Controller while TF is paused
 	// EXPECTED: Success; Minter Controller is configured with Minter
 	// Status:
 	// 	minterController1 -> minter1
 
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MasterMinter)
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, minterController2)
-	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, minter2)
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
+	minterController2 := w[0]
+	minter2 := w[1]
+
+	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
 	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController2.FormattedAddress(), minter2.FormattedAddress())
 	require.NoError(t, err, "error configuring minter controller")
@@ -183,6 +184,47 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	}
 	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
 
+	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	// ACTION: Configure Minter Controller from non Master Minter account
+	// EXPECTED: Request fails; Minter Controller not configured with Minter
+	// Status:
+	// 	minterController1 -> minter1
+	// 	minterController2 -> minter2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble, noble)
+	minterController3 := w[0]
+	minter3 := w[1]
+	alice := w[2]
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController3.FormattedAddress(), minter3.FormattedAddress())
+	require.ErrorContains(t, err, "you are not the master minter: unauthorized")
+
+	_, err = showMinterController(ctx, val, minterController3)
+	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
+
+	// ACTION: Configure a blacklisted Minter Controller and Minter from blacklisted Master Minter account
+	// EXPECTED: Success; Minter Controller is configured with Minter
+	// Status:
+	// 	minterController2 -> minter2
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MasterMinter)
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, minterController2)
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, minter2)
+
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController3.FormattedAddress(), minter3.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	showMCRes, err = showMinterController(ctx, val, minterController3)
+	require.NoError(t, err, "failed to query show-minter-controller")
+	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     minter3.FormattedAddress(),
+			Controller: minterController3.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
+
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MasterMinter)
 
 	// ACTION: Configure an already configured Minter Controller with a new Minter
@@ -191,6 +233,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	// Status:
 	// 	minterController1 -> minter1
 	// 	minterController2 -> minter2
+	//  minterController3 -> minter3
 
 	// configuring minter1 to ensure allowance stays the same after assigning minterController1 a new minter
 	_, err = val.ExecTx(ctx, minterController1.KeyName(), "fiat-tokenfactory", "configure-minter", minter1.FormattedAddress(), "1uusdc")
@@ -209,17 +252,17 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	}
 	require.Equal(t, expectedShowMinters.Minters, showMinterPreUpdateMinterController.Minters, "configured minter and or allowance is not as expected")
 
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-3", math.OneInt(), noble)
-	minter3 := w[0]
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-4", math.OneInt(), noble)
+	minter4 := w[0]
 
-	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter3.FormattedAddress())
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController1.FormattedAddress(), minter4.FormattedAddress())
 	require.NoError(t, err, "error configuring minter controller")
 
 	showMCRes, err = showMinterController(ctx, val, minterController1)
 	require.NoError(t, err, "failed to query show-minter-controller")
 	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
 		MinterController: fiattokenfactorytypes.MinterController{
-			Minter:     minter3.FormattedAddress(),
+			Minter:     minter4.FormattedAddress(),
 			Controller: minterController1.FormattedAddress(),
 		},
 	}
@@ -232,21 +275,23 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	// ACTION:- Configure an already configured Minter to another Minter Controller
 	// EXPECTED: Success; Minter Controller is configured with new Minter. Minter can have multiple Minter Controllers.
 	// Status:
-	// 	minterController1 -> minter3
+	// 	minterController1 -> minter4
 	// 	minterController2 -> minter2
+	// 	minterController3 -> minter3
+	//  minter1 dissociated from minter but has allowance
 
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-3", math.OneInt(), noble)
-	minterController3 := w[0]
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-4", math.OneInt(), noble)
+	minterController4 := w[0]
 
-	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController3.FormattedAddress(), minter3.FormattedAddress())
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController4.FormattedAddress(), minter4.FormattedAddress())
 	require.NoError(t, err, "error configuring minter controller")
 
-	showMCRes, err = showMinterController(ctx, val, minterController3)
+	showMCRes, err = showMinterController(ctx, val, minterController4)
 	require.NoError(t, err, "failed to query show-minter-controller")
 	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
 		MinterController: fiattokenfactorytypes.MinterController{
-			Minter:     minter3.FormattedAddress(),
-			Controller: minterController3.FormattedAddress(),
+			Minter:     minter4.FormattedAddress(),
+			Controller: minterController4.FormattedAddress(),
 		},
 	}
 	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
@@ -255,7 +300,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	require.NoError(t, err, "failed to query show-minter-controller")
 	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
 		MinterController: fiattokenfactorytypes.MinterController{
-			Minter:     minter3.FormattedAddress(),
+			Minter:     minter4.FormattedAddress(),
 			Controller: minterController1.FormattedAddress(),
 		},
 	}
@@ -274,7 +319,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 				Controller: nw.fiatTfRoles.MinterController.FormattedAddress(),
 			},
 			{
-				Minter:     minter3.FormattedAddress(),
+				Minter:     minter4.FormattedAddress(),
 				Controller: minterController1.FormattedAddress(),
 			},
 			{
@@ -284,6 +329,10 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 			{
 				Minter:     minter3.FormattedAddress(),
 				Controller: minterController3.FormattedAddress(),
+			},
+			{
+				Minter:     minter4.FormattedAddress(),
+				Controller: minterController4.FormattedAddress(),
 			},
 		},
 	}
@@ -303,12 +352,35 @@ func TestFiatTFRemoveMinterController(t *testing.T) {
 	noble := nw.chain
 	val := noble.Validators[0]
 
+	// ACTION: Happy path: Remove Minter Controller
+	// EXPECTED: Success; Minter Controller is removed
+
+	_, err := val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "remove-minter-controller", nw.fiatTfRoles.MinterController.FormattedAddress())
+	require.NoError(t, err, "error removing minter controller")
+
+	_, err = showMinterController(ctx, val, nw.fiatTfRoles.MinterController)
+	require.Error(t, err, "successfully queried for the minter controller when it should have failed")
+
 	// ACTION: Remove Minter Controller while TF is paused
 	// EXPECTED: Success; Minter Controller is removed
 
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", nw.fiatTfRoles.MinterController.FormattedAddress(), nw.fiatTfRoles.Minter.FormattedAddress())
+	require.NoError(t, err, "error configuring minter controller")
+
+	showMCRes, err := showMinterController(ctx, val, nw.fiatTfRoles.MinterController)
+	require.NoError(t, err, "failed to query show-minter-controller")
+	expectedShowMinterController := fiattokenfactorytypes.QueryGetMinterControllerResponse{
+		MinterController: fiattokenfactorytypes.MinterController{
+			Minter:     nw.fiatTfRoles.Minter.FormattedAddress(),
+			Controller: nw.fiatTfRoles.MinterController.FormattedAddress(),
+		},
+	}
+
+	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
+
 	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
-	_, err := val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "remove-minter-controller", nw.fiatTfRoles.MinterController.FormattedAddress())
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "remove-minter-controller", nw.fiatTfRoles.MinterController.FormattedAddress())
 	require.NoError(t, err, "error removing minter controller")
 
 	_, err = showMinterController(ctx, val, nw.fiatTfRoles.MinterController)
@@ -325,14 +397,8 @@ func TestFiatTFRemoveMinterController(t *testing.T) {
 	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MasterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", nw.fiatTfRoles.MinterController.FormattedAddress(), nw.fiatTfRoles.Minter.FormattedAddress())
 	require.NoError(t, err, "error configuring minter controller")
 
-	showMCRes, err := showMinterController(ctx, val, nw.fiatTfRoles.MinterController)
+	showMCRes, err = showMinterController(ctx, val, nw.fiatTfRoles.MinterController)
 	require.NoError(t, err, "failed to query show-minter-controller")
-	expectedShowMinterController := fiattokenfactorytypes.QueryGetMinterControllerResponse{
-		MinterController: fiattokenfactorytypes.MinterController{
-			Minter:     nw.fiatTfRoles.Minter.FormattedAddress(),
-			Controller: nw.fiatTfRoles.MinterController.FormattedAddress(),
-		},
-	}
 
 	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
 
@@ -341,12 +407,6 @@ func TestFiatTFRemoveMinterController(t *testing.T) {
 
 	showMCRes, err = showMinterController(ctx, val, nw.fiatTfRoles.MinterController)
 	require.NoError(t, err, "failed to query show-minter-controller")
-	expectedShowMinterController = fiattokenfactorytypes.QueryGetMinterControllerResponse{
-		MinterController: fiattokenfactorytypes.MinterController{
-			Minter:     nw.fiatTfRoles.Minter.FormattedAddress(),
-			Controller: nw.fiatTfRoles.MinterController.FormattedAddress(),
-		},
-	}
 
 	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
 
@@ -387,6 +447,11 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 	nw := nobleSpinUp(t, ctx, true)
 	noble := nw.chain
 	val := noble.Validators[0]
+
+	// ACTION: Happy path: Configure minter
+	// EXPECTED: Success; Minter is configured with allowance
+
+	configureMinter(t, ctx, val, nw.fiatTfRoles.MinterController, nw.fiatTfRoles.Minter, 20)
 
 	// ACTION: Configure minter while TF is paused
 	// EXPECTED: Request fails; Minter is not configured
@@ -471,14 +536,26 @@ func TestFiatTFRemoveMinter(t *testing.T) {
 	noble := nw.chain
 	val := noble.Validators[0]
 
+	// ACTION: Happy path: Remove minter
+	// EXPECTED: Success; Minter is removed
+
+	_, err := val.ExecTx(ctx, nw.fiatTfRoles.MinterController.KeyName(), "fiat-tokenfactory", "remove-minter", nw.fiatTfRoles.Minter.FormattedAddress())
+	require.NoError(t, err, "error broadcasting removing minter")
+
+	_, err = showMinters(ctx, val, nw.fiatTfRoles.Minter)
+	require.Error(t, err, "minter found; not successfully removed")
+
 	// ACTION: Remove minter while TF is paused
 	// EXPECTED: Success; Minter is removed
 
 	allowance := int64(10)
 
+	// reconfigure minter
+	configureMinter(t, ctx, val, nw.fiatTfRoles.MinterController, nw.fiatTfRoles.Minter, allowance)
+
 	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
-	_, err := val.ExecTx(ctx, nw.fiatTfRoles.MinterController.KeyName(), "fiat-tokenfactory", "remove-minter", nw.fiatTfRoles.Minter.FormattedAddress())
+	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MinterController.KeyName(), "fiat-tokenfactory", "remove-minter", nw.fiatTfRoles.Minter.FormattedAddress())
 	require.NoError(t, err, "error broadcasting removing minter")
 
 	_, err = showMinters(ctx, val, nw.fiatTfRoles.Minter)
