@@ -143,7 +143,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	// ACTION: Happy path: Configure Minter Controller
 	// EXPECTED: Success; Minter Controller is configured with Minter
 
-	w := interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-1", math.OneInt(), noble, noble)
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
 	minterController1 := w[0]
 	minter1 := w[1]
 
@@ -513,11 +513,13 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 	}
 	require.Equal(t, expectedShowMinters.Minters, showMintersRes.Minters, "configured minter allowance is not as expected")
 
-	// ACTION: Configure a minter that is blacklisted
+	// ACTION: Configure a minter is blacklisted from a blacklisted minter controller
 	// EXPECTED: Success; Minter is configured with allowance
 	// Status:
 	// minterController1 -> minter1
 	// gw minterController -> gw minter
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, minterController1)
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, minter1)
 
@@ -590,13 +592,15 @@ func TestFiatTFRemoveMinter(t *testing.T) {
 	}
 	require.Equal(t, expectedShowMinters.Minters, showMintersRes.Minters)
 
-	// ACTION: Remove minter from a blacklisted minter controller
+	// ACTION: Remove blacklisted minter from a blacklisted minter controller
 	// EXPECTED: Success; Minter is removed
 	// Status:
 	// 	gw minterController -> gw minter
 	// 	minterController1 -> minter1
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MinterController)
+
+	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.Minter)
 
 	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MinterController.KeyName(), "fiat-tokenfactory", "remove-minter", nw.fiatTfRoles.Minter.FormattedAddress())
 	require.NoError(t, err, "error broadcasting removing minter")
