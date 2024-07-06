@@ -142,6 +142,7 @@ func TestFiatTFBlacklist(t *testing.T) {
 	var preFailedBlacklist, postFailedBlacklist fiattokenfactorytypes.QueryAllBlacklistedResponse
 	_ = json.Unmarshal(res, &preFailedBlacklist)
 	// ignore the error since `pagination` does not unmarshal)
+	require.NotContains(t, preFailedBlacklist.Blacklisted, toBlacklist2.Address())
 
 	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist2.FormattedAddress())
 	require.ErrorContains(t, err, "you are not the blacklister: unauthorized")
