@@ -490,12 +490,13 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 	// ACTION: Configure minter from a minter controller not associated with the minter
 	// EXPECTED: Request fails; Minter is not configured with new Minter Controller but old Minter retains its allowance
 	// Status:
-	// minterController1 -> minter1 (un-configured)
-	// gw minterController -> gw minter
+	// 	minterController1 -> minter1 (un-configured)
+	// 	gw minterController -> gw minter
 
-	// reconfigure minter to ensure balance does not change
+	// reconfigure minter1 to ensure balance does not change
 	configureMinter(t, ctx, val, minterController1, minter1, allowance)
 
+	// reconfigure minter1 with a new allownace from a minter controller not associated with the minter
 	differentAllowance := allowance + 99
 	_, err = val.ExecTx(ctx, nw.fiatTfRoles.MinterController.KeyName(), "fiat-tokenfactory", "configure-minter", minter1.FormattedAddress(), fmt.Sprintf("%duusdc", differentAllowance))
 	require.ErrorContains(t, err, "minter address ≠ minter controller's minter address")
