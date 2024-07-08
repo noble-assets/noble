@@ -206,6 +206,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	// ACTION: Configure a blacklisted Minter Controller and Minter from blacklisted Master Minter account
 	// EXPECTED: Success; Minter Controller is configured with Minter
 	// Status:
+	//  minterController1 -> minter1
 	// 	minterController2 -> minter2
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.MasterMinter)
