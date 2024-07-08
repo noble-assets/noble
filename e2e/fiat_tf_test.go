@@ -196,14 +196,10 @@ func TestFiatTFUnpause(t *testing.T) {
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, nw.fiatTfRoles.Pauser)
 
-	// ACTION: Unpause TF while TF is already paused
+	// ACTION: Unpause TF while TF is already unpaused
 	// EXPECTED: Success; TF remains unpaused
 	// Status:
 	// 	Paused: false
-
-	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
-
-	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
 	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 }
