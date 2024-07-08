@@ -32,20 +32,24 @@ func TestFiatTFAuth(t *testing.T) {
 	alice := w[0] // 1ustake
 	bob := w[1]   // 1ustake
 
-	mintAmount := 100
+	mintAmount := int64(100)
 	_, err := val.ExecTx(ctx, nw.fiatTfRoles.Minter.KeyName(), "fiat-tokenfactory", "mint", alice.FormattedAddress(), fmt.Sprintf("%duusdc", mintAmount))
 	require.NoError(t, err)
 
 	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
 	sendAmount := 1
-	uusdcFee := 5
+	uusdcFee := int64(5)
 	_, err = val.ExecTx(ctx, alice.KeyName(), "bank", "send", alice.KeyName(), bob.FormattedAddress(), fmt.Sprintf("%dustake", sendAmount), "--fees", fmt.Sprintf("%duusdc", uusdcFee))
 	require.ErrorContains(t, err, "the chain is paused")
 
-	bal, err := noble.GetBalance(ctx, alice.FormattedAddress(), "ustake")
+	uStakebal, err := noble.GetBalance(ctx, alice.FormattedAddress(), "ustake")
 	require.NoError(t, err)
-	require.Equal(t, originalAmount, bal)
+	require.Equal(t, originalAmount, uStakebal)
+
+	uusdcBal, err := noble.GetBalance(ctx, alice.FormattedAddress(), "uusdc")
+	require.NoError(t, err)
+	require.Equal(t, math.NewInt(mintAmount), uusdcBal)
 
 	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
@@ -57,9 +61,13 @@ func TestFiatTFAuth(t *testing.T) {
 	_, err = val.ExecTx(ctx, alice.KeyName(), "bank", "send", alice.KeyName(), bob.FormattedAddress(), fmt.Sprintf("%dustake", sendAmount), "--fees", fmt.Sprintf("%duusdc", uusdcFee))
 	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not send tokens: unauthorized", alice.FormattedAddress()))
 
-	bal, err = noble.GetBalance(ctx, alice.FormattedAddress(), "ustake")
+	bal, err := noble.GetBalance(ctx, alice.FormattedAddress(), "ustake")
 	require.NoError(t, err)
 	require.Equal(t, originalAmount, bal)
+
+	uusdcBal, err = noble.GetBalance(ctx, alice.FormattedAddress(), "uusdc")
+	require.NoError(t, err)
+	require.Equal(t, math.NewInt(mintAmount), uusdcBal)
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, alice)
 
