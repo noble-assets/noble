@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
 	"github.com/spf13/cobra"
 )
 

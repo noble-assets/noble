@@ -12,10 +12,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/noble-assets/noble/v5/testutil/network"
-	"github.com/noble-assets/noble/v5/testutil/nullify"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/client/cli"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v6/testutil/network"
+	"github.com/noble-assets/noble/v6/testutil/nullify"
+	"github.com/noble-assets/noble/v6/x/tokenfactory/client/cli"
+	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
 )
 
 // Prevent strconv unused error
