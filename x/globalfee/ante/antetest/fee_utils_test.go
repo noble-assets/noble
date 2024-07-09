@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/noble-assets/noble/v5/x/globalfee/ante"
+	"github.com/noble-assets/noble/v6/x/globalfee/ante"
 )
 
 type feeUtilsTestSuite struct {

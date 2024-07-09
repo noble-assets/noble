@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/noble-assets/noble/v5/app"
-	"github.com/noble-assets/noble/v5/cmd"
+	"github.com/noble-assets/noble/v6/app"
+	"github.com/noble-assets/noble/v6/cmd"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"

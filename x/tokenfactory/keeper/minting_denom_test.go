@@ -6,10 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/noble-assets/noble/v5/testutil/keeper"
-	"github.com/noble-assets/noble/v5/testutil/nullify"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/keeper"
-	"github.com/noble-assets/noble/v5/x/tokenfactory/types"
+	keepertest "github.com/noble-assets/noble/v6/testutil/keeper"
+	"github.com/noble-assets/noble/v6/testutil/nullify"
+	"github.com/noble-assets/noble/v6/x/tokenfactory/keeper"
+	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
 )
 
 func createTestMintingDenom(keeper *keeper.Keeper, ctx sdk.Context) types.MintingDenom {

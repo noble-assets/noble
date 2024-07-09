@@ -12,7 +12,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	"github.com/noble-assets/forwarding/x/forwarding"
 	forwardingkeeper "github.com/noble-assets/forwarding/x/forwarding/keeper"
-	feeante "github.com/noble-assets/noble/v5/x/globalfee/ante"
+	feeante "github.com/noble-assets/noble/v6/x/globalfee/ante"
 )
 
 type HandlerOptions struct {

@@ -1,4 +1,4 @@
-module github.com/noble-assets/noble/v5
+module github.com/noble-assets/noble/v6
 
 go 1.21
 

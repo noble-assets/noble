@@ -1,8 +1,8 @@
 package tariff
 
 import (
-	"github.com/noble-assets/noble/v5/x/tariff/keeper"
-	"github.com/noble-assets/noble/v5/x/tariff/types"
+	"github.com/noble-assets/noble/v6/x/tariff/keeper"
+	"github.com/noble-assets/noble/v6/x/tariff/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
