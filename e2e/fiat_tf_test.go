@@ -42,6 +42,10 @@ func TestFiatTFIBCOut(t *testing.T) {
 	require.NoError(t, err)
 	gaiaToNobleChannelID := gaiaToNobleChannelInfo[0].ChannelID
 
+	// uusdc IBC denom on gaia
+	srcDenomTrace := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", gaiaToNobleChannelID, denomMetadataUsdc.Base))
+	dstIbcDenom := srcDenomTrace.IBCDenom()
+
 	amountToSend := math.NewInt(5)
 	transfer := ibc.WalletAmount{
 		Address: gaiaWallet.FormattedAddress(),
@@ -60,10 +64,6 @@ func TestFiatTFIBCOut(t *testing.T) {
 
 	// relay MsgRecvPacket & MsgAcknowledgement
 	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, nobleToGaiaChannelID))
-
-	// uusdc IBC denom on gaia
-	srcDenomTrace := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", gaiaToNobleChannelID, denomMetadataUsdc.Base))
-	dstIbcDenom := srcDenomTrace.IBCDenom()
 
 	gaiaWalletBal, err := gaia.GetBalance(ctx, gaiaWallet.FormattedAddress(), dstIbcDenom)
 	require.NoError(t, err)
