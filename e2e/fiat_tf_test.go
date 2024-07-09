@@ -202,16 +202,12 @@ func TestFiatTFAuthzSend(t *testing.T) {
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, granter)
 
-	preSendBal := bal
-
 	_, err = val.AuthzExec(ctx, grantee, nestedCmd)
 	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not send tokens: unauthorized", granter.FormattedAddress()))
 
 	bal, err = noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
 	require.True(t, bal.IsZero())
-	// bal should not change
-	// require.Equal(t, preSendBal, bal)
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, granter)
 
@@ -222,15 +218,12 @@ func TestFiatTFAuthzSend(t *testing.T) {
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, receiver)
 
-	preSendBal = bal
-
 	_, err = val.AuthzExec(ctx, grantee, nestedCmd)
 	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not receive tokens: unauthorized", receiver.FormattedAddress()))
 
 	bal, err = noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
-	// bal should not change
-	require.Equal(t, preSendBal, bal)
+	require.True(t, bal.IsZero())
 
 	unblacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, receiver)
 
@@ -241,15 +234,12 @@ func TestFiatTFAuthzSend(t *testing.T) {
 
 	pauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
 
-	preSendBal = bal
-
 	_, err = val.AuthzExec(ctx, grantee, nestedCmd)
 	require.ErrorContains(t, err, "the chain is paused")
 
 	bal, err = noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
-	// bal should not change
-	require.Equal(t, preSendBal, bal)
+	require.True(t, bal.IsZero())
 }
 
 func TestFiatTFBankSend(t *testing.T) {
