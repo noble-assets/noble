@@ -165,7 +165,7 @@ func TestFiatTFAuthzSend(t *testing.T) {
 	require.NoError(t, err)
 	require.Zero(t, res.Code)
 
-	sendAmount := 5
+	sendAmount := int64(5)
 	nestedCmd := []string{
 		noble.Config().Bin,
 		"tx", "bank", "send", granter.FormattedAddress(), receiver.FormattedAddress(), fmt.Sprintf("%duusdc", sendAmount),
@@ -240,6 +240,21 @@ func TestFiatTFAuthzSend(t *testing.T) {
 	bal, err = noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
 	require.True(t, bal.IsZero())
+
+	unpauseFiatTF(t, ctx, val, nw.fiatTfRoles.Pauser)
+
+	// ACTION: Happy path: Execute an authz SEND using a TF token
+	// EXPECTED: Success; authz send is successful.
+	// Status:
+	// 	Granter1 has authorized Grantee1 to send 100usdc from their wallet
+
+	_, err = val.AuthzExec(ctx, grantee, nestedCmd)
+	require.NoError(t, err)
+
+	bal, err = noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
+	require.NoError(t, err)
+	require.Equal(t, math.NewInt(sendAmount), bal)
+
 }
 
 func TestFiatTFBankSend(t *testing.T) {
