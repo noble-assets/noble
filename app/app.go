@@ -94,7 +94,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/noble-assets/noble/v6/app/upgrades/krypton"
+	"github.com/noble-assets/noble/v6/app/upgrades/xenon"
 	"github.com/noble-assets/noble/v6/cmd"
 	"github.com/noble-assets/noble/v6/docs"
 	"github.com/noble-assets/noble/v6/x/globalfee"
@@ -932,11 +932,12 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 func (app *App) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		krypton.UpgradeName,
-		krypton.CreateUpgradeHandler(
+		xenon.UpgradeName,
+		xenon.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
-			app.AuraKeeper,
+			app.HaloKeeper,
+			app.FlorinKeeper,
 			app.BankKeeper,
 		),
 	)
@@ -952,8 +953,8 @@ func (app *App) setupUpgradeHandlers() {
 	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
-	case krypton.UpgradeName:
-		storeLoader = krypton.CreateStoreLoader(upgradeInfo.Height)
+	case xenon.UpgradeName:
+		storeLoader = xenon.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {

@@ -1,15 +1,16 @@
-package krypton
+package xenon
 
 import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	auratypes "github.com/ondoprotocol/usdy-noble/x/aura/types"
+	florintypes "github.com/noble-assets/florin/x/florin/types"
+	halotypes "github.com/noble-assets/halo/x/halo/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 	storeUpgrades := storetypes.StoreUpgrades{
-		Added: []string{auratypes.ModuleName},
+		Added: []string{halotypes.ModuleName, florintypes.ModuleName},
 	}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
