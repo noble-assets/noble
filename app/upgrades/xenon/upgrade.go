@@ -70,7 +70,11 @@ func CreateUpgradeHandler(
 		switch ctx.ChainID() {
 		case TestnetChainID:
 			halokeeper.SetOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			halokeeper.SetAggregatorOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			halokeeper.SetEntitlementsOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+
 			florinkeeper.SetOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
+			florinkeeper.SetBlacklistOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
 		case MainnetChainID:
 			halokeeper.SetOwner(ctx, "")   // TODO
 			florinkeeper.SetOwner(ctx, "") // TODO
