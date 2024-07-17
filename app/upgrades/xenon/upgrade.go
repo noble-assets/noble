@@ -15,7 +15,7 @@ import (
 var (
 	// TODO: Verify denom metadata
 
-	eureMetaData = banktypes.Metadata{
+	eureMetadata = banktypes.Metadata{
 		Description: "Regulated Euro Stablecoin",
 		DenomUnits: []*banktypes.DenomUnit{
 			{
@@ -34,7 +34,7 @@ var (
 		Symbol:  "EURe",
 	}
 
-	usycMetaData = banktypes.Metadata{
+	usycMetadata = banktypes.Metadata{
 		Description: "",
 		DenomUnits: []*banktypes.DenomUnit{
 			{
@@ -57,8 +57,8 @@ var (
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
-	halokeeper *halokeeper.Keeper,
-	florinkeeper *florinkeeper.Keeper,
+	haloKeeper *halokeeper.Keeper,
+	florinKeeper *florinkeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -69,21 +69,25 @@ func CreateUpgradeHandler(
 
 		switch ctx.ChainID() {
 		case TestnetChainID:
-			halokeeper.SetOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
-			halokeeper.SetAggregatorOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
-			halokeeper.SetEntitlementsOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			haloKeeper.SetOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			haloKeeper.SetAggregatorOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			haloKeeper.SetEntitlementsOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
 
-			florinkeeper.SetOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
-			florinkeeper.SetBlacklistOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
+			florinKeeper.SetOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
+			florinKeeper.SetBlacklistOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
 		case MainnetChainID:
-			halokeeper.SetOwner(ctx, "")   // TODO
-			florinkeeper.SetOwner(ctx, "") // TODO
+			haloKeeper.SetOwner(ctx, "")             // TODO
+			haloKeeper.SetAggregatorOwner(ctx, "")   // TODO
+			haloKeeper.SetEntitlementsOwner(ctx, "") // TODO
+
+			florinKeeper.SetOwner(ctx, "")          // TODO
+			florinKeeper.SetBlacklistOwner(ctx, "") // TODO
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}
 
-		bankKeeper.SetDenomMetaData(ctx, eureMetaData)
-		bankKeeper.SetDenomMetaData(ctx, usycMetaData)
+		bankKeeper.SetDenomMetaData(ctx, eureMetadata)
+		bankKeeper.SetDenomMetaData(ctx, usycMetadata)
 
 		return vm, nil
 	}
