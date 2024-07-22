@@ -151,7 +151,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 			image:       ghcrImage("v5.0.0-rc.0"),
 		},
 		{
-			// xenon is a major release that introduced the halo and florin modules.
+			// xenon is a major release that introduced the halo module.
 			upgradeName: "xenon",
 			image:       nobleImageInfo[0],
 		},
