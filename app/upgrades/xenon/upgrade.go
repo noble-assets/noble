@@ -1,4 +1,4 @@
-package krypton
+package xenon
 
 import (
 	"fmt"
@@ -8,13 +8,13 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	aurakeeper "github.com/ondoprotocol/usdy-noble/x/aura/keeper"
+	halokeeper "github.com/noble-assets/halo/x/halo/keeper"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
-	auraKeeper *aurakeeper.Keeper,
+	haloKeeper *halokeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -25,32 +25,34 @@ func CreateUpgradeHandler(
 
 		switch ctx.ChainID() {
 		case TestnetChainID:
-			auraKeeper.SetOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
-			auraKeeper.SetBlocklistOwner(ctx, "noble1mxe0zwwdvjvn8dg2hnep55q4fc7sqmpud9qsqn")
+			haloKeeper.SetOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			haloKeeper.SetAggregatorOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			haloKeeper.SetEntitlementsOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
 		case MainnetChainID:
-			auraKeeper.SetOwner(ctx, "noble1t6ypyedl6ggvvlgx3cn6jvy9xpr3p2395m2dg5")
-			auraKeeper.SetBlocklistOwner(ctx, "noble1t6ypyedl6ggvvlgx3cn6jvy9xpr3p2395m2dg5")
+			haloKeeper.SetOwner(ctx, "")             // TODO
+			haloKeeper.SetAggregatorOwner(ctx, "")   // TODO
+			haloKeeper.SetEntitlementsOwner(ctx, "") // TODO
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}
 
 		bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
-			Description: "Ondo US Dollar Yield",
+			Description: "Hashnote US Yield Coin",
 			DenomUnits: []*banktypes.DenomUnit{
 				{
-					Denom:    "ausdy",
+					Denom:    "uusyc",
 					Exponent: 0,
-					Aliases:  []string{"attousdy"},
+					Aliases:  []string{"microusyc"},
 				},
 				{
-					Denom:    "usdy",
-					Exponent: 18,
+					Denom:    "usyc",
+					Exponent: 6,
 				},
 			},
-			Base:    "ausdy",
-			Display: "usdy",
-			Name:    "Ondo US Dollar Yield",
-			Symbol:  "USDY",
+			Base:    "uusyc",
+			Display: "usyc",
+			Name:    "Hashnote US Yield Coin",
+			Symbol:  "USYC",
 		})
 
 		return vm, nil

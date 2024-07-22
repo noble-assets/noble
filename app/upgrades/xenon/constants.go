@@ -1,7 +1,7 @@
-package krypton
+package xenon
 
 // UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "krypton"
+const UpgradeName = "xenon"
 
 // MainnetChainID is the Chain ID of the Noble mainnet.
 const MainnetChainID = "noble-1"
