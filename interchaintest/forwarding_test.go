@@ -65,6 +65,34 @@ func TestForwarding_RegisterOnNoble(t *testing.T) {
 	require.Equal(t, sdk.NewCoins(sdk.NewCoin("uusdc", sdk.NewInt(1_000_000))), stats.TotalForwarded)
 }
 
+func TestForwarding_RegisterSignerlessly(t *testing.T) {
+	t.Parallel()
+
+	ctx, wrapper, _, _, _, sender, receiver := ForwardingSuite(t)
+	validator := wrapper.chain.Validators[0]
+
+	address, exists := ForwardingAccount(t, ctx, validator, receiver)
+	require.False(t, exists)
+
+	require.NoError(t, validator.SendFunds(ctx, sender.KeyName(), ibc.WalletAmount{
+		Address: address,
+		Denom:   "uusdc",
+		Amount:  1_000_000,
+	}))
+
+	_, exists = ForwardingAccount(t, ctx, validator, receiver)
+	require.False(t, exists)
+
+	// NOTE: The keyName argument is intentionally left blank here. If
+	//  everything is working correctly, this shouldn't error as we don't need
+	//  to interact with the keyring.
+	_, err := validator.ExecTx(ctx, "", "forwarding", "register-account-signerlessly", "channel-0", receiver.FormattedAddress())
+	require.NoError(t, err)
+
+	_, exists = ForwardingAccount(t, ctx, validator, receiver)
+	require.True(t, exists)
+}
+
 func TestForwarding_RegisterViaTransfer(t *testing.T) {
 	t.Parallel()
 

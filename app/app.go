@@ -718,10 +718,9 @@ func New(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  forwarding.SigVerificationGasConsumer,
 			},
 			cdc:                    appCodec,
 			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
@@ -730,6 +729,7 @@ func New(
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 
+			BankKeeper:       app.BankKeeper,
 			ForwardingKeeper: app.ForwardingKeeper,
 		},
 	)

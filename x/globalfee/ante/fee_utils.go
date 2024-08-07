@@ -1,6 +1,7 @@
 package ante
 
 import (
+	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,6 +44,21 @@ func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk
 	}
 
 	return true
+}
+
+func (mfd FeeDecorator) isSignerlessForwardingRegistration(msgs []sdk.Msg) bool {
+	if len(msgs) != 1 {
+		return false
+	}
+
+	msg, ok := msgs[0].(*forwardingtypes.MsgRegisterAccount)
+	if !ok {
+		return false
+	}
+
+	address := forwardingtypes.GenerateAddress(msg.Channel, msg.Recipient)
+
+	return msg.Signer == address.String()
 }
 
 // DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk. Since we allow zero coins in global fee(zero coins means the chain does not want to set a global fee but still want to define the fee's denom)

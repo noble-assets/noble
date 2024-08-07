@@ -64,7 +64,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//	i.e., totalGas <= MaxTotalBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(ctx, msgs) && doesNotExceedMaxGasUsage
+	allowedToBypassMinFee := (mfd.containsOnlyBypassMinFeeMsgs(ctx, msgs) || mfd.isSignerlessForwardingRegistration(msgs)) && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
 	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
