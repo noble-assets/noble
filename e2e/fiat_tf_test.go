@@ -110,7 +110,7 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 	// Status:
 	// 	Master Minter: newMM3
 
-	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-mm-3", math.OneInt(), noble)
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-mm-4", math.OneInt(), noble)
 	newMM4 := w[0]
 
 	blacklistAccount(t, ctx, val, nw.fiatTfRoles.Blacklister, newMM4)
@@ -411,7 +411,7 @@ func TestFiatTFRemoveMinterController(t *testing.T) {
 
 	require.Equal(t, expectedShowMinterController.MinterController, showMCRes.MinterController)
 
-	// ACTION: Remove Minter Controller while Minter and Minter Controller are blacklisted
+	// ACTION: Remove Minter Controller while MasterMinter and Minter Controller are blacklisted
 	// EXPECTED: Success; Minter Controller is removed
 	// Status:
 	// 	gw minterController -> gw minter
