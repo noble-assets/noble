@@ -279,7 +279,8 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 	// 	minterController1 -> minter4
 	// 	minterController2 -> minter2
 	// 	minterController3 -> minter3
-	//  minter1 dissociated from minter but has allowance
+	//
+	//  minter1 has a minting allowance but is not controlled by any minterController
 
 	w = interchaintest.GetAndFundTestUsers(t, ctx, "minter-controller-4", math.OneInt(), noble)
 	minterController4 := w[0]
