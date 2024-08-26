@@ -29,9 +29,9 @@ func CreateUpgradeHandler(
 			haloKeeper.SetAggregatorOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
 			haloKeeper.SetEntitlementsOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
 		case MainnetChainID:
-			haloKeeper.SetOwner(ctx, "")             // TODO
-			haloKeeper.SetAggregatorOwner(ctx, "")   // TODO
-			haloKeeper.SetEntitlementsOwner(ctx, "") // TODO
+			haloKeeper.SetOwner(ctx, "noble184afdqq8x575e4m4khm0e52p4duxe6lxaxju3f")
+			haloKeeper.SetAggregatorOwner(ctx, "noble184afdqq8x575e4m4khm0e52p4duxe6lxaxju3f")
+			haloKeeper.SetEntitlementsOwner(ctx, "noble184afdqq8x575e4m4khm0e52p4duxe6lxaxju3f")
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}
