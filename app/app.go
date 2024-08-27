@@ -355,6 +355,8 @@ func New(
 		"uusdc",
 		app.AccountKeeper,
 		nil,
+		nil,
+		interfaceRegistry,
 	)
 
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
@@ -506,6 +508,7 @@ func New(
 
 		app.BankKeeper,
 	)
+	app.HaloKeeper.SetFTFKeeper(app.FiatTokenFactoryKeeper)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.CCTPKeeper = cctpkeeper.NewKeeper(
@@ -665,6 +668,7 @@ func New(
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		crisistypes.ModuleName,
+		fiattokenfactorymoduletypes.ModuleName,
 		genutiltypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
@@ -676,7 +680,6 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
-		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
 		forwardingtypes.ModuleName,
