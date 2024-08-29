@@ -4,7 +4,7 @@ package noble.tokenfactory;
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/noble-assets/noble/v6/x/tokenfactory/types";
+option go_package = "github.com/noble-assets/noble/v7/x/tokenfactory/types";
 
 message Minters {
   string address = 1;

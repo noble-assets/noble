@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	tarifftypes "github.com/noble-assets/noble/v6/x/tariff/types"
+	tarifftypes "github.com/noble-assets/noble/v7/x/tariff/types"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/strangelove-ventures/interchaintest/v4/testutil"
@@ -140,7 +140,7 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 		{
 			// xenon is a major release that introduced the halo module.
 			upgradeName: "xenon",
-			image:       nobleImageInfo[0],
+			image:       ghcrImage("v6.0.0"),
 		},
 	}
 

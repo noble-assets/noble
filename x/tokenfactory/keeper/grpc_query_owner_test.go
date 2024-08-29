@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	keepertest "github.com/noble-assets/noble/v6/testutil/keeper"
-	"github.com/noble-assets/noble/v6/testutil/nullify"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	keepertest "github.com/noble-assets/noble/v7/testutil/keeper"
+	"github.com/noble-assets/noble/v7/testutil/nullify"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 )
 
 func TestOwnerQuery(t *testing.T) {

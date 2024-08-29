@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/noble-assets/noble/v6/x/tariff/client/cli"
-	"github.com/noble-assets/noble/v6/x/tariff/keeper"
-	"github.com/noble-assets/noble/v6/x/tariff/types"
+	"github.com/noble-assets/noble/v7/x/tariff/client/cli"
+	"github.com/noble-assets/noble/v7/x/tariff/keeper"
+	"github.com/noble-assets/noble/v7/x/tariff/types"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

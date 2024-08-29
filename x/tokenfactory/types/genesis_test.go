@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/noble-assets/noble/v6/testutil/sample"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v7/testutil/sample"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 
 	"github.com/stretchr/testify/require"
 )

@@ -3,7 +3,7 @@ package cli
 import (
 	"strconv"
 
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
