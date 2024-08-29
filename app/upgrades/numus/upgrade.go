@@ -29,8 +29,8 @@ func CreateUpgradeHandler(
 
 		switch ctx.ChainID() {
 		case TestnetChainID:
-			florinKeeper.SetOwner(ctx, "ueure", "") // TODO
-			florinKeeper.SetBlacklistOwner(ctx, "") // TODO
+			florinKeeper.SetOwner(ctx, "ueure", "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
+			florinKeeper.SetBlacklistOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
 		case MainnetChainID:
 			florinKeeper.SetOwner(ctx, "ueure", "") // TODO
 			florinKeeper.SetBlacklistOwner(ctx, "") // TODO
