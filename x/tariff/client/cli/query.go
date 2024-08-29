@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/noble-assets/noble/v6/x/tariff/types"
+	"github.com/noble-assets/noble/v7/x/tariff/types"
 	"github.com/spf13/cobra"
 )
 

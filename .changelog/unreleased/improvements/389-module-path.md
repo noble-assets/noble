@@ -1,0 +1,1 @@
+- Update module path for v7 release line. ([#399](https://github.com/noble-assets/noble/pull/399))

@@ -7,16 +7,16 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/noble-assets/noble/v6/testutil/sample"
+	"github.com/noble-assets/noble/v7/testutil/sample"
 	"github.com/stretchr/testify/require"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/noble-assets/noble/v6/testutil/network"
-	"github.com/noble-assets/noble/v6/testutil/nullify"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/client/cli"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v7/testutil/network"
+	"github.com/noble-assets/noble/v7/testutil/nullify"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/client/cli"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 )
 
 // Prevent strconv unused error

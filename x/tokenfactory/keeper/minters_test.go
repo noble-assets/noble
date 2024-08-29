@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	keepertest "github.com/noble-assets/noble/v6/testutil/keeper"
-	"github.com/noble-assets/noble/v6/testutil/nullify"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/keeper"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	keepertest "github.com/noble-assets/noble/v7/testutil/keeper"
+	"github.com/noble-assets/noble/v7/testutil/nullify"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/keeper"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 	"github.com/stretchr/testify/require"
 )
 

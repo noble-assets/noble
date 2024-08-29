@@ -22,9 +22,9 @@ import (
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/noble-assets/noble/v6/app"
-	"github.com/noble-assets/noble/v6/cmd"
-	"github.com/noble-assets/noble/v6/testutil/sample"
+	"github.com/noble-assets/noble/v7/app"
+	"github.com/noble-assets/noble/v7/cmd"
+	"github.com/noble-assets/noble/v7/testutil/sample"
 	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
