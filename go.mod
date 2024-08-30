@@ -13,7 +13,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/noble-assets/florin v1.0.0-rc.0.0.20240829170655-b8d4fffe65d4
+	github.com/noble-assets/florin v1.0.0-rc.1
 	github.com/noble-assets/forwarding v1.1.0
 	github.com/noble-assets/halo v1.0.0
 	github.com/ondoprotocol/usdy-noble v1.0.0
