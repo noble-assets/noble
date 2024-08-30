@@ -142,6 +142,11 @@ func TestNoble1ChainUpgrade(t *testing.T) {
 			upgradeName: "xenon",
 			image:       ghcrImage("v6.0.0"),
 		},
+		{
+			// numus is a major release that introduced the florin module.
+			upgradeName: "numus",
+			image:       nobleImageInfo[0],
+		},
 	}
 
 	testNobleChainUpgrade(t, "noble-1", genesis, denomMetadataFrienzies, numValidators, numFullNodes, upgrades)

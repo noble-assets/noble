@@ -1,21 +1,22 @@
-package xenon
+package numus
 
 import (
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	halokeeper "github.com/noble-assets/halo/x/halo/keeper"
+	florinkeeper "github.com/noble-assets/florin/x/florin/keeper"
+	paramskeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
-	haloKeeper *halokeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
+	florinKeeper *florinkeeper.Keeper,
+	paramsKeeper paramskeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -23,36 +24,37 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
+		authority := paramsKeeper.GetAuthority(ctx)
+		florinKeeper.SetAuthority(ctx, authority)
+
 		switch ctx.ChainID() {
 		case TestnetChainID:
-			haloKeeper.SetOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
-			haloKeeper.SetAggregatorOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
-			haloKeeper.SetEntitlementsOwner(ctx, "noble1u0nahk4wltsp89tpce4cyayd63a69dhpkfq9wq")
+			florinKeeper.SetOwner(ctx, "ueure", "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
+			florinKeeper.SetBlacklistOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
 		case MainnetChainID:
-			haloKeeper.SetOwner(ctx, "noble184afdqq8x575e4m4khm0e52p4duxe6lxaxju3f")
-			haloKeeper.SetAggregatorOwner(ctx, "noble184afdqq8x575e4m4khm0e52p4duxe6lxaxju3f")
-			haloKeeper.SetEntitlementsOwner(ctx, "noble184afdqq8x575e4m4khm0e52p4duxe6lxaxju3f")
+			florinKeeper.SetOwner(ctx, "ueure", "") // TODO
+			florinKeeper.SetBlacklistOwner(ctx, "") // TODO
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}
 
 		bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
-			Description: "Hashnote US Yield Coin",
+			Description: "Monerium EUR emoney",
 			DenomUnits: []*banktypes.DenomUnit{
 				{
-					Denom:    "uusyc",
+					Denom:    "ueure",
 					Exponent: 0,
-					Aliases:  []string{"microusyc"},
+					Aliases:  []string{"microeure"},
 				},
 				{
-					Denom:    "usyc",
+					Denom:    "eure",
 					Exponent: 6,
 				},
 			},
-			Base:    "uusyc",
-			Display: "usyc",
-			Name:    "Hashnote US Yield Coin",
-			Symbol:  "USYC",
+			Base:    "ueure",
+			Display: "eure",
+			Name:    "Monerium EUR emoney",
+			Symbol:  "EURe",
 		})
 
 		return vm, nil
