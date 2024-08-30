@@ -25,7 +25,7 @@ jobs:
             - name: go-mod-why
               run: |
                 for MODULE in "${RESTRICTED[@]}"; do
-                    OUTPUT=$(go mod why "$MODULE")
+                    OUTPUT=$(go mod why -vendor "$MODULE")
                     if echo "$OUTPUT" | grep -q "main module does not need package $MODULE"; then
                         echo "$MODULE is not a direct import ✓"
                     else
