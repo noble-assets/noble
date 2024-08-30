@@ -26,7 +26,7 @@ jobs:
               run: |
                 for MODULE in "${RESTRICTED[@]}"; do
                     OUTPUT=$(go mod why -vendor "$MODULE")
-                    if echo "$OUTPUT" | grep -q "main module does not need package $MODULE"; then
+                    if echo "$OUTPUT" | grep -q "main module does not need to vendor package $MODULE"; then
                         echo "$MODULE is not a direct import ✓"
                     else
                         echo "$MODULE is currently restricted as a direct import in Noble ✘"
