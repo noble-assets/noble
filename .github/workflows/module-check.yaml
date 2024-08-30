@@ -1,0 +1,35 @@
+# This test ensures that certain Go modules are not used 
+# as a direct import inside of Noble
+
+name: Module Check
+
+on:
+  pull_request:
+
+env:
+    # comma separated list of restricted Go modules
+    RESTRICTED: "cosmossdk.io/x/circuit/keeper"
+
+jobs: 
+    go-mod-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: '>=1.22'
+
+            - name: go-mod-why
+              run: |
+                for MODULE in "${RESTRICTED[@]}"; do
+                    OUTPUT=$(go mod why "$MODULE")
+                    if echo "$OUTPUT" | grep -q "main module does not need package $MODULE"; then
+                        echo "$MODULE is not a direct import ✓"
+                    else
+                        echo "$MODULE is currently restricted as a direct import in Noble ✘"
+                        exit 1
+                    fi
+                done
