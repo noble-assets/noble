@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/noble-assets/noble/v6/x/tariff/types"
+	"github.com/noble-assets/noble/v7/x/tariff/types"
 	"math/rand"
 )
 

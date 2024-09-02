@@ -7,7 +7,7 @@ import (
 
 	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	globalfeetypes "github.com/noble-assets/noble/v6/x/globalfee/types"
+	globalfeetypes "github.com/noble-assets/noble/v7/x/globalfee/types"
 	"github.com/strangelove-ventures/interchaintest/v4/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v4/ibc"
 	"github.com/stretchr/testify/require"

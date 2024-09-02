@@ -153,6 +153,11 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		{
 			// xenon is a major release that introduced the halo module.
 			upgradeName: "xenon",
+			image:       ghcrImage("v6.0.0-rc.0"),
+		},
+		{
+			// numus is a major release that introduced the florin module.
+			upgradeName: "numus",
 			image:       nobleImageInfo[0],
 		},
 	}

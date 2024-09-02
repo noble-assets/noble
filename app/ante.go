@@ -14,7 +14,7 @@ import (
 	"github.com/noble-assets/forwarding/x/forwarding"
 	forwardingkeeper "github.com/noble-assets/forwarding/x/forwarding/keeper"
 	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
-	feeante "github.com/noble-assets/noble/v6/x/globalfee/ante"
+	feeante "github.com/noble-assets/noble/v7/x/globalfee/ante"
 )
 
 type BankKeeper interface {

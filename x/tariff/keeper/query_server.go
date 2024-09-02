@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/noble-assets/noble/v6/x/tariff/types"
+	"github.com/noble-assets/noble/v7/x/tariff/types"
 )
 
 var _ types.QueryServer = Keeper{}

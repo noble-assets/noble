@@ -2,6 +2,8 @@
 4d63.com/gocheckcompilerdirectives v1.2.1/go.mod h1:yjDJSxmDTtIHHCqX0ufRYZDL6vQtMG7tJdKVeWwsqvs=
 4d63.com/gochecknoglobals v0.2.1 h1:1eiorGsgHOFOuoOiJDy2psSrQbRdIHrlge0IJIkUgDc=
 4d63.com/gochecknoglobals v0.2.1/go.mod h1:KRE8wtJB3CXCsb1xy421JfTHIIbmT3U5ruxw2Qu8fSU=
+adr36.dev v0.0.0-20240829163820-17879c0e838f h1:GM7s+hh4g6VmxtduPyAj/hkXpkwt9N/aZ0WC5OreuOw=
+adr36.dev v0.0.0-20240829163820-17879c0e838f/go.mod h1:E6HaE8hVk+ss7kpa9wlj8Iue/G9sSKOca4eG95WHZDw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.38.0/go.mod h1:990N+gfupTy94rShfmMCWGDn0LpTmnzTp2qbd1dvSRU=
 cloud.google.com/go v0.43.0/go.mod h1:BOSR3VbTLkk6FDC/TcffxP4NF/FFBGA5ku+jvKOP7pg=
@@ -963,10 +965,12 @@ github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
 github.com/noble-assets/cosmos-sdk v0.45.16-send-restrictions h1:oQwbCoejkXp2/ozQSwc//A6UW9wJl71YgP7o04MsYq0=
 github.com/noble-assets/cosmos-sdk v0.45.16-send-restrictions/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
-github.com/noble-assets/forwarding v1.1.1-0.20240806090842-56acfa25fbb5 h1:w9mjHJAdXHDpLHmotrcXDx68x9I++Vs0bbQyU63jKjU=
-github.com/noble-assets/forwarding v1.1.1-0.20240806090842-56acfa25fbb5/go.mod h1:o64ZfzCHteRDhOlkpi7GeKAcjlcbWUihC7Y34Er2/3U=
-github.com/noble-assets/halo v1.0.0-alpha.0 h1:i5HBbMVi+GQul/aMxRtfFMfn6B4LKbYj10BFIZ0C3u8=
-github.com/noble-assets/halo v1.0.0-alpha.0/go.mod h1:zWcppKjRH5v0ZTRXPtxEhoO1XRFE7wi5GhxtnGeFy6I=
+github.com/noble-assets/florin v1.0.0-rc.1 h1:0O8Xr0Jqos7lvyvdtQE8Y0WcNH5PvfIJsocPeYLufh8=
+github.com/noble-assets/florin v1.0.0-rc.1/go.mod h1:W+6DjaZdSRQe2oqv8eCHQtbyp36LUNImGRCLdPNSA2o=
+github.com/noble-assets/forwarding v1.2.0-rc.0 h1:f/bL/cicvhNUp9SuueiqqqSVRRn7CQxTKOesVUKrSyQ=
+github.com/noble-assets/forwarding v1.2.0-rc.0/go.mod h1:o64ZfzCHteRDhOlkpi7GeKAcjlcbWUihC7Y34Er2/3U=
+github.com/noble-assets/halo v1.0.0 h1:JG5TAZZcuLArYgl/9dgwJJ9KAOIo2f03/S010WRVNV8=
+github.com/noble-assets/halo v1.0.0/go.mod h1:AUFdixNgPdce0soYfT6aNggwW9PUVFxaIkCC83M26Sk=
 github.com/nunnatsa/ginkgolinter v0.14.0 h1:XQPNmw+kZz5cC/HbFK3mQutpjzAQv1dHregRA+4CGGg=
 github.com/nunnatsa/ginkgolinter v0.14.0/go.mod h1:cm2xaqCUCRd7qcP4DqbVvpcyEMkuLM9CF0wY6VASohk=
 github.com/nxadm/tail v1.4.4 h1:DQuhQpB1tVlglWS2hLQ5OV6B5r8aGxSrPc5Qo6uTN78=

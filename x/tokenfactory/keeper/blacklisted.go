@@ -3,7 +3,7 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 )
 
 // SetBlacklisted set a specific blacklisted in the store from its index

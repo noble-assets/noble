@@ -10,10 +10,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/status"
 
-	"github.com/noble-assets/noble/v6/testutil/network"
-	"github.com/noble-assets/noble/v6/testutil/nullify"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/client/cli"
-	"github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v7/testutil/network"
+	"github.com/noble-assets/noble/v7/testutil/nullify"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/client/cli"
+	"github.com/noble-assets/noble/v7/x/tokenfactory/types"
 )
 
 func networkWithMintingDenomObjects(t *testing.T) (*network.Network, types.MintingDenom) {
@@ -28,16 +28,14 @@ func networkWithMintingDenomObjects(t *testing.T) (*network.Network, types.Minti
 		Denom: testDenom,
 	}
 
-	bankState := banktypes.DefaultGenesisState()
-	bankState.DenomMetadata = []banktypes.Metadata{{
+	var bankState banktypes.GenesisState
+	cfg.Codec.MustUnmarshalJSON(cfg.GenesisState[banktypes.ModuleName], &bankState)
+	bankState.DenomMetadata = append(bankState.DenomMetadata, banktypes.Metadata{
 		Base: testDenom,
-	}}
+	})
+	cfg.GenesisState[banktypes.ModuleName] = cfg.Codec.MustMarshalJSON(&bankState)
 
-	buf, err := cfg.Codec.MarshalJSON(bankState)
-	require.NoError(t, err)
-	cfg.GenesisState[banktypes.ModuleName] = buf
-
-	buf, err = cfg.Codec.MarshalJSON(&state)
+	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
 

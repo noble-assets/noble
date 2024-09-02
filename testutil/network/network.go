@@ -2,6 +2,8 @@ package network
 
 import (
 	"fmt"
+	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"testing"
 	"time"
 
@@ -14,19 +16,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
-	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/noble-assets/noble/v6/app"
-	"github.com/noble-assets/noble/v6/cmd"
-	"github.com/noble-assets/noble/v6/testutil/sample"
+	"github.com/noble-assets/noble/v7/app"
+	"github.com/noble-assets/noble/v7/cmd"
+	"github.com/noble-assets/noble/v7/testutil/sample"
 	paramauthoritytypes "github.com/strangelove-ventures/paramauthority/x/params/types/proposal"
 	paramauthorityupgradetypes "github.com/strangelove-ventures/paramauthority/x/upgrade/types"
 )
@@ -56,11 +54,35 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 // DefaultConfig will initialize config for the network with custom application,
 // genesis and single validator. All other parameters are inherited from cosmos-sdk/testutil/network.DefaultConfig
 func DefaultConfig() network.Config {
-	// app doesn't have this modules anymore, but we need them for test setup, which uses gentx and MsgCreateValidator
-	app.ModuleBasics[genutiltypes.ModuleName] = genutil.AppModuleBasic{}
-	app.ModuleBasics[stakingtypes.ModuleName] = staking.AppModuleBasic{}
-
 	encoding := cmd.MakeEncodingConfig(app.ModuleBasics)
+
+	genesisState := app.ModuleBasics.DefaultGenesis(encoding.Marshaler)
+	bankGenesisState := banktypes.DefaultGenesisState()
+	bankGenesisState.DenomMetadata = []banktypes.Metadata{
+		{
+			Description: "Circle USD Coin",
+			DenomUnits: []*banktypes.DenomUnit{
+				{
+					Denom:    "uusdc",
+					Exponent: 0,
+					Aliases:  []string{"microusdc"},
+				},
+				{
+					Denom:    "usdc",
+					Exponent: 6,
+				},
+			},
+			Base:    "uusdc",
+			Display: "usdc",
+			Name:    "Circle USD Coin",
+			Symbol:  "USDC",
+		},
+	}
+	genesisState[banktypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(bankGenesisState)
+	ftfGenesisState := fiattokenfactorytypes.DefaultGenesis()
+	ftfGenesisState.MintingDenom = &fiattokenfactorytypes.MintingDenom{Denom: "uusdc"}
+	genesisState[fiattokenfactorytypes.ModuleName] = encoding.Marshaler.MustMarshalJSON(ftfGenesisState)
+
 	cfg := network.Config{
 		Codec:             encoding.Marshaler,
 		TxConfig:          encoding.TxConfig,
@@ -76,7 +98,7 @@ func DefaultConfig() network.Config {
 				baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 			)
 		},
-		GenesisState:  app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
+		GenesisState:  genesisState,
 		TimeoutCommit: 2 * time.Second,
 		ChainID:       "chain-" + tmrand.NewRand().Str(6),
 		// Some changes are introduced to make the tests run as if Noble is a standalone chain.

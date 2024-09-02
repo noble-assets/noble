@@ -94,16 +94,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/noble-assets/noble/v6/app/upgrades/xenon"
-	"github.com/noble-assets/noble/v6/cmd"
-	"github.com/noble-assets/noble/v6/docs"
-	"github.com/noble-assets/noble/v6/x/globalfee"
-	tariff "github.com/noble-assets/noble/v6/x/tariff"
-	tariffkeeper "github.com/noble-assets/noble/v6/x/tariff/keeper"
-	tarifftypes "github.com/noble-assets/noble/v6/x/tariff/types"
-	tokenfactorymodule "github.com/noble-assets/noble/v6/x/tokenfactory"
-	tokenfactorymodulekeeper "github.com/noble-assets/noble/v6/x/tokenfactory/keeper"
-	tokenfactorymoduletypes "github.com/noble-assets/noble/v6/x/tokenfactory/types"
+	"github.com/noble-assets/noble/v7/app/upgrades/numus"
+	"github.com/noble-assets/noble/v7/cmd"
+	"github.com/noble-assets/noble/v7/docs"
+	"github.com/noble-assets/noble/v7/x/globalfee"
+	tariff "github.com/noble-assets/noble/v7/x/tariff"
+	tariffkeeper "github.com/noble-assets/noble/v7/x/tariff/keeper"
+	tarifftypes "github.com/noble-assets/noble/v7/x/tariff/types"
+	tokenfactorymodule "github.com/noble-assets/noble/v7/x/tokenfactory"
+	tokenfactorymodulekeeper "github.com/noble-assets/noble/v7/x/tokenfactory/keeper"
+	tokenfactorymoduletypes "github.com/noble-assets/noble/v7/x/tokenfactory/types"
 
 	"github.com/circlefin/noble-cctp/x/cctp"
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
@@ -120,6 +120,10 @@ import (
 	"github.com/noble-assets/halo/x/halo"
 	halokeeper "github.com/noble-assets/halo/x/halo/keeper"
 	halotypes "github.com/noble-assets/halo/x/halo/types"
+
+	"github.com/noble-assets/florin/x/florin"
+	florinkeeper "github.com/noble-assets/florin/x/florin/keeper"
+	florintypes "github.com/noble-assets/florin/x/florin/types"
 )
 
 const (
@@ -165,6 +169,7 @@ var (
 		forwarding.AppModuleBasic{},
 		aura.AppModuleBasic{},
 		halo.AppModuleBasic{},
+		florin.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -180,6 +185,7 @@ var (
 		cctptypes.ModuleName:                   nil,
 		auratypes.ModuleName:                   {authtypes.Burner, authtypes.Minter},
 		halotypes.ModuleName:                   {authtypes.Burner, authtypes.Minter},
+		florintypes.ModuleName:                 {authtypes.Burner, authtypes.Minter},
 	}
 )
 
@@ -246,6 +252,7 @@ type App struct {
 	ForwardingKeeper       *forwardingkeeper.Keeper
 	AuraKeeper             *aurakeeper.Keeper
 	HaloKeeper             *halokeeper.Keeper
+	FlorinKeeper           *florinkeeper.Keeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -284,7 +291,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey,
 		tokenfactorymoduletypes.StoreKey, fiattokenfactorymoduletypes.StoreKey, packetforwardtypes.StoreKey, stakingtypes.StoreKey,
-		cctptypes.StoreKey, forwardingtypes.StoreKey, auratypes.ModuleName, halotypes.ModuleName,
+		cctptypes.StoreKey, forwardingtypes.StoreKey, auratypes.ModuleName, halotypes.ModuleName, florintypes.ModuleName,
 	)
 	tkeys := sdk.NewTransientStoreKeys(
 		paramstypes.TStoreKey,
@@ -355,6 +362,14 @@ func New(
 		"uusdc",
 		app.AccountKeeper,
 		nil,
+		nil,
+		interfaceRegistry,
+	)
+
+	app.FlorinKeeper = florinkeeper.NewKeeper(
+		keys[florintypes.ModuleName],
+		app.AccountKeeper,
+		nil,
 	)
 
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
@@ -365,9 +380,11 @@ func New(
 		app.BlockedModuleAccountAddrs(),
 	).
 		WithSendCoinsRestriction(app.AuraKeeper.SendRestrictionFn).
-		WithSendCoinsRestriction(app.HaloKeeper.SendRestrictionFn)
+		WithSendCoinsRestriction(app.HaloKeeper.SendRestrictionFn).
+		WithSendCoinsRestriction(app.FlorinKeeper.SendRestrictionFn)
 	app.AuraKeeper.SetBankKeeper(app.BankKeeper)
 	app.HaloKeeper.SetBankKeeper(app.BankKeeper)
+	app.FlorinKeeper.SetBankKeeper(app.BankKeeper)
 
 	app.StakingKeeper = stakingkeeper.NewKeeper(
 		appCodec,
@@ -506,6 +523,7 @@ func New(
 
 		app.BankKeeper,
 	)
+	app.HaloKeeper.SetFTFKeeper(app.FiatTokenFactoryKeeper)
 	fiattokenfactorymodule := fiattokenfactorymodule.NewAppModule(appCodec, app.FiatTokenFactoryKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.CCTPKeeper = cctpkeeper.NewKeeper(
@@ -585,6 +603,7 @@ func New(
 		forwarding.NewAppModule(app.ForwardingKeeper),
 		aura.NewAppModule(app.AuraKeeper),
 		halo.NewAppModule(app.HaloKeeper),
+		florin.NewAppModule(app.FlorinKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -619,6 +638,7 @@ func New(
 		forwardingtypes.ModuleName,
 		auratypes.ModuleName,
 		halotypes.ModuleName,
+		florintypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -648,6 +668,7 @@ func New(
 		forwardingtypes.ModuleName,
 		auratypes.ModuleName,
 		halotypes.ModuleName,
+		florintypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -665,6 +686,7 @@ func New(
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		crisistypes.ModuleName,
+		fiattokenfactorymoduletypes.ModuleName,
 		genutiltypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
@@ -676,12 +698,12 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		tokenfactorymoduletypes.ModuleName,
-		fiattokenfactorymoduletypes.ModuleName,
 		globalfee.ModuleName,
 		cctptypes.ModuleName,
 		forwardingtypes.ModuleName,
 		auratypes.ModuleName,
 		halotypes.ModuleName,
+		florintypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -920,12 +942,13 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 func (app *App) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		xenon.UpgradeName,
-		xenon.CreateUpgradeHandler(
+		numus.UpgradeName,
+		numus.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
-			app.HaloKeeper,
 			app.BankKeeper,
+			app.FlorinKeeper,
+			app.ParamsKeeper,
 		),
 	)
 
@@ -940,8 +963,8 @@ func (app *App) setupUpgradeHandlers() {
 	var storeLoader baseapp.StoreLoader
 
 	switch upgradeInfo.Name {
-	case xenon.UpgradeName:
-		storeLoader = xenon.CreateStoreLoader(upgradeInfo.Height)
+	case numus.UpgradeName:
+		storeLoader = numus.CreateStoreLoader(upgradeInfo.Height)
 	}
 
 	if storeLoader != nil {

@@ -1,4 +1,4 @@
-module github.com/noble-assets/noble/v6
+module github.com/noble-assets/noble/v7
 
 go 1.21
 
@@ -13,8 +13,9 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/noble-assets/forwarding v1.1.1-0.20240806090842-56acfa25fbb5
-	github.com/noble-assets/halo v1.0.0-alpha.0
+	github.com/noble-assets/florin v1.0.0-rc.1
+	github.com/noble-assets/forwarding v1.2.0-rc.0
+	github.com/noble-assets/halo v1.0.0
 	github.com/ondoprotocol/usdy-noble v1.0.0
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cast v1.5.1
@@ -31,6 +32,7 @@ require (
 )
 
 require (
+	adr36.dev v0.0.0-20240829163820-17879c0e838f // indirect
 	cosmossdk.io/api v0.2.6 // indirect
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
