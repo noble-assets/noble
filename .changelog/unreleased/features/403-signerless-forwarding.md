@@ -1,0 +1,1 @@
+- Update `x/fowarding` to support signerless account registration. ([#403](https://github.com/noble-assets/noble/pull/403))
