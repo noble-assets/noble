@@ -967,8 +967,8 @@ github.com/noble-assets/cosmos-sdk v0.45.16-send-restrictions h1:oQwbCoejkXp2/oz
 github.com/noble-assets/cosmos-sdk v0.45.16-send-restrictions/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
 github.com/noble-assets/florin v1.0.0-rc.1 h1:0O8Xr0Jqos7lvyvdtQE8Y0WcNH5PvfIJsocPeYLufh8=
 github.com/noble-assets/florin v1.0.0-rc.1/go.mod h1:W+6DjaZdSRQe2oqv8eCHQtbyp36LUNImGRCLdPNSA2o=
-github.com/noble-assets/forwarding v1.1.0 h1:2TXBs2Y9vWqgHyDKtdcHht6i7OT+pLaVHE3bPvfpmJY=
-github.com/noble-assets/forwarding v1.1.0/go.mod h1:o64ZfzCHteRDhOlkpi7GeKAcjlcbWUihC7Y34Er2/3U=
+github.com/noble-assets/forwarding v1.2.0-rc.0 h1:f/bL/cicvhNUp9SuueiqqqSVRRn7CQxTKOesVUKrSyQ=
+github.com/noble-assets/forwarding v1.2.0-rc.0/go.mod h1:o64ZfzCHteRDhOlkpi7GeKAcjlcbWUihC7Y34Er2/3U=
 github.com/noble-assets/halo v1.0.0 h1:JG5TAZZcuLArYgl/9dgwJJ9KAOIo2f03/S010WRVNV8=
 github.com/noble-assets/halo v1.0.0/go.mod h1:AUFdixNgPdce0soYfT6aNggwW9PUVFxaIkCC83M26Sk=
 github.com/nunnatsa/ginkgolinter v0.14.0 h1:XQPNmw+kZz5cC/HbFK3mQutpjzAQv1dHregRA+4CGGg=
