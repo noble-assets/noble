@@ -1,10 +1,10 @@
 package ante
 
 import (
-	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	forwardingtypes "github.com/noble-assets/forwarding/x/forwarding/types"
 	globalfeetypes "github.com/noble-assets/noble/v7/x/globalfee/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
