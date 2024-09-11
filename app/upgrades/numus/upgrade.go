@@ -7,7 +7,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	florinkeeper "github.com/noble-assets/florin/x/florin/keeper"
+	florinkeeper "github.com/monerium/module-noble/x/florin/keeper"
 	paramskeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 )
 

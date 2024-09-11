@@ -123,7 +123,7 @@ endif
 ###                                Protobuf                                 ###
 ###############################################################################
 
-BUF_VERSION=1.39
+BUF_VERSION=1.40
 
 proto-all: proto-format proto-lint proto-gen
 
