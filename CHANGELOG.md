@@ -14,6 +14,10 @@ Other notable changes are documented below.
 
 [eure]: https://monerium.com
 
+### BUG FIXES
+
+- Update `x/halo` to correctly check recipient role when trading to fiat. ([#405](https://github.com/noble-assets/noble/pull/405))
+
 ### IMPROVEMENTS
 
 - Update module path for v7 release line. ([#399](https://github.com/noble-assets/noble/pull/399))

@@ -1,0 +1,1 @@
+- Update `x/halo` to correctly check recipient role when trading to fiat. ([#405](https://github.com/noble-assets/noble/pull/405))

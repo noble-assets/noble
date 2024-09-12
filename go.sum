@@ -936,8 +936,8 @@ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3Rllmb
 github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/modocache/gover v0.0.0-20171022184752-b58185e213c5/go.mod h1:caMODM3PzxT8aQXRPkAt8xlV/e7d7w8GM5g0fa5F0D8=
-github.com/monerium/module-noble v1.0.0-rc.1.0.20240911143328-9ed83366cee2 h1:+KsFbZxpn0OktQ+jFZwEiZeTc7r4npKxOQ9ylWgZ5VQ=
-github.com/monerium/module-noble v1.0.0-rc.1.0.20240911143328-9ed83366cee2/go.mod h1:eg2ur9ZGvnASANV5iNvyGT2JPbg/499+UZOCB843j1c=
+github.com/monerium/module-noble v1.0.0 h1:MSdGacwXDMeV11MedvIjtfAKJ4QLOTKWpCRJBs+uvjI=
+github.com/monerium/module-noble v1.0.0/go.mod h1:eg2ur9ZGvnASANV5iNvyGT2JPbg/499+UZOCB843j1c=
 github.com/moricho/tparallel v0.3.1 h1:fQKD4U1wRMAYNngDonW5XupoB/ZGJHdpzrWqgyg9krA=
 github.com/moricho/tparallel v0.3.1/go.mod h1:leENX2cUv7Sv2qDgdi0D0fCftN8fRC67Bcn8pqzeYNI=
 github.com/moul/http2curl v1.0.0/go.mod h1:8UbvGypXm98wA/IqH45anm5Y2Z6ep6O31QGOAZ3H0fQ=
@@ -969,8 +969,8 @@ github.com/noble-assets/cosmos-sdk v0.45.16-send-restrictions h1:oQwbCoejkXp2/oz
 github.com/noble-assets/cosmos-sdk v0.45.16-send-restrictions/go.mod h1:bScuNwWAP0TZJpUf+SHXRU3xGoUPp+X9nAzfeIXts40=
 github.com/noble-assets/forwarding v1.1.0 h1:2TXBs2Y9vWqgHyDKtdcHht6i7OT+pLaVHE3bPvfpmJY=
 github.com/noble-assets/forwarding v1.1.0/go.mod h1:o64ZfzCHteRDhOlkpi7GeKAcjlcbWUihC7Y34Er2/3U=
-github.com/noble-assets/halo v1.0.0 h1:JG5TAZZcuLArYgl/9dgwJJ9KAOIo2f03/S010WRVNV8=
-github.com/noble-assets/halo v1.0.0/go.mod h1:AUFdixNgPdce0soYfT6aNggwW9PUVFxaIkCC83M26Sk=
+github.com/noble-assets/halo v1.0.1 h1:Fndy4JaAAvEd5SDGECnkoWJ2uVG1XCF47L67Px9ickE=
+github.com/noble-assets/halo v1.0.1/go.mod h1:AUFdixNgPdce0soYfT6aNggwW9PUVFxaIkCC83M26Sk=
 github.com/nunnatsa/ginkgolinter v0.14.0 h1:XQPNmw+kZz5cC/HbFK3mQutpjzAQv1dHregRA+4CGGg=
 github.com/nunnatsa/ginkgolinter v0.14.0/go.mod h1:cm2xaqCUCRd7qcP4DqbVvpcyEMkuLM9CF0wY6VASohk=
 github.com/nxadm/tail v1.4.4 h1:DQuhQpB1tVlglWS2hLQ5OV6B5r8aGxSrPc5Qo6uTN78=
