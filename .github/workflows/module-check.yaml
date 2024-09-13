@@ -1,5 +1,5 @@
-# This test ensures that certain Go modules are not used 
-# as a direct import inside of Noble
+# This test ensures that certain Go Modules are not used 
+# as an import inside of Noble
 
 name: Module Check
 
@@ -8,7 +8,7 @@ on:
 
 env:
     # comma separated list of restricted Go modules
-    RESTRICTED: "cosmossdk.io/x/circuit/keeper"
+    RESTRICTED_MODULES: "cosmossdk.io/x/circuit"
 
 jobs: 
     go-mod-check:
@@ -24,12 +24,12 @@ jobs:
 
             - name: go-mod-why
               run: |
-                for MODULE in "${RESTRICTED[@]}"; do
-                    OUTPUT=$(go mod why -vendor "$MODULE")
-                    if echo "$OUTPUT" | grep -q "main module does not need to vendor package $MODULE"; then
-                        echo "$MODULE is not a direct import ✓"
+                for MODULE in "${RESTRICTED_MODULES[@]}"; do
+                    OUTPUT=$(go mod why -m -vendor "$MODULE")
+                    if echo "$OUTPUT" | grep -q "main module does not need to vendor module $MODULE"; then
+                        echo "$MODULE is not imported ✓"
                     else
-                        echo "$MODULE is currently restricted as a direct import in Noble ✘"
+                        echo "$MODULE is currently restricted as an import in Noble ✘"
                         exit 1
                     fi
                 done
