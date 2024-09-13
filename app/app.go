@@ -621,7 +621,6 @@ func New(
 		stakingtypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
-		crisistypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
@@ -639,10 +638,10 @@ func New(
 		auratypes.ModuleName,
 		halotypes.ModuleName,
 		florintypes.ModuleName,
+		crisistypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName,
 		stakingtypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
@@ -669,6 +668,7 @@ func New(
 		auratypes.ModuleName,
 		halotypes.ModuleName,
 		florintypes.ModuleName,
+		crisistypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
