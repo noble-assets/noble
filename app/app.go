@@ -121,9 +121,9 @@ import (
 	halokeeper "github.com/noble-assets/halo/x/halo/keeper"
 	halotypes "github.com/noble-assets/halo/x/halo/types"
 
-	"github.com/noble-assets/florin/x/florin"
-	florinkeeper "github.com/noble-assets/florin/x/florin/keeper"
-	florintypes "github.com/noble-assets/florin/x/florin/types"
+	"github.com/monerium/module-noble/x/florin"
+	florinkeeper "github.com/monerium/module-noble/x/florin/keeper"
+	florintypes "github.com/monerium/module-noble/x/florin/types"
 )
 
 const (
@@ -740,9 +740,10 @@ func New(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  forwarding.SigVerificationGasConsumer,
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			cdc:                    appCodec,
 			fiatTokenFactoryKeeper: app.FiatTokenFactoryKeeper,
@@ -751,7 +752,6 @@ func New(
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 
-			BankKeeper:       app.BankKeeper,
 			ForwardingKeeper: app.ForwardingKeeper,
 		},
 	)

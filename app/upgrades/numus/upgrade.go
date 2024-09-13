@@ -2,12 +2,13 @@ package numus
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	florinkeeper "github.com/noble-assets/florin/x/florin/keeper"
+	florinkeeper "github.com/monerium/module-noble/x/florin/keeper"
 	paramskeeper "github.com/strangelove-ventures/paramauthority/x/params/keeper"
 )
 
@@ -32,8 +33,8 @@ func CreateUpgradeHandler(
 			florinKeeper.SetOwner(ctx, "ueure", "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
 			florinKeeper.SetBlacklistOwner(ctx, "noble1tv9u97jln0k3anpzhahkeahh66u74dug302pyn")
 		case MainnetChainID:
-			florinKeeper.SetOwner(ctx, "ueure", "") // TODO
-			florinKeeper.SetBlacklistOwner(ctx, "") // TODO
+			florinKeeper.SetOwner(ctx, "ueure", "noble1ya7ggnwv78qcnkv89lte30yge54ztzst3usgmw")
+			florinKeeper.SetBlacklistOwner(ctx, "noble1ya7ggnwv78qcnkv89lte30yge54ztzst3usgmw")
 		default:
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, ctx.ChainID())
 		}

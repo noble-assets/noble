@@ -158,7 +158,7 @@ func TestGrand1ChainUpgrade(t *testing.T) {
 		{
 			// numus is a major release that introduced the florin module.
 			upgradeName: "numus",
-			image:       nobleImageInfo[0],
+			image:       ghcrImage("v7.0.0-rc.0"),
 		},
 	}
 
