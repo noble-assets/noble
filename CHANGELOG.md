@@ -7,10 +7,10 @@
 This is the Helium major release of Noble. It upgrades the Noble
 binary to Cosmos SDK version 50 and IBC-Go to version 8.
 In addition, it replaces the Paramauthority module with an in-house built
-[Authority][authority] module. This module is used to assist with governance 
-tasks such as chain upgrades and IBC client substitutions. 
+[Authority][authority] module. This module is used to assist with governance
+tasks such as chain upgrades and IBC client substitutions.
 
-The following Noble specific modules have been updated to SDK v50 and 
+The following Noble specific modules have been updated to SDK v50 and
 IBC-Go v8:
 
 - [cctp]
@@ -140,11 +140,11 @@ It allows users to create a new account type, where the receipt of funds into
 that account triggers an automatic IBC transfer over a specified channel to a
 recipient address. This allows for one-click transfers to any IBC-enabled chain,
 and can be used in tandem with, for example, the receipt of funds from a
-[Circle Mint][mint] account or via [CCTP].
+[Circle Mint][mint] account or via [CCTP][cctp-docs].
 
 Other notable changes include are documented below.
 
-[cctp]: https://www.circle.com/en/cross-chain-transfer-protocol
+[cctp-docs]: https://www.circle.com/en/cross-chain-transfer-protocol
 [mint]: https://www.circle.com/en/circle-mint
 
 ### DEPENDENCIES
@@ -241,4 +241,3 @@ In response to multiple IBC channels expiring on Noble's mainnet network, it was
 ## Previous Changes
 
 This changelog has yet to be fully initialized. For previous versions please refer to the release notes for a summary of changes.
-
