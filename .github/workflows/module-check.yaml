@@ -1,0 +1,50 @@
+# This test ensures that certain Go Modules are not used 
+# as an import inside of Noble
+
+name: Module Check
+
+on:
+  pull_request:
+
+env:
+    # comma separated list of restricted Go modules/packages
+    RESTRICTED_MODULES: "cosmossdk.io/x/circuit"
+    RESTRICTED_PACKAGES: "github.com/cosmos/cosmos-sdk/x/gov, github.com/cosmos/cosmos-sdk/x/group"
+
+jobs: 
+    go-mod-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: '>=1.22'
+
+            - name: go-mod-why
+              run: |
+                for MODULE in $RESTRICTED_MODULES; do
+                    OUTPUT=$(go mod why -m "$MODULE")
+                    if echo "$OUTPUT" | grep -q "main module does not need module $MODULE"; then
+                        echo "$MODULE is not imported ✓"
+                    else
+                        echo "$MODULE is currently restricted as an import in Noble ✘"
+                        exit 1
+                    fi
+                done
+
+                for PACKAGE in $RESTRICTED_PACKAGES; do
+                    OUTPUT=$(go mod why "$PACKAGE")
+                    if echo "$OUTPUT" | grep -q "main module does not need package $PACKAGE"; then
+                        echo "$PACKAGE is not imported ✓"
+
+                    # if the shortest import path is the E2E suite, is is safe to assume the package is not used in the main module
+                    elif echo "$OUTPUT" | grep -q "github.com/noble-assets/noble/e2e"; then
+                        echo "$PACKAGE is not imported into main Noble module ✓"
+                    else
+                        echo "$PACKAGE is currently restricted as an import in Noble ✘"
+                        exit 1
+                    fi
+                done

@@ -1,0 +1,120 @@
+modules:
+  - name: runtime
+    config:
+      "@type": cosmos.app.runtime.v1alpha1.Module
+      app_name: Noble
+      pre_blockers: [ upgrade ]
+      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz ]
+      end_blockers: [ crisis, staking, feegrant, forwarding ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority ]
+      override_store_keys:
+        - module_name: auth
+          kv_store_key: acc
+        - module_name: fiat-tokenfactory
+          kv_store_key: fiattokenfactory
+  - name: auth
+    config:
+      "@type": cosmos.auth.module.v1.Module
+      bech32_prefix: noble
+      module_account_permissions:
+        - account: fee_collector
+        - account: interchainaccounts
+        - account: bonded_tokens_pool
+          permissions: [ burner, staking ]
+        - account: not_bonded_tokens_pool
+          permissions: [ burner, staking ]
+        - account: transfer
+          permissions: [ burner, minter ]
+        - account: fiat-tokenfactory
+          permissions: [ burner, minter ]
+        - account: halo
+          permissions: [ burner, minter ]
+        - account: florin
+          permissions: [ burner, minter ]
+        - account: aura
+          permissions: [ burner, minter ]
+      authority: authority # Utilize our custom x/authority module.
+  - name: authz
+    config:
+      "@type": cosmos.authz.module.v1.Module
+  - name: bank
+    config:
+      "@type": cosmos.bank.module.v1.Module
+      blocked_module_accounts_override:
+      # TODO: Add any modules?
+        [ auth, bonded_tokens_pool, not_bonded_tokens_pool ]
+      authority: authority # Utilize our custom x/authority module.
+  - name: consensus
+    config:
+      "@type": cosmos.consensus.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: crisis
+    config:
+      "@type": cosmos.crisis.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: evidence
+    config:
+      "@type": cosmos.evidence.module.v1.Module
+  - name: feegrant
+    config:
+      "@type": cosmos.feegrant.module.v1.Module
+  - name: genutil
+    config:
+      "@type": cosmos.genutil.module.v1.Module
+  - name: params
+    config:
+      "@type": cosmos.params.module.v1.Module
+  - name: slashing
+    config:
+      "@type": cosmos.slashing.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: staking
+    config:
+      "@type": cosmos.staking.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: tx
+    config:
+      "@type": cosmos.tx.config.v1.Config
+  - name: upgrade
+    config:
+      "@type": cosmos.upgrade.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: vesting
+    config:
+      "@type": cosmos.vesting.module.v1.Module
+  
+  # Circle Modules
+  - name: cctp
+    config:
+      "@type": circle.cctp.module.v1.Module
+  - name: fiat-tokenfactory
+    config:
+      "@type": circle.fiattokenfactory.module.v1.Module
+  
+  # Ondo Module
+  - name: aura
+    config:
+      "@type": aura.module.v1.Module
+      denom: ausdy
+  
+  # Hashnote Module
+  - name: halo
+    config:
+      "@type": halo.module.v1.Module
+      denom: uusyc
+      underlying: uusdc
+  
+  # Monerium Module
+  - name: florin
+    config:
+      "@type": florin.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+
+  # Noble Modules
+  - name: authority
+    config:
+      "@type": noble.authority.module.v1.Module
+  - name: forwarding
+    config:
+      "@type": noble.forwarding.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
