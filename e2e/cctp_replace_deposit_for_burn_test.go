@@ -35,8 +35,9 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 	noble := nw.Chain
 	nobleValidator := noble.Validators[0]
 
+	broadcaster := cosmos.NewBroadcaster(t, noble)
+
 	attesters := make([]*ecdsa.PrivateKey, 2)
-	msgs := make([]sdk.Msg, 2)
 
 	// attester - ECDSA public key (Circle will own these keys for mainnet)
 	for i := range attesters {
@@ -49,54 +50,55 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 
 		attesterPub := hex.EncodeToString(pubKey)
 
+		bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
+		defer bCancel()
+
 		// Adding an attester to protocal
-		msgs[i] = &cctptypes.MsgEnableAttester{
-			From:     nw.FiatTfRoles.Owner.FormattedAddress(),
-			Attester: attesterPub,
-		}
+		tx, err := cosmos.BroadcastTx(
+			bCtx,
+			broadcaster,
+			nw.CCTPRoles.AttesterManager,
+			&cctptypes.MsgEnableAttester{
+				From:     nw.CCTPRoles.AttesterManager.FormattedAddress(),
+				Attester: attesterPub,
+			},
+		)
+		require.NoError(t, err, "error enabling attester")
+		require.Zero(t, tx.Code, "cctp enable attester transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 	}
-
-	broadcaster := cosmos.NewBroadcaster(t, noble)
-	// broadcaster.ConfigureClientContextOptions(func(clientContext sdkclient.Context) sdkclient.Context {
-	// 	return clientContext.WithBroadcastMode(flags.BroadcastBlock)
-	// })
-
-	t.Log("preparing to submit add public keys tx")
 
 	burnToken := make([]byte, 32)
 	copy(burnToken[12:], common.FromHex("0x07865c6E87B9F70255377e024ace6630C1Eaa37F"))
 
 	// maps remote token on remote domain to a local token -- used for minting
-	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
-		From:         nw.FiatTfRoles.Owner.FormattedAddress(),
-		RemoteDomain: 0,
-		RemoteToken:  burnToken,
-		LocalToken:   e2e.DenomMetadataUsdc.Base,
-	})
-
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
 
 	tx, err := cosmos.BroadcastTx(
 		bCtx,
 		broadcaster,
-		nw.FiatTfRoles.Owner,
-		msgs...,
+		nw.CCTPRoles.TokenController,
+		&cctptypes.MsgLinkTokenPair{
+			From:         nw.CCTPRoles.TokenController.FormattedAddress(),
+			RemoteDomain: 0,
+			RemoteToken:  burnToken,
+			LocalToken:   e2e.DenomMetadataUsdc.Base,
+		},
 	)
-	require.NoError(t, err, "error submitting add public keys tx")
-	require.Zero(t, tx.Code, "cctp add pub keys transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+	require.NoError(t, err, "error linking token pair")
+	require.Zero(t, tx.Code, "cctp link token pair transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	t.Logf("Submitted add public keys tx: %s", tx.TxHash)
 
 	cctpModuleAccount := authtypes.NewModuleAddress(cctptypes.ModuleName).String()
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MasterMinter.KeyName(),
-		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount, "-b", "block",
+		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount,
 	)
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+e2e.DenomMetadataUsdc.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+e2e.DenomMetadataUsdc.Base,
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 

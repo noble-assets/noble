@@ -8,7 +8,6 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -83,6 +82,7 @@ func NobleEncoding() *testutil.TestEncodingConfig {
 
 	// register custom types
 	fiattokenfactorytypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	cctptypes.RegisterInterfaces(cfg.InterfaceRegistry)
 	return &cfg
 }
 
@@ -135,17 +135,19 @@ func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.Ch
 		if setupAllCircleRoles {
 			allFiatTFRoles := []cosmos.GenesisKV{
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: nw.FiatTfRoles.MasterMinter.FormattedAddress()}),
-				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintersList", []fiattokenfactorytypes.Minters{{Address: nw.FiatTfRoles.Minter.FormattedAddress(), Allowance: sdktypes.Coin{Denom: DenomMetadataUsdc.Base, Amount: math.NewInt(100_00_000)}}}),
+				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintersList", []fiattokenfactorytypes.Minters{{Address: nw.FiatTfRoles.Minter.FormattedAddress(), Allowance: sdk.Coin{Denom: DenomMetadataUsdc.Base, Amount: math.NewInt(100_00_000)}}}),
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.pauser", fiattokenfactorytypes.Pauser{Address: nw.FiatTfRoles.Pauser.FormattedAddress()}),
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.blacklister", fiattokenfactorytypes.Blacklister{Address: nw.FiatTfRoles.Blacklister.FormattedAddress()}),
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: nw.FiatTfRoles.MasterMinter.FormattedAddress()}),
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.minterControllerList", []fiattokenfactorytypes.MinterController{{Minter: nw.FiatTfRoles.Minter.FormattedAddress(), Controller: nw.FiatTfRoles.MinterController.FormattedAddress()}}),
 				cosmos.NewGenesisKV("app_state.cctp", cctptypes.GenesisState{
-					Owner:              nw.CCTPRoles.Owner.FormattedAddress(),
-					AttesterManager:    nw.CCTPRoles.AttesterManager.FormattedAddress(),
-					TokenController:    nw.CCTPRoles.TokenController.FormattedAddress(),
-					NextAvailableNonce: &cctptypes.Nonce{Nonce: 0},
-					SignatureThreshold: &cctptypes.SignatureThreshold{Amount: 2},
+					Owner:                             nw.CCTPRoles.Owner.FormattedAddress(),
+					AttesterManager:                   nw.CCTPRoles.AttesterManager.FormattedAddress(),
+					TokenController:                   nw.CCTPRoles.TokenController.FormattedAddress(),
+					BurningAndMintingPaused:           &cctptypes.BurningAndMintingPaused{Paused: false},
+					SendingAndReceivingMessagesPaused: &cctptypes.SendingAndReceivingMessagesPaused{Paused: false},
+					NextAvailableNonce:                &cctptypes.Nonce{Nonce: 0},
+					SignatureThreshold:                &cctptypes.SignatureThreshold{Amount: 2},
 				}),
 			}
 			updatedGenesis = append(updatedGenesis, allFiatTFRoles...)
@@ -203,7 +205,7 @@ func createTokenfactoryRoles(ctx context.Context, val *cosmos.ChainNode, setupAl
 		Denom:   chainCfg.Denom,
 		Amount:  math.ZeroInt(),
 	}
-	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []sdktypes.Coin{sdktypes.NewCoin(genesisWallet.Denom, genesisWallet.Amount)})
+	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []sdk.Coin{sdk.NewCoin(genesisWallet.Denom, genesisWallet.Amount)})
 	if err != nil {
 		return FiatTfRoles{}, err
 	}
@@ -269,7 +271,7 @@ func createTokenfactoryRoles(ctx context.Context, val *cosmos.ChainNode, setupAl
 	}
 
 	for _, wallet := range genesisWallets {
-		err = val.AddGenesisAccount(ctx, wallet.Address, []sdktypes.Coin{sdktypes.NewCoin(wallet.Denom, wallet.Amount)})
+		err = val.AddGenesisAccount(ctx, wallet.Address, []sdk.Coin{sdk.NewCoin(wallet.Denom, wallet.Amount)})
 		if err != nil {
 			return FiatTfRoles{}, err
 		}
@@ -295,7 +297,7 @@ func createAuthorityRole(ctx context.Context, val *cosmos.ChainNode) (ibc.Wallet
 		Denom:   chainCfg.Denom,
 		Amount:  math.ZeroInt(),
 	}
-	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []sdktypes.Coin{sdktypes.NewCoin(genesisWallet.Denom, genesisWallet.Amount)})
+	err = val.AddGenesisAccount(ctx, genesisWallet.Address, []sdk.Coin{sdk.NewCoin(genesisWallet.Denom, genesisWallet.Amount)})
 	if err != nil {
 		return nil, err
 	}
@@ -364,6 +366,9 @@ func createCCTPRoles(ctx context.Context, val *cosmos.ChainNode) (CCTPRoles, err
 // setupAllCircleRoles: if true, all Tokenfactory and CCTP roles will be created and setup at genesis,
 // if false, only the Owner role will be created
 func NobleSpinUp(t *testing.T, ctx context.Context, setupAllCircleRoles bool) (nw NobleWrapper) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("noble", "noblepub")
+
 	rep := testreporter.NewNopReporter()
 	eRep := rep.RelayerExecReporter(t)
 
@@ -415,6 +420,9 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllCircleRoles bool)
 	client *client.Client,
 	network string,
 ) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("noble", "noblepub")
+
 	rep = testreporter.NewNopReporter()
 	eRep = rep.RelayerExecReporter(t)
 
@@ -577,7 +585,7 @@ func configureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, m
 	expectedShowMinters := fiattokenfactorytypes.QueryGetMintersResponse{
 		Minters: fiattokenfactorytypes.Minters{
 			Address: minter.FormattedAddress(),
-			Allowance: sdktypes.Coin{
+			Allowance: sdk.Coin{
 				Denom:  "uusdc",
 				Amount: math.NewInt(allowance),
 			},

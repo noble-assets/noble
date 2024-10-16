@@ -18,7 +18,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// run `make local-image`to rebuild updated binary before running test
 func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -35,36 +34,33 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	user := interchaintest.GetAndFundTestUsers(t, ctx, "wallet", math.OneInt(), noble)[0]
 
 	_, err := nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MasterMinter.KeyName(),
-		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), nw.FiatTfRoles.Minter.FormattedAddress(), "-b", "block",
+		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), nw.FiatTfRoles.Minter.FormattedAddress(),
 	)
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", nw.FiatTfRoles.Minter.FormattedAddress(), "1000000000000"+e2e.DenomMetadataUsdc.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", nw.FiatTfRoles.Minter.FormattedAddress(), "1000000000000"+e2e.DenomMetadataUsdc.Base,
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.Minter.KeyName(),
-		"fiat-tokenfactory", "mint", user.FormattedAddress(), "1000000000000"+e2e.DenomMetadataUsdc.Base, "-b", "block",
+		"fiat-tokenfactory", "mint", user.FormattedAddress(), "1000000000000"+e2e.DenomMetadataUsdc.Base,
 	)
 	require.NoError(t, err, "failed to execute mint to user tx")
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MasterMinter.KeyName(),
-		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), cctptypes.ModuleAddress.String(), "-b", "block",
+		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), cctptypes.ModuleAddress.String(),
 	)
 	require.NoError(t, err, "failed to configure cctp minter controller")
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctptypes.ModuleAddress.String(), "1000000000000"+e2e.DenomMetadataUsdc.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctptypes.ModuleAddress.String(), "1000000000000"+e2e.DenomMetadataUsdc.Base,
 	)
 	require.NoError(t, err, "failed to configure cctp minter")
 
 	// ----
 
 	broadcaster := cosmos.NewBroadcaster(t, noble)
-	// broadcaster.ConfigureClientContextOptions(func(clientContext sdkclient.Context) sdkclient.Context {
-	// 	return clientContext.WithBroadcastMode(flags.BroadcastBlock)
-	// })
 
 	burnToken := make([]byte, 32)
 	copy(burnToken[12:], common.FromHex("0x07865c6E87B9F70255377e024ace6630C1Eaa37F"))
@@ -72,32 +68,38 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 	tokenMessenger := make([]byte, 32)
 	copy(tokenMessenger[12:], common.FromHex("0xD0C3da58f55358142b8d3e06C1C30c5C6114EFE8"))
 
-	msgs := []sdk.Msg{}
-
-	msgs = append(msgs, &cctptypes.MsgAddRemoteTokenMessenger{
-		From:     nw.FiatTfRoles.Owner.FormattedAddress(),
-		DomainId: 0,
-		Address:  tokenMessenger,
-	})
-
-	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
-		From:         nw.FiatTfRoles.Owner.FormattedAddress(),
-		RemoteDomain: 0,
-		RemoteToken:  burnToken,
-		LocalToken:   e2e.DenomMetadataUsdc.Base,
-	})
-
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
 
 	tx, err := cosmos.BroadcastTx(
 		bCtx,
 		broadcaster,
-		nw.FiatTfRoles.Owner,
-		msgs...,
+		nw.CCTPRoles.Owner,
+		&cctptypes.MsgAddRemoteTokenMessenger{
+			From:     nw.FiatTfRoles.Owner.FormattedAddress(),
+			DomainId: 0,
+			Address:  tokenMessenger,
+		},
 	)
-	require.NoError(t, err, "error configuring remote domain")
-	require.Zero(t, tx.Code, "configuring remote domain failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+	require.NoError(t, err, "error adding remote token messenger")
+	require.Zero(t, tx.Code, "adding remote token messenger failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+
+	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
+	defer bCancel()
+
+	tx, err = cosmos.BroadcastTx(
+		bCtx,
+		broadcaster,
+		nw.CCTPRoles.TokenController,
+		&cctptypes.MsgLinkTokenPair{
+			From:         nw.CCTPRoles.TokenController.FormattedAddress(),
+			RemoteDomain: 0,
+			RemoteToken:  burnToken,
+			LocalToken:   e2e.DenomMetadataUsdc.Base,
+		},
+	)
+	require.NoError(t, err, "error linking token pair")
+	require.Zero(t, tx.Code, "linking token pair failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	beforeBurnBal, err := noble.GetBalance(ctx, user.FormattedAddress(), e2e.DenomMetadataUsdc.Base)
 	require.NoError(t, err)
@@ -107,7 +109,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 
 	destinationCaller := []byte("12345678901234567890123456789012")
 
-	depositForBurnWithCallerNoble := &cctptypes.MsgDepositForBurnWithCaller{
+	msgDepositForBurnWithCallerNoble := &cctptypes.MsgDepositForBurnWithCaller{
 		From:              user.FormattedAddress(),
 		Amount:            math.NewInt(1000000),
 		BurnToken:         e2e.DenomMetadataUsdc.Base,
@@ -120,7 +122,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 		bCtx,
 		broadcaster,
 		user,
-		depositForBurnWithCallerNoble,
+		msgDepositForBurnWithCallerNoble,
 	)
 	require.NoError(t, err, "error broadcasting msgDepositForBurnWithCaller")
 	require.Zero(t, tx.Code, "msgDepositForBurnWithCaller failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
@@ -142,7 +144,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 
 			require.Equal(t, uint64(0), depositForBurn.Nonce)
 			require.Equal(t, expectedBurnToken, depositForBurn.BurnToken)
-			require.Equal(t, depositForBurnWithCallerNoble.Amount, depositForBurn.Amount)
+			require.Equal(t, msgDepositForBurnWithCallerNoble.Amount, depositForBurn.Amount)
 			require.Equal(t, user.FormattedAddress(), depositForBurn.Depositor)
 			require.Equal(t, mintRecipient, depositForBurn.MintRecipient)
 			require.Equal(t, uint32(0), depositForBurn.DestinationDomain)
@@ -161,7 +163,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 			messageSender := make([]byte, 32)
 			copy(messageSender[12:], sdk.MustAccAddressFromBech32(cctptypes.ModuleAddress.String()))
 
-			expectedBurnToken := crypto.Keccak256([]byte(depositForBurnWithCallerNoble.BurnToken))
+			expectedBurnToken := crypto.Keccak256([]byte(msgDepositForBurnWithCallerNoble.BurnToken))
 
 			moduleAddress := make([]byte, 32)
 			copy(moduleAddress[12:], sdk.MustAccAddressFromBech32(user.FormattedAddress()))
@@ -179,7 +181,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 
 			require.Equal(t, uint32(0), body.Version)
 			require.Equal(t, mintRecipient, body.MintRecipient)
-			require.Equal(t, depositForBurnWithCallerNoble.Amount, body.Amount)
+			require.Equal(t, msgDepositForBurnWithCallerNoble.Amount, body.Amount)
 			require.Equal(t, expectedBurnToken, body.BurnToken)
 			require.Equal(t, moduleAddress, body.MessageSender)
 		}

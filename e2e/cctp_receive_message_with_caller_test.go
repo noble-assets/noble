@@ -10,14 +10,14 @@ import (
 	"testing"
 	"time"
 
-	cosmossdk_io_math "cosmossdk.io/math"
+	math "cosmossdk.io/math"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/noble-assets/noble/e2e"
+	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/stretchr/testify/require"
 )
@@ -33,8 +33,9 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	noble := nw.Chain
 	nobleValidator := noble.Validators[0]
 
+	broadcaster := cosmos.NewBroadcaster(t, noble)
+
 	attesters := make([]*ecdsa.PrivateKey, 2)
-	msgs := make([]sdk.Msg, 2)
 
 	// attester - ECDSA public key (Circle will own these keys for mainnet)
 	for i := range attesters {
@@ -47,36 +48,25 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 
 		attesterPub := hex.EncodeToString(pubKey)
 
+		bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
+		defer bCancel()
+
 		// Adding an attester to protocal
-		msgs[i] = &cctptypes.MsgEnableAttester{
-			From:     nw.FiatTfRoles.Owner.FormattedAddress(),
-			Attester: attesterPub,
-		}
+		tx, err := cosmos.BroadcastTx(
+			bCtx,
+			broadcaster,
+			nw.CCTPRoles.AttesterManager,
+			&cctptypes.MsgEnableAttester{
+				From:     nw.CCTPRoles.AttesterManager.FormattedAddress(),
+				Attester: attesterPub,
+			},
+		)
+		require.NoError(t, err, "error enabling attester")
+		require.Zero(t, tx.Code, "cctp enable attester transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 	}
-
-	broadcaster := cosmos.NewBroadcaster(t, noble)
-	// broadcaster.ConfigureClientContextOptions(func(clientContext sdkclient.Context) sdkclient.Context {
-	// 	return clientContext.WithBroadcastMode(flags.BroadcastBlock)
-	// })
-
-	t.Log("preparing to submit add public keys tx")
 
 	burnToken := make([]byte, 32)
 	copy(burnToken[12:], common.FromHex("0x07865c6E87B9F70255377e024ace6630C1Eaa37F"))
-	msgs = append(msgs, &cctptypes.MsgLinkTokenPair{
-		From:         nw.FiatTfRoles.Owner.FormattedAddress(),
-		RemoteDomain: 0,
-		RemoteToken:  burnToken,
-		LocalToken:   e2e.DenomMetadataUsdc.Base,
-	})
-
-	tokenMessenger := make([]byte, 32)
-	copy(tokenMessenger[12:], common.FromHex("0xBd3fa81B58Ba92a82136038B25aDec7066af3155"))
-	msgs = append(msgs, &cctptypes.MsgAddRemoteTokenMessenger{
-		From:     nw.FiatTfRoles.Owner.FormattedAddress(),
-		DomainId: 0,
-		Address:  tokenMessenger,
-	})
 
 	bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
@@ -84,13 +74,35 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	tx, err := cosmos.BroadcastTx(
 		bCtx,
 		broadcaster,
-		nw.FiatTfRoles.Owner,
-		msgs...,
+		nw.CCTPRoles.TokenController,
+		&cctptypes.MsgLinkTokenPair{
+			From:         nw.CCTPRoles.TokenController.FormattedAddress(),
+			RemoteDomain: 0,
+			RemoteToken:  burnToken,
+			LocalToken:   e2e.DenomMetadataUsdc.Base,
+		},
 	)
-	require.NoError(t, err, "error submitting add public keys tx")
-	require.Zero(t, tx.Code, "cctp add pub keys transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
+	require.NoError(t, err, "error linking token pair")
+	require.Zero(t, tx.Code, "cctp link token pair transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
-	t.Logf("Submitted add public keys tx: %s", tx.TxHash)
+	tokenMessenger := make([]byte, 32)
+	copy(tokenMessenger[12:], common.FromHex("0xBd3fa81B58Ba92a82136038B25aDec7066af3155"))
+
+	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
+	defer bCancel()
+
+	tx, err = cosmos.BroadcastTx(
+		bCtx,
+		broadcaster,
+		nw.CCTPRoles.Owner,
+		&cctptypes.MsgAddRemoteTokenMessenger{
+			From:     nw.CCTPRoles.Owner.FormattedAddress(),
+			DomainId: 0,
+			Address:  tokenMessenger,
+		},
+	)
+	require.NoError(t, err, "error adding remote token messenger")
+	require.Zero(t, tx.Code, "cctp adding remote token messenger transaction failed: %s - %s - %s", tx.Codespace, tx.RawLog, tx.Data)
 
 	_, bCancel = context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
@@ -98,12 +110,12 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	cctpModuleAccount := authtypes.NewModuleAddress(cctptypes.ModuleName).String()
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MasterMinter.KeyName(),
-		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount, "-b", "block",
+		"fiat-tokenfactory", "configure-minter-controller", nw.FiatTfRoles.MinterController.FormattedAddress(), cctpModuleAccount,
 	)
 	require.NoError(t, err, "failed to execute configure minter controller tx")
 
 	_, err = nobleValidator.ExecTx(ctx, nw.FiatTfRoles.MinterController.KeyName(),
-		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+e2e.DenomMetadataUsdc.Base, "-b", "block",
+		"fiat-tokenfactory", "configure-minter", cctpModuleAccount, "1000000"+e2e.DenomMetadataUsdc.Base,
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
@@ -121,15 +133,17 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	depositForBurn := cctptypes.BurnMessage{
 		BurnToken:     burnToken,
 		MintRecipient: burnRecipientPadded,
-		Amount:        cosmossdk_io_math.NewInt(1000000),
+		Amount:        math.NewInt(1000000),
 		MessageSender: burnRecipientPadded,
 	}
 
 	depositForBurnBz, err := depositForBurn.Bytes()
 	require.NoError(t, err)
 
+	relayer := interchaintest.GetAndFundTestUsers(t, ctx, "relayer", math.OneInt(), noble)[0]
+
 	destinationCaller := make([]byte, 32)
-	copy(destinationCaller[12:], nw.FiatTfRoles.Owner.Address())
+	copy(destinationCaller[12:], relayer.Address())
 
 	wrappedDepositForBurn := cctptypes.Message{
 		Version:           0,
@@ -168,12 +182,13 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 
 	bCtx, bCancel = context.WithTimeout(ctx, 20*time.Second)
 	defer bCancel()
+
 	tx, err = cosmos.BroadcastTx(
 		bCtx,
 		broadcaster,
-		nw.FiatTfRoles.Owner,
+		relayer,
 		&cctptypes.MsgReceiveMessage{ //note: all messages that go to noble go through MsgReceiveMessage
-			From:        nw.FiatTfRoles.Owner.FormattedAddress(),
+			From:        relayer.FormattedAddress(),
 			Message:     wrappedDepositForBurnBz,
 			Attestation: attestationBurn,
 		},
@@ -186,5 +201,5 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	balance, err := noble.GetBalance(ctx, nobleReceiver, e2e.DenomMetadataUsdc.Base)
 	require.NoError(t, err)
 
-	require.Equal(t, int64(1000000), balance)
+	require.Equal(t, math.NewInt(1000000), balance)
 }
