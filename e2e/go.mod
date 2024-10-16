@@ -4,7 +4,7 @@ go 1.22.7
 
 require (
 	cosmossdk.io/math v1.3.0
-	github.com/circlefin/noble-cctp v0.0.0-20240510135541-253cf7eb9436
+	github.com/circlefin/noble-cctp v0.0.0-20241016210224-38595d108987
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241015182229-c20bd0c8442f
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogoproto v1.7.0
@@ -38,7 +38,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
+	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
 	github.com/ChainSafe/go-schnorrkel/1 v0.0.0-00010101000000-000000000000 // indirect
 	github.com/ComposableFi/go-subkey/v2 v2.0.0-tm03420 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
@@ -287,10 +287,6 @@ require (
 replace (
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 	github.com/ChainSafe/go-schnorrkel/1 => github.com/ChainSafe/go-schnorrkel v1.0.0
-
-	// TODO: use internal circlefin/noble-cctp
-	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20241016141630-655a9c6df416
-	github.com/circlefin/noble-cctp/api => github.com/circlefin/noble-cctp-private/api v0.0.0-20241016141630-655a9c6df416
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 

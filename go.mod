@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	github.com/circlefin/noble-cctp v0.0.0-20240510135541-253cf7eb9436
+	github.com/circlefin/noble-cctp v0.0.0-20241016210224-38595d108987
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241015182229-c20bd0c8442f
 	github.com/cometbft/cometbft v0.38.12
 	github.com/cosmos/cosmos-db v1.0.2
@@ -57,7 +57,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
-	github.com/circlefin/noble-cctp/api v0.0.0-00010101000000-000000000000 // indirect
+	github.com/circlefin/noble-cctp/api v0.0.0-20241016210224-38595d108987 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/cockroachdb/errors v1.11.3 // indirect
 	github.com/cockroachdb/fifo v0.0.0-20240606204812-0bbfbd93a7ce // indirect
@@ -171,6 +171,7 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
@@ -224,10 +225,6 @@ require (
 )
 
 replace (
-	// TODO: use internal circlefin/noble-cctp
-	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20241016141630-655a9c6df416
-	github.com/circlefin/noble-cctp/api => github.com/circlefin/noble-cctp-private/api v0.0.0-20241016141630-655a9c6df416
-
 	// use cosmos flavored gogo/protobuf
 	// https://github.com/cosmos/cosmos-sdk/issues/8469
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
