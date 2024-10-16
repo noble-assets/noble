@@ -76,7 +76,7 @@ func TestCCTP_DepositForBurnWithCaller(t *testing.T) {
 		broadcaster,
 		nw.CCTPRoles.Owner,
 		&cctptypes.MsgAddRemoteTokenMessenger{
-			From:     nw.FiatTfRoles.Owner.FormattedAddress(),
+			From:     nw.CCTPRoles.Owner.FormattedAddress(),
 			DomainId: 0,
 			Address:  tokenMessenger,
 		},
