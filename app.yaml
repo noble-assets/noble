@@ -27,6 +27,8 @@ modules:
           permissions: [ burner, minter ]
         - account: fiat-tokenfactory
           permissions: [ burner, minter ]
+        - account: cctp
+          permissions: [ burner, minter ]
         - account: halo
           permissions: [ burner, minter ]
         - account: florin
