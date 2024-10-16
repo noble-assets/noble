@@ -31,8 +31,8 @@ import (
 	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	"github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
-	authoritykeeper "github.com/noble-assets/authority/x/authority/keeper"
-	authoritytypes "github.com/noble-assets/authority/x/authority/types"
+	authoritykeeper "github.com/noble-assets/authority/keeper"
+	authoritytypes "github.com/noble-assets/authority/types"
 )
 
 func CreateUpgradeHandler(
@@ -142,7 +142,8 @@ func CreateUpgradeHandler(
 }
 
 // MigrateValidatorAccounts performs a migration of all validator operators to
-// permanently locked vesting accounts. TODO: Handle inactive validators.
+// permanently locked vesting accounts. NOTE: In a future upgrade, think about
+// clawing back inactive validator staking tokens.
 func MigrateValidatorAccounts(ctx context.Context, accountKeeper authkeeper.AccountKeeper, stakingKeeper *stakingkeeper.Keeper) {
 	validators, _ := stakingKeeper.GetAllValidators(ctx)
 	for _, validator := range validators {

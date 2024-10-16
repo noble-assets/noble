@@ -38,7 +38,7 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"
 	_ "github.com/cosmos/cosmos-sdk/x/staking"
 	_ "github.com/monerium/module-noble/v2"
-	_ "github.com/noble-assets/authority/x/authority"
+	_ "github.com/noble-assets/authority"
 	_ "github.com/noble-assets/forwarding/v2/x/forwarding"
 	_ "github.com/noble-assets/halo/v2"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
@@ -58,18 +58,15 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-
 	// Circle Modules
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
-
 	// Ondo Modules
 	aurakeeper "github.com/ondoprotocol/usdy-noble/v2/keeper"
 	// Hashnote Modules
@@ -77,7 +74,7 @@ import (
 	// Monerium Modules
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 	// Noble Modules
-	authoritykeeper "github.com/noble-assets/authority/x/authority/keeper"
+	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/x/forwarding/keeper"
 )
 
@@ -122,10 +119,10 @@ type App struct {
 	FTFKeeper  *ftfkeeper.Keeper
 	// Ondo Modules
 	AuraKeeper *aurakeeper.Keeper
-	// Monerium Modules
-	FlorinKeeper *florinkeeper.Keeper
 	// Hashnote Modules
 	HaloKeeper *halokeeper.Keeper
+	// Monerium Modules
+	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper

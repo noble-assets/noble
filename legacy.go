@@ -24,7 +24,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	soloclient "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-	authoritytypes "github.com/noble-assets/authority/x/authority/types"
+	authoritytypes "github.com/noble-assets/authority/types"
 	"github.com/noble-assets/forwarding/v2/x/forwarding"
 )
 

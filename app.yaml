@@ -28,7 +28,6 @@ modules:
         - account: fiat-tokenfactory
           permissions: [ burner, minter ]
         - account: cctp
-          permissions: [ burner, minter ]
         - account: halo
           permissions: [ burner, minter ]
         - account: florin
@@ -43,7 +42,6 @@ modules:
     config:
       "@type": cosmos.bank.module.v1.Module
       blocked_module_accounts_override:
-      # TODO: Add any modules?
         [ auth, bonded_tokens_pool, not_bonded_tokens_pool ]
       authority: authority # Utilize our custom x/authority module.
   - name: consensus
@@ -93,20 +91,20 @@ modules:
     config:
       "@type": circle.fiattokenfactory.module.v1.Module
   
-  # Ondo Module
+  # Ondo Modules
   - name: aura
     config:
       "@type": aura.module.v1.Module
       denom: ausdy
   
-  # Hashnote Module
+  # Hashnote Modules
   - name: halo
     config:
       "@type": halo.module.v1.Module
       denom: uusyc
       underlying: uusdc
   
-  # Monerium Module
+  # Monerium Modules
   - name: florin
     config:
       "@type": florin.module.v1.Module

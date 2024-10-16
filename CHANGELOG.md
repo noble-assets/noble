@@ -2,31 +2,33 @@
 
 ## v8.0.0
 
-*October 17, 2024* 
+*Oct 17, 2024*
 
-This is the Helium major release of Noble. It upgrades the Noble
-binary to Cosmos SDK version 50 and IBC-Go to version 8.
-In addition, it replaces the Paramauthority module with an in-house built
-[Authority][authority] module. This module is used to assist with governance
-tasks such as chain upgrades and IBC client substitutions.
+This is the Helium major release of Noble. It upgrades the Noble's core
+dependencies, namely CometBFT (f.k.a. Tendermint), Cosmos SDK, and IBC to their
+latest stable release [Eden]. In addition to this upgrade, it also replaces the
+legacy [ParamAuthority] module with an in-house build [Authority] module. This
+module allows the Noble Maintenance Multisig to enact governance gated actions
+like chain upgrades and IBC client substitutions.
 
-The following Noble specific modules have been updated to SDK v50 and
-IBC-Go v8:
+The following modules have specifically been upgraded to Cosmos SDK `v0.50.x`
 
-- [cctp]
-- [fiat-tokenfactory]
-- [aura]
-- [halo]
-- [florin]
-- [forwarding]
+- [FiatTokenFactory] — Circle's USD Coin
+- [CCTP] — Circle's Cross Chain Transfer Protocol
+- [Aura] — Ondo's US Dollar Yield Token
+- [Halo] — Hashnote's US Yield Coin
+- [Florin] — Monerium's EUR emoney
+- [Forwarding] — Noble's Intents System
 
+[aura]: https://github.com/ondoprotocol/usdy-noble
 [authority]: https://github.com/noble-assets/authority
 [cctp]: https://github.com/circlefin/noble-cctp
-[fiat-tokenfactory]: https://github.com/circlefin/noble-fiattokenfactory
-[aura]: https://github.com/ondoprotocol/usdy-noble
-[halo]: https://github.com/noble-assets/halo
+[eden]: https://medium.com/the-interchain-foundation/elevating-the-cosmos-sdk-eden-v0-50-20a554e16e43
 [florin]: https://github.com/monerium/module-noble
 [forwarding]: https://github.com/noble-assets/forwarding
+[halo]: https://github.com/noble-assets/halo
+[fiattokenfactory]: https://github.com/circlefin/noble-fiattokenfactory
+[paramauthority]: https://github.com/strangelove-ventures/paramauthority
 
 ## v7.0.0
 
@@ -241,3 +243,4 @@ In response to multiple IBC channels expiring on Noble's mainnet network, it was
 ## Previous Changes
 
 This changelog has yet to be fully initialized. For previous versions please refer to the release notes for a summary of changes.
+

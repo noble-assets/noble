@@ -22,17 +22,17 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
 	github.com/cosmos/ibc-go/v8 v8.5.1
-	github.com/monerium/module-noble/v2 v2.0.0-rc.0
-	github.com/noble-assets/authority v0.0.0-20240522213936-d3f37fc6227c
+	github.com/monerium/module-noble/v2 v2.0.0-rc.3.0.20241009233532-f2109c84b6c1
+	github.com/noble-assets/authority v1.0.0-rc.0
 	github.com/noble-assets/forwarding/v2 v2.0.0-20240829085026-e00f6bfe13f1
-	github.com/noble-assets/halo/v2 v2.0.0-20241008114200-741981ec84a4
-	github.com/ondoprotocol/usdy-noble/v2 v2.0.0-20241002161528-0a224c2fc5fd
+	github.com/noble-assets/halo/v2 v2.0.0-20240928083543-bd3392537219
+	github.com/ondoprotocol/usdy-noble/v2 v2.0.0-20241008190859-099f72833941
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 )
 
 require (
-	adr36.dev v0.0.0-20240916174542-e2c73055e6d4 // indirect
+	adr36.dev v1.0.0-rc.0 // indirect
 	cloud.google.com/go v0.115.1 // indirect
 	cloud.google.com/go/auth v0.9.3 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
@@ -89,7 +89,7 @@ require (
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
@@ -199,14 +199,14 @@ require (
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.27.0 // indirect
+	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/oauth2 v0.22.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/term v0.24.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/term v0.25.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
 	google.golang.org/api v0.196.0 // indirect
 	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
@@ -225,16 +225,12 @@ require (
 
 replace (
 	// TODO: use internal circlefin/noble-cctp
-	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20240911160924-cb4a75d00fa7
-	github.com/circlefin/noble-cctp/api => github.com/circlefin/noble-cctp-private/api v0.0.0-20240826224125-5e939280b531
+	github.com/circlefin/noble-cctp => github.com/circlefin/noble-cctp-private v0.0.0-20241016141630-655a9c6df416
+	github.com/circlefin/noble-cctp/api => github.com/circlefin/noble-cctp-private/api v0.0.0-20241016141630-655a9c6df416
 
-	// TODO: look into removing
 	// use cosmos flavored gogo/protobuf
 	// https://github.com/cosmos/cosmos-sdk/issues/8469
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	// TODO: use internal ondo fork
-	github.com/ondoprotocol/usdy-noble/v2 => github.com/noble-assets/aura-fork/v2 v2.0.0-20241008121405-9d4f45d8e81d
 
 	// use cosmos compatible syndtr/goleveldb
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

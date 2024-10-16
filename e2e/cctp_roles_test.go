@@ -6,7 +6,7 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/circlefin/noble-cctp/x/cctp/types"
-	"github.com/gogo/protobuf/jsonpb"
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/noble-assets/noble/e2e"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
