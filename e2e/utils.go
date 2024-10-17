@@ -476,9 +476,9 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllCircleRoles bool)
 // Fiat Token Factory Helpers //
 ////////////////////////////////
 
-// blacklistAccount blacklists an account and then runs the `show-blacklisted` query to ensure the
+// BlacklistAccount blacklists an account and then runs the `show-blacklisted` query to ensure the
 // account was successfully blacklisted on chain
-func blacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, toBlacklist ibc.Wallet) {
+func BlacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, toBlacklist ibc.Wallet) {
 	_, err := val.ExecTx(ctx, blacklister.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist.FormattedAddress())
 	require.NoError(t, err, "failed to broadcast blacklist message")
 
@@ -508,9 +508,9 @@ func unblacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode
 	require.Error(t, err, "query succeeded, blacklisted account should not exist")
 }
 
-// pauseFiatTF pauses the fiat tokenfactory. It then runs the `show-paused` query to ensure the
+// PauseFiatTF pauses the fiat tokenfactory. It then runs the `show-paused` query to ensure the
 // the tokenfactory was successfully paused
-func pauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pauser ibc.Wallet) {
+func PauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pauser ibc.Wallet) {
 	_, err := val.ExecTx(ctx, pauser.KeyName(), "fiat-tokenfactory", "pause")
 	require.NoError(t, err, "error pausing fiat-tokenfactory")
 
@@ -529,9 +529,9 @@ func pauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pause
 	require.Equal(t, expectedPaused, showPausedResponse)
 }
 
-// unpauseFiatTF pauses the fiat tokenfactory. It then runs the `show-paused` query to ensure the
+// UnpauseFiatTF pauses the fiat tokenfactory. It then runs the `show-paused` query to ensure the
 // the tokenfactory was successfully unpaused
-func unpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pauser ibc.Wallet) {
+func UnpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pauser ibc.Wallet) {
 	_, err := val.ExecTx(ctx, pauser.KeyName(), "fiat-tokenfactory", "unpause")
 	require.NoError(t, err, "error pausing fiat-tokenfactory")
 
@@ -629,8 +629,8 @@ func showMinters(ctx context.Context, val *cosmos.ChainNode, minter ibc.Wallet) 
 	return showMinters, nil
 }
 
-// showOwner queries for the token factory Owner by running: `query fiat-tokenfactory show-owner`.
-func showOwner(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetOwnerResponse, error) {
+// ShowOwner queries for the token factory Owner by running: `query fiat-tokenfactory show-owner`.
+func ShowOwner(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetOwnerResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-owner")
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetOwnerResponse{}, err
