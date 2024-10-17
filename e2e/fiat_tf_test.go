@@ -1699,7 +1699,7 @@ func TestFiatTFAuthzSend(t *testing.T) {
 	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, grantee)
 
 	_, err = val.AuthzExec(ctx, grantee, nestedCmd)
-	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not receive tokens: unauthorized", grantee.FormattedAddress()))
+	require.ErrorContains(t, err, fmt.Sprintf("an address (%s) is blacklisted and can not authorize tokens: unauthorized", receiver.FormattedAddress()))
 
 	bal, err := noble.GetBalance(ctx, receiver.FormattedAddress(), "uusdc")
 	require.NoError(t, err)
