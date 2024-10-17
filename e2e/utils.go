@@ -661,8 +661,8 @@ func ShowMasterMinter(ctx context.Context, val *cosmos.ChainNode) (fiattokenfact
 	return showMMResponse, nil
 }
 
-// showPauser queries for the token factory Pauser by running: `query fiat-tokenfactory show-pauser`.
-func showPauser(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetPauserResponse, error) {
+// ShowPauser queries for the token factory Pauser by running: `query fiat-tokenfactory show-pauser`.
+func ShowPauser(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetPauserResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-pauser")
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetPauserResponse{}, err
@@ -710,8 +710,8 @@ func showBlacklisted(ctx context.Context, val *cosmos.ChainNode, blacklistedWall
 	return showBlacklistedRes, nil
 }
 
-// showPaused queries the paused state of the token factory by running: `query fiat-tokenfactory show-paused`.
-func showPaused(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetPausedResponse, error) {
+// ShowPaused queries the paused state of the token factory by running: `query fiat-tokenfactory show-paused`.
+func ShowPaused(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetPausedResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-paused")
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetPausedResponse{}, err
