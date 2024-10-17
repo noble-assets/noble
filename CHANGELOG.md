@@ -2,7 +2,7 @@
 
 ## v8.0.0
 
-*Oct 17, 2024*
+*Oct 16, 2024*
 
 This is the Helium major release of Noble. It upgrades the Noble's core
 dependencies, namely CometBFT (f.k.a. Tendermint), Cosmos SDK, and IBC to their
