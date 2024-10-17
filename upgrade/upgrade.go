@@ -180,11 +180,11 @@ func MigrateValidatorAccounts(ctx context.Context, accountKeeper authkeeper.Acco
 // BurnSurplusSupply performs a burn of the surplus $STAKE supply.
 func BurnSurplusSupply(ctx context.Context, authority string, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.Keeper) error {
 	supply := bankKeeper.GetSupply(ctx, "ustake")
-	surplus := supply.Sub(sdk.NewCoin(
+	surplus, err := supply.SafeSub(sdk.NewCoin(
 		"ustake", math.NewInt(1_000_000_000_000_000),
 	))
 
-	if !surplus.IsPositive() {
+	if err != nil || !surplus.IsPositive() {
 		return nil
 	}
 
