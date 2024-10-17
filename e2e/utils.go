@@ -498,9 +498,9 @@ func BlacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, 
 	require.Equal(t, expectedBlacklistResponse.Blacklisted, showBlacklistedResponse.Blacklisted)
 }
 
-// unblacklistAccount unblacklists an account and then runs the `show-blacklisted` query to ensure the
+// UnblacklistAccount unblacklists an account and then runs the `show-blacklisted` query to ensure the
 // account was successfully unblacklisted on chain
-func unblacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, unBlacklist ibc.Wallet) {
+func UnblacklistAccount(t *testing.T, ctx context.Context, val *cosmos.ChainNode, blacklister ibc.Wallet, unBlacklist ibc.Wallet) {
 	_, err := val.ExecTx(ctx, blacklister.KeyName(), "fiat-tokenfactory", "unblacklist", unBlacklist.FormattedAddress())
 	require.NoError(t, err, "failed to broadcast blacklist message")
 
@@ -550,8 +550,8 @@ func UnpauseFiatTF(t *testing.T, ctx context.Context, val *cosmos.ChainNode, pau
 	require.Equal(t, expectedUnpaused, showPausedResponse)
 }
 
-// setupMinterAndController creates a minter controller and minter. It also sets up a minter with an specified allowance of `uusdc`
-func setupMinterAndController(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, val *cosmos.ChainNode, masterMinter ibc.Wallet, allowance int64) (minter ibc.Wallet, minterController ibc.Wallet) {
+// SetupMinterAndController creates a minter controller and minter. It also sets up a minter with an specified allowance of `uusdc`
+func SetupMinterAndController(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, val *cosmos.ChainNode, masterMinter ibc.Wallet, allowance int64) (minter ibc.Wallet, minterController ibc.Wallet) {
 	w := interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
 	minterController = w[0]
 	minter = w[1]
@@ -559,7 +559,7 @@ func setupMinterAndController(t *testing.T, ctx context.Context, noble *cosmos.C
 	_, err := val.ExecTx(ctx, masterMinter.KeyName(), "fiat-tokenfactory", "configure-minter-controller", minterController.FormattedAddress(), minter.FormattedAddress())
 	require.NoError(t, err, "error configuring minter controller")
 
-	showMC, err := showMinterController(ctx, val, minterController)
+	showMC, err := ShowMinterController(ctx, val, minterController)
 	require.NoError(t, err, "failed to query show-minter-controller")
 	expectedShowMinterController := fiattokenfactorytypes.QueryGetMinterControllerResponse{
 		MinterController: fiattokenfactorytypes.MinterController{
@@ -569,18 +569,18 @@ func setupMinterAndController(t *testing.T, ctx context.Context, noble *cosmos.C
 	}
 	require.Equal(t, expectedShowMinterController.MinterController, showMC.MinterController)
 
-	configureMinter(t, ctx, val, minterController, minter, allowance)
+	ConfigureMinter(t, ctx, val, minterController, minter, allowance)
 
 	return minter, minterController
 }
 
-// configureMinter configures a minter with a specified allowance of `uusdc`. It then runs the `show-minters` query to ensure
+// ConfigureMinter configures a minter with a specified allowance of `uusdc`. It then runs the `show-minters` query to ensure
 // the minter was properly configured
-func configureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, minterController, minter ibc.Wallet, allowance int64) {
+func ConfigureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, minterController, minter ibc.Wallet, allowance int64) {
 	_, err := val.ExecTx(ctx, minterController.KeyName(), "fiat-tokenfactory", "configure-minter", minter.FormattedAddress(), fmt.Sprintf("%duusdc", allowance))
 	require.NoError(t, err, "error configuring minter")
 
-	showMinter, err := showMinters(ctx, val, minter)
+	showMinter, err := ShowMinters(ctx, val, minter)
 	require.NoError(t, err, "failed to query show-minter")
 	expectedShowMinters := fiattokenfactorytypes.QueryGetMintersResponse{
 		Minters: fiattokenfactorytypes.Minters{
@@ -595,9 +595,9 @@ func configureMinter(t *testing.T, ctx context.Context, val *cosmos.ChainNode, m
 	require.Equal(t, expectedShowMinters.Minters, showMinter.Minters)
 }
 
-// showMinterController queries for a specific minter controller by running: `query fiat-tokenfactory show-minter-controller <address>`.
+// ShowMinterController queries for a specific minter controller by running: `query fiat-tokenfactory show-minter-controller <address>`.
 // An error is returned if the minter controller does not exist
-func showMinterController(ctx context.Context, val *cosmos.ChainNode, minterController ibc.Wallet) (fiattokenfactorytypes.QueryGetMinterControllerResponse, error) {
+func ShowMinterController(ctx context.Context, val *cosmos.ChainNode, minterController ibc.Wallet) (fiattokenfactorytypes.QueryGetMinterControllerResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minter-controller", minterController.FormattedAddress())
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetMinterControllerResponse{}, err
@@ -612,9 +612,9 @@ func showMinterController(ctx context.Context, val *cosmos.ChainNode, minterCont
 	return showMinterController, nil
 }
 
-// showMinters queries for a specific minter by running: `query fiat-tokenfactory show-minters <address>`.
+// ShowMinters queries for a specific minter by running: `query fiat-tokenfactory show-minters <address>`.
 // An error is returned if the minter does not exist
-func showMinters(ctx context.Context, val *cosmos.ChainNode, minter ibc.Wallet) (fiattokenfactorytypes.QueryGetMintersResponse, error) {
+func ShowMinters(ctx context.Context, val *cosmos.ChainNode, minter ibc.Wallet) (fiattokenfactorytypes.QueryGetMintersResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-minters", minter.FormattedAddress())
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetMintersResponse{}, err
@@ -645,8 +645,8 @@ func ShowOwner(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytype
 	return showOwnerResponse, nil
 }
 
-// showMasterMinter queries for the token factory Master Minter by running: `query fiat-tokenfactory show-master-minter`.
-func showMasterMinter(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetMasterMinterResponse, error) {
+// ShowMasterMinter queries for the token factory Master Minter by running: `query fiat-tokenfactory show-master-minter`.
+func ShowMasterMinter(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetMasterMinterResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-master-minter")
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetMasterMinterResponse{}, err
