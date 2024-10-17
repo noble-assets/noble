@@ -1059,8 +1059,8 @@ github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
 github.com/noble-assets/authority v1.0.0-rc.0 h1:mrMhEK3+F2lNRMGJalydAt0gTEK+WGtCW4wV3aU++gM=
 github.com/noble-assets/authority v1.0.0-rc.0/go.mod h1:AyCyM1iP73dHxBsulw0GpZNgPIQvSndWp30pK87nmog=
-github.com/noble-assets/forwarding/v2 v2.0.0-20240829085026-e00f6bfe13f1 h1:ZsQDkY+YtSiLaf9JYhP63JGtKEcKW9h++VCvRcwcWcE=
-github.com/noble-assets/forwarding/v2 v2.0.0-20240829085026-e00f6bfe13f1/go.mod h1:OGbKgjHf/4HHthbilK9RCPsBXUS40LFxRl4cAcNhqwk=
+github.com/noble-assets/forwarding/v2 v2.0.0-20241017154500-56685530d602 h1:yNN1TU1qSAWfWUZBBVK2qQgVoKG4z/Q4JuUXgzyQUcE=
+github.com/noble-assets/forwarding/v2 v2.0.0-20241017154500-56685530d602/go.mod h1:OGbKgjHf/4HHthbilK9RCPsBXUS40LFxRl4cAcNhqwk=
 github.com/noble-assets/halo/v2 v2.0.0-20240928083543-bd3392537219 h1:kFPNHaKQ6L6FY/qcXVe5guZnBmpbx1YVApyxywMSpAs=
 github.com/noble-assets/halo/v2 v2.0.0-20240928083543-bd3392537219/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
