@@ -1945,7 +1945,7 @@ func TestFiatTFIBCOut(t *testing.T) {
 	transfer.Address = "malformed-address1234"
 
 	_, err = noble.SendIBCTransfer(ctx, nobleToGaiaChannelID, nobleWallet.KeyName(), transfer, ibc.TransferOptions{})
-	require.ErrorContains(t, err, "decoding bech32 failed")
+	require.ErrorContains(t, err, "error decoding address")
 
 	// ACTION: Successfully IBC send out a TF token to an address on another chain
 	// EXPECTED: Success;
