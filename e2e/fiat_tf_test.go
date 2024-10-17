@@ -773,3 +773,233 @@ func TestFiatTFRemoveMinter(t *testing.T) {
 	_, err = e2e.ShowMinters(ctx, val, nw.FiatTfRoles.Minter)
 	require.Error(t, err, "minter found; not successfully removed")
 }
+
+func TestFiatTFUpdatePauser(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := e2e.NobleSpinUp(t, ctx, true)
+	noble := nw.Chain
+	val := noble.Validators[0]
+
+	// ACTION: Happy path: Update Pauser
+	// EXPECTED: Success; pauser updated
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "new-pauser-1", math.OneInt(), noble)
+	newPauser1 := w[0]
+
+	_, err := val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-pauser", newPauser1.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-pauser message")
+
+	showPauserRes, err := e2e.ShowPauser(ctx, val)
+	require.NoError(t, err, "failed to query show-pauser")
+	expectedGetPauserResponse := fiattokenfactorytypes.QueryGetPauserResponse{
+		Pauser: fiattokenfactorytypes.Pauser{
+			Address: newPauser1.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetPauserResponse.Pauser, showPauserRes.Pauser)
+
+	// ACTION: Update Pauser while TF is paused
+	// EXPECTED: Success; pauser updated
+	// Status:
+	// 	Pauser: newPauser1
+
+	e2e.PauseFiatTF(t, ctx, val, newPauser1)
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-pauser-2", math.OneInt(), noble)
+	newPauser2 := w[0]
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-pauser", newPauser2.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-pauser message")
+
+	showPauserRes, err = e2e.ShowPauser(ctx, val)
+	require.NoError(t, err, "failed to query show-pauser")
+	expectedGetPauserResponse = fiattokenfactorytypes.QueryGetPauserResponse{
+		Pauser: fiattokenfactorytypes.Pauser{
+			Address: newPauser2.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetPauserResponse.Pauser, showPauserRes.Pauser)
+
+	e2e.UnpauseFiatTF(t, ctx, val, newPauser2)
+
+	// ACTION: Update Pauser from non owner account
+	// EXPECTED: Request fails; pauser not updated
+	// Status:
+	// 	Pauser: newPauser2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
+	newPauser3 := w[0]
+	alice := w[1]
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "update-pauser", newPauser3.FormattedAddress())
+	require.ErrorContains(t, err, "you are not the owner: unauthorized")
+
+	showPauserRes, err = e2e.ShowPauser(ctx, val)
+	require.NoError(t, err, "failed to query show-pauser")
+	require.Equal(t, expectedGetPauserResponse.Pauser, showPauserRes.Pauser)
+
+	// ACTION: Update Pauser from blacklisted owner account
+	// EXPECTED: Success; pauser updated
+	// Status:
+	// 	Pauser: newPauser2
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Owner)
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-pauser", newPauser3.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-pauser message")
+
+	showPauserRes, err = e2e.ShowPauser(ctx, val)
+	require.NoError(t, err, "failed to query show-pauser")
+	expectedGetPauserResponse = fiattokenfactorytypes.QueryGetPauserResponse{
+		Pauser: fiattokenfactorytypes.Pauser{
+			Address: newPauser3.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetPauserResponse.Pauser, showPauserRes.Pauser)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Owner)
+
+	// ACTION: Update Pauser to blacklisted Pauser account
+	// EXPECTED: Success; pauser updated
+	// Status:
+	// 	Pauser: newPauser3
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-pauser-4", math.OneInt(), noble)
+	newPauser4 := w[0]
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, newPauser4)
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-pauser", newPauser4.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-pauser message")
+
+	showPauserRes, err = e2e.ShowPauser(ctx, val)
+	require.NoError(t, err, "failed to query show-pauser")
+	expectedGetPauserResponse = fiattokenfactorytypes.QueryGetPauserResponse{
+		Pauser: fiattokenfactorytypes.Pauser{
+			Address: newPauser4.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetPauserResponse.Pauser, showPauserRes.Pauser)
+}
+
+func TestFiatTFPause(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := e2e.NobleSpinUp(t, ctx, true)
+	noble := nw.Chain
+	val := noble.Validators[0]
+
+	// ACTION: Happy path: Pause TF
+	// EXPECTED: Success; TF is paused
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	// ACTION: Pause TF from an account that is not the Pauser
+	// EXPECTED: Request fails; TF not paused
+	// Status:
+	// 	Paused: true
+
+	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "alice", math.OneInt(), noble)
+	alice := w[0]
+
+	_, err := val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "pause")
+	require.ErrorContains(t, err, "you are not the pauser: unauthorized")
+
+	showPausedRes, err := e2e.ShowPaused(ctx, val)
+	require.NoError(t, err, "error querying for paused state")
+	expectedPaused := fiattokenfactorytypes.QueryGetPausedResponse{
+		Paused: fiattokenfactorytypes.Paused{
+			Paused: false,
+		},
+	}
+	require.Equal(t, expectedPaused, showPausedRes)
+
+	// ACTION: Pause TF from a blacklisted Pauser account
+	// EXPECTED: Success; TF is paused
+	// Status:
+	// 	Paused: false
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Pauser)
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Pauser)
+
+	// ACTION: Pause TF while TF is already paused
+	// EXPECTED: Success; TF remains paused
+	// Status:
+	// 	Paused: true
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+}
+
+func TestFiatTFUnpause(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := e2e.NobleSpinUp(t, ctx, true)
+	noble := nw.Chain
+	val := noble.Validators[0]
+
+	// ACTION: Happy path: Unpause TF
+	// EXPECTED: Success; TF is unpaused
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	// ACTION: Unpause TF from an account that is not a Pauser
+	// EXPECTED: Request fails; TF remains paused
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "alice", math.OneInt(), noble)
+	alice := w[0]
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	_, err := val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "unpause")
+	require.ErrorContains(t, err, "you are not the pauser: unauthorized")
+
+	showPausedRes, err := e2e.ShowPaused(ctx, val)
+	require.NoError(t, err, "error querying for paused state")
+	expectedPaused := fiattokenfactorytypes.QueryGetPausedResponse{
+		Paused: fiattokenfactorytypes.Paused{
+			Paused: true,
+		},
+	}
+	require.Equal(t, expectedPaused, showPausedRes)
+
+	// ACTION: Unpause TF from a blacklisted Pauser account
+	// EXPECTED: Success; TF is unpaused
+	// Status:
+	// 	Paused: true
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Pauser)
+
+	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Pauser)
+
+	// ACTION: Unpause TF while TF is already unpaused
+	// EXPECTED: Success; TF remains unpaused
+	// Status:
+	// 	Paused: false
+
+	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+}
