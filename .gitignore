@@ -7,3 +7,4 @@ release/
 play_sh/
 /heighliner*
 bin/
+build/
