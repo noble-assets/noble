@@ -1003,3 +1003,288 @@ func TestFiatTFUnpause(t *testing.T) {
 
 	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
 }
+
+func TestFiatTFUpdateBlacklister(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := e2e.NobleSpinUp(t, ctx, true)
+	noble := nw.Chain
+	val := noble.Validators[0]
+
+	// ACTION: Happy path: Update Blacklister
+	// EXPECTED: Success; blacklister updated
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "new-blacklister-1", math.OneInt(), noble)
+	newBlacklister1 := w[0]
+
+	_, err := val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister1.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	showBlacklisterRes, err := e2e.ShowBlacklister(ctx, val)
+	require.NoError(t, err, "failed to query show-blacklister")
+	expectedGetBlacklisterResponse := fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: newBlacklister1.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, showBlacklisterRes.Blacklister)
+
+	// ACTION: Update Blacklister while TF is paused
+	// EXPECTED: Success; blacklister updated
+	// Status:
+	// 	Blacklister: newBlacklister1
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-blacklister-2", math.OneInt(), noble)
+	newBlacklister2 := w[0]
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister2.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	showBlacklisterRes, err = e2e.ShowBlacklister(ctx, val)
+	require.NoError(t, err, "failed to query show-blacklister")
+	expectedGetBlacklisterResponse = fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: newBlacklister2.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, showBlacklisterRes.Blacklister)
+
+	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	// ACTION: Update Blacklister from non owner account
+	// EXPECTED: Request fails; blacklister not updated
+	// Status:
+	// 	Blacklister: newBlacklister2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
+	newBlacklister3 := w[0]
+	alice := w[1]
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister3.FormattedAddress())
+	require.ErrorContains(t, err, "you are not the owner: unauthorized")
+
+	showBlacklisterRes, err = e2e.ShowBlacklister(ctx, val)
+	require.NoError(t, err, "failed to query show-blacklister")
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, showBlacklisterRes.Blacklister)
+
+	// ACTION: Update Blacklister from blacklisted owner account
+	// EXPECTED: Success; blacklister updated
+	// Status:
+	// 	Blacklister: newBlacklister2
+
+	e2e.BlacklistAccount(t, ctx, val, newBlacklister2, nw.FiatTfRoles.Owner)
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister3.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	showBlacklisterRes, err = e2e.ShowBlacklister(ctx, val)
+	require.NoError(t, err, "failed to query show-blacklister")
+	expectedGetBlacklisterResponse = fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: newBlacklister3.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, showBlacklisterRes.Blacklister)
+
+	e2e.UnblacklistAccount(t, ctx, val, newBlacklister3, nw.FiatTfRoles.Owner)
+
+	// ACTION: Update Blacklister to blacklisted Blacklister account
+	// EXPECTED: Success; blacklister updated
+	// Status:
+	// 	Blacklister: newBlacklister3
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "new-blacklister-4", math.OneInt(), noble)
+	newBlacklister4 := w[0]
+
+	e2e.BlacklistAccount(t, ctx, val, newBlacklister3, newBlacklister4)
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Owner.KeyName(), "fiat-tokenfactory", "update-blacklister", newBlacklister4.FormattedAddress())
+	require.NoError(t, err, "failed to broadcast update-blacklister message")
+
+	showBlacklisterRes, err = e2e.ShowBlacklister(ctx, val)
+	require.NoError(t, err, "failed to query show-blacklister")
+	expectedGetBlacklisterResponse = fiattokenfactorytypes.QueryGetBlacklisterResponse{
+		Blacklister: fiattokenfactorytypes.Blacklister{
+			Address: newBlacklister4.FormattedAddress(),
+		},
+	}
+	require.Equal(t, expectedGetBlacklisterResponse.Blacklister, showBlacklisterRes.Blacklister)
+}
+
+func TestFiatTFBlacklist(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := e2e.NobleSpinUp(t, ctx, true)
+	noble := nw.Chain
+	val := noble.Validators[0]
+
+	// ACTION: Happy path: Blacklist user
+	// EXPECTED: Success; user blacklisted
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "to-blacklist-1", math.OneInt(), noble)
+	toBlacklist1 := w[0]
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, toBlacklist1)
+
+	// ACTION: Blacklist user while TF is paused
+	// EXPECTED: Success; user blacklisted
+	// Status:
+	// 	blacklisted: toBlacklist1
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "to-blacklist-2", math.OneInt(), noble)
+	toBlacklist2 := w[0]
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, toBlacklist2)
+
+	e2e.UnpauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	// ACTION: Blacklist user from non Blacklister account
+	// EXPECTED: Request failed; user not blacklisted
+	// Status:
+	// 	blacklisted: toBlacklist1, toBlacklist2
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "default", math.OneInt(), noble, noble)
+	toBlacklist3 := w[0]
+	alice := w[1]
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+
+	var preFailedBlacklist, postFailedBlacklist fiattokenfactorytypes.QueryAllBlacklistedResponse
+	_ = json.Unmarshal(res, &preFailedBlacklist)
+	// ignore the error since `pagination` does not unmarshal)
+	require.NotContains(t, preFailedBlacklist.Blacklisted, toBlacklist3.Address())
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist3.FormattedAddress())
+	require.ErrorContains(t, err, "you are not the blacklister: unauthorized")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+	_ = json.Unmarshal(res, &postFailedBlacklist)
+	// ignore the error since `pagination` does not unmarshal)
+	require.ElementsMatch(t, preFailedBlacklist.Blacklisted, postFailedBlacklist.Blacklisted)
+
+	// Blacklist an account while the blacklister is blacklisted
+	// EXPECTED: Success; user blacklisted
+	// Status:
+	// 	blacklisted: toBlacklist1, toBlacklist2
+	// 	not blacklisted: toBlacklist3
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Blacklister)
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, toBlacklist3)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Blacklister)
+
+	// Blacklist an already blacklisted account
+	// EXPECTED: Request fails; user remains blacklisted
+	// Status:
+	// 	blacklisted: toBlacklist1, toBlacklist2, toBlacklist3
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Blacklister.KeyName(), "fiat-tokenfactory", "blacklist", toBlacklist1.FormattedAddress())
+	require.ErrorContains(t, err, "user is already blacklisted")
+
+	showBlacklistedRes, err := e2e.ShowBlacklisted(ctx, val, toBlacklist1)
+	require.NoError(t, err, "failed to query show-blacklisted")
+	expectedBlacklistResponse := fiattokenfactorytypes.QueryGetBlacklistedResponse{
+		Blacklisted: fiattokenfactorytypes.Blacklisted{
+			AddressBz: toBlacklist1.Address(),
+		},
+	}
+	require.Equal(t, expectedBlacklistResponse.Blacklisted, showBlacklistedRes.Blacklisted)
+}
+
+func TestFiatTFUnblacklist(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+
+	nw := e2e.NobleSpinUp(t, ctx, true)
+	noble := nw.Chain
+	val := noble.Validators[0]
+
+	// ACTION: Happy path: Unblacklist user
+	// EXPECTED: Success; user unblacklisted
+
+	w := interchaintest.GetAndFundTestUsers(t, ctx, "blacklist-user-1", math.OneInt(), noble)
+	blacklistedUser1 := w[0]
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, blacklistedUser1)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, blacklistedUser1)
+
+	// ACTION: Unblacklist user while TF is paused
+	// EXPECTED: Success; user unblacklisted
+	// Status:
+	// 	not blacklisted: blacklistedUser1
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, blacklistedUser1)
+
+	e2e.PauseFiatTF(t, ctx, val, nw.FiatTfRoles.Pauser)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, blacklistedUser1)
+
+	// ACTION: Unblacklist user from non Blacklister account
+	// EXPECTED: Request fails; user not unblacklisted
+	// Status:
+	// 	not blacklisted: blacklistedUser1
+
+	w = interchaintest.GetAndFundTestUsers(t, ctx, "alice", math.OneInt(), noble)
+	alice := w[0]
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, blacklistedUser1)
+
+	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+	var preFailedUnblacklist, postFailedUnblacklist fiattokenfactorytypes.QueryAllBlacklistedResponse
+	_ = json.Unmarshal(res, &preFailedUnblacklist)
+	// ignore the error since `pagination` does not unmarshal)
+
+	_, err = val.ExecTx(ctx, alice.KeyName(), "fiat-tokenfactory", "unblacklist", blacklistedUser1.FormattedAddress())
+	require.ErrorContains(t, err, "you are not the blacklister: unauthorized")
+
+	res, _, err = val.ExecQuery(ctx, "fiat-tokenfactory", "list-blacklisted")
+	require.NoError(t, err, "failed to query list-blacklisted")
+	_ = json.Unmarshal(res, &postFailedUnblacklist)
+	// ignore the error since `pagination` does not unmarshal)
+	require.ElementsMatch(t, preFailedUnblacklist.Blacklisted, postFailedUnblacklist.Blacklisted)
+
+	// ACTION: Unblacklist an account while the blacklister is blacklisted
+	// EXPECTED: Success; user unblacklisted
+	// Status:
+	// 	blacklisted: blacklistedUser1
+
+	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Blacklister)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, blacklistedUser1)
+
+	e2e.UnblacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nw.FiatTfRoles.Blacklister)
+
+	// ACTION: Unblacklist an account that is not blacklisted
+	// EXPECTED: Request fails; user remains unblacklisted
+	// Status:
+	// 	not blacklisted: blacklistedUser1
+
+	_, err = val.ExecTx(ctx, nw.FiatTfRoles.Blacklister.KeyName(), "fiat-tokenfactory", "unblacklist", blacklistedUser1.FormattedAddress())
+	require.ErrorContains(t, err, "the specified address is not blacklisted")
+
+	_, err = e2e.ShowBlacklisted(ctx, val, blacklistedUser1)
+	require.Error(t, err, "query succeeded, blacklisted account should not exist")
+}

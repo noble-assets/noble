@@ -677,8 +677,8 @@ func ShowPauser(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytyp
 	return showPauserRes, nil
 }
 
-// showBlacklister queries for the token factory Blacklister by running: `query fiat-tokenfactory show-blacklister`.
-func showBlacklister(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetBlacklisterResponse, error) {
+// ShowBlacklister queries for the token factory Blacklister by running: `query fiat-tokenfactory show-blacklister`.
+func ShowBlacklister(ctx context.Context, val *cosmos.ChainNode) (fiattokenfactorytypes.QueryGetBlacklisterResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklister")
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetBlacklisterResponse{}, err
@@ -693,9 +693,9 @@ func showBlacklister(ctx context.Context, val *cosmos.ChainNode) (fiattokenfacto
 	return showBlacklisterRes, nil
 }
 
-// showBlacklisted queries for a specific blacklisted address by running: `query fiat-tokenfactory show-blacklisted <address>`.
+// ShowBlacklisted queries for a specific blacklisted address by running: `query fiat-tokenfactory show-blacklisted <address>`.
 // An error is returned if the address is not blacklisted
-func showBlacklisted(ctx context.Context, val *cosmos.ChainNode, blacklistedWallet ibc.Wallet) (fiattokenfactorytypes.QueryGetBlacklistedResponse, error) {
+func ShowBlacklisted(ctx context.Context, val *cosmos.ChainNode, blacklistedWallet ibc.Wallet) (fiattokenfactorytypes.QueryGetBlacklistedResponse, error) {
 	res, _, err := val.ExecQuery(ctx, "fiat-tokenfactory", "show-blacklisted", blacklistedWallet.FormattedAddress())
 	if err != nil {
 		return fiattokenfactorytypes.QueryGetBlacklistedResponse{}, err
