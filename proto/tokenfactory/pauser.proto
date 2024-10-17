@@ -1,8 +1,0 @@
-syntax = "proto3";
-package noble.tokenfactory;
-
-option go_package = "github.com/noble-assets/noble/v7/x/tokenfactory/types";
-
-message Pauser {
-  string address = 1;
-}
