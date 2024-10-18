@@ -31,6 +31,8 @@ require (
 	github.com/spf13/viper v1.19.0
 )
 
+replace github.com/monerium/module-noble/v2 => github.com/noble-assets/florin-fork/v2 v2.0.0-20241018103000-2902294dfcdb
+
 require (
 	adr36.dev v1.0.0-rc.0 // indirect
 	cloud.google.com/go v0.115.1 // indirect
