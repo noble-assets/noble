@@ -1,66 +1,56 @@
 ![Noble banner](https://raw.githubusercontent.com/noble-assets/networks/main/Twitter_Banner.png)
 # ✨✨ Noble ✨✨
 
-## Overview
+[Noble](https://noble.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.50/learn/intro/why-app-specific) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, supporting [Circle's USDC](https://www.circle.com/en/usdc), [Ondo's USDY](https://ondo.finance/), [Monerium's EURe](https://monerium.com/). Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers onthe Noble blockchain.
 
-[Noble](https://nobleassets.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers onthe Noble blockchain.
+[![twitter](https://img.shields.io/badge/twitter-@noble_xyz-white?labelColor=0f1331&style=flat)](https://twitter.com/noble_xyz/) [![telegram](https://img.shields.io/badge/telegram-noble-white?labelColor=0f1331&style=flat)](https://t.me/+5mCog0PAWCRmOWYx) [![website](https://img.shields.io/badge/website-noble.xyz-white?labelColor=0f1331&style=flat)](https://noble.xyz/)
 
-## Noble App-Chain Design 
+## Contents
+1. [Noble Chain Design](#noble-chain-design)
+2. [Assets on Noble](#assets-on-noble)
+3. [Protocol Features](#protocol-features)
+4. [Noble on the Interchain](#noble-on-the-interchain)
+5. [Noble Upgrades and Governance](#noble-upgrades--governance)
+6. [For Developers](#for-developers)
+7. [For Node Operators & Validators](#for-node-operators--validators)
+8. [Contributing](#contributing)
 
-The Noble app-chain conforms to [industry standard](https://github.com/centrehq/centre-tokens/blob/master/doc/tokendesign.md) smart contracting capabilities with regards to asset issuance functionality. This functionality allows the minting and burning of tokens by multiple entities and the freezing blacklisting of addresses on the Noble chain.
+## Noble Chain Design
 
-Key authorities include: 
-
-**Owner:** The Owner role has the ability to reassign all roles and will be held by the asset issuer. 
-
-**Minter:** The Owner has the authority to add/remove Minters which have the authority to both mint and burn tokens on the Noble chain. 
-
-**Blacklist:** The asset issuer has the authority to blacklist addresses. A blacklisted address will be unable to transfer tokens outside of the Noble chain via IBC, or to approve, mint, or burn tokens. 
-
-
-## Tokenfactory
-
-Noble implements a tokenfactory module pattern to enable the minting of generic assets in Cosmos. Further, tokenfactory modules are under the exclusive purview of the asset issuers and are separate and distinct from governance of the Noble chain. Additionally, each tokenfactory module is distinct from one other as they each house unique access controls with ownership over the minting and burning of a specific asset.
-
-The Access Control table below shows the functionality tied to each privileged account.
-
-## Access Control
-
-|                                             | **Owner** | **Minter** | **Master Minter** | **Minter Controller** | **Pauser** | **Blacklister** | **Is Paused<br>(Actions Allowed)** |
-|---------------------------------------------|:---------:|:----------:|:-----------------:|:---------------------:|:----------:|:---------------:|:--------------------------------:|
-| **Blacklist**                               |           |            |                   |                       |            |        x        |                 x                |
-| **Unblacklist**                             |           |            |                   |                       |            |        x        |                 x                |
-| **Burn**                                    |           |      x     |                   |                       |            |                 |                                  |
-| **Mint**                                    |           |      x     |                   |                       |            |                 |                                  |
-| **Add Minter Controller**                   |           |            |         x         |                       |            |                 |                 x                |
-| **Add Minter with allowance**               |           |            |                   |           x           |            |                 |                 x                |
-| **Pause**                                   |           |            |                   |                       |      x     |                 |                 x                |
-| **Unpause**                                 |           |            |                   |                       |      x     |                 |                 x                |
-| **Remove Minter Controller**                |           |            |         x         |                       |            |                 |                 x                |
-| **Remove Minter**                           |           |            |                   |           x           |            |                 |                 x                |
-| **Update Blacklister**                      |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Master Minter**                    |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Owner**                            |     x     |            |                   |                       |            |                 |                 x                |
-| **Update Pauser**                           |     x     |            |                   |                       |            |                 |                 x                |
-| **Transer Tokens (tokenfactory asset)**     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
-| **Transer Tokens (non-tokenfactory asset)** |     x     |      x     |         x         |           x           |      x     |        x        |                 x                |
-
-
-## Security Guarantees in a Permissioned Validator Set (Proof of Authority) 
-
-The initial plans for Noble’s go-to-market entailed leveraging Replicated Security (also known as ["Interchain Security”](https://github.com/cosmos/interchain-security)) – the shared security model of the Cosmos Hub. This feature allows validators to secure app-chains using the value of ATOMs staked by Cosmos Hub delegators. Due to uncertainty around the design of replicated security (e.g., the removal of automated slashing packets), Noble has paused integration with Replicated Security. 
-
-At launch, Noble will be a Proof of Authority chain with a trusted validator set (a subset of Cosmos Hub validators). The validator set will be permissioned by equal shares of staking tokens placed in vesting accounts. The tokens will have no value. Economic security will derive from fees captured by the chain in USDC and other assets on a block-by-block basis. If a double sign is detected by the chain, the validator address will be “tombstoned,” meaning that their tokens and the address will no longer be usable for validation and resulting in the loss of all future fee revenue. The Proof of Authority model provides real economic cost to faulty validator behavior and thus provides economic security to the network that can be computed in real time based on past and projected fees.
+The Noble protocol runs on Proof-of-Authority consensus with a trusted validator set. The validator set is permissioned by equal shares of staking tokens placed in vesting accounts. The tokens have no value. Economic security is derived from fees captured by the chain as issued  assets on a block-by-block basis. If a double sign is detected by the chain, the validator address will be “tombstoned”, meaning that their tokens and the address will no longer be usable for validation and resulting in the loss of all future fee revenue. The Proof-of-Authority model provides real economic cost to faulty validator behavior and thus provides economic security to the network that can be computed in real time based on past and projected fees.
 
 Noble intends to monitor developments in shared security across the blockchain ecosystem to ensure the optimality of the security model.
 
-## Connecting to Noble
+## Assets on Noble
+
+Every asset issued on the Noble chain is implemented as its own Cosmos SDK module.
+
+| Issuer                                   | Asset | Module Name            | 
+| ---------------------------------------- | ----- | ---------------------- | 
+| [Circle](https://www.circle.com/en/usdc) | USDC  | [noble-fiattokenfactory](https://github.com/circlefin/noble-fiattokenfactory) |
+| [Ondo](https://ondo.finance/)            | USDY  | [aura](https://github.com/ondoprotocol/usdy-noble)                       | 
+| [Monerium](https://monerium.com/)        | EURe  | [florin](https://github.com/monerium/module-noble)                     |
+| [Hashnote](https://www.hashnote.com/)    | USYC  | [halo](https://github.com/noble-assets/halo)                             |
+
+## Protocol features
+
+Along with asset issuance, the Noble protocol also implements the following modules:
+
+| Module name                                                              | Features |
+| ------------------------------------------------------------------------ | -------- |
+| [noble-cctp](https://github.com/circlefin/noble-cctp)                    | Allows native transfer of Circle's USDC across ecosystems through their [Cross Chain Transfer Protocol](https://www.circle.com/en/cross-chain-transfer-protocol) |
+| [forwarding](https://github.com/noble-assets/forwarding)                 | Allows a custom account type on Noble to auto forward any tokens it receives to an address on a different chain connected via IBC |
+| [globalfee](./x/globalfee)                                               | Allows the protocol to control the transaction fees and bypass gas fees for specific sdk.Msg types |
+| [tariff](./x/tariff)                                                     | Adds a source of revenue for the protocol as well as its contributors by collecting a percentage of share of token transfers via Noble | 
+| [paramauthority](https://github.com/strangelove-ventures/paramauthority) | Allows a configured address to perform the governance operations. [More](#noble-upgrades--governance) | 
+
+## Noble on the Interchain
 
 App-chains are able to permissionlessly connect to Noble [via IBC](https://medium.com/the-interchain-foundation/eli5-what-is-ibc-def44d7b5b4c), a universal interoperability protocol that allows two different blockchains to communicate with one another, garaunteeing reliable, ordered, and authenticated communication.
 
-How to integrate with Noble? 
+#### How to integrate with Noble? 
 
-To establish a connection to Noble (or any 2 IBC compatible chains), developers will be required to set up a relayer on an existing path. This [tutorial](https://github.com/cosmos/relayer/blob/main/docs/create-path-across-chain.md) gives an overview of how to create a channel, client, and connection and to start relaying IBC packets.
+To establish a connection to Noble (or any 2 IBC compatible chains), anybody can set up a relayer on an existing path. This [tutorial](https://github.com/cosmos/relayer/blob/main/docs/create-path-across-chain.md) gives an overview of how to create a channel, client, and connection and to start relaying IBC packets.
 
 ## Noble Upgrades & Governance
 
@@ -96,113 +86,36 @@ The NMM is a 5/7 multisig for passing a Noble Multisig proposal to fulfill the t
 
 Stakeholders on the NMM will be able to be rotated in and out of the mulitisg over time. 
 
-## Partnership with StrangeLove & Future Technical Development
-
-Noble has selected StrangeLove Labs (“StrangeLove”) as its initial engineering and product partner to implement Noble’s initial app-chain design. StrangeLove has built an MVP and is bringing it to market using battle-proven XP-derived practices like Test-driven Development, Continuous Integration and Continuous Deployment, and short iteration cycles.
-
-In collaboration with StrangeLove, Noble intends to build an in-house team focused on software development and integration to further build the Noble vision related to products and services.
-
-## Media
-
-TWITTER: [@noble_xyz](https://twitter.com/noble_xyz/)
-
-WEB: [nobleassets.xyz](https://nobleassets.xyz/)
-
+## For Developers 
  
-## Build and install to go bin path
+### Setup Noble locally
 
-[go](https://go.dev/dl/) will be needed for this install
+The following software should be installed on the target system:
+
+1. Go Programming Language (https://go.dev)
+2. Git  (https://git-scm.com)
+3. GNU Make (https://www.gnu.org/software/make)
 
 ```
+git clone https://github.com/noble-assets/noble
+cd noble
 make install
 ```
 
-## Initialize config
+### Local Running
 
-Come up with a moniker for your node, then run:
-
-```
-nobled init $MONIKER
-```
-
-Prior to launch, some config settings are required by the `tokenfactory` module in the `genesis.json` file:
-- There must be a designated address for the "owner" role.
-- Other roles, such as `masterMinter`, `blacklister`, and `pauser` are optional at genesis.
-- `mintingDenom` must be filled out and the `denom` specified must be registered in `denom_metadata`
-
-`tokenfactory `Example:
-```json
-"tokenfactory": {
-      "params": {},
-      "blacklistedList": [],
-      "paused": {
-        "paused": false
-      },
-      "masterMinter": {
-        "address": "noble1x8rynykqla7cnc0tf2f3xn0wa822ztt70y39vn"
-      },
-      "mintersList": [],
-      "pauser": {
-        "address": "noble1g3v4qdc83h6m5wdz3x92vfu0tjtt7e6y48qqrz"
-      },
-      "blacklister": {
-        "address": "noble159leclhhuhhcmedu2n8nfjjedxjyrtkee8l4v2"
-      },
-      "owner": {
-        "address": "noble153eyy4uufmrak2swgrn4fjtyslg256ecdngyve"
-      },
-      "minterControllerList": [],
-      "mintingDenom": {
-        "denom": "urupee"
-      }
-    }
-```
-
-`denom_metadata` example:
-
-```json
-"denom_metadata": [
-        {
-          "display": "rupee",
-          "base": "urupee",
-          "name": "rupee",
-          "symbol": "rupee",
-          "denom_units": [
-            {
-              "denom": "urupee",
-              "aliases": [
-                "microrupee"
-              ],
-              "exponent": "0"
-            },
-            {
-              "denom": "mrupee",
-              "aliases": [
-                "milirupee"
-              ],
-              "exponent": "3"
-            },
-            {
-              "denom": "rupee",
-              "aliases": null,
-              "exponent": "6"
-            }
-          ]
-        },
-    ]
-```
-## Launch node
+To quickly spin up a standalone noble chain and setup all privileged accounts, run the [play.sh](play.sh) bash script
 
 ```
-nobled start
+sh play.sh
 ```
 
-## Running Nodes
+## For Node Operators & Validators
+
+### Running Nodes
 
 - See [`noble-networks`](https://github.com/noble-assets/networks/tree/main) for all info around validating for mainnet and testent
 
-## Testing
+## Contributing
 
-The [`interchaintest`](https://github.com/strangelove-ventures/interchaintest) test suite has been imported into the noble repo. Tests can be ran and written [here](./interchaintest/).
-
-To quickly spin up a standalone noble chain and setup all privileged accounts, run the [play.sh](play.sh) bash script.
+This repository is not looking for external contributors.
