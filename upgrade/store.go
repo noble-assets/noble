@@ -7,6 +7,7 @@ import (
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	authoritytypes "github.com/noble-assets/authority/types"
+	globalfeetypes "github.com/noble-assets/globalfee/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
@@ -17,6 +18,7 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 			crisistypes.StoreKey,
 			// Noble Modules
 			authoritytypes.ModuleName,
+			globalfeetypes.ModuleName,
 		},
 	}
 

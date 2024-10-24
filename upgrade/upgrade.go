@@ -33,6 +33,7 @@ import (
 	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	authoritytypes "github.com/noble-assets/authority/types"
+	globalfeetypes "github.com/noble-assets/globalfee/types"
 )
 
 func CreateUpgradeHandler(
@@ -70,7 +71,8 @@ func CreateUpgradeHandler(
 				keyTable = slashingtypes.ParamKeyTable() //nolint:staticcheck
 			case stakingtypes.ModuleName:
 				keyTable = stakingtypes.ParamKeyTable() //nolint:staticcheck
-
+			case globalfeetypes.ModuleName:
+				keyTable = globalfeetypes.ParamKeyTable() //nolint:staticcheck
 			}
 
 			if !subspace.HasKeyTable() {
