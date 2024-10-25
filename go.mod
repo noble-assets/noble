@@ -16,7 +16,7 @@ require (
 	cosmossdk.io/x/upgrade v0.1.4
 	github.com/circlefin/noble-cctp v0.0.0-20241016210224-38595d108987
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241015182229-c20bd0c8442f
-	github.com/cometbft/cometbft v0.38.13-0.20241023054248-b628cf982d96 // unreleased indexer fix
+	github.com/cometbft/cometbft v0.38.13
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
