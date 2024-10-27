@@ -47,7 +47,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22'
 
       - name: Generate Matrix
         id: set-matrix
@@ -74,7 +74,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22'
 
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v4
