@@ -2025,7 +2025,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 		Amount:  amountToSend,
 	}
 
-	height, err := noble.Height(ctx)
+	height, err := gaia.Height(ctx)
 	require.NoError(t, err)
 
 	tx, err := gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
@@ -2033,7 +2033,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
 
-	heightAfterFlush, err := noble.Height(ctx)
+	heightAfterFlush, err := gaia.Height(ctx)
 	require.NoError(t, err)
 
 	ack, err := testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
@@ -2051,7 +2051,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, gaiaWallet)
 
-	height, err = noble.Height(ctx)
+	height, err = gaia.Height(ctx)
 	require.NoError(t, err)
 
 	tx, err = gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
@@ -2059,7 +2059,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
 
-	heightAfterFlush, err = noble.Height(ctx)
+	heightAfterFlush, err = gaia.Height(ctx)
 	require.NoError(t, err)
 
 	ack, err = testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
@@ -2077,7 +2077,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	e2e.BlacklistAccount(t, ctx, val, nw.FiatTfRoles.Blacklister, nobleWallet)
 
-	height, err = noble.Height(ctx)
+	height, err = gaia.Height(ctx)
 	require.NoError(t, err)
 
 	tx, err = gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
@@ -2085,7 +2085,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
 
-	heightAfterFlush, err = noble.Height(ctx)
+	heightAfterFlush, err = gaia.Height(ctx)
 	require.NoError(t, err)
 
 	ack, err = testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
@@ -2101,7 +2101,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 	// ACTION: Successfully IBC send in a TF token to an address on noble
 	// EXPECTED: Success;
 
-	height, err = noble.Height(ctx)
+	height, err = gaia.Height(ctx)
 	require.NoError(t, err)
 
 	tx, err = gaia.SendIBCTransfer(ctx, gaiaToNobleChannelID, gaiaWallet.KeyName(), transfer, ibc.TransferOptions{})
@@ -2109,7 +2109,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	require.NoError(t, r.Flush(ctx, eRep, ibcPathName, gaiaToNobleChannelID))
 
-	heightAfterFlush, err = noble.Height(ctx)
+	heightAfterFlush, err = gaia.Height(ctx)
 	require.NoError(t, err)
 
 	ack, err = testutil.PollForAck(ctx, gaia, height, heightAfterFlush+5, tx.Packet)
