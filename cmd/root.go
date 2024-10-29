@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"cosmossdk.io/client/v2/autocli"
 	cmtcfg "github.com/cometbft/cometbft/config"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
@@ -16,12 +14,9 @@ import (
 )
 
 // NewRootCmd creates a new root command for nobled. It is called once in the main function.
-func NewRootCmd(
-	txConfigOpts tx.ConfigOptions,
-	autoCliOpts autocli.AppOptions,
-	moduleBasicManager module.BasicManager,
-	clientCtx client.Context,
-) *cobra.Command {
+func NewRootCmd() *cobra.Command {
+	Initialize()
+
 	rootCmd := &cobra.Command{
 		Use: "nobled",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
@@ -66,7 +61,7 @@ func NewRootCmd(
 		},
 	}
 
-	initRootCmd(rootCmd, clientCtx.TxConfig, moduleBasicManager)
+	initRootCmd(rootCmd, clientCtx.TxConfig, ModuleBasicManager)
 
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
 		panic(err)
