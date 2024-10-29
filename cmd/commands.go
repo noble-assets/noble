@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"errors"
+	"io"
+
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
-	"errors"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -22,7 +24,6 @@ import (
 	"github.com/noble-assets/noble/v8"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io"
 )
 
 func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager module.BasicManager) {
