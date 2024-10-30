@@ -50,7 +50,7 @@ var (
 	txConfigOpts       tx.ConfigOptions
 	autoCliOpts        autocli.AppOptions
 	ModuleBasicManager module.BasicManager
-	clientCtx          client.Context
+	ClientCtx          client.Context
 )
 
 func Initialize() {
@@ -73,7 +73,7 @@ func Initialize() {
 		&txConfigOpts,
 		&autoCliOpts,
 		&ModuleBasicManager,
-		&clientCtx,
+		&ClientCtx,
 	); err != nil {
 		panic(err)
 	}
@@ -92,7 +92,7 @@ func Initialize() {
 	}
 	for name, mod := range modules {
 		ModuleBasicManager[name] = module.CoreAppModuleBasicAdaptor(name, mod)
-		ModuleBasicManager[name].RegisterInterfaces(clientCtx.InterfaceRegistry)
+		ModuleBasicManager[name].RegisterInterfaces(ClientCtx.InterfaceRegistry)
 		autoCliOpts.Modules[name] = mod
 	}
 }

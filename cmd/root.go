@@ -24,8 +24,8 @@ func NewRootCmd() *cobra.Command {
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
 
-			clientCtx = clientCtx.WithCmdContext(cmd.Context())
-			clientCtx, err := client.ReadPersistentCommandFlags(clientCtx, cmd.Flags())
+			ClientCtx = ClientCtx.WithCmdContext(cmd.Context())
+			clientCtx, err := client.ReadPersistentCommandFlags(ClientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -61,7 +61,7 @@ func NewRootCmd() *cobra.Command {
 		},
 	}
 
-	initRootCmd(rootCmd, clientCtx.TxConfig, ModuleBasicManager)
+	initRootCmd(rootCmd, ClientCtx.TxConfig, ModuleBasicManager)
 
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
 		panic(err)
