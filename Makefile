@@ -33,16 +33,15 @@ whitespace += $(whitespace)
 comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
-ldflags := $(LDFLAGS)
-ldflags += -X github.com/cosmos/cosmos-sdk/version.Name=Noble \
-	-X github.com/cosmos/cosmos-sdk/version.AppName=nobled \
-	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
-	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-	-X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=Noble \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=nobled \
+		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
-BUILD_FLAGS := -ldflags '$(ldflags)'
-
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 ###############################################################################
 ###                              Building / Install                         ###
