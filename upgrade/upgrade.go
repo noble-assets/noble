@@ -10,6 +10,7 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -33,6 +34,7 @@ import (
 	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	authoritytypes "github.com/noble-assets/authority/types"
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 	globalfeetypes "github.com/noble-assets/globalfee/types"
 )
 
@@ -40,6 +42,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	cdc codec.Codec,
+	registry codectypes.InterfaceRegistry,
 	logger log.Logger,
 	capabilityStoreKey *storetypes.KVStoreKey,
 	accountKeeper authkeeper.AccountKeeper,
@@ -48,6 +51,7 @@ func CreateUpgradeHandler(
 	capabilityKeeper *capabilitykeeper.Keeper,
 	clientKeeper clientkeeper.Keeper,
 	consensusKeeper consensuskeeper.Keeper,
+	globalFeeKeeper *globalfeekeeper.Keeper,
 	paramsKeeper paramskeeper.Keeper,
 	stakingKeeper *stakingkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
@@ -130,6 +134,27 @@ func CreateUpgradeHandler(
 		err = authorityKeeper.Owner.Set(ctx, authority)
 		if err != nil {
 			return vm, errors.Wrap(err, "failed to migrate authority address")
+		}
+
+		// Remove unsupported messages from GlobalFee bypass list.
+		oldBypassMessages, err := globalFeeKeeper.GetBypassMessages(ctx)
+		if err != nil {
+			return vm, err
+		}
+		err = globalFeeKeeper.BypassMessages.Clear(ctx, nil)
+		if err != nil {
+			return vm, err
+		}
+		for _, bypassMessage := range oldBypassMessages {
+			resolved, err := registry.Resolve(bypassMessage)
+			if err != nil || resolved == nil {
+				continue
+			}
+
+			err = globalFeeKeeper.BypassMessages.Set(ctx, bypassMessage)
+			if err != nil {
+				return vm, err
+			}
 		}
 
 		MigrateValidatorAccounts(ctx, accountKeeper, stakingKeeper)
