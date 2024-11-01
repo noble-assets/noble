@@ -44,18 +44,39 @@ ldflags := $(strip $(ldflags))
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 ###############################################################################
-###                              Building / Install                         ###
+###                                  Build                                  ###
 ###############################################################################
 
-install: go.sum
+build:
+	@echo "🤖 Building nobled..."
+	@go build -mod=readonly $(BUILD_FLAGS) -o "$(PWD)/build" ./cmd/nobled
+	@echo "✅ Completed build!"
+
+install:
 	@echo "🤖 Installing nobled..."
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/nobled
 	@echo "✅ Completed install!"
 
-build:
-	@echo "🤖 Building nobled..."
-	@go build $(BUILD_FLAGS) -o "$(PWD)/build/" ./...
-	@echo "✅ Completed build!"
+###############################################################################
+###                                 Tooling                                 ###
+###############################################################################
+
+gofumpt_cmd=mvdan.cc/gofumpt
+golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
+
+FILES := $(shell find $(shell go list -f '{{.Dir}}' ./...) -name "*.go" -a -not -name "*.pb.go" -a -not -name "*.pb.gw.go" -a -not -name "*.pulsar.go" | sed "s|$(shell pwd)/||g")
+license:
+	@go-license --config .github/license.yml $(FILES)
+
+format:
+	@echo "🤖 Running formatter..."
+	@go run $(gofumpt_cmd) -l -w .
+	@echo "✅ Completed formatting!"
+
+lint:
+	@echo "🤖 Running linter..."
+	@go run $(golangci_lint_cmd) run --timeout=10m
+	@echo "✅ Completed linting!"
 
 ###############################################################################
 ###                                 Testing                                 ###
@@ -63,19 +84,11 @@ build:
 
 local-image:
 ifeq (,$(shell which heighliner))
-	echo 'heighliner' binary not found. Please install: https://github.com/strangelove-ventures/heighliner
+	@echo heighliner not found. https://github.com/strangelove-ventures/heighliner
 else
-	heighliner build -c noble --local
+	@echo "🤖 Building image..."
+	@heighliner build --chain noble --local 1> /dev/null
+	@echo "✅ Completed build!"
 endif
 
-
-###############################################################################
-###                                Linting                                  ###
-###############################################################################
-
-lint:
-	@echo "--> Running linter"
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m 
-
-
-.PHONY: install build local-image lint
+.PHONY: license format lint build install local-image

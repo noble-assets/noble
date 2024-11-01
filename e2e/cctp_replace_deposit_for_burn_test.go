@@ -1,3 +1,17 @@
+// Copyright 2024 NASD Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package e2e_test
 
 import (
@@ -11,13 +25,12 @@ import (
 	"testing"
 	"time"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/ethereum/go-ethereum/crypto"
-
 	"cosmossdk.io/math"
 	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/noble-assets/noble/e2e"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
@@ -46,7 +59,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 
 		attesters[i] = p
 
-		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) //public key
+		pubKey := elliptic.Marshal(p.PublicKey, p.PublicKey.X, p.PublicKey.Y) // public key
 
 		attesterPub := hex.EncodeToString(pubKey)
 
@@ -102,7 +115,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 	)
 	require.NoError(t, err, "failed to execute configure minter tx")
 
-	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" //account
+	const receiver = "9B6CA0C13EB603EF207C4657E1E619EF531A4D27" // account
 
 	receiverBz, err := hex.DecodeString(receiver)
 	require.NoError(t, err)
@@ -143,7 +156,7 @@ func TestCCTP_ReplaceDepositForBurn(t *testing.T) {
 
 	digestBurn := crypto.Keccak256(wrappedDepositForBurnBz) // hashed message is the key to the attestation
 
-	attestationBurn := make([]byte, 0, len(attesters)*65) //65 byte
+	attestationBurn := make([]byte, 0, len(attesters)*65) // 65 byte
 
 	// CCTP requires attestations to have signatures sorted by address
 	sort.Slice(attesters, func(i, j int) bool {
