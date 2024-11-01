@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package upgrade
+//go:build tools
 
-// UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "helium"
+// This file uses the recommended method for tracking developer tools in a Go module.
+//
+// REF: https://github.com/golang/go/wiki/Modules#how-can-i-track-tool-dependencies-for-a-module
+package tools
 
-const UpgradeASCII = `
- _   _      _ _                 
-| | | | ___| (_)_   _ _ __ ___  
-| |_| |/ _ \ | | | | |  _   _ \ 
-|  _  |  __/ | | |_| | | | | | |
-|_| |_|\___|_|_|\__,_|_| |_| |_|
-`
+import (
+	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
+	_ "mvdan.cc/gofumpt"
+)
