@@ -4,8 +4,8 @@ go 1.22.7
 
 require (
 	cosmossdk.io/math v1.3.0
-	github.com/circlefin/noble-cctp v0.0.0-20241016210224-38595d108987
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241015182229-c20bd0c8442f
+	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241030165025-e3796e8ba8c1
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-go/v8 v8.5.1
