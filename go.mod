@@ -14,8 +14,8 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	github.com/circlefin/noble-cctp v0.0.0-20241016210224-38595d108987
-	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241015182229-c20bd0c8442f
+	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
+	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241030165025-e3796e8ba8c1
 	github.com/cometbft/cometbft v0.38.13
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/cosmos-sdk v0.50.10
@@ -154,7 +154,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
-	github.com/gogo/protobuf v1.3.3 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.2.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -360,11 +360,5 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace (
-	// use cosmos flavored gogo/protobuf
-	// https://github.com/cosmos/cosmos-sdk/issues/8469
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	// use cosmos compatible syndtr/goleveldb
-	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-)
+// use cosmos compatible syndtr/goleveldb
+replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
