@@ -1,3 +1,17 @@
+// Copyright 2024 NASD Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package e2e
 
 import (
@@ -7,20 +21,18 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
+	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
+	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap/zaptest"
-
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/docker/docker/client"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
-
-	cctptypes "github.com/circlefin/noble-cctp/x/cctp/types"
-	fiattokenfactorytypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap/zaptest"
 )
 
 var (
@@ -122,7 +134,6 @@ func NobleChainSpec(
 // if false, only the Owner role will be setup
 func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-
 		updatedGenesis := []cosmos.GenesisKV{
 			cosmos.NewGenesisKV("app_state.authority.owner", nw.Authority.FormattedAddress()),
 			cosmos.NewGenesisKV("app_state.bank.denom_metadata", []banktypes.Metadata{DenomMetadataUsdc}),
