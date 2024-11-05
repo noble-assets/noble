@@ -8,7 +8,7 @@ require (
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20241030165025-e3796e8ba8c1
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/ibc-go/v8 v8.5.1
+	github.com/cosmos/ibc-go/v8 v8.5.2
 	github.com/docker/docker v24.0.9+incompatible
 	github.com/ethereum/go-ethereum v1.14.8
 	github.com/strangelove-ventures/interchaintest/v8 v8.7.1
@@ -24,9 +24,9 @@ require (
 	cloud.google.com/go/iam v1.2.0 // indirect
 	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/api v0.7.5 // indirect
-	cosmossdk.io/client/v2 v2.0.0-beta.4 // indirect
+	cosmossdk.io/client/v2 v2.0.0-beta.5 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
-	cosmossdk.io/core v0.11.1 // indirect
+	cosmossdk.io/core v0.12.0 // indirect
 	cosmossdk.io/depinject v1.0.0 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
 	cosmossdk.io/log v1.4.1 // indirect

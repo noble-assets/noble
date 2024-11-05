@@ -3,8 +3,8 @@ module github.com/noble-assets/noble/v8
 go 1.22.7
 
 require (
-	cosmossdk.io/client/v2 v2.0.0-beta.4
-	cosmossdk.io/core v0.11.1
+	cosmossdk.io/client/v2 v2.0.0-beta.5
+	cosmossdk.io/core v0.12.0
 	cosmossdk.io/depinject v1.0.0
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.4.1
@@ -21,13 +21,13 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
-	github.com/cosmos/ibc-go/v8 v8.5.1
+	github.com/cosmos/ibc-go/v8 v8.5.2
 	github.com/golangci/golangci-lint v1.61.0
-	github.com/monerium/module-noble/v2 v2.0.0-rc.3.0.20241009233532-f2109c84b6c1
+	github.com/monerium/module-noble/v2 v2.0.0-rc.4
 	github.com/noble-assets/authority v1.0.0-rc.0
-	github.com/noble-assets/forwarding/v2 v2.0.0-20241017154500-56685530d602
-	github.com/noble-assets/halo/v2 v2.0.0-20240928083543-bd3392537219
-	github.com/ondoprotocol/usdy-noble/v2 v2.0.0-20241008190859-099f72833941
+	github.com/noble-assets/forwarding/v2 v2.0.0-rc.0
+	github.com/noble-assets/halo/v2 v2.0.0-rc.0
+	github.com/ondoprotocol/usdy-noble/v2 v2.0.0-rc.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	mvdan.cc/gofumpt v0.7.0
@@ -129,7 +129,6 @@ require (
 	github.com/firefart/nonamedreturns v1.0.5 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/ghostiam/protogetter v0.3.6 // indirect
 	github.com/go-critic/go-critic v0.11.4 // indirect
