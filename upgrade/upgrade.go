@@ -16,6 +16,8 @@ package upgrade
 
 import (
 	"context"
+	"sort"
+	"strings"
 
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
@@ -24,6 +26,7 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -43,16 +46,21 @@ import (
 	v6 "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/migrations/v6"
 	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
 	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	"github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	authoritytypes "github.com/noble-assets/authority/types"
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	globalfeetypes "github.com/noble-assets/globalfee/types"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	cdc codec.Codec,
+	registry codectypes.InterfaceRegistry,
 	logger log.Logger,
 	capabilityStoreKey *storetypes.KVStoreKey,
 	accountKeeper authkeeper.AccountKeeper,
@@ -61,6 +69,7 @@ func CreateUpgradeHandler(
 	capabilityKeeper *capabilitykeeper.Keeper,
 	clientKeeper clientkeeper.Keeper,
 	consensusKeeper consensuskeeper.Keeper,
+	globalFeeKeeper *globalfeekeeper.Keeper,
 	paramsKeeper paramskeeper.Keeper,
 	stakingKeeper *stakingkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
@@ -84,7 +93,8 @@ func CreateUpgradeHandler(
 				keyTable = slashingtypes.ParamKeyTable() //nolint:staticcheck
 			case stakingtypes.ModuleName:
 				keyTable = stakingtypes.ParamKeyTable() //nolint:staticcheck
-
+			case globalfeetypes.ModuleName:
+				keyTable = globalfeetypes.ParamKeyTable() //nolint:staticcheck
 			}
 
 			if !subspace.HasKeyTable() {
@@ -139,12 +149,42 @@ func CreateUpgradeHandler(
 		var authority string
 		subspace = paramsKeeper.Subspace(paramstypes.ModuleName).WithKeyTable(authoritytypes.ParamKeyTable()) //nolint:staticcheck
 		subspace.Get(sdkCtx, authoritytypes.AuthorityKey, &authority)
+
 		err = authorityKeeper.Owner.Set(ctx, authority)
 		if err != nil {
 			return vm, errors.Wrap(err, "failed to migrate authority address")
 		}
 
+		// Override migrated list of bypass messages, ensuring that IBC relaying
+		// remains free, and enable all current asset issuers (Circle, Ondo,
+		// Hashnote, and Monerium) to interact with the protocol for free.
+		bypassMessages := []string{
+			sdk.MsgTypeURL(&clienttypes.MsgUpdateClient{}),
+			sdk.MsgTypeURL(&channeltypes.MsgRecvPacket{}),
+			sdk.MsgTypeURL(&channeltypes.MsgTimeout{}),
+			sdk.MsgTypeURL(&channeltypes.MsgAcknowledgement{}),
+		}
+		bypassMessages = append(bypassMessages, GetModuleMessages(registry, "circle")...)
+		bypassMessages = append(bypassMessages, GetModuleMessages(registry, "aura")...)
+		bypassMessages = append(bypassMessages, GetModuleMessages(registry, "halo")...)
+		bypassMessages = append(bypassMessages, GetModuleMessages(registry, "florin")...)
+		sort.Strings(bypassMessages)
+
+		err = globalFeeKeeper.BypassMessages.Clear(ctx, nil)
+		if err != nil {
+			return vm, err
+		}
+		for _, bypassMessage := range bypassMessages {
+			err = globalFeeKeeper.BypassMessages.Set(ctx, bypassMessage)
+			if err != nil {
+				return vm, err
+			}
+		}
+
+		// Migrate validator accounts to permanently locked vesting.
 		MigrateValidatorAccounts(ctx, accountKeeper, stakingKeeper)
+
+		// Safely burn surplus staking token supply.
 		err = BurnSurplusSupply(ctx, authority, accountKeeper, bankKeeper)
 		if err != nil {
 			return vm, err
@@ -213,4 +253,16 @@ func BurnSurplusSupply(ctx context.Context, authority string, accountKeeper auth
 
 	err = bankKeeper.BurnCoins(ctx, upgradetypes.ModuleName, sdk.NewCoins(surplus))
 	return err
+}
+
+// GetModuleMessages is a utility that returns all messages registered by a module.
+func GetModuleMessages(registry codectypes.InterfaceRegistry, name string) (messages []string) {
+	for _, message := range registry.ListImplementations(sdk.MsgInterfaceProtoName) {
+		if strings.HasPrefix(message, "/"+name) {
+			messages = append(messages, message)
+		}
+	}
+
+	sort.Strings(messages)
+	return
 }
