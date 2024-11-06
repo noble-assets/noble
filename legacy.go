@@ -39,7 +39,7 @@ import (
 	soloclient "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	authoritytypes "github.com/noble-assets/authority/types"
-	"github.com/noble-assets/forwarding/v2/x/forwarding"
+	"github.com/noble-assets/forwarding/v2"
 )
 
 func (app *App) RegisterLegacyModules() error {
