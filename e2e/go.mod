@@ -16,7 +16,7 @@ require (
 	github.com/noble-assets/authority v1.0.0-rc.0
 	github.com/noble-assets/globalfee v1.0.0-rc.0
 	github.com/noble-assets/halo/v2 v2.0.0-rc.0
-	github.com/noble-assets/noble/v8 v8.0.0-rc.3-fix
+	github.com/noble-assets/noble/v8 v8.0.0-rc.3
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0-rc.0
 	github.com/strangelove-ventures/interchaintest/v8 v8.8.0
 	github.com/stretchr/testify v1.9.0

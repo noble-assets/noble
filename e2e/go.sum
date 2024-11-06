@@ -1142,8 +1142,8 @@ github.com/noble-assets/globalfee v1.0.0-rc.0 h1:O1+XpEBe9eaSaZhgO5+G9NDyThL87xp
 github.com/noble-assets/globalfee v1.0.0-rc.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.0-rc.0 h1:uIDIirJ8977OR5J4ZYyau0iF/SSnaLIS01ydaZi5wbs=
 github.com/noble-assets/halo/v2 v2.0.0-rc.0/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
-github.com/noble-assets/noble/v8 v8.0.0-rc.3-fix h1:eq+Of2P/XgYVatOlkV7Ww/JUEzz2V1Seapkg18CxjFs=
-github.com/noble-assets/noble/v8 v8.0.0-rc.3-fix/go.mod h1:+wamFXopAPF08yL8cub00Spv/WRhfud+YqEhIcMjCVw=
+github.com/noble-assets/noble/v8 v8.0.0-rc.3 h1:jqBu7JXLzf0+sPaJuCyYwwhoW220t9yGKBS/iAPDyzg=
+github.com/noble-assets/noble/v8 v8.0.0-rc.3/go.mod h1:+wamFXopAPF08yL8cub00Spv/WRhfud+YqEhIcMjCVw=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
 github.com/nunnatsa/ginkgolinter v0.16.2/go.mod h1:4tWRinDN1FeJgU+iJANW/kz7xKN5nYRAOfJDQUS9dOQ=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
