@@ -87,7 +87,7 @@ ifeq (,$(shell which heighliner))
 	@echo heighliner not found. https://github.com/strangelove-ventures/heighliner
 else
 	@echo "🤖 Building image..."
-	@heighliner build --chain noble --local 1> /dev/null
+	@heighliner build --chain noble --local
 	@echo "✅ Completed build!"
 endif
 

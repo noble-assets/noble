@@ -27,6 +27,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/docker/docker/client"
+	florintypes "github.com/monerium/module-noble/v2/types"
+	authoritytypes "github.com/noble-assets/authority/types"
+	halotypes "github.com/noble-assets/halo/v2/types"
+	auratypes "github.com/ondoprotocol/usdy-noble/v2/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -35,12 +39,17 @@ import (
 	"go.uber.org/zap/zaptest"
 )
 
+const (
+	ghcrRepo        = "ghcr.io/noble-assets/noble"
+	containerUidGid = "1025:1025"
+)
+
 var (
-	nobleImageInfo = []ibc.DockerImage{
+	LocalImages = []ibc.DockerImage{
 		{
 			Repository: "noble",
 			Version:    "local",
-			UidGid:     "1025:1025",
+			UIDGID:     "1025:1025",
 		},
 	}
 
@@ -95,6 +104,10 @@ func NobleEncoding() *testutil.TestEncodingConfig {
 	// register custom types
 	fiattokenfactorytypes.RegisterInterfaces(cfg.InterfaceRegistry)
 	cctptypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	halotypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	auratypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	florintypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	authoritytypes.RegisterInterfaces(cfg.InterfaceRegistry)
 	return &cfg
 }
 
@@ -102,6 +115,7 @@ func NobleChainSpec(
 	ctx context.Context,
 	nw *NobleWrapper,
 	chainID string,
+	version []ibc.DockerImage,
 	nv, nf int,
 	setupAllCircleRoles bool,
 ) *interchaintest.ChainSpec {
@@ -120,7 +134,7 @@ func NobleChainSpec(
 			GasAdjustment:  1.1,
 			TrustingPeriod: "504h",
 			NoHostMount:    false,
-			Images:         nobleImageInfo,
+			Images:         version,
 			EncodingConfig: NobleEncoding(),
 			PreGenesis:     preGenesisAll(ctx, nw, setupAllCircleRoles),
 			ModifyGenesis:  modifyGenesisAll(nw, setupAllCircleRoles),
@@ -376,7 +390,7 @@ func createCCTPRoles(ctx context.Context, val *cosmos.ChainNode) (CCTPRoles, err
 //
 // setupAllCircleRoles: if true, all Tokenfactory and CCTP roles will be created and setup at genesis,
 // if false, only the Owner role will be created
-func NobleSpinUp(t *testing.T, ctx context.Context, setupAllCircleRoles bool) (nw NobleWrapper) {
+func NobleSpinUp(t *testing.T, ctx context.Context, version []ibc.DockerImage, setupAllCircleRoles bool) (nw NobleWrapper, client *client.Client) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("noble", "noblepub")
 
@@ -389,7 +403,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, setupAllCircleRoles bool) (n
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -420,7 +434,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, setupAllCircleRoles bool) (n
 //
 // setupAllCircleRoles: if true, all Tokenfactory and CCTP roles will be created and setup at genesis,
 // if false, only the Owner role will be created
-func NobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllCircleRoles bool) (
+func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage, setupAllCircleRoles bool) (
 	nw NobleWrapper,
 	ibcSimd *cosmos.CosmosChain,
 	rf interchaintest.RelayerFactory,
@@ -443,7 +457,7 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, setupAllCircleRoles bool)
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 		{Name: "ibc-go-simd", Version: "v8.5.1", NumValidators: &numValidators, NumFullNodes: &numFullNodes},
 	})
 

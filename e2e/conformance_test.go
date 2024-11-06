@@ -31,7 +31,7 @@ func TestConformance(t *testing.T) {
 	ctx := context.Background()
 
 	var nw e2e.NobleWrapper
-	nw, ibcSimd, rf, r, ibcPathName, rep, _, client, network := e2e.NobleSpinUpIBC(t, ctx, false)
+	nw, ibcSimd, rf, r, ibcPathName, rep, _, client, network := e2e.NobleSpinUpIBC(t, ctx, e2e.LocalImages, false)
 
 	conformance.TestChainPair(t, ctx, client, network, nw.Chain, ibcSimd, rf, rep, r, ibcPathName)
 }
