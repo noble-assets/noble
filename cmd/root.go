@@ -15,69 +15,21 @@
 package cmd
 
 import (
-	"os"
-
-	"cosmossdk.io/client/v2/autocli"
-	clientv2keyring "cosmossdk.io/client/v2/autocli/keyring"
-	"cosmossdk.io/core/address"
-	"cosmossdk.io/core/appmodule"
-	"cosmossdk.io/depinject"
-	"cosmossdk.io/log"
 	cmtcfg "github.com/cometbft/cometbft/config"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	pfm "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
-	pfmtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
-	"github.com/cosmos/ibc-go/modules/capability"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
-	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
-	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
-	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v8/modules/core"
-	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
-	soloclient "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
-	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-	"github.com/noble-assets/noble/v8"
 	"github.com/spf13/cobra"
 )
 
 // NewRootCmd creates a new root command for nobled. It is called once in the main function.
 func NewRootCmd() *cobra.Command {
-	var (
-		txConfigOpts       tx.ConfigOptions
-		autoCliOpts        autocli.AppOptions
-		moduleBasicManager module.BasicManager
-		clientCtx          client.Context
-	)
-
-	if err := depinject.Inject(
-		depinject.Configs(noble.AppConfig(),
-			depinject.Supply(
-				log.NewNopLogger(),
-			),
-			depinject.Provide(
-				ProvideClientContext,
-				ProvideKeyring,
-			),
-		),
-		&txConfigOpts,
-		&autoCliOpts,
-		&moduleBasicManager,
-		&clientCtx,
-	); err != nil {
-		panic(err)
-	}
+	Initialize()
 
 	rootCmd := &cobra.Command{
 		Use: "nobled",
@@ -86,8 +38,8 @@ func NewRootCmd() *cobra.Command {
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
 
-			clientCtx = clientCtx.WithCmdContext(cmd.Context())
-			clientCtx, err := client.ReadPersistentCommandFlags(clientCtx, cmd.Flags())
+			ClientCtx = ClientCtx.WithCmdContext(cmd.Context())
+			clientCtx, err := client.ReadPersistentCommandFlags(ClientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -116,67 +68,18 @@ func NewRootCmd() *cobra.Command {
 
 			// overwrite the minimum gas price from the app configuration
 			srvCfg := serverconfig.DefaultConfig()
-			srvCfg.MinGasPrices = "0uusdc"
+			srvCfg.MinGasPrices = "0uusdc,0ausdy,0ueure"
 			srvCfg.API.Enable = true
 
 			return server.InterceptConfigsPreRunHandler(cmd, serverconfig.DefaultConfigTemplate, srvCfg, cmtcfg.DefaultConfig())
 		},
 	}
 
-	// Since the IBC modules don't support dependency injection, we need to
-	// manually register the modules on the client side.
-	// This needs to be removed after IBC supports App Wiring.
-	modules := map[string]appmodule.AppModule{
-		capabilitytypes.ModuleName: capability.AppModule{},
-		ibcexported.ModuleName:     ibc.AppModule{},
-		icatypes.ModuleName:        ica.AppModule{},
-		pfmtypes.ModuleName:        pfm.AppModule{},
-		transfertypes.ModuleName:   transfer.AppModule{},
-		tmclient.ModuleName:        tmclient.AppModule{},
-		soloclient.ModuleName:      soloclient.AppModule{},
-	}
-	for name, mod := range modules {
-		moduleBasicManager[name] = module.CoreAppModuleBasicAdaptor(name, mod)
-		moduleBasicManager[name].RegisterInterfaces(clientCtx.InterfaceRegistry)
-		autoCliOpts.Modules[name] = mod
-	}
-
-	initRootCmd(rootCmd, clientCtx.TxConfig, moduleBasicManager)
+	initRootCmd(rootCmd, ClientCtx.TxConfig, ModuleBasicManager)
 
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
 		panic(err)
 	}
 
 	return rootCmd
-}
-
-func ProvideClientContext(
-	appCodec codec.Codec,
-	interfaceRegistry codectypes.InterfaceRegistry,
-	txConfig client.TxConfig,
-	legacyAmino *codec.LegacyAmino,
-) client.Context {
-	clientCtx := client.Context{}.
-		WithCodec(appCodec).
-		WithInterfaceRegistry(interfaceRegistry).
-		WithTxConfig(txConfig).
-		WithLegacyAmino(legacyAmino).
-		WithInput(os.Stdin).
-		WithAccountRetriever(types.AccountRetriever{}).
-		WithHomeDir(noble.DefaultNodeHome).
-		WithViper("") // env variable prefix
-
-	// Read the config again to overwrite the default values with the values from the config file
-	clientCtx, _ = config.ReadFromClientConfig(clientCtx)
-
-	return clientCtx
-}
-
-func ProvideKeyring(clientCtx client.Context, addressCodec address.Codec) (clientv2keyring.Keyring, error) {
-	kb, err := client.NewKeyringFromBackend(clientCtx, clientCtx.Keyring.Backend())
-	if err != nil {
-		return nil, err
-	}
-
-	return keyring.NewAutoCLIKeyring(kb)
 }
