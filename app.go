@@ -52,7 +52,7 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/staking"
 	_ "github.com/monerium/module-noble/v2"
 	_ "github.com/noble-assets/authority"
-	_ "github.com/noble-assets/forwarding/v2/x/forwarding"
+	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
@@ -95,7 +95,7 @@ import (
 
 	// Noble Modules
 	authoritykeeper "github.com/noble-assets/authority/keeper"
-	forwardingkeeper "github.com/noble-assets/forwarding/v2/x/forwarding/keeper"
+	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 )
 
