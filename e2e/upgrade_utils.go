@@ -34,8 +34,6 @@ import (
 const (
 	haltHeightDelta    = 10 // will propose upgrade this many blocks in the future
 	blocksAfterUpgrade = 10
-
-	authModule = "noble13am065qmk680w86wya4u9refhnssqwcvgs0sfk"
 )
 
 type ChainUpgrade struct {
@@ -150,7 +148,7 @@ func TestChainUpgrade(
 
 			upgradePlan, err := tx.SetMsgs([]sdk.Msg{
 				&sdkupgradetypes.MsgSoftwareUpgrade{
-					Authority: authModule,
+					Authority: authoritytypes.ModuleAddress.String(),
 					Plan: sdkupgradetypes.Plan{
 						Name:   upgrade.UpgradeName,
 						Height: haltHeight,
