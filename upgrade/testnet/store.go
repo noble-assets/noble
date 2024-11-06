@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package upgrade
+package testnet
 
-// UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "helium"
+import (
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	globalfeetypes "github.com/noble-assets/globalfee/types"
+)
 
-const UpgradeASCII = `
- _   _      _ _                 
-| | | | ___| (_)_   _ _ __ ___  
-| |_| |/ _ \ | | | | |  _   _ \ 
-|  _  |  __/ | | |_| | | | | | |
-|_| |_|\___|_|_|\__,_|_| |_| |_|
-`
+func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
+	storeUpgrades := storetypes.StoreUpgrades{
+		Added: []string{globalfeetypes.ModuleName},
+	}
+
+	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
+}

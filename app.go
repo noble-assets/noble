@@ -34,7 +34,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v8/upgrade"
+	"github.com/noble-assets/noble/v8/upgrade/testnet"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
@@ -86,10 +86,13 @@ import (
 
 	// Ondo Modules
 	aurakeeper "github.com/ondoprotocol/usdy-noble/v2/keeper"
+
 	// Hashnote Modules
 	halokeeper "github.com/noble-assets/halo/v2/keeper"
+
 	// Monerium Modules
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
+
 	// Noble Modules
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/x/forwarding/keeper"
@@ -290,8 +293,10 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 
 func (app *App) RegisterUpgradeHandler() error {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		upgrade.UpgradeName,
-		upgrade.CreateUpgradeHandler(
+		testnet.UpgradeName,
+		testnet.CreateUpgradeHandler(
+			app.ModuleManager,
+			app.Configurator(),
 			app.interfaceRegistry,
 			app.GlobalFeeKeeper,
 			app.ParamsKeeper,
@@ -306,8 +311,8 @@ func (app *App) RegisterUpgradeHandler() error {
 		return nil
 	}
 
-	if upgradeInfo.Name == upgrade.UpgradeName {
-		app.SetStoreLoader(upgrade.CreateStoreLoader(upgradeInfo.Height))
+	if upgradeInfo.Name == testnet.UpgradeName {
+		app.SetStoreLoader(testnet.CreateStoreLoader(upgradeInfo.Height))
 	}
 
 	return nil
