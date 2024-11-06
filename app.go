@@ -211,6 +211,13 @@ func NewApp(
 		return nil, err
 	}
 
+	// When initializing the upgrade keeper via dependency injection, the
+	// initial module version map is created using only the modules that are
+	// wired through dependency injection. As a result, any "legacy" modules
+	// (those that don't support dependency injection) are excluded. The line
+	// below updates the version map to ensure that all modules are included.
+	app.UpgradeKeeper.SetInitVersionMap(app.ModuleManager.GetVersionMap())
+
 	anteHandler, err := NewAnteHandler(HandlerOptions{
 		HandlerOptions: ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
