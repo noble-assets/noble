@@ -39,7 +39,7 @@ func TestFiatTFUpdateOwner(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -89,7 +89,7 @@ func TestFiatTFAcceptOwner(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -201,7 +201,7 @@ func TestFiatTFUpdateMasterMinter(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -316,7 +316,7 @@ func TestFiatTFConfigureMinterController(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -530,7 +530,7 @@ func TestFiatTFRemoveMinterController(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -625,7 +625,7 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -716,7 +716,7 @@ func TestFiatTFRemoveMinter(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -799,7 +799,7 @@ func TestFiatTFUpdatePauser(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -913,7 +913,7 @@ func TestFiatTFPause(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -971,7 +971,7 @@ func TestFiatTFUnpause(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1029,7 +1029,7 @@ func TestFiatTFUpdateBlacklister(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1143,7 +1143,7 @@ func TestFiatTFBlacklist(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1233,7 +1233,7 @@ func TestFiatTFUnblacklist(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1314,7 +1314,7 @@ func TestFiatTFMint(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1453,7 +1453,7 @@ func TestFiatTFBurn(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1547,7 +1547,7 @@ func TestFiatTFAuth(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1621,7 +1621,7 @@ func TestFiatTFAuthzGrant(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1674,7 +1674,7 @@ func TestFiatTFAuthzSend(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1791,7 +1791,7 @@ func TestFiatTFBankSend(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1869,7 +1869,7 @@ func TestFiatTFIBCOut(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw, gaia, _, r, ibcPathName, _, eRep, _, _ := e2e.NobleSpinUpIBC(t, ctx, true)
+	nw, gaia, _, r, ibcPathName, _, eRep, _, _ := e2e.NobleSpinUpIBC(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 
@@ -1982,7 +1982,7 @@ func TestFiatTFIBCIn(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw, gaia, _, r, ibcPathName, _, eRep, _, _ := e2e.NobleSpinUpIBC(t, ctx, true)
+	nw, gaia, _, r, ibcPathName, _, eRep, _, _ := e2e.NobleSpinUpIBC(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	val := noble.Validators[0]
 

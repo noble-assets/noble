@@ -43,7 +43,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	nw := e2e.NobleSpinUp(t, ctx, true)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, true)
 	noble := nw.Chain
 	nobleValidator := noble.Validators[0]
 

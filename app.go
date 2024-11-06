@@ -34,8 +34,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
-	"github.com/noble-assets/noble/v8/upgrade"
+	"github.com/noble-assets/noble/v8/upgrade/testnet"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
@@ -73,21 +72,27 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+
 	// Circle Modules
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
+
 	// Ondo Modules
 	aurakeeper "github.com/ondoprotocol/usdy-noble/v2/keeper"
+
 	// Hashnote Modules
 	halokeeper "github.com/noble-assets/halo/v2/keeper"
+
 	// Monerium Modules
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
+
 	// Noble Modules
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
@@ -295,23 +300,13 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 
 func (app *App) RegisterUpgradeHandler() error {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		upgrade.UpgradeName,
-		upgrade.CreateUpgradeHandler(
+		testnet.UpgradeName,
+		testnet.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
-			app.appCodec,
 			app.interfaceRegistry,
-			app.Logger(),
-			app.GetKey(capabilitytypes.StoreKey),
-			app.AccountKeeper,
-			app.AuthorityKeeper,
-			app.BankKeeper,
-			app.CapabilityKeeper,
-			app.IBCKeeper.ClientKeeper,
-			app.ConsensusKeeper,
 			app.GlobalFeeKeeper,
 			app.ParamsKeeper,
-			app.StakingKeeper,
 		),
 	)
 
@@ -323,8 +318,8 @@ func (app *App) RegisterUpgradeHandler() error {
 		return nil
 	}
 
-	if upgradeInfo.Name == upgrade.UpgradeName {
-		app.SetStoreLoader(upgrade.CreateStoreLoader(upgradeInfo.Height))
+	if upgradeInfo.Name == testnet.UpgradeName {
+		app.SetStoreLoader(testnet.CreateStoreLoader(upgradeInfo.Height))
 	}
 
 	return nil

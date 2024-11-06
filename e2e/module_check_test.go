@@ -28,7 +28,7 @@ func TestRestrictedModules(t *testing.T) {
 
 	ctx := context.Background()
 
-	nw := e2e.NobleSpinUp(t, ctx, false)
+	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, false)
 	noble := nw.Chain.GetNode()
 
 	restrictedModules := []string{"circuit", "gov", "group"}

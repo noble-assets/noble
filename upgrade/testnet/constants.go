@@ -12,23 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package e2e_test
+package testnet
 
-import (
-	"context"
-	"testing"
-
-	"github.com/noble-assets/noble/e2e"
-	"github.com/strangelove-ventures/interchaintest/v8/conformance"
-)
-
-func TestConformance(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-
-	var nw e2e.NobleWrapper
-	nw, ibcSimd, rf, r, ibcPathName, rep, _, client, network := e2e.NobleSpinUpIBC(t, ctx, e2e.LocalImages, false)
-
-	conformance.TestChainPair(t, ctx, client, network, nw.Chain, ibcSimd, rf, rep, r, ibcPathName)
-}
+// UpgradeName is the name of this specific software upgrade used on-chain.
+const UpgradeName = "v8.0.0-rc.4"

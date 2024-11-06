@@ -12,23 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package e2e_test
+package testnet
 
 import (
-	"context"
-	"testing"
-
-	"github.com/noble-assets/noble/e2e"
-	"github.com/strangelove-ventures/interchaintest/v8/conformance"
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	globalfeetypes "github.com/noble-assets/globalfee/types"
 )
 
-func TestConformance(t *testing.T) {
-	t.Parallel()
+func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
+	storeUpgrades := storetypes.StoreUpgrades{
+		Added: []string{globalfeetypes.ModuleName},
+	}
 
-	ctx := context.Background()
-
-	var nw e2e.NobleWrapper
-	nw, ibcSimd, rf, r, ibcPathName, rep, _, client, network := e2e.NobleSpinUpIBC(t, ctx, e2e.LocalImages, false)
-
-	conformance.TestChainPair(t, ctx, client, network, nw.Chain, ibcSimd, rf, rep, r, ibcPathName)
+	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
 }
