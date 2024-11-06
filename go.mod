@@ -26,6 +26,7 @@ require (
 	github.com/monerium/module-noble/v2 v2.0.0-rc.4
 	github.com/noble-assets/authority v1.0.0-rc.0
 	github.com/noble-assets/forwarding/v2 v2.0.0-rc.0
+	github.com/noble-assets/globalfee v1.0.0-rc.0
 	github.com/noble-assets/halo/v2 v2.0.0-rc.0
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0-rc.0
 	github.com/spf13/cobra v1.8.1

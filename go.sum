@@ -1088,6 +1088,8 @@ github.com/noble-assets/authority v1.0.0-rc.0 h1:mrMhEK3+F2lNRMGJalydAt0gTEK+WGt
 github.com/noble-assets/authority v1.0.0-rc.0/go.mod h1:AyCyM1iP73dHxBsulw0GpZNgPIQvSndWp30pK87nmog=
 github.com/noble-assets/forwarding/v2 v2.0.0-rc.0 h1:mZEWLnyNiHy4sKtVTA1vTrM82+fyUyHJv6rdUEL6scg=
 github.com/noble-assets/forwarding/v2 v2.0.0-rc.0/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
+github.com/noble-assets/globalfee v1.0.0-rc.0 h1:O1+XpEBe9eaSaZhgO5+G9NDyThL87xp1nANXcqoxzg8=
+github.com/noble-assets/globalfee v1.0.0-rc.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.0-rc.0 h1:uIDIirJ8977OR5J4ZYyau0iF/SSnaLIS01ydaZi5wbs=
 github.com/noble-assets/halo/v2 v2.0.0-rc.0/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=

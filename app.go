@@ -54,6 +54,7 @@ import (
 	_ "github.com/monerium/module-noble/v2"
 	_ "github.com/noble-assets/authority"
 	_ "github.com/noble-assets/forwarding/v2"
+	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 
@@ -72,18 +73,15 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-
 	// Circle Modules
 	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
 	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
-
 	// Ondo Modules
 	aurakeeper "github.com/ondoprotocol/usdy-noble/v2/keeper"
 	// Hashnote Modules
@@ -93,6 +91,7 @@ import (
 	// Noble Modules
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 )
 
 var DefaultNodeHome string
@@ -143,6 +142,7 @@ type App struct {
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
+	GlobalFeeKeeper  *globalfeekeeper.Keeper
 }
 
 func init() {
@@ -218,6 +218,7 @@ func NewApp(
 		// Noble Modules
 		&app.AuthorityKeeper,
 		&app.ForwardingKeeper,
+		&app.GlobalFeeKeeper,
 	); err != nil {
 		return nil, err
 	}
@@ -234,6 +235,7 @@ func NewApp(
 			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
+			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
 		},
 		cdc:       app.appCodec,
 		FTFKeeper: app.FTFKeeper,
@@ -291,6 +293,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.appCodec,
+			app.interfaceRegistry,
 			app.Logger(),
 			app.GetKey(capabilitytypes.StoreKey),
 			app.AccountKeeper,
@@ -299,6 +302,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.CapabilityKeeper,
 			app.IBCKeeper.ClientKeeper,
 			app.ConsensusKeeper,
+			app.GlobalFeeKeeper,
 			app.ParamsKeeper,
 			app.StakingKeeper,
 		),

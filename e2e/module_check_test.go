@@ -16,19 +16,24 @@ package e2e_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/noble-assets/noble/e2e"
-	"github.com/strangelove-ventures/interchaintest/v8/conformance"
+	"github.com/stretchr/testify/require"
 )
 
-func TestConformance(t *testing.T) {
+func TestRestrictedModules(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
 
-	var nw e2e.NobleWrapper
-	nw, ibcSimd, rf, r, ibcPathName, rep, _, client, network := e2e.NobleSpinUpIBC(t, ctx, false)
+	nw := e2e.NobleSpinUp(t, ctx, false)
+	noble := nw.Chain.GetNode()
 
-	conformance.TestChainPair(t, ctx, client, network, nw.Chain, ibcSimd, rf, rep, r, ibcPathName)
+	restrictedModules := []string{"circuit", "gov", "group"}
+
+	for _, module := range restrictedModules {
+		require.False(t, noble.HasCommand(ctx, "query", module), fmt.Sprintf("%s is a restricted module", module))
+	}
 }
