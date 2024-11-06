@@ -16,10 +16,15 @@ package e2e_test
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	globalfeetypes "github.com/noble-assets/globalfee/types"
 	"github.com/noble-assets/noble/e2e"
+	"github.com/noble-assets/noble/v8/upgrade"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/require"
@@ -41,13 +46,25 @@ func TestChainUpgrade(t *testing.T) {
 
 				val := noble.Validators[0]
 
-				res, _, err := val.ExecQuery(ctx, "globalfee", "gas-prices")
-				require.NoError(t, err)
-				fmt.Println(string(res))
+				bypassMessages := []string{
+					sdk.MsgTypeURL(&clienttypes.MsgUpdateClient{}),
+					sdk.MsgTypeURL(&channeltypes.MsgRecvPacket{}),
+					sdk.MsgTypeURL(&channeltypes.MsgTimeout{}),
+					sdk.MsgTypeURL(&channeltypes.MsgAcknowledgement{}),
+				}
+				registry := noble.Config().EncodingConfig.InterfaceRegistry
+				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "circle")...)
+				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "aura")...)
+				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "halo")...)
+				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "florin")...)
 
-				res, _, err = val.ExecQuery(ctx, "globalfee", "bypass-messages")
+				res, _, err := val.ExecQuery(ctx, "globalfee", "bypass-messages")
 				require.NoError(t, err)
-				fmt.Println(string(res))
+
+				var bypassMessagesRes globalfeetypes.QueryBypassMessagesResponse
+				err = json.Unmarshal(res, &bypassMessagesRes)
+				require.NoError(t, err)
+				require.ElementsMatch(t, bypassMessages, bypassMessagesRes.BypassMessages)
 			},
 		},
 	}
