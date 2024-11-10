@@ -34,7 +34,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v8/upgrade/testnet"
+	"github.com/noble-assets/noble/v8/upgrade"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
@@ -76,6 +76,7 @@ import (
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
@@ -300,13 +301,23 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 
 func (app *App) RegisterUpgradeHandler() error {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		testnet.UpgradeName,
-		testnet.CreateUpgradeHandler(
+		upgrade.UpgradeName,
+		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
+			app.appCodec,
 			app.interfaceRegistry,
+			app.Logger(),
+			app.GetKey(capabilitytypes.ModuleName),
+			app.AccountKeeper,
+			app.AuthorityKeeper,
+			app.BankKeeper,
+			app.CapabilityKeeper,
+			app.IBCKeeper.ClientKeeper,
+			app.ConsensusKeeper,
 			app.GlobalFeeKeeper,
 			app.ParamsKeeper,
+			app.StakingKeeper,
 		),
 	)
 
@@ -318,8 +329,8 @@ func (app *App) RegisterUpgradeHandler() error {
 		return nil
 	}
 
-	if upgradeInfo.Name == testnet.UpgradeName {
-		app.SetStoreLoader(testnet.CreateStoreLoader(upgradeInfo.Height))
+	if upgradeInfo.Name == upgrade.UpgradeName {
+		app.SetStoreLoader(upgrade.CreateStoreLoader(upgradeInfo.Height))
 	}
 
 	return nil

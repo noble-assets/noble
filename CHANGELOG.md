@@ -2,33 +2,21 @@
 
 ## v8.0.0
 
-*Oct 16, 2024*
+*Nov 10, 2024*
 
-This is the Helium major release of Noble. It upgrades the Noble's core
-dependencies, namely CometBFT (f.k.a. Tendermint), Cosmos SDK, and IBC to their
-latest stable release [Eden]. In addition to this upgrade, it also replaces the
-legacy [ParamAuthority] module with an in-house build [Authority] module. This
-module allows the Noble Maintenance Multisig to enact governance gated actions
-like chain upgrades and IBC client substitutions.
+This is the Helium major release of Noble. It upgrades Noble itself and all of it's core modules to the latest stable release of the Cosmos SDK, `v0.50.x` a.k.a. Eden. Additional module changes have been documented below:
 
-The following modules have specifically been upgraded to Cosmos SDK `v0.50.x`
+#### FiatTokenFactory
 
-- [FiatTokenFactory] — Circle's USD Coin
-- [CCTP] — Circle's Cross Chain Transfer Protocol
-- [Aura] — Ondo's US Dollar Yield Token
-- [Halo] — Hashnote's US Yield Coin
-- [Florin] — Monerium's EUR emoney
-- [Forwarding] — Noble's Intents System
+The BlockIBC logic was improved to support both Bech32 and Bech32m for IBC recipient addresses.
 
-[aura]: https://github.com/ondoprotocol/usdy-noble
-[authority]: https://github.com/noble-assets/authority
-[cctp]: https://github.com/circlefin/noble-cctp
-[eden]: https://medium.com/the-interchain-foundation/elevating-the-cosmos-sdk-eden-v0-50-20a554e16e43
-[florin]: https://github.com/monerium/module-noble
-[forwarding]: https://github.com/noble-assets/forwarding
-[halo]: https://github.com/noble-assets/halo
-[fiattokenfactory]: https://github.com/circlefin/noble-fiattokenfactory
-[paramauthority]: https://github.com/strangelove-ventures/paramauthority
+#### Florin
+
+The module was updated to accept a user's public key when verifying signatures, instead of relying on on-chain data.
+
+#### Forwarding
+
+The module was updated to include a fallback address and a list of allowed denominations to forward.
 
 ## v7.0.0
 
