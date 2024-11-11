@@ -12,7 +12,7 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.5.2
 	github.com/docker/docker v24.0.9+incompatible
 	github.com/ethereum/go-ethereum v1.14.8
-	github.com/monerium/module-noble/v2 v2.0.0-rc.4
+	github.com/monerium/module-noble/v2 v2.0.0
 	github.com/noble-assets/authority v1.0.0
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.0
