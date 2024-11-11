@@ -2,7 +2,7 @@
 
 ## v8.0.0
 
-*Nov 10, 2024*
+*Nov 11, 2024*
 
 This is the Helium major release of Noble. It upgrades Noble itself and all of it's core modules to the latest stable release of the Cosmos SDK, `v0.50.x` a.k.a. Eden. Additional module changes have been documented below:
 
