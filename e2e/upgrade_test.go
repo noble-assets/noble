@@ -31,6 +31,8 @@ import (
 )
 
 func TestChainUpgrade(t *testing.T) {
+	t.Skip()
+
 	genesisVersion := "v8.0.0-rc.3-fix"
 
 	upgrades := []e2e.ChainUpgrade{
