@@ -21,7 +21,6 @@ import (
 
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
-	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -184,12 +183,6 @@ func CreateUpgradeHandler(
 		// Migrate validator accounts to permanently locked vesting.
 		MigrateValidatorAccounts(ctx, accountKeeper, stakingKeeper)
 
-		// Safely burn surplus staking token supply.
-		err = BurnSurplusSupply(ctx, authority, accountKeeper, bankKeeper)
-		if err != nil {
-			return vm, err
-		}
-
 		logger.Info(UpgradeASCII)
 		return vm, nil
 	}
@@ -229,30 +222,6 @@ func MigrateValidatorAccounts(ctx context.Context, accountKeeper authkeeper.Acco
 
 		accountKeeper.SetAccount(ctx, rawAccount)
 	}
-}
-
-// BurnSurplusSupply performs a burn of the surplus $STAKE supply.
-func BurnSurplusSupply(ctx context.Context, authority string, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.Keeper) error {
-	supply := bankKeeper.GetSupply(ctx, "ustake")
-	surplus, err := supply.SafeSub(sdk.NewCoin(
-		"ustake", math.NewInt(1_000_000_000_000_000),
-	))
-
-	if err != nil || !surplus.IsPositive() {
-		return nil
-	}
-
-	address, err := accountKeeper.AddressCodec().StringToBytes(authority)
-	if err != nil {
-		return err
-	}
-	err = bankKeeper.SendCoinsFromAccountToModule(ctx, address, upgradetypes.ModuleName, sdk.NewCoins(surplus))
-	if err != nil {
-		return err
-	}
-
-	err = bankKeeper.BurnCoins(ctx, upgradetypes.ModuleName, sdk.NewCoins(surplus))
-	return err
 }
 
 // GetModuleMessages is a utility that returns all messages registered by a module.
