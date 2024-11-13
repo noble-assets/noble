@@ -132,6 +132,8 @@ func (app *App) RegisterLegacyModules() error {
 		AddRoute(transfertypes.ModuleName, transferStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
+	app.ForwardingKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
+
 	return app.RegisterModules(
 		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper, true),
 		ibc.NewAppModule(app.IBCKeeper),
