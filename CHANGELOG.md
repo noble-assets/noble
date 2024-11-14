@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## v8.0.2
+
+*Nov 13, 2024*
+
+This is a consensus breaking patch to the v8 Helium release line.
+
+It addresses the following consensus failure when upgrading Noble's mainnet to the `v8.0.1` release.
+
+### BUG FIXES
+
+- Due to IBC-Go v8 not supporting App Wiring, the Noble Core Team has to manually initialize all IBC modules and keepers. The Forwarding module receives multiple IBC keepers, which have to be manually set once wiring is complete. ([#429](https://github.com/noble-assets/noble/pull/429))
+
+## v8.0.1
+
+*Nov 13, 2024*
+
+This is a consensus breaking patch to the v8 Helium release line.
+
+It addresses the following consensus failure when upgrading Noble's mainnet to the `v8.0.0` release.
+
+### BUG FIXES
+
+- In the v8 Helium upgrade handler, the Noble Core Team wanted to align a missconfiguration in the initial genesis file that resulted in 18 surplus $STAKE existing, bringing the total supply to 1,000,000,018. The migration plan involved burning the surplus 18 tokens via the Uupgrade module, however, the module account was never initialized and permissioned. ([#428](https://github.com/noble-assets/noble/pull/428))
+
 ## v8.0.0
 
 *Nov 11, 2024*
