@@ -1,0 +1,1 @@
+- Due to IBC-Go v8 not supporting App Wiring, the Noble Core Team has to manually initialize all IBC modules and keepers. The Forwarding module receives multiple IBC keepers, which have to be manually set once wiring is complete. ([#429](https://github.com/noble-assets/noble/pull/429))
