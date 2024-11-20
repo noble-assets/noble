@@ -1,0 +1,1 @@
+- Update `x/halo` to latest non-consensus breaking patch. ([#431](https://github.com/noble-assets/noble/pull/431))
