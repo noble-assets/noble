@@ -1,0 +1,1 @@
+- Bump `cosmossdk.io/math` to [`v1.4.0`](https://github.com/cosmos/cosmos-sdk/releases/tag/math%2Fv1.4.0) to resolve [ASA-2024-010](https://github.com/cosmos/cosmos-sdk/security/advisories/GHSA-7225-m954-23v7) security advisory. ([#433](https://github.com/noble-assets/noble/pull/433))
