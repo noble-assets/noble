@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v8.0.3
+
+*Nov 20, 2024*
+
+This is a non-consensus breaking patch to the v8 Helium release line.
+
+### DEPENDENCIES
+
+- Update `x/halo` to latest non-consensus breaking patch. ([#431](https://github.com/noble-assets/noble/pull/431))
+- Bump `cosmossdk.io/math` to [`v1.4.0`](https://github.com/cosmos/cosmos-sdk/releases/tag/math%2Fv1.4.0) to resolve [ASA-2024-010](https://github.com/cosmos/cosmos-sdk/security/advisories/GHSA-7225-m954-23v7) security advisory. ([#433](https://github.com/noble-assets/noble/pull/433))
+
 ## v8.0.2
 
 *Nov 13, 2024*
