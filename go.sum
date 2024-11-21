@@ -398,8 +398,6 @@ github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194 h1:q3QN+txpYb
 github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194/go.mod h1:XWMC0dUamrWzwClBpQsGUg9YF/2qLGz6nwcIJxeiuaU=
 github.com/circlefin/noble-cctp/api v0.0.0-20241031192117-4285c94ec194 h1:RhcpyBH9MLvq291zETgFYVk40iJHzpk7r/Remd97C+c=
 github.com/circlefin/noble-cctp/api v0.0.0-20241031192117-4285c94ec194/go.mod h1:NkDh8O/gJ2gu1jTbbr8PgEm/Y8xYd6H0jr9gVYGgeRw=
-github.com/circlefin/noble-fiattokenfactory v0.0.0-20241030165025-e3796e8ba8c1 h1:j5mffnXSdHXDFwR8dloQ+FLWUWHu+Qaytgd4ej/0uRA=
-github.com/circlefin/noble-fiattokenfactory v0.0.0-20241030165025-e3796e8ba8c1/go.mod h1:RVASIEhg26agv9tyc3DIWe+Aj44df8i5bQY4HN5/snQ=
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/ckaznocha/intrange v0.2.0 h1:FykcZuJ8BD7oX93YbO1UY9oZtkRbp+1/kJcDjkefYLs=
@@ -1084,6 +1082,8 @@ github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
 github.com/noble-assets/authority v1.0.0 h1:AItgvW6OEn7CocTuda3YjHuOq/7jTTyr1COpqJUgzz0=
 github.com/noble-assets/authority v1.0.0/go.mod h1:AyCyM1iP73dHxBsulw0GpZNgPIQvSndWp30pK87nmog=
+github.com/noble-assets/fiattokenfactory v0.0.0-20241114165410-6e3ccbadac22 h1:WktDmgEVWHFBl8FY2CMIGMG/kG+IvUnQpU3k2fMxrSQ=
+github.com/noble-assets/fiattokenfactory v0.0.0-20241114165410-6e3ccbadac22/go.mod h1:RVASIEhg26agv9tyc3DIWe+Aj44df8i5bQY4HN5/snQ=
 github.com/noble-assets/forwarding/v2 v2.0.0 h1:6iBg51yEtIlSaDzW7o5g17SvP9o1rNOUFxEPX17E6pE=
 github.com/noble-assets/forwarding/v2 v2.0.0/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
 github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3lOwkbO+Y=
