@@ -42,8 +42,8 @@ The Access Control table below shows the functionality tied to each privileged a
 | **Update Master Minter**                    |     x     |            |                   |                       |            |                 |                 x                |
 | **Update Owner**                            |     x     |            |                   |                       |            |                 |                 x                |
 | **Update Pauser**                           |     x     |            |                   |                       |            |                 |                 x                |
-| **Transer Tokens (tokenfactory asset)**     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
-| **Transer Tokens (non-tokenfactory asset)** |     x     |      x     |         x         |           x           |      x     |        x        |                 x                |
+| **Transfer Tokens (tokenfactory asset)**    |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
+| **Transfer Tokens (non-tokenfactory asset)**|     x     |      x     |         x         |           x           |      x     |        x        |                 x                |
 
 
 ## Security Guarantees in a Permissioned Validator Set (Proof of Authority) 
@@ -56,7 +56,7 @@ Noble intends to monitor developments in shared security across the blockchain e
 
 ## Connecting to Noble
 
-App-chains are able to permissionlessly connect to Noble [via IBC](https://medium.com/the-interchain-foundation/eli5-what-is-ibc-def44d7b5b4c), a universal interoperability protocol that allows two different blockchains to communicate with one another, garaunteeing reliable, ordered, and authenticated communication.
+App-chains are able to permissionlessly connect to Noble [via IBC](https://medium.com/the-interchain-foundation/eli5-what-is-ibc-def44d7b5b4c), a universal interoperability protocol that allows two different blockchains to communicate with one another, guaranteeing reliable, ordered, and authenticated communication.
 
 How to integrate with Noble? 
 
