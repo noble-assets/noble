@@ -72,9 +72,9 @@ func NewRootCmd() *cobra.Command {
 			srvCfg := serverconfig.DefaultConfig()
 			srvCfg.MinGasPrices = "0uusdc,0ausdy,0ueure"
 			srvCfg.API.Enable = true
-			// overwrite default timeout_commit from the cometbft configuration
+			// overwrite default commit timeout from the cometbft configuration
 			cmtCfg := cmtcfg.DefaultConfig()
-			cmtCfg.Consensus.TimeoutCommit = (500 * time.Millisecond)
+			cmtCfg.Consensus.TimeoutCommit = 500 * time.Millisecond
 
 			return server.InterceptConfigsPreRunHandler(cmd, serverconfig.DefaultConfigTemplate, srvCfg, cmtCfg)
 		},
