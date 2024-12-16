@@ -1136,8 +1136,8 @@ github.com/nishanths/exhaustive v0.12.0 h1:vIY9sALmw6T/yxiASewa4TQcFsVYZQQRUQJhK
 github.com/nishanths/exhaustive v0.12.0/go.mod h1:mEZ95wPIZW+x8kC4TgC+9YCUgiST7ecevsVDTgc2obs=
 github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm/w98Vk=
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
-github.com/noble-assets/authority v1.0.0 h1:AItgvW6OEn7CocTuda3YjHuOq/7jTTyr1COpqJUgzz0=
-github.com/noble-assets/authority v1.0.0/go.mod h1:AyCyM1iP73dHxBsulw0GpZNgPIQvSndWp30pK87nmog=
+github.com/noble-assets/authority v1.0.1 h1:8zK11lSLG/fHKEzAurabpUCkZup3bGzJTmiv8JmbP+A=
+github.com/noble-assets/authority v1.0.1/go.mod h1:NeduRYMyYEZ2sep+wFenvj/LWJTB9UUYw0GPldF+Bkk=
 github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3lOwkbO+Y=
 github.com/noble-assets/globalfee v1.0.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
