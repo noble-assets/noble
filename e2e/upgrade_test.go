@@ -24,7 +24,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	globalfeetypes "github.com/noble-assets/globalfee/types"
 	"github.com/noble-assets/noble/e2e"
-	"github.com/noble-assets/noble/v8/upgrade"
+	"github.com/noble-assets/noble/v9/upgrade"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/require"

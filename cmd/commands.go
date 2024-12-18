@@ -35,7 +35,7 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/noble-assets/noble/v8"
+	"github.com/noble-assets/noble/v9"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

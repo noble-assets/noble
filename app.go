@@ -34,7 +34,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v8/upgrade"
+	"github.com/noble-assets/noble/v9/upgrade"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
