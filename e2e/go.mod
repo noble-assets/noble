@@ -16,7 +16,7 @@ require (
 	github.com/noble-assets/authority v1.0.1
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
-	github.com/noble-assets/noble/v8 v8.0.0-rc.3
+	github.com/noble-assets/noble/v9 v9.0.0
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
 	github.com/strangelove-ventures/interchaintest/v8 v8.8.0
 	github.com/stretchr/testify v1.9.0
@@ -31,7 +31,6 @@ require (
 	cloud.google.com/go/iam v1.2.0 // indirect
 	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/api v0.7.6 // indirect
-	cosmossdk.io/client/v2 v2.0.0-beta.5 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/core v0.11.1 // indirect
 	cosmossdk.io/depinject v1.1.0 // indirect
@@ -291,7 +290,7 @@ replace (
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-	github.com/noble-assets/noble => ../
+	github.com/noble-assets/noble/v9 => ../
 
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
 )
