@@ -40,6 +40,8 @@ import (
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	authoritytypes "github.com/noble-assets/authority/types"
 	"github.com/noble-assets/forwarding/v2"
+	"github.com/noble-assets/wormhole"
+	wormholetypes "github.com/noble-assets/wormhole/types"
 )
 
 func (app *App) RegisterLegacyModules() error {
@@ -129,10 +131,14 @@ func (app *App) RegisterLegacyModules() error {
 
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icahost.NewIBCModule(app.ICAHostKeeper)).
-		AddRoute(transfertypes.ModuleName, transferStack)
+		AddRoute(transfertypes.ModuleName, transferStack).
+		AddRoute(wormholetypes.ModuleName, wormhole.NewIBCModule(app.WormholeKeeper))
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.ForwardingKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
+
+	scopedWormholeKeeper := app.CapabilityKeeper.ScopeToModule(wormholetypes.ModuleName)
+	app.WormholeKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.IBCKeeper.PortKeeper, scopedWormholeKeeper)
 
 	return app.RegisterModules(
 		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper, true),
