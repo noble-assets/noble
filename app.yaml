@@ -6,7 +6,7 @@ modules:
       pre_blockers: [ upgrade ]
       begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz ]
       end_blockers: [ crisis, staking, feegrant, forwarding ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -122,3 +122,6 @@ modules:
     config:
       "@type": noble.globalfee.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
+  - name: wormhole
+    config:
+      "@type": wormhole.module.v1.Module

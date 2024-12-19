@@ -55,6 +55,7 @@ import (
 	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
+	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 
 	// Cosmos Modules
@@ -98,6 +99,7 @@ import (
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 )
 
 var DefaultNodeHome string
@@ -149,6 +151,7 @@ type App struct {
 	AuthorityKeeper  *authoritykeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
+	WormholeKeeper   *wormholekeeper.Keeper
 }
 
 func init() {
@@ -225,6 +228,7 @@ func NewApp(
 		&app.AuthorityKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
+		&app.WormholeKeeper,
 	); err != nil {
 		return nil, err
 	}
