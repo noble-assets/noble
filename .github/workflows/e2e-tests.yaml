@@ -2,6 +2,10 @@ name: End to End Tests
 
 on:
   pull_request:
+  
+  push:
+    branches:
+      - dan/*
 
 env:
   TAR_PATH: heighliner.tar
@@ -22,6 +26,7 @@ jobs:
           tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
+          clone-key: ${{ secrets.SSH_CIRCLE }}
 
           # Heighliner chains.yaml config
           chain: noble
