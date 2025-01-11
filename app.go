@@ -21,6 +21,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cast"
+
 	"cosmossdk.io/core/appconfig"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
@@ -34,6 +36,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	"github.com/noble-assets/noble/v9/jester"
 	"github.com/noble-assets/noble/v9/upgrade"
 
 	_ "cosmossdk.io/x/evidence"
@@ -262,6 +265,13 @@ func NewApp(
 		return nil, err
 	}
 	app.SetAnteHandler(anteHandler)
+
+	jesterGrpcClient := jester.NewJesterGRPCClient(cast.ToString(appOpts.Get(jester.FlagJesterGRPC)))
+
+	app.SetExtendVoteHandler(NewExtendVoteHandler(jesterGrpcClient))
+	app.SetVerifyVoteExtensionHandler(NewVerifyVoteExtensionHandler())
+	app.SetPrepareProposal(NewPrepareProposalHandler())
+	app.SetPreBlocker(NewPreBlocker(app.WormholeKeeper))
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
 		return nil, err

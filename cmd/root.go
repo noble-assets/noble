@@ -26,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
+	"github.com/noble-assets/noble/v9/jester"
 	"github.com/spf13/cobra"
 )
 
@@ -76,7 +77,9 @@ func NewRootCmd() *cobra.Command {
 			cmtCfg := cmtcfg.DefaultConfig()
 			cmtCfg.Consensus.TimeoutCommit = 500 * time.Millisecond
 
-			return server.InterceptConfigsPreRunHandler(cmd, serverconfig.DefaultConfigTemplate, srvCfg, cmtCfg)
+			customAppTemplate, appConfig := jester.AppendJesterConfig(srvCfg)
+
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, appConfig, cmtCfg)
 		},
 	}
 
