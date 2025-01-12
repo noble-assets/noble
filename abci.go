@@ -21,6 +21,11 @@ type InjectedDollarVE struct {
 
 // client queryv1connect.QueryServiceClient
 func NewExtendVoteHandler(client jester.QueryServiceClient) sdk.ExtendVoteHandler {
+	// TODO: consider better handling of "noJesterBlocks" logic
+	// maximum amount of blocks a validator is allowed to submit without a jester response
+	const maxNoJesterBlocks = uint16(500)
+	noJesterBlocks := new(uint16)
+
 	// Returns custom functionality for the block proposer to execute.
 	return func(ctx sdk.Context, req *abcitypes.RequestExtendVote) (*abcitypes.ResponseExtendVote, error) {
 		log := ctx.Logger()
@@ -28,8 +33,23 @@ func NewExtendVoteHandler(client jester.QueryServiceClient) sdk.ExtendVoteHandle
 		request := connect.NewRequest(&jester.GetVoteExtensionRequest{})
 		res, err := client.GetVoteExtension(context.Background(), request)
 		if err != nil {
-			log.Error("failed to get vote extention from jester", "err", err)
+			*noJesterBlocks++
+
+			log.Error(`failed to get vote extention from Jester. Your node will panic if "MAX-noJesterBlocks" is reached!!!`,
+				"current-noJesterBlocks", *noJesterBlocks, "MAX-noJesterBlocks", maxNoJesterBlocks,
+				"err", err,
+			)
+
+			if *noJesterBlocks >= maxNoJesterBlocks {
+				panic("too many consecutive blocks porposed without jester response")
+			}
+
+			return &abcitypes.ResponseExtendVote{
+				VoteExtension: nil,
+			}, nil
 		}
+
+		*noJesterBlocks = 0
 
 		bz, err := json.Marshal(res.Msg)
 		if err != nil {
@@ -69,7 +89,7 @@ func NewPrepareProposalHandler() sdk.PrepareProposalHandler {
 			return &abcitypes.ResponsePrepareProposal{Txs: req.Txs}, nil
 		}
 
-		rawVoteExtension := []byte{}
+		var rawVoteExtension []byte
 		highestPowerVal := int64(math.MinInt64)
 
 		for _, vote := range req.LocalLastCommit.Votes {
@@ -77,6 +97,10 @@ func NewPrepareProposalHandler() sdk.PrepareProposalHandler {
 				rawVoteExtension = vote.VoteExtension
 				highestPowerVal = vote.Validator.Power
 			}
+		}
+
+		if rawVoteExtension == nil {
+			return &abcitypes.ResponsePrepareProposal{Txs: req.Txs}, nil
 		}
 
 		var voteExtension jester.GetVoteExtensionResponse
