@@ -9,6 +9,7 @@ on:
 
 env:
   TAR_PATH: heighliner.tar
+  GOPRIVATE: github.com/{organisation}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -54,10 +55,17 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.FIAT_TF_PRIV_DPLY }}
+      - name: Add and Configure SSH Deploy Key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            echo "${{ secrets.FIAT_TF_PRIV_DPLY }}" | base64 -d | ssh-add -
+            echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+            git config --global url."ssh://git@github.com/".insteadOf https://github.com/    
+
 
       - name: Generate Matrix
         id: set-matrix
@@ -94,10 +102,16 @@ jobs:
       - name: Load Docker Image
         run: docker image load -i ${{ env.TAR_PATH }}
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.FIAT_TF_PRIV_DPLY }}
+      - name: Add and Configure SSH Deploy Key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            echo "${{ secrets.FIAT_TF_PRIV_DPLY }}" | base64 -d | ssh-add -
+            echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+            git config --global url."ssh://git@github.com/".insteadOf https://github.com/  
 
       - name: Run Tests
         run: cd e2e && go test -race -v -timeout 30m -run ^${{ matrix.test }}$ .
