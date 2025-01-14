@@ -27,7 +27,8 @@ jobs:
           tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
-          clone-key: ${{ secrets.FIAT_TF_PRIV_DPLY }}
+          # clone-key: ${{ secrets.FIAT_TF_PRIV_DPLY }}
+          additional-args: "--clone-key ${{ secrets.FIAT_TF_PRIV_DPLY }}"
 
           # Heighliner chains.yaml config
           chain: noble
