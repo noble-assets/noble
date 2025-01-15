@@ -1,7 +1,52 @@
 ![Noble banner](https://raw.githubusercontent.com/noble-assets/networks/main/Twitter_Banner.png)
+
 # ✨✨ Noble ✨✨
 
 ## Overview
+
+[Noble](https://nobleassets.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble's vision is to be the world's premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers on the Noble blockchain.
+
+## Table of Contents
+- [Overview](#overview)
+- [Noble App-Chain Design](#noble-app-chain-design)
+- [Quick Start](#quick-start)
+- [Security Model](#security-guarantees-in-a-permissioned-validator-set-proof-of-authority)
+- [Integration Guide](#connecting-to-noble)
+- [Governance](#noble-upgrades--governance)
+- [Development](#partnership-with-strangelove--future-technical-development)
+- [Community](#media)
+
+## Quick Start
+
+### Prerequisites
+- Go 1.19 or later
+- Make
+- Git
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/noble-assets/noble
+cd noble
+
+# Install the binary
+make install
+```
+
+### Initialize Your Node
+```bash
+# Generate genesis configuration
+nobled init <your-moniker-name>
+
+# Configure your node (see Configuration section below)
+# Start your node
+nobled start
+```
+
+## Configuration
+
+### Required Genesis Settings
+The `tokenfactory` module requires specific configuration in `genesis.json`:
 
 [Noble](https://nobleassets.xyz/) is a Cosmos [application-specific blockchain](https://docs.cosmos.network/v0.46/intro/why-app-specific.html) purpose-built for native asset issuance. Noble brings the efficiency and interoperability of native assets to the wider Cosmos ecosystem, starting with USDC. Noble’s vision is to be the world’s premier issuance hub for digital assets that connect to other blockchains seamlessly. Noble leverages the Cosmos-SDK – a flexible toolkit that allows developers to leverage existing modules, and to seamlessly integrate custom modules that add virtually unlimited functionality for asset issuers onthe Noble blockchain.
 
@@ -109,13 +154,29 @@ TWITTER: [@noble_xyz](https://twitter.com/noble_xyz/)
 WEB: [nobleassets.xyz](https://nobleassets.xyz/)
 
  
-## Build and install to go bin path
+## Build and Install
 
-[go](https://go.dev/dl/) will be needed for this install
+### Requirements
+- Go 1.19+
+- Git
 
-```
+### Installation
+```bash
 make install
 ```
+
+### Node Initialization
+```bash
+# Initialize your node with a moniker
+nobled init $MONIKER
+
+# Configure genesis.json (see Configuration section below)
+# Start your node
+nobled start
+```
+
+### Important: Genesis Configuration
+The `tokenfactory` module requires specific settings in `genesis.json`:
 
 ## Initialize config
 
@@ -206,3 +267,4 @@ nobled start
 The [`interchaintest`](https://github.com/strangelove-ventures/interchaintest) test suite has been imported into the noble repo. Tests can be ran and written [here](./interchaintest/).
 
 To quickly spin up a standalone noble chain and setup all privileged accounts, run the [play.sh](play.sh) bash script.
+
