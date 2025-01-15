@@ -15,10 +15,11 @@
 package upgrade
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
-	return upgradetypes.UpgradeStoreLoader(upgradeHeight, nil)
+	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storetypes.StoreUpgrades{})
 }
