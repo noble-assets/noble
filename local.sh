@@ -29,8 +29,6 @@ if ! [ -f .duke/data/priv_validator_state.json ]; then
 
   nobled genesis gentx validator 1000000ustake --chain-id "duke-1" --home .duke --keyring-backend test &> /dev/null
   nobled genesis collect-gentxs --home .duke &> /dev/null
-
-  sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' .duke/config/config.toml
 fi
 
 nobled start --home .duke

@@ -1,0 +1,1 @@
+- Bump Cosmos SDK to [`v0.50.11`](https://github.com/cosmos/cosmos-sdk/releases/v0.50.11) to resolve [ABS-0043/ABS-0044](https://github.com/cosmos/cosmos-sdk/security/advisories/GHSA-8wcc-m6j2-qxvm) security advisory. ([#441](https://github.com/noble-assets/noble/pull/441))
