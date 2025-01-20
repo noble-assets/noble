@@ -6,7 +6,7 @@ modules:
       pre_blockers: [ upgrade ]
       begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz ]
       end_blockers: [ crisis, staking, feegrant, forwarding ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, dollar ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -33,6 +33,8 @@ modules:
         - account: florin
           permissions: [ burner, minter ]
         - account: aura
+          permissions: [ burner, minter ]
+        - account: dollar
           permissions: [ burner, minter ]
       authority: authority # Utilize our custom x/authority module.
   - name: authz
@@ -114,6 +116,11 @@ modules:
   - name: authority
     config:
       "@type": noble.authority.module.v1.Module
+  - name: dollar
+    config:
+      "@type": noble.dollar.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+      denom: uusdn
   - name: forwarding
     config:
       "@type": noble.forwarding.module.v1.Module
