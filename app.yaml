@@ -4,9 +4,9 @@ modules:
       "@type": cosmos.app.runtime.v1alpha1.Module
       app_name: Noble
       pre_blockers: [ upgrade ]
-      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz ]
+      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap ]
       end_blockers: [ crisis, staking, feegrant, forwarding ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, swap ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -122,6 +122,13 @@ modules:
     config:
       "@type": noble.globalfee.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
+  - name: swap
+    config:
+      "@type": swap.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+      base_denom: uusdn
+      stableswap:
+        unbonding_block_delta: 30
   - name: wormhole
     config:
       "@type": wormhole.module.v1.Module
