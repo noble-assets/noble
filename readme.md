@@ -42,8 +42,8 @@ The Access Control table below shows the functionality tied to each privileged a
 | **Update Master Minter**                    |     x     |            |                   |                       |            |                 |                 x                |
 | **Update Owner**                            |     x     |            |                   |                       |            |                 |                 x                |
 | **Update Pauser**                           |     x     |            |                   |                       |            |                 |                 x                |
-| **Transer Tokens (tokenfactory asset)**     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
-| **Transer Tokens (non-tokenfactory asset)** |     x     |      x     |         x         |           x           |      x     |        x        |                 x                |
+| **Transfer Tokens (tokenfactory asset)**     |     x     |      x     |         x         |           x           |      x     |        x        |                                  |
+| **Transfer Tokens (non-tokenfactory asset)** |     x     |      x     |         x         |           x           |      x     |        x        |                 x                |
 
 
 ## Security Guarantees in a Permissioned Validator Set (Proof of Authority) 
