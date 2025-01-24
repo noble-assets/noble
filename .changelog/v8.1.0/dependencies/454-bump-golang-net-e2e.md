@@ -1,0 +1,1 @@
+- Update golang.org/x/net to v0.33.0 in e2e/ ([\#454](https://github.com/noble-assets/noble/pull/454))

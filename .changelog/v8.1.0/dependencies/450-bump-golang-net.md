@@ -1,0 +1,1 @@
+- Update golang.org/x/net to v0.33.0 ([\#450](https://github.com/noble-assets/noble/pull/450))
