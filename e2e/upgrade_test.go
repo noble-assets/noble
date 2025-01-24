@@ -47,7 +47,7 @@ func TestChainUpgrade(t *testing.T) {
 				// After successfully creating and querying the ICA account we need to update the test suite value for later usage.
 				icaTs.IcaAddress = icaAddr
 
-				// Assert inital balance of the ICA is correct.
+				// Assert initial balance of the ICA is correct.
 				initBal, err := noble.BankQueryBalance(ctx, icaAddr, noble.Config().Denom)
 				require.NoError(t, err, "failed to query bank balance")
 				require.True(t, initBal.Equal(icaTs.InitBal), "invalid balance expected(%s), got(%s)", icaTs.InitBal, initBal)
