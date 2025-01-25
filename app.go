@@ -267,11 +267,14 @@ func NewApp(
 	app.SetAnteHandler(anteHandler)
 
 	jesterGrpcClient := jester.NewJesterGRPCClient(cast.ToString(appOpts.Get(jester.FlagJesterGRPC)))
+	proposalHandler := NewProposalHandler(
+		logger, app.BaseApp, app.Mempool(),
+		jesterGrpcClient, app.WormholeKeeper,
+	)
 
-	app.SetExtendVoteHandler(NewExtendVoteHandler(jesterGrpcClient))
-	app.SetVerifyVoteExtensionHandler(NewVerifyVoteExtensionHandler())
-	app.SetPrepareProposal(NewPrepareProposalHandler())
-	app.SetPreBlocker(NewPreBlocker(app.WormholeKeeper))
+	app.SetPrepareProposal(proposalHandler.PrepareProposal())
+	app.SetProcessProposal(proposalHandler.NewProcessProposalHandler())
+	app.SetPreBlocker(proposalHandler.NewPreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
 		return nil, err

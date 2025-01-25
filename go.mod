@@ -362,3 +362,5 @@ require (
 
 // use cosmos compatible syndtr/goleveldb
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+
+replace jester.noble.xyz/api v0.0.0-20250110224153-143376c94717 => ../jester/api
