@@ -20,9 +20,8 @@ import (
 	pfm "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	pfmtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
-	"github.com/cosmos/ibc-go/modules/capability"
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	capabilitykeeper "github.com/cosmos/ibc-go/v8/modules/capability/keeper"
+	capabilitytypes "github.com/cosmos/ibc-go/v8/modules/capability/types"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
@@ -135,7 +134,7 @@ func (app *App) RegisterLegacyModules() error {
 	app.ForwardingKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
 
 	return app.RegisterModules(
-		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper, true),
+		capabilitytypes.NewAppModule(app.appCodec, *app.CapabilityKeeper, true),
 		ibc.NewAppModule(app.IBCKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		pfm.NewAppModule(app.PFMKeeper, app.GetSubspace(pfmtypes.ModuleName)),
