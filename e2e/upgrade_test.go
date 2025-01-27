@@ -1,4 +1,4 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ func TestChainUpgrade(t *testing.T) {
 
 	upgrades := []e2e.ChainUpgrade{
 		{
-			Image:       e2e.GhcrImage("v8.0.0"),
+			Image:       e2e.GhcrImage("v8.0.4"),
 			UpgradeName: "helium",
 			PreUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
 				icaAddr, err := e2e.RegisterICAAccount(ctx, icaTs)
@@ -94,7 +94,7 @@ func TestChainUpgrade(t *testing.T) {
 		},
 		{
 			Image:       e2e.LocalImages[0],
-			UpgradeName: "v8.1",
+			UpgradeName: "argentum",
 			PostUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
 				msgSend, ok := icaTs.Msgs[0].(*banktypes.MsgSend)
 				require.True(t, ok, "expected MsgSend, got %T", icaTs.Msgs[0])

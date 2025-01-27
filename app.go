@@ -1,4 +1,4 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -312,7 +312,9 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
+			app.Logger(),
 			app.CapabilityKeeper,
+			app.ConsensusKeeper,
 		),
 	)
 
