@@ -39,6 +39,7 @@ import (
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
+	_ "dollar.noble.xyz"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
@@ -95,6 +96,7 @@ import (
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
+	dollarkeeper "dollar.noble.xyz/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
@@ -148,6 +150,7 @@ type App struct {
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
+	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
@@ -225,6 +228,7 @@ func NewApp(
 		&app.AuraKeeper,
 		// Noble Modules
 		&app.AuthorityKeeper,
+		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
 		&app.WormholeKeeper,

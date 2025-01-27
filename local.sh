@@ -17,6 +17,7 @@ if ! [ -f .duke/data/priv_validator_state.json ]; then
   nobled genesis add-genesis-account validator 1000000ustake --home .duke --keyring-backend test
   AUTHORITY=$(nobled keys add authority --home .duke --keyring-backend test --output json | jq .address)
   nobled genesis add-genesis-account authority 4000000ustake --home .duke --keyring-backend test
+  nobled genesis add-genesis-account noble1cyyzpxplxdzkeea7kwsydadg87357qnah9s9cv 1000000uusdc --home .duke --keyring-backend test
 
   TEMP=.duke/genesis.json
   touch $TEMP && jq '.app_state.authority.owner = '$AUTHORITY'' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
