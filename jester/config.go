@@ -34,7 +34,7 @@ func AppendJesterConfig(srvCfg *serverconfig.Config) (customAppTemplate string, 
 
 [jester]
 
-# Jesters gRPC server address. 
+# Jester's gRPC server address. 
 # This should not conflict with the CometBFT gRPC server.
 grpc-server = "{{ .JesterConfig.GRPCAddress }}"
 `
@@ -48,5 +48,5 @@ const (
 )
 
 func AddJesterFlags(cmd *cobra.Command) {
-	cmd.Flags().String(FlagJesterGRPC, defaultJesterGRPC, "Jesters gRPC server address")
+	cmd.Flags().String(FlagJesterGRPC, defaultJesterGRPC, "Jester's gRPC server address")
 }

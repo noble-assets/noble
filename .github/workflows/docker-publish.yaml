@@ -28,10 +28,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: strangelove-ventures/heighliner-build-action@v1.0.2
+        uses: strangelove-ventures/heighliner-build-action@v1.0.3
         with:
           chain: noble
           dockerfile: cosmos
           build-target: make install
           binaries: |
             - /go/bin/nobled
+          clone-key: ${{ secrets.NOBLE_DOLLAR_DEPLOY }}

@@ -8,12 +8,12 @@ import (
 
 	"connectrpc.com/connect"
 	"cosmossdk.io/log"
+	dollarkeeper "dollar.noble.xyz/keeper"
+	dollarportaltypes "dollar.noble.xyz/types/portal"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
-	wormholekeeper "github.com/noble-assets/wormhole/keeper"
-	wormholetypes "github.com/noble-assets/wormhole/types"
 	jester "jester.noble.xyz/api"
 )
 
@@ -23,10 +23,10 @@ const (
 )
 
 type ProposalHandler struct {
-	logger         log.Logger
-	bApp           *baseapp.BaseApp
-	jester         jester.QueryServiceClient
-	wormholeKeeper *wormholekeeper.Keeper
+	logger       log.Logger
+	bApp         *baseapp.BaseApp
+	jester       jester.QueryServiceClient
+	dollarKeeper *dollarkeeper.Keeper
 
 	noJesterBlocks uint16
 
@@ -39,14 +39,14 @@ func NewProposalHandler(
 	bApp *baseapp.BaseApp,
 	mp mempool.Mempool,
 	jester jester.QueryServiceClient,
-	wormholeKeeper *wormholekeeper.Keeper,
+	dollarKeeper *dollarkeeper.Keeper,
 ) *ProposalHandler {
 	defaultHandler := baseapp.NewDefaultProposalHandler(mp, bApp)
 	return &ProposalHandler{
-		logger:         logger,
-		bApp:           bApp,
-		jester:         jester,
-		wormholeKeeper: wormholeKeeper,
+		logger:       logger,
+		bApp:         bApp,
+		jester:       jester,
+		dollarKeeper: dollarKeeper,
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
@@ -141,10 +141,10 @@ func (h *ProposalHandler) NewPreBlocker() sdk.PreBlocker {
 		}
 
 		var successfullMsg int
-		server := wormholekeeper.NewMsgServer(h.wormholeKeeper)
+		server := dollarkeeper.NewPortalMsgServer(h.dollarKeeper)
 		for _, vaa := range jesterResponse.Dollar.Vaas {
 			cachedCtx, writeCache := ctx.CacheContext()
-			_, err := server.SubmitVAA(cachedCtx, &wormholetypes.MsgSubmitVAA{
+			_, err := server.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
 				Vaa: vaa,
 			})
 
