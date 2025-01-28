@@ -131,7 +131,7 @@ modules:
       authority: authority # Utilize our custom x/authority module.
   - name: swap
     config:
-      "@type": swap.module.v1.Module
+      "@type": noble.swap.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
       base_denom: uusdn
       stableswap:

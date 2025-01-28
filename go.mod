@@ -33,7 +33,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v0.0.0-20241218145335-db59397b21c4
+	swap.noble.xyz v1.0.0-alpha.0
 )
 
 require (
