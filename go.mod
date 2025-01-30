@@ -3,6 +3,7 @@ module github.com/noble-assets/noble/v9
 go 1.22.7
 
 require (
+	connectrpc.com/connect v1.18.1
 	cosmossdk.io/client/v2 v2.0.0-beta.5
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.1.0
@@ -30,8 +31,10 @@ require (
 	github.com/noble-assets/halo/v2 v2.0.1
 	github.com/noble-assets/wormhole v1.0.0-alpha.0
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
+	github.com/spf13/cast v1.7.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
+	jester.noble.xyz/api v0.0.0-20250118000127-963b12b602e8
 	mvdan.cc/gofumpt v0.7.0
 	swap.noble.xyz v1.0.0-alpha.1
 )
@@ -289,7 +292,6 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
-	github.com/spf13/cast v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
@@ -347,7 +349,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240827150818-7e3bb234dfed // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240930140551-af27646dc61f // indirect
 	google.golang.org/grpc v1.67.1 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
+	google.golang.org/protobuf v1.36.2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

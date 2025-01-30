@@ -36,6 +36,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/noble-assets/noble/v9"
+	"github.com/noble-assets/noble/v9/jester"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -53,6 +54,7 @@ func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager 
 	)
 
 	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, func(startCmd *cobra.Command) {
+		jester.AddJesterFlags(startCmd)
 		crisis.AddModuleInitFlags(startCmd)
 	})
 
