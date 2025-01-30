@@ -23,9 +23,6 @@ import (
 )
 
 const (
-	// maximum amount of blocks a validator is allowed to submit without a jester response
-	maxNoJesterBlocks = uint16(1000)
-
 	// index to inject jester response into block
 	injectIndex = 0
 )
@@ -36,8 +33,6 @@ type ProposalHandler struct {
 	jesterCli      jester.QueryServiceClient
 	dollarKeeper   *dollarkeeper.Keeper
 	wormholeKeeper *wormholekeeper.Keeper
-
-	noJesterBlocks uint16
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultProcessProposalHandler sdk.ProcessProposalHandler
@@ -81,20 +76,10 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		// Query Jester for VAA's
 		request := connect.NewRequest(&jester.GetVoteExtensionRequest{})
 		jRes, err := h.jesterCli.GetVoteExtension(context.Background(), request)
-		// TODO: consider better handling of "noJesterBlocks" logic
 		if err != nil {
-			h.noJesterBlocks++
-			log.Error(`failed to get vote extension from Jester. Your node will panic if "MAX-noJesterBlocks" is reached!!!`,
-				"current-noJesterBlocks", h.noJesterBlocks, "MAX-noJesterBlocks", maxNoJesterBlocks,
+			log.Error(`failed to get vote extension from Jester. Ensure Jester is configured and running!`,
 				"err", err,
 			)
-
-			if h.noJesterBlocks >= maxNoJesterBlocks {
-				panic("too many consecutive blocks proposed without jester response")
-			}
-		} else {
-			// Reset noJesterBlocks counter if Jester response is received
-			h.noJesterBlocks = 0
 		}
 
 		// If there are no transactions in the block, we do not require a Jester response.
