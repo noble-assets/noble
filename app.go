@@ -318,7 +318,6 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.Configurator(),
 			app.Logger(),
 			app.CapabilityKeeper,
-			app.ConsensusKeeper,
 		),
 	)
 

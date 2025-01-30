@@ -21,6 +21,7 @@ import (
 
 	dollartypes "dollar.noble.xyz/types"
 	wormholetypes "github.com/noble-assets/wormhole/types"
+	swaptypes "swap.noble.xyz/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
@@ -28,6 +29,7 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 		Added: []string{
 			// Noble Modules
 			dollartypes.ModuleName,
+			swaptypes.ModuleName,
 			wormholetypes.ModuleName,
 		},
 	}
