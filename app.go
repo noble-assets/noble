@@ -154,8 +154,8 @@ type App struct {
 	// Monerium Modules
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
-	DollarKeeper     *dollarkeeper.Keeper
 	AuthorityKeeper  *authoritykeeper.Keeper
+	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
