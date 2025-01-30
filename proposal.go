@@ -101,11 +101,11 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			res.Txs = slices.Insert(res.Txs, injectIndex, emptyJesterRes)
 		// Jester responded with VAA's that need to be injected
 		case jRes.Msg.Dollar.Vaas != nil:
-			vaas := jRes.Msg.Dollar.Vaas
 			var nonExecutedVaas [][]byte
 
+			// Check if the VAA's have already been executed.
 			wormholeSever := wormholekeeper.NewQueryServer(h.wormholeKeeper)
-			for _, raw := range vaas {
+			for _, raw := range jRes.Msg.Dollar.Vaas {
 				vaa, err := vaautils.Unmarshal(raw)
 				if err != nil {
 					log.Warn("failed to unmarshal vaa from jester", "err", err)
@@ -123,16 +123,18 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				}
 			}
 
-			jRes.Msg.Dollar.Vaas = nonExecutedVaas
+			if len(nonExecutedVaas) > 0 {
+				jRes.Msg.Dollar.Vaas = nonExecutedVaas
 
-			bz, err := json.Marshal(jRes.Msg)
-			if err != nil {
-				return res, fmt.Errorf("failed to marshal jester response: %w", err)
+				bz, err := json.Marshal(jRes.Msg)
+				if err != nil {
+					return res, fmt.Errorf("failed to marshal jester response: %w", err)
+				}
+
+				// inject VAA bytes into block. These will be handled in the PreBlocker
+				res.Txs = slices.Insert(res.Txs, injectIndex, bz)
+				ctx.Logger().Info("received vote extension", "num_vaas", len(jRes.Msg.Dollar.Vaas))
 			}
-
-			// inject VAA bytes into block. These will be handled in the PreBlocker
-			res.Txs = slices.Insert(res.Txs, injectIndex, bz)
-			ctx.Logger().Info("received vote extension", "num_vaas", len(jRes.Msg.Dollar.Vaas))
 		}
 
 		return &abci.ResponsePrepareProposal{Txs: res.Txs}, nil

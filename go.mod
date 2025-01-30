@@ -34,6 +34,7 @@ require (
 	github.com/spf13/cast v1.7.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
+	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.0.0-20250118000127-963b12b602e8
 	mvdan.cc/gofumpt v0.7.0
 	swap.noble.xyz v1.0.0-alpha.1
@@ -311,7 +312,6 @@ require (
 	github.com/ultraware/funlen v0.1.0 // indirect
 	github.com/ultraware/whitespace v0.1.1 // indirect
 	github.com/uudashr/gocognit v1.1.3 // indirect
-	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150 // indirect
 	github.com/xen0n/gosmopolitan v1.2.2 // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.3.0 // indirect
