@@ -154,8 +154,8 @@ type App struct {
 	// Monerium Modules
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
-	AuthorityKeeper  *authoritykeeper.Keeper
 	DollarKeeper     *dollarkeeper.Keeper
+	AuthorityKeeper  *authoritykeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
@@ -276,11 +276,11 @@ func NewApp(
 	jesterGrpcClient := jester.NewJesterGRPCClient(cast.ToString(appOpts.Get(jester.FlagJesterGRPC)))
 	proposalHandler := NewProposalHandler(
 		logger, app.BaseApp, app.Mempool(),
-		jesterGrpcClient, app.WormholeKeeper,
+		jesterGrpcClient, app.DollarKeeper, app.WormholeKeeper,
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
-	app.SetProcessProposal(proposalHandler.NewProcessProposalHandler())
+	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
 	app.SetPreBlocker(proposalHandler.NewPreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {

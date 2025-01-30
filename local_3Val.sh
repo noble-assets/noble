@@ -60,7 +60,6 @@ if ! [ -f .duke/data/priv_validator_state.json ]; then
   touch $TEMP && jq '.app_state.wormhole.config.gov_chain = 1' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
   touch $TEMP && jq '.app_state.wormhole.config.gov_address = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ="' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
   touch $TEMP && jq '.app_state.wormhole.guardian_sets = {"0":{"addresses":["vvpCnVfNGLf4pNkaLamrSvBdD74="],"expiration_time":0}}' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
-  touch $TEMP && jq '.consensus.params.abci.vote_extensions_enable_height = "1"' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
 
   # Copy genesis to val 2 and 3
   cp "$HOME1/config/genesis.json" "$HOME2/config/genesis.json"
@@ -87,7 +86,7 @@ NODE_ID3=$(nobled tendermint show-node-id --home "$HOME3")
 PP3="$NODE_ID3@$P2P3"
 
 # Start tmux session
-SESSION="ve-network"
+SESSION="3v-network"
 tmux new-session -d -s "$SESSION"
 
 tmux split-window -h -t "$SESSION"
@@ -108,4 +107,7 @@ tmux send-keys -t "$SESSION:0.2" "tail -f $HOME3/logs.log" C-m
 tmux attach-session -t "$SESSION"
 
 # To reset:
-# In tmux ctr-c on one of the nodes, run killall nobled, exit out of session (ctrl-b d), then kill session (tmux kill-session -t ve-network)
+#   `ctr-c` to kill 1 out of the three nodes, 
+#   `killall nobled` to kill the rest of the nodes
+#   (ctrl-b then d) to exit out of tmux session session 
+#   `tmux kill-session -t 3v-network` to kill tmux session
