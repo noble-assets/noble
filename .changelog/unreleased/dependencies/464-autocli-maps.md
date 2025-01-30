@@ -1,0 +1,1 @@
+- Bump `cosmossdk.io/client/v2` to support returning maps inside AutoCLI queries. ([#464](https://github.com/noble-assets/noble/pull/464))
