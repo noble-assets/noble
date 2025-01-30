@@ -42,6 +42,7 @@ import (
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
+	_ "dollar.noble.xyz"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
@@ -60,6 +61,7 @@ import (
 	_ "github.com/noble-assets/halo/v2"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
+	_ "swap.noble.xyz"
 
 	// Cosmos Modules
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
@@ -80,7 +82,6 @@ import (
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
@@ -99,10 +100,12 @@ import (
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
+	dollarkeeper "dollar.noble.xyz/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
+	swapkeeper "swap.noble.xyz/keeper"
 )
 
 var DefaultNodeHome string
@@ -152,8 +155,10 @@ type App struct {
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
+	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
+	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
 }
 
@@ -229,8 +234,10 @@ func NewApp(
 		&app.AuraKeeper,
 		// Noble Modules
 		&app.AuthorityKeeper,
+		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
+		&app.SwapKeeper,
 		&app.WormholeKeeper,
 	); err != nil {
 		return nil, err
@@ -322,19 +329,7 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
-			app.appCodec,
-			app.interfaceRegistry,
-			app.Logger(),
-			app.GetKey(capabilitytypes.ModuleName),
-			app.AccountKeeper,
-			app.AuthorityKeeper,
-			app.BankKeeper,
 			app.CapabilityKeeper,
-			app.IBCKeeper.ClientKeeper,
-			app.ConsensusKeeper,
-			app.GlobalFeeKeeper,
-			app.ParamsKeeper,
-			app.StakingKeeper,
 		),
 	)
 

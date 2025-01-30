@@ -16,60 +16,110 @@ package e2e_test
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
-	globalfeetypes "github.com/noble-assets/globalfee/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/noble-assets/noble/e2e"
-	"github.com/noble-assets/noble/v9/upgrade"
+	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/require"
 )
 
 func TestChainUpgrade(t *testing.T) {
-	t.Skip()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 
-	genesisVersion := "v8.0.0-rc.3-fix"
+	genesisVersion := "v7.0.0"
 
 	upgrades := []e2e.ChainUpgrade{
 		{
-			Image:       e2e.LocalImages[0],
-			UpgradeName: "v8.0.0-rc.4",
-			Emergency:   false,
-			PreUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet) {
-				require.False(t, noble.GetNode().HasCommand(ctx, "query", "globalfee"))
+			Image:       e2e.GhcrImage("v8.0.0"),
+			UpgradeName: "helium",
+			PreUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
+				icaAddr, err := e2e.RegisterICAAccount(ctx, icaTs)
+				require.NoError(t, err, "failed to setup ICA account")
+				require.NotEmpty(t, icaAddr, "ICA address should not be empty")
+
+				// After successfully creating and querying the ICA account we need to update the test suite value for later usage.
+				icaTs.IcaAddress = icaAddr
+
+				// Assert inital balance of the ICA is correct.
+				initBal, err := noble.BankQueryBalance(ctx, icaAddr, noble.Config().Denom)
+				require.NoError(t, err, "failed to query bank balance")
+				require.True(t, initBal.Equal(icaTs.InitBal), "invalid balance expected(%s), got(%s)", icaTs.InitBal, initBal)
+
+				// Create and fund a user on Noble for use as the dst address in the bank transfer that we
+				// compose below.
+				users := interchaintest.GetAndFundTestUsers(t, ctx, "user", icaTs.InitBal, icaTs.Host)
+				dstAddress := users[0].FormattedAddress()
+
+				transferAmount := math.NewInt(1_000_000)
+
+				fromAddress := sdk.MustAccAddressFromBech32(icaAddr)
+				toAddress := sdk.MustAccAddressFromBech32(dstAddress)
+				coin := sdk.NewCoin(icaTs.Host.Config().Denom, transferAmount)
+				msgs := []sdk.Msg{banktypes.NewMsgSend(fromAddress, toAddress, sdk.NewCoins(coin))}
+
+				icaTs.Msgs = msgs
+
+				err = e2e.SendICATx(ctx, icaTs)
+				require.NoError(t, err, "failed to send ICA tx")
+
+				// Assert that the updated balance of the dst address is correct.
+				expectedBal := icaTs.InitBal.Add(transferAmount)
+				updatedBal, err := noble.BankQueryBalance(ctx, dstAddress, noble.Config().Denom)
+				require.NoError(t, err, "failed to query bank balance")
+				require.True(t, updatedBal.Equal(expectedBal), "invalid balance expected(%s), got(%s)", expectedBal, updatedBal)
 			},
-			PostUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet) {
-				require.True(t, noble.GetNode().HasCommand(ctx, "query", "globalfee"))
+			PostUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
+				msgSend, ok := icaTs.Msgs[0].(*banktypes.MsgSend)
+				require.True(t, ok, "expected MsgSend, got %T", icaTs.Msgs[0])
 
-				val := noble.Validators[0]
+				coin := msgSend.Amount[0]
 
-				bypassMessages := []string{
-					sdk.MsgTypeURL(&clienttypes.MsgUpdateClient{}),
-					sdk.MsgTypeURL(&channeltypes.MsgRecvPacket{}),
-					sdk.MsgTypeURL(&channeltypes.MsgTimeout{}),
-					sdk.MsgTypeURL(&channeltypes.MsgAcknowledgement{}),
-				}
-				registry := noble.Config().EncodingConfig.InterfaceRegistry
-				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "circle")...)
-				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "aura")...)
-				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "halo")...)
-				bypassMessages = append(bypassMessages, upgrade.GetModuleMessages(registry, "florin")...)
+				// Verify that the previously created ICA no longer works.
+				err := e2e.SendICATx(ctx, icaTs)
+				require.Error(t, err, "should have failed to send ICA tx after v8.0.0 upgrade")
 
-				res, _, err := val.ExecQuery(ctx, "globalfee", "bypass-messages")
-				require.NoError(t, err)
+				// Assert that the balance of the dst address has not updated.
+				expectedBal := icaTs.InitBal.Add(coin.Amount)
+				bal, err := noble.BankQueryBalance(ctx, msgSend.ToAddress, noble.Config().Denom)
+				require.NoError(t, err, "failed to query bank balance")
+				require.True(t, bal.Equal(expectedBal), "invalid balance expected(%s), got(%s)", expectedBal, bal)
+			},
+		},
+		{
+			Image:       e2e.LocalImages[0],
+			UpgradeName: "v8.1",
+			PostUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
+				msgSend, ok := icaTs.Msgs[0].(*banktypes.MsgSend)
+				require.True(t, ok, "expected MsgSend, got %T", icaTs.Msgs[0])
 
-				var bypassMessagesRes globalfeetypes.QueryBypassMessagesResponse
-				err = json.Unmarshal(res, &bypassMessagesRes)
-				require.NoError(t, err)
-				require.ElementsMatch(t, bypassMessages, bypassMessagesRes.BypassMessages)
+				coin := msgSend.Amount[0]
+
+				// The ICA tx we sent in the previous PostUpgrade handler will be relayed once the chain restarts with
+				// the changes in v8.1 so we need to account for that when asserting the dst address bal is correct.
+				expectedBal := icaTs.InitBal.Add(coin.Amount).Add(coin.Amount)
+				bal, err := noble.BankQueryBalance(ctx, msgSend.ToAddress, noble.Config().Denom)
+				require.NoError(t, err, "failed to query bank balance")
+				require.True(t, bal.Equal(expectedBal), "invalid balance expected(%s), got(%s)", expectedBal, bal)
+
+				// Verify that the previously created ICA works again with new txs as well.
+				err = e2e.SendICATx(ctx, icaTs)
+				require.NoError(t, err, "failed to send ICA tx")
+
+				// Assert that the balance of the dst address is correct.
+				expectedBal = bal.Add(coin.Amount)
+				updatedBal, err := noble.BankQueryBalance(ctx, msgSend.ToAddress, noble.Config().Denom)
+				require.NoError(t, err, "failed to query bank balance")
+				require.True(t, updatedBal.Equal(expectedBal), "invalid balance expected(%s), got(%s)", expectedBal, updatedBal)
 			},
 		},
 	}
 
-	e2e.TestChainUpgrade(t, genesisVersion, upgrades)
+	e2e.TestChainUpgrade(t, genesisVersion, upgrades, true)
 }
