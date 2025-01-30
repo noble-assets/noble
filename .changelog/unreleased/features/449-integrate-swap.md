@@ -1,0 +1,1 @@
+- Integrate our custom Swap module, that enables the exchange of tokens issued on Noble. ([#449](https://github.com/noble-assets/noble/pull/449))
