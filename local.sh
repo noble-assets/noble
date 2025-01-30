@@ -31,7 +31,6 @@ if ! [ -f .duke/data/priv_validator_state.json ]; then
   touch $TEMP && jq '.app_state.wormhole.config.gov_chain = 1' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
   touch $TEMP && jq '.app_state.wormhole.config.gov_address = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ="' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
   touch $TEMP && jq '.app_state.wormhole.guardian_sets = {"0":{"addresses":["vvpCnVfNGLf4pNkaLamrSvBdD74="],"expiration_time":0}}' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
-  touch $TEMP && jq '.consensus.params.abci.vote_extensions_enable_height = "1"' .duke/config/genesis.json > $TEMP && mv $TEMP .duke/config/genesis.json
 
   nobled genesis gentx validator 1000000ustake --chain-id "duke-1" --home .duke --keyring-backend test &> /dev/null
   nobled genesis collect-gentxs --home .duke &> /dev/null
