@@ -2,7 +2,6 @@ package noble
 
 import (
 	"context"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -18,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
+	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
 	jester "jester.noble.xyz/api"
 )
@@ -105,19 +105,21 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			var nonExecutedVaas [][]byte
 
 			wormholeSever := wormholekeeper.NewQueryServer(h.wormholeKeeper)
-			for _, vaa := range vaas {
-				r, err := wormholeSever.ExecutedVAA(ctx, &wormholetypes.QueryExecutedVAA{
-					// TODO: double check if this is encoded correctly
-					Input: hex.EncodeToString(vaa),
-				})
+			for _, raw := range vaas {
+				vaa, err := vaautils.Unmarshal(raw)
 				if err != nil {
-					log.Error("while preparing proposal, failed to query executed VAA", "vaa", hex.EncodeToString(vaa), "err", err)
+					log.Warn("failed to unmarshal vaa from jester", "err", err)
 				}
-				if !r.Executed {
-					nonExecutedVaas = append(nonExecutedVaas, vaa)
+
+				r, _ := wormholeSever.ExecutedVAA(ctx, &wormholetypes.QueryExecutedVAA{
+					Input: vaa.SigningDigest().String(),
+				})
+
+				if r != nil && !r.Executed {
+					nonExecutedVaas = append(nonExecutedVaas, raw)
 				} else {
 					// TODO: Keeping this log in for testing purposes only. This should be removed for final release.
-					log.Info("VAA already executed", "vaa", hex.EncodeToString(vaa))
+					log.Info("received already executed vaa from jester", "identifier", vaa.MessageID())
 				}
 			}
 
@@ -137,12 +139,12 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	}
 }
 
-// ProcessProposalHandler validates the proposed block along with the transactions. This is called by
+// ProcessProposal validates the proposed block along with the transactions. This is called by
 // all validators except for the proposer.
 // It returns a status if it was accepted or rejected.
 // We currently do not validate the injected bytes from the proposalHandler as these bytes will be
 // handled in the PreBlocker.
-func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
+func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
 		resAccept := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}
 		resReject := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}

@@ -280,7 +280,7 @@ func NewApp(
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
-	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
+	app.SetProcessProposal(proposalHandler.ProcessProposal())
 	app.SetPreBlocker(proposalHandler.NewPreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
