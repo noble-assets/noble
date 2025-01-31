@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +19,7 @@ package upgrade
 import (
 	"context"
 
+	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -29,6 +32,7 @@ import (
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
+	logger log.Logger,
 	capabilityKeeper *capabilitykeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -39,6 +43,8 @@ func CreateUpgradeHandler(
 
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		FixICS27ChannelCapabilities(sdkCtx, capabilityKeeper)
+
+		logger.Info("Welcome to a new generation of Noble!" + UpgradeASCII)
 
 		return vm, nil
 	}

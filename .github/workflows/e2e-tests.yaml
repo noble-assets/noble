@@ -22,7 +22,6 @@ jobs:
           tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
-          clone-key: ${{ secrets.NOBLE_DOLLAR_DEPLOY }}
 
           # Heighliner chains.yaml config
           chain: noble
@@ -49,17 +48,6 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
-
-      - name: Add and Configure SSH Deploy Key
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          echo "${{ secrets.NOBLE_DOLLAR_DEPLOY }}" | base64 -d | ssh-add -
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-          git config --global url."ssh://git@github.com/".insteadOf https://github.com/    
 
       - name: Generate Matrix
         id: set-matrix
@@ -95,17 +83,6 @@ jobs:
 
       - name: Load Docker Image
         run: docker image load -i ${{ env.TAR_PATH }}
-
-      - name: Add and Configure SSH Deploy Key
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          echo "${{ secrets.NOBLE_DOLLAR_DEPLOY }}" | base64 -d | ssh-add -
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
-          git config --global url."ssh://git@github.com/".insteadOf https://github.com/  
 
       - name: Run Tests
         run: cd e2e && go test -race -v -timeout 30m -run ^${{ matrix.test }}$ .

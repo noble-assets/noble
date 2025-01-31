@@ -13,7 +13,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	dollar.noble.xyz v1.0.0-alpha.0
+	dollar.noble.xyz v1.0.0-alpha.1
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cometbft/cometbft v0.38.15
@@ -33,7 +33,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v1.0.0-alpha.1
+	swap.noble.xyz v1.0.0-alpha.2
 )
 
 require (

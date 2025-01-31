@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +20,21 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+
+	dollartypes "dollar.noble.xyz/types"
+	wormholetypes "github.com/noble-assets/wormhole/types"
+	swaptypes "swap.noble.xyz/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
-	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storetypes.StoreUpgrades{})
+	storeUpgrades := storetypes.StoreUpgrades{
+		Added: []string{
+			// Noble Modules
+			dollartypes.ModuleName,
+			swaptypes.ModuleName,
+			wormholetypes.ModuleName,
+		},
+	}
+
+	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
 }
