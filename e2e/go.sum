@@ -191,6 +191,7 @@ cloud.google.com/go/workflows v1.7.0/go.mod h1:JhSrZuVZWuiDfKEFxU0/F1PQjmpnpcoIS
 cosmossdk.io/api v0.7.6 h1:PC20PcXy1xYKH2KU4RMurVoFjjKkCgYRbVAD4PdqUuY=
 cosmossdk.io/api v0.7.6/go.mod h1:IcxpYS5fMemZGqyYtErK7OqvdM0C8kdW3dq8Q/XIG38=
 cosmossdk.io/client/v2 v2.0.0-beta.8 h1:RXMJdA4V9H1H3/3BfMD6dAW3lF8W9DpNPPYnKD+ArxY=
+cosmossdk.io/client/v2 v2.0.0-beta.8/go.mod h1:x+E2eji+ToMtUIqKzoJ5mJIhat+Zak47xZ8jOYjJQBA=
 cosmossdk.io/collections v0.4.0 h1:PFmwj2W8szgpD5nOd8GWH6AbYNi1f2J6akWXJ7P5t9s=
 cosmossdk.io/collections v0.4.0/go.mod h1:oa5lUING2dP+gdDquow+QjlF45eL1t4TJDypgGd+tv0=
 cosmossdk.io/core v0.11.1 h1:h9WfBey7NAiFfIcUhDVNS503I2P2HdZLebJlUIs8LPA=
@@ -212,6 +213,7 @@ cosmossdk.io/x/evidence v0.1.1/go.mod h1:OoDsWlbtuyqS70LY51aX8FBTvguQqvFrt78qL7U
 cosmossdk.io/x/feegrant v0.1.1 h1:EKFWOeo/pup0yF0svDisWWKAA9Zags6Zd0P3nRvVvw8=
 cosmossdk.io/x/feegrant v0.1.1/go.mod h1:2GjVVxX6G2fta8LWj7pC/ytHjryA6MHAJroBWHFNiEQ=
 cosmossdk.io/x/tx v0.13.8 h1:dQwC8jMe7awx/edi1HPPZ40AjHnsix6KSO/jbKMUYKk=
+cosmossdk.io/x/tx v0.13.8/go.mod h1:V6DImnwJMTq5qFjeGWpXNiT/fjgE4HtmclRmTqRVM3w=
 cosmossdk.io/x/upgrade v0.1.4 h1:/BWJim24QHoXde8Bc64/2BSEB6W4eTydq0X/2f8+g38=
 cosmossdk.io/x/upgrade v0.1.4/go.mod h1:9v0Aj+fs97O+Ztw+tG3/tp5JSlrmT7IcFhAebQHmOPo=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
