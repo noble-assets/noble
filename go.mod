@@ -35,7 +35,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
-	jester.noble.xyz/api v0.0.0-20250118000127-963b12b602e8
+	jester.noble.xyz/api v0.1.0
 	mvdan.cc/gofumpt v0.7.0
 	swap.noble.xyz v1.0.0-alpha.1
 )

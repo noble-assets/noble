@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"time"
 
 	"connectrpc.com/connect"
 	"cosmossdk.io/log"
@@ -75,7 +76,10 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 
 		// Query Jester for VAA's
 		request := connect.NewRequest(&jester.GetVoteExtensionRequest{})
-		jRes, err := h.jesterCli.GetVoteExtension(context.Background(), request)
+		ctxTO, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+		defer cancel()
+
+		jRes, err := h.jesterCli.GetVoteExtension(ctxTO, request)
 		if err != nil {
 			log.Error(`failed to get vote extension from Jester. Ensure Jester is configured and running!`,
 				"err", err,
