@@ -134,6 +134,7 @@ modules:
       "@type": noble.swap.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
       base_denom: uusdn
+      base_minimum_deposit: 1000000
       stableswap:
         unbonding_block_delta: 30
   - name: wormhole
