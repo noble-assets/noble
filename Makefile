@@ -49,7 +49,7 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 build:
 	@echo "🤖 Building nobled..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o "$(PWD)/build" ./cmd/nobled
+	@go build -mod=readonly $(BUILD_FLAGS) -o "$(PWD)/build/nobled" ./cmd/nobled
 	@echo "✅ Completed build!"
 
 install:
@@ -64,7 +64,7 @@ install:
 gofumpt_cmd=mvdan.cc/gofumpt
 golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
 
-FILES := $(shell find $(shell go list -f '{{.Dir}}' ./...) -name "*.go" -a -not -name "*.pb.go" -a -not -name "*.pb.gw.go" -a -not -name "*.pulsar.go" | sed "s|$(shell pwd)/||g")
+FILES := $(shell find . -name "*.go")
 license:
 	@go-license --config .github/license.yml $(FILES)
 

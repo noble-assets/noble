@@ -8,3 +8,5 @@ play_sh/
 /heighliner*
 bin/
 build/
+go.work
+go.work.sum

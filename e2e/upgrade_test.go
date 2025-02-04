@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +39,7 @@ func TestChainUpgrade(t *testing.T) {
 
 	upgrades := []e2e.ChainUpgrade{
 		{
-			Image:       e2e.GhcrImage("v8.0.0"),
+			Image:       e2e.GhcrImage("v8.0.5"),
 			UpgradeName: "helium",
 			PreUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
 				icaAddr, err := e2e.RegisterICAAccount(ctx, icaTs)
@@ -47,7 +49,7 @@ func TestChainUpgrade(t *testing.T) {
 				// After successfully creating and querying the ICA account we need to update the test suite value for later usage.
 				icaTs.IcaAddress = icaAddr
 
-				// Assert inital balance of the ICA is correct.
+				// Assert initial balance of the ICA is correct.
 				initBal, err := noble.BankQueryBalance(ctx, icaAddr, noble.Config().Denom)
 				require.NoError(t, err, "failed to query bank balance")
 				require.True(t, initBal.Equal(icaTs.InitBal), "invalid balance expected(%s), got(%s)", icaTs.InitBal, initBal)
@@ -94,7 +96,7 @@ func TestChainUpgrade(t *testing.T) {
 		},
 		{
 			Image:       e2e.LocalImages[0],
-			UpgradeName: "v8.1",
+			UpgradeName: "argentum",
 			PostUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
 				msgSend, ok := icaTs.Msgs[0].(*banktypes.MsgSend)
 				require.True(t, ok, "expected MsgSend, got %T", icaTs.Msgs[0])
