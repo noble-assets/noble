@@ -101,26 +101,12 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				"err", err,
 			)
 		}
-
 		// If there are no transactions in the block, we do not require a Jester response.
 		// In the PreBlocker, if there are transactions, we assume the first one is a Jester response
 		// and handle it accordingly. If there are no transactions, this handling is not needed.
 		// This allows us to retain the capability of having empty blocks which will help with chain bloat.
-		requireJesterInj := len(res.Txs) > 0
 
-		switch {
-		// Jester response failed and we do not need to inject an empty Jester response
-		case !requireJesterInj && jRes == nil:
-			// no op
-		// Jester response failed OR Jester responded with zero VAA's but we need to inject an empty Jester response
-		case requireJesterInj && jRes == nil || requireJesterInj && jRes.Msg.Dollar.Vaas == nil:
-			emptyJesterRes, err := json.Marshal(jester.GetVoteExtensionResponse{})
-			if err != nil {
-				log.Error("failed to marshal empty jester response", "err", err)
-			}
-			res.Txs = slices.Insert(res.Txs, injectIndex, emptyJesterRes)
-		// Jester responded with VAA's that need to be injected
-		case jRes.Msg.Dollar.Vaas != nil:
+		if jRes != nil && jRes.Msg.GetDollar().GetVaas() != nil {
 			var nonExecutedVaas [][]byte
 
 			// Check if the VAA's have already been executed.
@@ -129,6 +115,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				vaa, err := vaautils.Unmarshal(raw)
 				if err != nil {
 					log.Warn("failed to unmarshal vaa from jester", "err", err)
+					continue
 				}
 
 				r, _ := wormholeSever.ExecutedVAA(ctx, &wormholetypes.QueryExecutedVAA{
@@ -143,6 +130,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				}
 			}
 
+			// Inject the valid VAAs into the Block.
 			if len(nonExecutedVaas) > 0 {
 				jRes.Msg.Dollar.Vaas = nonExecutedVaas
 
@@ -176,7 +164,10 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 		}
 
 		// Remove injected Jester bytes to perform basic validation on other transactions
-		req.Txs = append(req.Txs[:injectIndex], req.Txs[injectIndex+1:]...)
+		if h.isJesterExtension(req.Txs[injectIndex]) {
+			req.Txs = append(req.Txs[:injectIndex], req.Txs[injectIndex+1:]...)
+		}
+
 		res, err := h.defaultProcessProposalHandler(ctx, req)
 		if err != nil {
 			return resReject, fmt.Errorf("failed in default ProcessProposal handler: %w", err)
@@ -186,12 +177,6 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 				"height", req.Height)
 			return resReject, nil
 		}
-
-		// TODO: Consult:
-		// Should we validate the injected bytes?
-		// I don't think this is necessary since this is going through a message server.
-		// It is my understanding that rejecting the proposal will reject all transactions in this block.
-
 		return resAccept, nil
 	}
 }
@@ -206,34 +191,58 @@ func (h *ProposalHandler) NewPreBlocker() sdk.PreBlocker {
 			return res, nil
 		}
 
-		var jesterResponse jester.GetVoteExtensionResponse
-		if err := json.Unmarshal(req.Txs[0], &jesterResponse); err != nil {
-			ctx.Logger().Error("failed to decode injected dollar vote extension", "err", err)
-			return nil, err
-		}
-
-		if jesterResponse.Dollar != nil {
-			var successfullMsgs int
-			dollarServer := dollarkeeper.NewPortalMsgServer(h.dollarKeeper)
-			for _, vaa := range jesterResponse.Dollar.Vaas {
-				cachedCtx, writeCache := ctx.CacheContext()
-				_, err := dollarServer.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
-					Vaa: vaa,
-				})
-
-				if err == nil {
-					writeCache()
-					successfullMsgs++
-				} else {
-					ctx.Logger().Error("failed to submit VAA", "err", err)
-				}
-			}
-
-			if successfullMsgs > 0 {
-				ctx.Logger().Info("successfully submitted VAAs", "num_vaas", successfullMsgs)
-			}
-		}
+		_ = h.handleJesterExtension(ctx, req.Txs[injectIndex])
 
 		return res, nil
 	}
+}
+
+func (h *ProposalHandler) isJesterExtension(bytes []byte) bool {
+	var jesterResponse jester.GetVoteExtensionResponse
+	return json.Unmarshal(bytes, &jesterResponse) == nil
+}
+
+func (h *ProposalHandler) handleJesterExtension(ctx sdk.Context, bytes []byte) error {
+	defer func() {
+		if r := recover(); r != nil {
+			ctx.Logger().Error("panic recovered in NewPreBlocker on Jester Extension handler", "error", r)
+		}
+	}()
+
+	// Ensure that the bytes are a Jester Extension message.
+	if !h.isJesterExtension(bytes) {
+		return nil
+	}
+
+	// Unmarshal
+	var jesterResponse jester.GetVoteExtensionResponse
+	if err := json.Unmarshal(bytes, &jesterResponse); err != nil {
+		ctx.Logger().Error("failed to decode injected dollar vote extension", "err", err)
+		return err
+	}
+
+	// Handle the Dollar Extension.
+	if jesterResponse.Dollar != nil {
+		var successfullMsgs int
+		dollarServer := dollarkeeper.NewPortalMsgServer(h.dollarKeeper)
+		for _, vaa := range jesterResponse.Dollar.Vaas {
+			cachedCtx, writeCache := ctx.CacheContext()
+			_, err := dollarServer.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
+				Vaa: vaa,
+			})
+
+			if err == nil {
+				writeCache()
+				successfullMsgs++
+			} else {
+				ctx.Logger().Error("failed to submit VAA", "err", err)
+			}
+		}
+
+		if successfullMsgs > 0 {
+			ctx.Logger().Info("successfully submitted VAAs", "num_vaas", successfullMsgs)
+		}
+	}
+
+	return nil
 }
