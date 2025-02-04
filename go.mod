@@ -3,6 +3,7 @@ module github.com/noble-assets/noble/v9
 go 1.22.11
 
 require (
+	connectrpc.com/connect v1.18.1
 	cosmossdk.io/client/v2 v2.0.0-beta.8
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.1.0
@@ -29,10 +30,13 @@ require (
 	github.com/noble-assets/forwarding/v2 v2.0.0
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
-	github.com/noble-assets/wormhole v1.0.0-alpha.0
+	github.com/noble-assets/wormhole v1.0.0-alpha.2
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
+	github.com/spf13/cast v1.7.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
+	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
+	jester.noble.xyz/api v0.1.0
 	mvdan.cc/gofumpt v0.7.0
 	swap.noble.xyz v1.0.0-alpha.3
 )
@@ -289,7 +293,6 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
-	github.com/spf13/cast v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
@@ -309,7 +312,6 @@ require (
 	github.com/ultraware/funlen v0.1.0 // indirect
 	github.com/ultraware/whitespace v0.1.1 // indirect
 	github.com/uudashr/gocognit v1.1.3 // indirect
-	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150 // indirect
 	github.com/xen0n/gosmopolitan v1.2.2 // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.3.0 // indirect
