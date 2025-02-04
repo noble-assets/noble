@@ -56,7 +56,7 @@ func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager 
 	)
 
 	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, func(startCmd *cobra.Command) {
-		jester.AddJesterFlags(startCmd)
+		jester.AddFlags(startCmd)
 		crisis.AddModuleInitFlags(startCmd)
 	})
 

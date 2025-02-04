@@ -23,13 +23,13 @@ import (
 	jester "jester.noble.xyz/api"
 )
 
-func NewJesterGRPCClient(grpcAddr string) (gRPCclient jester.QueryServiceClient) {
-	if !strings.Contains(grpcAddr, "://") {
-		grpcAddr = "http://" + grpcAddr
+func NewClient(address string) jester.QueryServiceClient {
+	if !strings.Contains(address, "://") {
+		address = "http://" + address
 	}
 
 	return jester.NewQueryServiceClient(
 		http.DefaultClient,
-		grpcAddr,
+		address,
 	)
 }

@@ -275,15 +275,15 @@ func NewApp(
 	}
 	app.SetAnteHandler(anteHandler)
 
-	jesterGrpcClient := jester.NewJesterGRPCClient(cast.ToString(appOpts.Get(jester.FlagJesterGRPC)))
+	jesterClient := jester.NewClient(cast.ToString(appOpts.Get(jester.FlagGRPCAddress)))
 	proposalHandler := NewProposalHandler(
-		logger, app.BaseApp, app.Mempool(),
-		jesterGrpcClient, app.DollarKeeper, app.WormholeKeeper,
+		app.BaseApp, app.Mempool(),
+		jesterClient, app.DollarKeeper, app.WormholeKeeper,
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
 	app.SetProcessProposal(proposalHandler.ProcessProposal())
-	app.SetPreBlocker(proposalHandler.NewPreBlocker())
+	app.SetPreBlocker(proposalHandler.PreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
 		return nil, err

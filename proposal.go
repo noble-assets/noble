@@ -23,125 +23,109 @@ import (
 	"slices"
 	"time"
 
-	"connectrpc.com/connect"
-	"cosmossdk.io/log"
-	dollarkeeper "dollar.noble.xyz/keeper"
-	dollarportaltypes "dollar.noble.xyz/types/portal"
-
+	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
+
+	"connectrpc.com/connect"
+	jester "jester.noble.xyz/api"
+
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
-	jester "jester.noble.xyz/api"
+	dollarkeeper "dollar.noble.xyz/keeper"
+	dollarportaltypes "dollar.noble.xyz/types/portal"
 )
 
-const (
-	// index to inject jester response into block
-	injectIndex = 0
-)
+// jesterIndex is the index of the injected Jester response in a block.
+const jesterIndex = 0
 
 type ProposalHandler struct {
-	logger         log.Logger
-	bApp           *baseapp.BaseApp
-	jesterCli      jester.QueryServiceClient
-	dollarKeeper   *dollarkeeper.Keeper
-	wormholeKeeper *wormholekeeper.Keeper
+	jesterClient       jester.QueryServiceClient
+	wormholeServer     wormholetypes.QueryServer
+	dollarPortalServer dollarportaltypes.MsgServer
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultProcessProposalHandler sdk.ProcessProposalHandler
 }
 
 func NewProposalHandler(
-	logger log.Logger,
-	bApp *baseapp.BaseApp,
-	mp mempool.Mempool,
-	jesterCli jester.QueryServiceClient,
+	app *baseapp.BaseApp,
+	mempool mempool.Mempool,
+	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
 ) *ProposalHandler {
-	defaultHandler := baseapp.NewDefaultProposalHandler(mp, bApp)
+	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
+
 	return &ProposalHandler{
-		logger:         logger,
-		bApp:           bApp,
-		jesterCli:      jesterCli,
-		dollarKeeper:   dollarKeeper,
-		wormholeKeeper: wormholeKeeper,
+		jesterClient:       jesterClient,
+		wormholeServer:     wormholekeeper.NewQueryServer(wormholeKeeper),
+		dollarPortalServer: dollarkeeper.NewPortalMsgServer(dollarKeeper),
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
 	}
 }
 
-// PrepareProposal is called only by the proposing validator and prepares a proposal
-// for the next block.
-// It calls Jester to check if there are any outstanding VAAs. These VAAs are injected
-// as bytes into the first transaction of the block and will later be handled by the PreBlocker.
+// PrepareProposal is the logic called by the current block proposer to prepare
+// a block proposal. Noble modifies this by making a request to our sidecar
+// service, Jester, to check if there are any outstanding $USDN transfers that
+// need to be relayed to Noble. These transfers (in the form of Wormhole VAAs)
+// are injected as the first transaction of the block, and are later processed
+// by the PreBlocker handler.
 func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestPrepareProposal) (*abci.ResponsePrepareProposal, error) {
-		log := ctx.Logger()
+		logger := ctx.Logger()
 
-		// Call default handler first for basic validation
 		res, err := h.defaultPrepareProposalHandler(ctx, req)
 		if err != nil {
-			return nil, fmt.Errorf("failed in default PrepareProposal handler: %w", err)
+			return nil, errors.Wrap(err, "default PrepareProposal handler failed")
 		}
 
-		// Query Jester for VAA's
-		request := connect.NewRequest(&jester.GetVoteExtensionRequest{})
-		ctxTO, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
 		defer cancel()
 
-		jRes, err := h.jesterCli.GetVoteExtension(ctxTO, request)
+		request := connect.NewRequest(&jester.GetVoteExtensionRequest{})
+		jesterRes, err := h.jesterClient.GetVoteExtension(ctxWithTimeout, request)
 		if err != nil {
-			log.Error(`failed to get vote extension from Jester. Ensure Jester is configured and running!`,
-				"err", err,
-			)
+			logger.Error("failed to query jester", "err", err)
 		}
-		// If there are no transactions in the block, we do not require a Jester response.
-		// In the PreBlocker, if there are transactions, we assume the first one is a Jester response
-		// and handle it accordingly. If there are no transactions, this handling is not needed.
-		// This allows us to retain the capability of having empty blocks which will help with chain bloat.
 
-		if jRes != nil && jRes.Msg.GetDollar().GetVaas() != nil {
-			var nonExecutedVaas [][]byte
+		if jesterRes != nil && jesterRes.Msg != nil && jesterRes.Msg.Dollar != nil && len(jesterRes.Msg.Dollar.Vaas) > 0 {
+			var nonExecutedVAAs [][]byte
 
-			// Check if the VAA's have already been executed.
-			wormholeSever := wormholekeeper.NewQueryServer(h.wormholeKeeper)
-			for _, raw := range jRes.Msg.Dollar.Vaas {
+			for _, raw := range jesterRes.Msg.Dollar.Vaas {
 				vaa, err := vaautils.Unmarshal(raw)
 				if err != nil {
-					log.Warn("failed to unmarshal vaa from jester", "err", err)
+					logger.Warn("failed to unmarshal transfer from jester", "err", err)
 					continue
 				}
 
-				r, _ := wormholeSever.ExecutedVAA(ctx, &wormholetypes.QueryExecutedVAA{
+				wormholeRes, _ := h.wormholeServer.ExecutedVAA(ctx, &wormholetypes.QueryExecutedVAA{
 					Input: vaa.SigningDigest().String(),
 				})
 
-				if r != nil && !r.Executed {
-					nonExecutedVaas = append(nonExecutedVaas, raw)
+				if wormholeRes != nil && !wormholeRes.Executed {
+					nonExecutedVAAs = append(nonExecutedVAAs, raw)
 				} else {
-					// TODO: Keeping this log in for testing purposes only. This should be removed for final release.
-					log.Info("received already executed vaa from jester", "identifier", vaa.MessageID())
+					logger.Debug("skipped already executed transfer from jester", "identifier", vaa.MessageID())
 				}
 			}
 
-			// Inject the valid VAAs into the Block.
-			if len(nonExecutedVaas) > 0 {
-				jRes.Msg.Dollar.Vaas = nonExecutedVaas
+			if len(nonExecutedVAAs) > 0 {
+				jesterRes.Msg.Dollar.Vaas = nonExecutedVAAs
 
-				bz, err := json.Marshal(jRes.Msg)
+				bz, err := json.Marshal(jesterRes.Msg)
 				if err != nil {
-					return res, fmt.Errorf("failed to marshal jester response: %w", err)
+					return nil, errors.Wrap(err, "failed to marshal injected jester tx")
 				}
+				res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
 
-				// inject VAA bytes into block. These will be handled in the PreBlocker
-				res.Txs = slices.Insert(res.Txs, injectIndex, bz)
-				ctx.Logger().Info("received vote extension", "num_vaas", len(jRes.Msg.Dollar.Vaas))
+				logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 			}
 		}
 
@@ -149,11 +133,10 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	}
 }
 
-// ProcessProposal validates the proposed block along with the transactions. This is called by
-// all validators except for the proposer.
-// It returns a status if it was accepted or rejected.
-// We currently do not validate the injected bytes from the proposalHandler as these bytes will be
-// handled in the PreBlocker.
+// ProcessProposal is the logic called by all validators except the current
+// block proposer to process a block proposal. Noble modifies this by first
+// removing the injected transaction from our sidecar service, Jester, then
+// executing the default proposal processing logic provided by the Cosmos SDK.
 func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
 		resAccept := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}
@@ -163,86 +146,82 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 			return resAccept, nil
 		}
 
-		// Remove injected Jester bytes to perform basic validation on other transactions
-		if h.isJesterExtension(req.Txs[injectIndex]) {
-			req.Txs = append(req.Txs[:injectIndex], req.Txs[injectIndex+1:]...)
+		if h.isJesterTx(req.Txs[jesterIndex]) {
+			req.Txs = req.Txs[jesterIndex+1:]
 		}
 
 		res, err := h.defaultProcessProposalHandler(ctx, req)
-		if err != nil {
-			return resReject, fmt.Errorf("failed in default ProcessProposal handler: %w", err)
+		if err != nil || (res != nil && !res.IsAccepted()) {
+			return resReject, errors.Wrap(err, "default ProcessProposal handler failed")
 		}
-		if !res.IsAccepted() {
-			h.logger.Error("the proposal is rejected by default ProcessProposal handler",
-				"height", req.Height)
-			return resReject, nil
-		}
+
 		return resAccept, nil
 	}
 }
 
-// NewPreBlocker submits the VAA's using a message server tied to the dollar keeper.
-// This is called by all validators.
-func (h *ProposalHandler) NewPreBlocker() sdk.PreBlocker {
+// PreBlocker processes all injected $USDN transfers from Jester.
+func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-		// There are no transactions in this block, no need to parse and submit any VAA's
-		res := &sdk.ResponsePreBlock{}
 		if len(req.Txs) == 0 {
-			return res, nil
+			return &sdk.ResponsePreBlock{}, nil
 		}
 
-		_ = h.handleJesterExtension(ctx, req.Txs[injectIndex])
+		tx := req.Txs[jesterIndex]
+		if h.isJesterTx(tx) {
+			h.handleJesterTx(ctx, tx)
+		}
 
-		return res, nil
+		return &sdk.ResponsePreBlock{}, nil
 	}
 }
 
-func (h *ProposalHandler) isJesterExtension(bytes []byte) bool {
+// isJesterTx is a utility that returns if a given transaction is from Jester.
+func (h *ProposalHandler) isJesterTx(bytes []byte) bool {
 	var jesterResponse jester.GetVoteExtensionResponse
 	return json.Unmarshal(bytes, &jesterResponse) == nil
 }
 
-func (h *ProposalHandler) handleJesterExtension(ctx sdk.Context, bytes []byte) error {
+// handleJesterTx is a utility that handles an injected transaction from Jester.
+func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
+	logger := ctx.Logger()
+
 	defer func() {
 		if r := recover(); r != nil {
-			ctx.Logger().Error("panic recovered in NewPreBlocker on Jester Extension handler", "error", r)
+			logger.Error("recovered panic when handling transfers from jester", "err", r)
 		}
 	}()
 
-	// Ensure that the bytes are a Jester Extension message.
-	if !h.isJesterExtension(bytes) {
-		return nil
+	var res jester.GetVoteExtensionResponse
+	if err := json.Unmarshal(bytes, &res); err != nil {
+		logger.Error("failed to unmarshal injected jester tx", "err", err)
+		return
 	}
 
-	// Unmarshal
-	var jesterResponse jester.GetVoteExtensionResponse
-	if err := json.Unmarshal(bytes, &jesterResponse); err != nil {
-		ctx.Logger().Error("failed to decode injected dollar vote extension", "err", err)
-		return err
-	}
+	if res.Dollar != nil && len(res.Dollar.Vaas) > 0 {
+		var count int
 
-	// Handle the Dollar Extension.
-	if jesterResponse.Dollar != nil {
-		var successfullMsgs int
-		dollarServer := dollarkeeper.NewPortalMsgServer(h.dollarKeeper)
-		for _, vaa := range jesterResponse.Dollar.Vaas {
+		for _, raw := range res.Dollar.Vaas {
+			vaa, err := vaautils.Unmarshal(raw)
+			if err != nil {
+				logger.Error("failed to unmarshal transfer from jester", "err", err)
+				continue
+			}
+
 			cachedCtx, writeCache := ctx.CacheContext()
-			_, err := dollarServer.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
-				Vaa: vaa,
+			_, err = h.dollarPortalServer.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
+				Vaa: raw,
 			})
 
 			if err == nil {
 				writeCache()
-				successfullMsgs++
+				count++
 			} else {
-				ctx.Logger().Error("failed to submit VAA", "err", err)
+				logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
 			}
 		}
 
-		if successfullMsgs > 0 {
-			ctx.Logger().Info("successfully submitted VAAs", "num_vaas", successfullMsgs)
+		if count > 0 {
+			logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
 		}
 	}
-
-	return nil
 }
