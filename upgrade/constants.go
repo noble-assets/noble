@@ -33,3 +33,6 @@ const UpgradeASCII = `
 
 // TestnetChainID is the Chain ID of the Noble testnet.
 const TestnetChainID = "grand-1"
+
+// MainnetChainID is the Chain ID of the Noble mainnet.
+const MainnetChainID = "noble-1"

@@ -125,6 +125,9 @@ func ConfigureWormholeModule(ctx sdk.Context, wormholeKeeper *wormholekeeper.Kee
 		}
 
 		return nil
+	case MainnetChainID:
+		// TODO: Add the necessary configurations for mainnet here!
+		return nil
 	default:
 		return fmt.Errorf("cannot configure the wormhole module on %s chain", ctx.ChainID())
 	}
@@ -149,6 +152,9 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 			return errors.Wrap(err, "unable to set dollar portal peer in state")
 		}
 
+		return nil
+	case MainnetChainID:
+		// TODO: Add the necessary configurations for mainnet here!
 		return nil
 	default:
 		return fmt.Errorf("cannot configure the dollar module on %s chain", ctx.ChainID())
