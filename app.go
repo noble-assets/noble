@@ -277,7 +277,7 @@ func NewApp(
 
 	jesterClient := jester.NewClient(cast.ToString(appOpts.Get(jester.FlagGRPCAddress)))
 	proposalHandler := NewProposalHandler(
-		app.BaseApp, app.Mempool(),
+		app.BaseApp, app.Mempool(), app.PreBlocker,
 		jesterClient, app.DollarKeeper, app.WormholeKeeper,
 	)
 
