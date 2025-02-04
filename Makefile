@@ -49,7 +49,7 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 build:
 	@echo "🤖 Building nobled..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o "$(PWD)/build" ./cmd/nobled
+	@go build -mod=readonly $(BUILD_FLAGS) -o "$(PWD)/build/nobled" ./cmd/nobled
 	@echo "✅ Completed build!"
 
 install:
