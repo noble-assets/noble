@@ -1094,8 +1094,8 @@ github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3l
 github.com/noble-assets/globalfee v1.0.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
 github.com/noble-assets/halo/v2 v2.0.1/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
-github.com/noble-assets/wormhole v1.0.0-alpha.1 h1:2PMRecmR8eoYT/ZF/YfAIH3TxVYAFN5Gf4f4czndRBs=
-github.com/noble-assets/wormhole v1.0.0-alpha.1/go.mod h1:OUivFiRSS9o7k4q/5rBBZEwh0hR8kzoDVD7LulOkHx0=
+github.com/noble-assets/wormhole v1.0.0-alpha.2 h1:LWNGDez+j4XP68Ak/SdCEtH7OUVYIAhAc/iovbuGLM0=
+github.com/noble-assets/wormhole v1.0.0-alpha.2/go.mod h1:s7T9FC+bxHwlLED8pmXumdqwhr56CGJqTdhhcIj4A/Q=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
 github.com/nunnatsa/ginkgolinter v0.16.2/go.mod h1:4tWRinDN1FeJgU+iJANW/kz7xKN5nYRAOfJDQUS9dOQ=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=

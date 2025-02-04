@@ -30,7 +30,7 @@ require (
 	github.com/noble-assets/forwarding/v2 v2.0.0
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
-	github.com/noble-assets/wormhole v1.0.0-alpha.1
+	github.com/noble-assets/wormhole v1.0.0-alpha.2
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
 	github.com/spf13/cast v1.7.0
 	github.com/spf13/cobra v1.8.1
