@@ -39,7 +39,7 @@ func TestChainUpgrade(t *testing.T) {
 
 	upgrades := []e2e.ChainUpgrade{
 		{
-			Image:       e2e.GhcrImage("v8.0.4"),
+			Image:       e2e.GhcrImage("v8.0.5"),
 			UpgradeName: "helium",
 			PreUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *e2e.ICATestSuite) {
 				icaAddr, err := e2e.RegisterICAAccount(ctx, icaTs)

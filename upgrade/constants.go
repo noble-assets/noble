@@ -30,3 +30,6 @@ const UpgradeASCII = `
 	╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝
 
 `
+
+// TestnetChainID is the Chain ID of the Noble testnet.
+const TestnetChainID = "grand-1"
