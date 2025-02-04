@@ -22,13 +22,13 @@ import (
 )
 
 const (
-	defaultJesterGRPC = "localhost:9091"
+	defaultJesterAddress = "localhost:9091"
 )
 
 // AppendJesterConfig appends the Jester configuration to app.toml
 func AppendJesterConfig(srvCfg *serverconfig.Config) (customAppTemplate string, NobleAppConfig interface{}) {
 	type JesterConfig struct {
-		GRPCAddress string `mapstructure:"grpc-server"`
+		GRPCAddress string `mapstructure:"grpc-address"`
 	}
 
 	type CustomAppConfig struct {
@@ -38,7 +38,7 @@ func AppendJesterConfig(srvCfg *serverconfig.Config) (customAppTemplate string, 
 	}
 
 	defaultJesterConfig := JesterConfig{
-		GRPCAddress: defaultJesterGRPC,
+		GRPCAddress: defaultJesterAddress,
 	}
 
 	NobleAppConfig = CustomAppConfig{Config: *srvCfg, JesterConfig: defaultJesterConfig}
@@ -50,9 +50,9 @@ func AppendJesterConfig(srvCfg *serverconfig.Config) (customAppTemplate string, 
 
 [jester]
 
-# Jesters gRPC server address. 
+# Jester's gRPC server address. 
 # This should not conflict with the CometBFT gRPC server.
-grpc-server = "{{ .JesterConfig.GRPCAddress }}"
+grpc-address = "{{ .JesterConfig.GRPCAddress }}"
 `
 	return customAppTemplate, NobleAppConfig
 }
@@ -60,9 +60,9 @@ grpc-server = "{{ .JesterConfig.GRPCAddress }}"
 // Flags
 
 const (
-	FlagJesterGRPC = "jester.grpc-server"
+	FlagGRPCAddress = "jester.grpc-address"
 )
 
-func AddJesterFlags(cmd *cobra.Command) {
-	cmd.Flags().String(FlagJesterGRPC, defaultJesterGRPC, "Jesters gRPC server address")
+func AddFlags(cmd *cobra.Command) {
+	cmd.Flags().String(FlagGRPCAddress, defaultJesterAddress, "Jester's gRPC server address")
 }
