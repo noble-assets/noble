@@ -50,11 +50,13 @@ type ProposalHandler struct {
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultProcessProposalHandler sdk.ProcessProposalHandler
+	defaultPreBlocker             sdk.PreBlocker
 }
 
 func NewProposalHandler(
 	app *baseapp.BaseApp,
 	mempool mempool.Mempool,
+	preBlocker sdk.PreBlocker,
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
@@ -68,6 +70,7 @@ func NewProposalHandler(
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
+		defaultPreBlocker:             preBlocker,
 	}
 }
 
@@ -112,7 +115,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				if wormholeRes != nil && !wormholeRes.Executed {
 					nonExecutedVAAs = append(nonExecutedVAAs, raw)
 				} else {
-					logger.Debug("skipped already executed transfer from jester", "identifier", vaa.MessageID())
+					logger.Warn("skipped already executed transfer from jester", "identifier", vaa.MessageID())
 				}
 			}
 
@@ -162,8 +165,13 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 // PreBlocker processes all injected $USDN transfers from Jester.
 func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		res, err := h.defaultPreBlocker(ctx, req)
+		if err != nil {
+			return nil, errors.Wrap(err, "default PreBlocker failed")
+		}
+
 		if len(req.Txs) == 0 {
-			return &sdk.ResponsePreBlock{}, nil
+			return res, nil
 		}
 
 		tx := req.Txs[jesterIndex]
@@ -171,7 +179,7 @@ func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 			h.handleJesterTx(ctx, tx)
 		}
 
-		return &sdk.ResponsePreBlock{}, nil
+		return res, nil
 	}
 }
 
