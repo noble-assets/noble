@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=https://json.schemastore.org/buf.gen.json
+version: v1
+plugins:
+  - name: openapiv2
+    out: ./api/tmp-swagger-gen
+    opt: logtostderr=true,fqn_for_openapi_name=true,simple_operation_ids=true,json_names_for_fields=false
