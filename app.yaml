@@ -36,6 +36,7 @@ modules:
           permissions: [ burner, minter ]
         - account: dollar
           permissions: [ burner, minter ]
+        - account: dollar/yield
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
