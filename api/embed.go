@@ -18,7 +18,6 @@ package api
 
 import (
 	"embed"
-	"io/fs"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -34,13 +33,21 @@ func RegisterSwaggerAPI(_ client.Context, rtr *mux.Router, swaggerEnabled bool) 
 		return nil
 	}
 
-	root, err := fs.Sub(SwaggerUI, "gen")
+	index, err := SwaggerUI.ReadFile("gen/index.html")
 	if err != nil {
 		return err
 	}
+	rtr.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write(index)
+	})
 
-	staticServer := http.FileServer(http.FS(root))
-	rtr.PathPrefix("/").Handler(staticServer)
+	swagger, err := SwaggerUI.ReadFile("gen/swagger.yaml")
+	if err != nil {
+		return err
+	}
+	rtr.HandleFunc("/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write(swagger)
+	})
 
 	return nil
 }
