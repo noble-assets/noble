@@ -18,6 +18,7 @@ package noble
 
 import (
 	storetypes "cosmossdk.io/store/types"
+	dollar "dollar.noble.xyz"
 	"github.com/circlefin/noble-fiattokenfactory/x/blockibc"
 	pfm "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
@@ -121,6 +122,7 @@ func (app *App) RegisterLegacyModules() error {
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = dollar.NewIBCMiddleware(transferStack, app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
 	transferStack = forwarding.NewMiddleware(transferStack, app.AccountKeeper, app.ForwardingKeeper)
 	transferStack = pfm.NewIBCMiddleware(
 		transferStack,
