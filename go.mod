@@ -23,7 +23,6 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
 	github.com/cosmos/ibc-go/v8 v8.5.2
-	github.com/ethereum/go-ethereum v1.14.13
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/monerium/module-noble/v2 v2.0.0
 	github.com/noble-assets/authority v1.0.1
@@ -39,7 +38,7 @@ require (
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.1.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v1.0.0-alpha.3
+	swap.noble.xyz v1.0.0-alpha.4
 )
 
 require (
@@ -130,6 +129,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/dvsekhvalnov/jose2go v1.6.0 // indirect
 	github.com/emicklei/dot v1.6.2 // indirect
+	github.com/ethereum/go-ethereum v1.14.13 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
