@@ -331,6 +331,10 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
+			app.Logger(),
+			app.CapabilityKeeper,
+			app.DollarKeeper,
+			app.WormholeKeeper,
 		),
 	)
 
