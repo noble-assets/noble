@@ -4,7 +4,388 @@
     "title": "Noble API Reference",
     "version": "9.0.0"
   },
+  "x-tagGroups": [
+    {
+      "name": "Circle",
+      "tags": [
+        "CCTP",
+        "FiatTokenFactory"
+      ]
+    },
+    {
+      "name": "Cosmos",
+      "tags": [
+        "Auth",
+        "Authz",
+        "Bank",
+        "Consensus",
+        "CometBFT",
+        "Evidence",
+        "Feegrant",
+        "Node",
+        "Params",
+        "Slashing",
+        "Staking",
+        "Upgrade"
+      ]
+    },
+    {
+      "name": "Dollar",
+      "tags": [
+        "Dollar",
+        "Dollar Portal",
+        "Dollar Vaults"
+      ]
+    },
+    {
+      "name": "Hashnote",
+      "tags": [
+        "Halo",
+        "Halo Aggregator",
+        "Halo Entitlements"
+      ]
+    },
+    {
+      "name": "IBC",
+      "tags": [
+        "Channel",
+        "Client",
+        "Connection",
+        "Fee",
+        "ICA Controller",
+        "ICA Host",
+        "Transfer"
+      ]
+    },
+    {
+      "name": "Monerium",
+      "tags": [
+        "Florin",
+        "Florin Blacklist"
+      ]
+    },
+    {
+      "name": "Noble",
+      "tags": [
+        "Authority",
+        "Forwarding",
+        "Globalfee"
+      ]
+    },
+    {
+      "name": "Ondo",
+      "tags": [
+        "Aura",
+        "Aura Blocklist"
+      ]
+    },
+    {
+      "name": "Swap",
+      "tags": [
+        "Swap",
+        "Stableswap"
+      ]
+    },
+    {
+      "name": "Wormhole",
+      "tags": [
+        "Wormhole"
+      ]
+    }
+  ],
   "apis": [
+    {
+      "url": "./api/tmp-swagger-gen/circle/cctp/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "CCTP"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/circle/fiattokenfactory/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "FiatTokenFactory"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "FTFPaused",
+          "Owner": "FTFOwner",
+          "Minters": "FTFMinters"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/auth/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Auth"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "AuthParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Authz"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/bank/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Bank"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "BankParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/base/node/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Service": "Node"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Config": "NodeConfig"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/base/tendermint/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Service": "CometBFT"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/evidence/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Evidence"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/feegrant/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Feegrant"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/params/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Params"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "ParamsParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/slashing/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Slashing"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/staking/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Staking"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "StakingParams",
+          "Pool": "StakingPool"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/upgrade/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Upgrade"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/florin/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Florin"
+        },
+        "operationIds": {
+          "rename": {
+            "Owner": "FlorinOwner"
+          }
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/florin/blacklist/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Florin Blacklist"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Owner": "FlorinBlocklistOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/halo/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Halo"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Nonce": "HaloNonce",
+          "Owner": "HaloOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/halo/aggregator/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Halo Aggregator"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Owner": "HaloAggregatorOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/halo/entitlements/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Halo Entitlements"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Owner": "HaloEntitlementsOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/applications/fee/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Fee"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/applications/interchain_accounts/controller/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "ICA Controller"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCICAControllerParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/applications/interchain_accounts/host/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "ICA Host"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCICAHostParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/applications/transfer/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Transfer"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCTransferParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/core/channel/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Channel"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/core/client/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Client"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "UpgradedConsensusState": "IBCUpgradedConsensusState"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ibc/core/connection/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Connection"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/authority/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Authority"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Owner": "AuthorityOwner"
+        }
+      }
+    },
     {
       "url": "./api/tmp-swagger-gen/noble/dollar/v1/query.swagger.json",
       "tags": {
@@ -17,7 +398,7 @@
       "url": "./api/tmp-swagger-gen/noble/dollar/portal/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Dollar"
+          "Query": "Dollar Portal"
         }
       }
     },
@@ -25,7 +406,7 @@
       "url": "./api/tmp-swagger-gen/noble/dollar/vaults/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Dollar"
+          "Query": "Dollar Vaults"
         }
       },
       "operationIds": {
@@ -36,10 +417,18 @@
       }
     },
     {
-      "url": "./api/tmp-swagger-gen/wormhole/v1/query.swagger.json",
+      "url": "./api/tmp-swagger-gen/noble/forwarding/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Wormhole"
+          "Query": "Forwarding"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/globalfee/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Globalfee"
         }
       }
     },
@@ -60,12 +449,48 @@
       "url": "./api/tmp-swagger-gen/noble/swap/stableswap/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Swap"
+          "Query": "Stableswap"
         }
       },
       "operationIds": {
         "rename": {
           "PositionsByProvider": "StableswapPositionsByProvider"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/aura/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Aura"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "AuraPaused",
+          "Owner": "AuraOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/aura/blocklist/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Aura Blocklist"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Owner": "AuraBlocklistOwner",
+          "Address": "AuraBlocklistAddress"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/wormhole/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Wormhole"
         }
       }
     }
