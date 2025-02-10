@@ -18,14 +18,17 @@ package noble
 
 import (
 	"context"
+	"cosmossdk.io/core/address"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"slices"
 	"time"
 
 	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 
@@ -44,6 +47,9 @@ import (
 const jesterIndex = 0
 
 type ProposalHandler struct {
+	addressCodec address.Codec
+	txConfig     client.TxConfig
+
 	jesterClient       jester.QueryServiceClient
 	wormholeServer     wormholetypes.QueryServer
 	dollarPortalServer dollarportaltypes.MsgServer
@@ -57,6 +63,8 @@ func NewProposalHandler(
 	app *baseapp.BaseApp,
 	mempool mempool.Mempool,
 	preBlocker sdk.PreBlocker,
+	addressCodec address.Codec,
+	txConfig client.TxConfig,
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
@@ -64,6 +72,9 @@ func NewProposalHandler(
 	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
 
 	return &ProposalHandler{
+		addressCodec: addressCodec,
+		txConfig:     txConfig,
+
 		jesterClient:       jesterClient,
 		wormholeServer:     wormholekeeper.NewQueryServer(wormholeKeeper),
 		dollarPortalServer: dollarkeeper.NewPortalMsgServer(dollarKeeper),
@@ -99,7 +110,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		}
 
 		if jesterRes != nil && jesterRes.Msg != nil && jesterRes.Msg.Dollar != nil && len(jesterRes.Msg.Dollar.Vaas) > 0 {
-			var nonExecutedVAAs [][]byte
+			var nonExecutedVAAs []sdk.Msg
 
 			for _, raw := range jesterRes.Msg.Dollar.Vaas {
 				vaa, err := vaautils.Unmarshal(raw)
@@ -113,23 +124,41 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				})
 
 				if wormholeRes != nil && !wormholeRes.Executed {
-					nonExecutedVAAs = append(nonExecutedVAAs, raw)
+					signer, _ := h.addressCodec.BytesToString(req.ProposerAddress)
+
+					nonExecutedVAAs = append(nonExecutedVAAs, &dollarportaltypes.MsgDeliver{
+						Signer: signer,
+						Vaa:    raw,
+					})
 				} else {
 					logger.Warn("skipped already executed transfer from jester", "identifier", vaa.MessageID())
 				}
 			}
 
-			if len(nonExecutedVAAs) > 0 {
-				jesterRes.Msg.Dollar.Vaas = nonExecutedVAAs
+			builder := h.txConfig.NewTxBuilder()
 
-				bz, err := json.Marshal(jesterRes.Msg)
-				if err != nil {
-					return nil, errors.Wrap(err, "failed to marshal injected jester tx")
-				}
-				res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
-
-				logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
+			err := builder.SetMsgs(nonExecutedVAAs...)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
 			}
+			err = builder.SetSignatures(signing.SignatureV2{
+				Data: &signing.SingleSignatureData{
+					SignMode:  signing.SignMode_SIGN_MODE_UNSPECIFIED,
+					Signature: []byte(""),
+				},
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set signatures of injected jester tx")
+			}
+			tx := builder.GetTx()
+
+			bz, err := h.txConfig.TxEncoder()(tx)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to marshal injected jester tx")
+			}
+			res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
+
+			logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 		}
 
 		return &abci.ResponsePrepareProposal{Txs: res.Txs}, nil
@@ -149,10 +178,7 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 			return resAccept, nil
 		}
 
-		if h.isJesterTx(req.Txs[jesterIndex]) {
-			req.Txs = req.Txs[jesterIndex+1:]
-		}
-
+		req.Txs = req.Txs[jesterIndex+1:]
 		res, err := h.defaultProcessProposalHandler(ctx, req)
 		if err != nil || (res != nil && !res.IsAccepted()) {
 			return resReject, errors.Wrap(err, "default ProcessProposal handler failed")
@@ -175,9 +201,7 @@ func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 		}
 
 		tx := req.Txs[jesterIndex]
-		if h.isJesterTx(tx) {
-			h.handleJesterTx(ctx, tx)
-		}
+		h.handleJesterTx(ctx, tx)
 
 		return res, nil
 	}
@@ -199,37 +223,33 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 		}
 	}()
 
-	var res jester.GetVoteExtensionResponse
-	if err := json.Unmarshal(bytes, &res); err != nil {
+	tx, err := h.txConfig.TxDecoder()(bytes)
+	if err != nil {
 		logger.Error("failed to unmarshal injected jester tx", "err", err)
 		return
 	}
 
-	if res.Dollar != nil && len(res.Dollar.Vaas) > 0 {
-		var count int
+	var count int
+	for _, raw := range tx.GetMsgs() {
+		msg := raw.(*dollarportaltypes.MsgDeliver)
 
-		for _, raw := range res.Dollar.Vaas {
-			vaa, err := vaautils.Unmarshal(raw)
-			if err != nil {
-				logger.Error("failed to unmarshal transfer from jester", "err", err)
-				continue
-			}
-
-			cachedCtx, writeCache := ctx.CacheContext()
-			_, err = h.dollarPortalServer.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
-				Vaa: raw,
-			})
-
-			if err == nil {
-				writeCache()
-				count++
-			} else {
-				logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
-			}
+		vaa, err := vaautils.Unmarshal(msg.Vaa)
+		if err != nil {
+			logger.Error("failed to unmarshal transfer from jester", "err", err)
+			continue
 		}
 
-		if count > 0 {
-			logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
+		cachedCtx, writeCache := ctx.CacheContext()
+		_, err = h.dollarPortalServer.Deliver(cachedCtx, msg)
+
+		if err == nil {
+			writeCache()
+			count++
+		} else {
+			logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
 		}
+	}
+	if count > 0 {
+		logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
 	}
 }
