@@ -69,11 +69,11 @@ func CreateUpgradeHandler(
 // -> Update Index: Index = 1.037503387862, Total Principal = 964914, Total Yield Accrued = 1101
 //
 // https://sepolia.etherscan.io/tx/0xcf3412eaa0beb24f8cb08ddcd9af43abf4034195b5108f70a6a7b95a79e596ae
-// Delivered via Jester in block #TODO
+// Delivered via Jester in block #23130168
 // -> Update Index: Index = 1.037690277684, Total Principal = 964914, Total Yield Accrued = 1281
 //
 // https://sepolia.etherscan.io/tx/0xa913bf0e9b5a2fa578cf28e001bb3ca277ba9dce673724ac4ccb7ce09fe8a0af
-// Delivered via Jester in block #TODO
+// Delivered via Jester in block #23130243
 // -> Mint 1 $USDN: Index = 1.037690850231, Total Principal = 1928592, Total Yield Accrued = 1282
 //
 // https://www.mintscan.io/noble-testnet/tx/458B008D1614731AFC5E1795C2B7EA5CCF1025CE974BF36D7C4FEEA4747A6E33
@@ -81,7 +81,7 @@ func CreateUpgradeHandler(
 // -> Burn 1 $USDN: Index = 1.037690850231, Total Principal = 964914, Total Yield Accrued = 1282
 //
 // https://sepolia.etherscan.io/tx/0xf0756978c39ea02f13ff745d347b20fb11aa15b36a2200536d4701820465e035
-// Delivered via Jester in block #TODO
+// Delivered via Jester in block #23192359
 // -> Update Index: Index = 1.037824814971, Total Principal = 964914, Total Yield Accrued = 1411
 func AdjustDollarState(ctx context.Context, addressCodec address.Codec, bankKeeper bankkeeper.Keeper, dollarKeeper *dollarkeeper.Keeper) error {
 	balance := bankKeeper.GetBalance(ctx, dollartypes.YieldAddress, dollarKeeper.GetDenom())
