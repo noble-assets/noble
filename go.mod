@@ -26,7 +26,7 @@ require (
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/monerium/module-noble/v2 v2.0.0
 	github.com/noble-assets/authority v1.0.2
-	github.com/noble-assets/forwarding/v2 v2.0.0
+	github.com/noble-assets/forwarding/v2 v2.0.1
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
 	github.com/noble-assets/wormhole v1.0.0-alpha.2
