@@ -18,12 +18,12 @@ package noble
 
 import (
 	"context"
-	"cosmossdk.io/core/address"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"slices"
 	"time"
+
+	"cosmossdk.io/core/address"
 
 	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -50,9 +50,10 @@ type ProposalHandler struct {
 	addressCodec address.Codec
 	txConfig     client.TxConfig
 
-	jesterClient       jester.QueryServiceClient
-	wormholeServer     wormholetypes.QueryServer
-	dollarPortalServer dollarportaltypes.MsgServer
+	jesterClient   jester.QueryServiceClient
+	wormholeServer wormholetypes.QueryServer
+	// dollarPortalServer dollarportaltypes.MsgServer
+	dollarKeeper *dollarkeeper.Keeper
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultProcessProposalHandler sdk.ProcessProposalHandler
@@ -75,9 +76,10 @@ func NewProposalHandler(
 		addressCodec: addressCodec,
 		txConfig:     txConfig,
 
-		jesterClient:       jesterClient,
-		wormholeServer:     wormholekeeper.NewQueryServer(wormholeKeeper),
-		dollarPortalServer: dollarkeeper.NewPortalMsgServer(dollarKeeper),
+		jesterClient:   jesterClient,
+		wormholeServer: wormholekeeper.NewQueryServer(wormholeKeeper),
+		// dollarPortalServer: dollarkeeper.NewPortalMsgServer(dollarKeeper),
+		dollarKeeper: dollarKeeper,
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
@@ -124,11 +126,10 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				})
 
 				if wormholeRes != nil && !wormholeRes.Executed {
-					signer, _ := h.addressCodec.BytesToString(req.ProposerAddress)
+					// signer, _ := h.addressCodec.BytesToString(req.ProposerAddress)
 
-					nonExecutedVAAs = append(nonExecutedVAAs, &dollarportaltypes.MsgDeliver{
-						Signer: signer,
-						Vaa:    raw,
+					nonExecutedVAAs = append(nonExecutedVAAs, &dollarportaltypes.MsgDeliverInjection{
+						Vaa: raw,
 					})
 				} else {
 					logger.Warn("skipped already executed transfer from jester", "identifier", vaa.MessageID())
@@ -141,15 +142,15 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
 			}
-			err = builder.SetSignatures(signing.SignatureV2{
-				Data: &signing.SingleSignatureData{
-					SignMode:  signing.SignMode_SIGN_MODE_UNSPECIFIED,
-					Signature: []byte(""),
-				},
-			})
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to set signatures of injected jester tx")
-			}
+			// err = builder.SetSignatures(signing.SignatureV2{
+			// 	Data: &signing.SingleSignatureData{
+			// 		SignMode:  signing.SignMode_SIGN_MODE_UNSPECIFIED,
+			// 		Signature: []byte(""),
+			// 	},
+			// })
+			// if err != nil {
+			// 	return nil, errors.Wrap(err, "failed to set signatures of injected jester tx")
+			// }
 			tx := builder.GetTx()
 
 			bz, err := h.txConfig.TxEncoder()(tx)
@@ -231,7 +232,7 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 
 	var count int
 	for _, raw := range tx.GetMsgs() {
-		msg := raw.(*dollarportaltypes.MsgDeliver)
+		msg := raw.(*dollarportaltypes.MsgDeliverInjection)
 
 		vaa, err := vaautils.Unmarshal(msg.Vaa)
 		if err != nil {
@@ -239,15 +240,22 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 			continue
 		}
 
-		cachedCtx, writeCache := ctx.CacheContext()
-		_, err = h.dollarPortalServer.Deliver(cachedCtx, msg)
-
-		if err == nil {
-			writeCache()
-			count++
-		} else {
+		if err := h.dollarKeeper.DeliverInjections(ctx, msg); err != nil {
 			logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
+		} else {
+			count++
 		}
+
+		// 	cachedCtx, writeCache := ctx.CacheContext()
+		// 	_, err = h.dollarPortalServer.Deliver(cachedCtx, msg)
+
+		// 	if err == nil {
+		// 		writeCache()
+		// 		count++
+		// 	} else {
+		// 		logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
+		// 	}
+		// }
 	}
 	if count > 0 {
 		logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
