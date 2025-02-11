@@ -1,0 +1,1 @@
+- Bump Forwarding to [`v2.0.1`](https://github.com/noble-assets/forwarding/releases/tag/v2.0.1) ([#481](https://github.com/noble-assets/noble/pull/481))
