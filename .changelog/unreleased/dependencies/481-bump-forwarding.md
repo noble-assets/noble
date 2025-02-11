@@ -1,0 +1,1 @@
+- Bump Forwarding to [`v2.0.1`](https://github.com/noble-assets/forwarding/releases/tag/v2.0.1) to add check for address lenght in forwarding and harden account check when registering. ([#481](https://github.com/noble-assets/noble/pull/481))
