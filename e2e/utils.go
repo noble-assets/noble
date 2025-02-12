@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -429,7 +431,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, version []ibc.DockerImage, s
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -483,7 +485,7 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 		{
 			Name:    "ibc-go-simd",
 			Version: "v8.5.1",

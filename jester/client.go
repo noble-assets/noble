@@ -14,28 +14,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package e2e_test
+package jester
 
 import (
-	"context"
-	"fmt"
-	"testing"
+	"net/http"
+	"strings"
 
-	"github.com/noble-assets/noble/e2e"
-	"github.com/stretchr/testify/require"
+	jester "jester.noble.xyz/api"
 )
 
-func TestRestrictedModules(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-
-	nw, _ := e2e.NobleSpinUp(t, ctx, e2e.LocalImages, false)
-	noble := nw.Chain.GetNode()
-
-	restrictedModules := []string{"circuit", "gov", "group"}
-
-	for _, module := range restrictedModules {
-		require.False(t, noble.HasCommand(ctx, "query", module), fmt.Sprintf("%s is a restricted module", module))
+func NewClient(address string) jester.QueryServiceClient {
+	if !strings.Contains(address, "://") {
+		address = "http://" + address
 	}
+
+	return jester.NewQueryServiceClient(
+		http.DefaultClient,
+		address,
+	)
 }

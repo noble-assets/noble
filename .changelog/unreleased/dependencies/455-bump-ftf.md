@@ -1,0 +1,1 @@
+- Bump FiatTokenFactory to remove the limit check when decoding addresses. ([#455](https://github.com/noble-assets/noble/pull/455))

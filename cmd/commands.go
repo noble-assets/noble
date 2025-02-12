@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +37,8 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/noble-assets/noble/v8"
+	"github.com/noble-assets/noble/v9"
+	"github.com/noble-assets/noble/v9/jester"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -53,6 +56,7 @@ func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager 
 	)
 
 	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, func(startCmd *cobra.Command) {
+		jester.AddFlags(startCmd)
 		crisis.AddModuleInitFlags(startCmd)
 	})
 
