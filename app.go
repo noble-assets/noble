@@ -23,23 +23,30 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cast"
-
 	"cosmossdk.io/core/appconfig"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/libs/bytes"
+	cmtos "github.com/cometbft/cometbft/libs/os"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/noble-assets/noble/v9/jester"
 	"github.com/noble-assets/noble/v9/upgrade"
+	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
@@ -69,6 +76,7 @@ import (
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
 	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -79,7 +87,9 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
@@ -297,6 +307,151 @@ func NewApp(
 	}
 
 	return app, nil
+}
+
+// InitSimAppForTestnet is broken down into two sections:
+// Required Changes: Changes that, if not made, will cause the testnet to halt or panic
+// Optional Changes: Changes to customize the testnet to one's liking (lower vote times, fund accounts, etc)
+func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.PubKey, newOperatorAddress, upgradeToTrigger string) *App {
+	//
+	// Required Changes:
+	//
+
+	ctx := app.BaseApp.NewUncachedContext(true, cmtproto.Header{})
+	pubkey := &ed25519.PubKey{Key: newValPubKey.Bytes()}
+	pubkeyAny, err := codectypes.NewAnyWithValue(pubkey)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+
+	// STAKING
+	//
+
+	// Create Validator struct for our new validator.
+	_, bz, err := bech32.DecodeAndConvert(newOperatorAddress)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	bech32Addr, err := bech32.ConvertAndEncode("osmovaloper", bz)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	newVal := stakingtypes.Validator{
+		OperatorAddress: bech32Addr,
+		ConsensusPubkey: pubkeyAny,
+		Jailed:          false,
+		Status:          stakingtypes.Bonded,
+		Tokens:          math.NewInt(900000000000000),
+		DelegatorShares: math.LegacyNewDec(10000000),
+		Description: stakingtypes.Description{
+			Moniker: "Testnet Validator",
+		},
+		// TODO: Properly initialize this!
+		//Commission: stakingtypes.Commission{
+		//	CommissionRates: stakingtypes.CommissionRates{
+		//		Rate:          math.MustNewDecFromStr("0.05"),
+		//		MaxRate:       math.MustNewDecFromStr("0.1"),
+		//		MaxChangeRate: math.MustNewDecFromStr("0.05"),
+		//	},
+		//},
+		MinSelfDelegation: math.OneInt(),
+	}
+
+	// Remove all validators from power store
+	stakingKey := app.GetKey(stakingtypes.ModuleName)
+	stakingStore := ctx.KVStore(stakingKey)
+	iterator, err := app.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all valdiators from last validators store
+	iterator, err = app.StakingKeeper.LastValidatorsIterator(ctx)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from validators store
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorsKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from unbonding queue
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorQueueKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Add our validator to power and last validators store
+	err = app.StakingKeeper.SetValidator(ctx, newVal)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, newVal)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	err = app.StakingKeeper.SetValidatorByPowerIndex(ctx, newVal)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	valAddr, err := sdk.ValAddressFromBech32(newVal.GetOperator())
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	err = app.StakingKeeper.SetLastValidatorPower(ctx, valAddr, 0)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr); err != nil {
+		panic(err)
+	}
+
+	// SLASHING
+	//
+
+	// Set validator signing info for our new validator.
+	newConsAddr := sdk.ConsAddress(newValAddr.Bytes())
+	newValidatorSigningInfo := slashingtypes.ValidatorSigningInfo{
+		Address:     newConsAddr.String(),
+		StartHeight: app.LastBlockHeight() - 1,
+		Tombstoned:  false,
+	}
+	err = app.SlashingKeeper.SetValidatorSigningInfo(ctx, newConsAddr, newValidatorSigningInfo)
+	if err != nil {
+		cmtos.Exit(err.Error())
+	}
+
+	//
+	// Optional Changes:
+	//
+
+	// UPGRADE
+	//
+
+	if upgradeToTrigger != "" {
+		upgradePlan := upgradetypes.Plan{
+			Name:   upgradeToTrigger,
+			Height: app.LastBlockHeight() + 10,
+		}
+		err = app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return app
 }
 
 func (app *App) LegacyAmino() *codec.LegacyAmino {
