@@ -107,6 +107,7 @@ func AdjustDollarState(ctx context.Context, addressCodec address.Codec, bankKeep
 	}
 
 	stats := dollartypes.Stats{
+		TotalHolders:      1,
 		TotalPrincipal:    math.NewInt(964914),
 		TotalYieldAccrued: math.NewInt(1411),
 	}
