@@ -30,6 +30,7 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/keeper"
 	dollartypes "dollar.noble.xyz/types"
+	dollarvaultstypes "dollar.noble.xyz/types/vaults"
 )
 
 func CreateUpgradeHandler(
@@ -113,6 +114,17 @@ func AdjustDollarState(ctx context.Context, addressCodec address.Codec, bankKeep
 	}
 	if err := dollarKeeper.Stats.Set(ctx, stats); err != nil {
 		return errors.Wrap(err, "unable to set dollar stats")
+	}
+
+	vaultsStats := dollarvaultstypes.Stats{
+		FlexibleTotalPrincipal:                   math.ZeroInt(),
+		FlexibleTotalUsers:                       0,
+		FlexibleTotalDistributedRewardsPrincipal: math.ZeroInt(),
+		StakedTotalPrincipal:                     math.ZeroInt(),
+		StakedTotalUsers:                         0,
+	}
+	if err := dollarKeeper.VaultsStats.Set(ctx, vaultsStats); err != nil {
+		return errors.Wrap(err, "unable to set dollar vaults stats")
 	}
 
 	return nil
