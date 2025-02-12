@@ -261,14 +261,14 @@ func NewApp(
 	anteHandler, err := NewAnteHandler(HandlerOptions{
 		HandlerOptions: ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
 		},
-		cdc:       app.appCodec,
-		FTFKeeper: app.FTFKeeper,
-		IBCKeeper: app.IBCKeeper,
+		cdc:        app.appCodec,
+		BankKeeper: app.BankKeeper,
+		FTFKeeper:  app.FTFKeeper,
+		IBCKeeper:  app.IBCKeeper,
 	})
 	if err != nil {
 		return nil, err
@@ -277,12 +277,11 @@ func NewApp(
 
 	jesterClient := jester.NewClient(cast.ToString(appOpts.Get(jester.FlagGRPCAddress)))
 	proposalHandler := NewProposalHandler(
-		app.BaseApp, app.Mempool(), app.PreBlocker,
+		app.BaseApp, app.Mempool(), app.PreBlocker, app.txConfig,
 		jesterClient, app.DollarKeeper, app.WormholeKeeper,
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
-	app.SetProcessProposal(proposalHandler.ProcessProposal())
 	app.SetPreBlocker(proposalHandler.PreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
