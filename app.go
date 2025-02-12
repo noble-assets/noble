@@ -277,12 +277,11 @@ func NewApp(
 
 	jesterClient := jester.NewClient(cast.ToString(appOpts.Get(jester.FlagGRPCAddress)))
 	proposalHandler := NewProposalHandler(
-		app.BaseApp, app.Mempool(), app.PreBlocker,
+		app.BaseApp, app.Mempool(), app.PreBlocker, app.txConfig,
 		jesterClient, app.DollarKeeper, app.WormholeKeeper,
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
-	app.SetProcessProposal(proposalHandler.ProcessProposal())
 	app.SetPreBlocker(proposalHandler.PreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {

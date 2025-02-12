@@ -13,7 +13,7 @@ require (
 	github.com/docker/docker v24.0.9+incompatible
 	github.com/ethereum/go-ethereum v1.14.13
 	github.com/monerium/module-noble/v2 v2.0.0
-	github.com/noble-assets/authority v1.0.1
+	github.com/noble-assets/authority v1.0.2
 	github.com/noble-assets/halo/v2 v2.0.1
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
 	github.com/strangelove-ventures/interchaintest/v8 v8.8.0
