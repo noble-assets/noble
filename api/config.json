@@ -112,8 +112,8 @@
       "operationIds": {
         "rename": {
           "Paused": "FTFPaused",
-          "Owner": "FTFOwner",
-          "Minters": "FTFMinters"
+          "Minters": "FTFMinters",
+          "Owner": "FTFOwner"
         }
       }
     },
@@ -293,6 +293,7 @@
       },
       "operationIds": {
         "rename": {
+          "Paused": "HaloEntitlementsPaused",
           "Owner": "HaloEntitlementsOwner"
         }
       }
@@ -392,6 +393,12 @@
         "rename": {
           "Query": "Dollar"
         }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "DollarPaused",
+          "Stats": "DollarStats"
+        }
       }
     },
     {
@@ -399,6 +406,11 @@
       "tags": {
         "rename": {
           "Query": "Dollar Portal"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "DollarPortalPaused"
         }
       }
     },
@@ -412,7 +424,8 @@
       "operationIds": {
         "rename": {
           "Paused": "DollarVaultsPaused",
-          "PositionsByProvider": "DollarVaultsPositionsByProvider"
+          "PositionsByProvider": "DollarVaultsPositionsByProvider",
+          "Stats": "DollarVaultsStats"
         }
       }
     },
@@ -421,6 +434,11 @@
       "tags": {
         "rename": {
           "Query": "Forwarding"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Stats": "ForwardingStats"
         }
       }
     },

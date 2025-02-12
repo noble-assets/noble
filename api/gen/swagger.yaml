@@ -5,8 +5,8 @@ info:
 x-tagGroups:
   - name: Circle
     tags:
-      - FiatTokenFactory
       - CCTP
+      - FiatTokenFactory
   - name: Cosmos
     tags:
       - Auth
@@ -22358,7 +22358,7 @@ paths:
         - Halo Entitlements
   /halo/entitlements/v1/paused:
     get:
-      operationId: Paused
+      operationId: HaloEntitlementsPaused
       responses:
         '200':
           description: A successful response.
@@ -38676,6 +38676,37 @@ paths:
                   additionalProperties: {}
       tags:
         - Dollar
+  /noble/dollar/v1/paused:
+    get:
+      operationId: DollarPaused
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              paused:
+                type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Dollar
   /noble/dollar/v1/principal/{account}:
     get:
       operationId: Principal
@@ -38710,6 +38741,42 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Dollar
+  /noble/dollar/v1/stats:
+    get:
+      operationId: DollarStats
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total_holders:
+                type: string
+                format: uint64
+              total_principal:
+                type: string
+              total_yield_accrued:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
       tags:
         - Dollar
   /noble/dollar/v1/yield/{account}:
@@ -38791,6 +38858,37 @@ paths:
             properties:
               owner:
                 type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Dollar Portal
+  /noble/dollar/portal/v1/paused:
+    get:
+      operationId: DollarPortalPaused
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              paused:
+                type: boolean
         default:
           description: An unexpected error response.
           schema:
@@ -38949,6 +39047,47 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Dollar Vaults
+  /noble/dollar/vaults/v1/stats:
+    get:
+      operationId: DollarVaultsStats
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              flexible_total_principal:
+                type: string
+              flexible_total_users:
+                type: string
+                format: uint64
+              flexible_total_distributed_rewards_principal:
+                type: string
+              staked_total_principal:
+                type: string
+              staked_total_users:
+                type: string
+                format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
       tags:
         - Dollar Vaults
   /noble/forwarding/v1/address/{channel}/{recipient}/{fallback}:
@@ -39378,7 +39517,7 @@ paths:
         - Forwarding
   /noble/forwarding/v1/stats:
     get:
-      operationId: Stats
+      operationId: ForwardingStats
       responses:
         '200':
           description: A successful response.
