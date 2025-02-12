@@ -261,14 +261,14 @@ func NewApp(
 	anteHandler, err := NewAnteHandler(HandlerOptions{
 		HandlerOptions: ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
 		},
-		cdc:       app.appCodec,
-		FTFKeeper: app.FTFKeeper,
-		IBCKeeper: app.IBCKeeper,
+		cdc:        app.appCodec,
+		BankKeeper: app.BankKeeper,
+		FTFKeeper:  app.FTFKeeper,
+		IBCKeeper:  app.IBCKeeper,
 	})
 	if err != nil {
 		return nil, err

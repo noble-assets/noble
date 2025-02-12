@@ -1086,10 +1086,10 @@ github.com/nishanths/exhaustive v0.12.0 h1:vIY9sALmw6T/yxiASewa4TQcFsVYZQQRUQJhK
 github.com/nishanths/exhaustive v0.12.0/go.mod h1:mEZ95wPIZW+x8kC4TgC+9YCUgiST7ecevsVDTgc2obs=
 github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm/w98Vk=
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
-github.com/noble-assets/authority v1.0.1 h1:8zK11lSLG/fHKEzAurabpUCkZup3bGzJTmiv8JmbP+A=
-github.com/noble-assets/authority v1.0.1/go.mod h1:NeduRYMyYEZ2sep+wFenvj/LWJTB9UUYw0GPldF+Bkk=
-github.com/noble-assets/forwarding/v2 v2.0.0 h1:6iBg51yEtIlSaDzW7o5g17SvP9o1rNOUFxEPX17E6pE=
-github.com/noble-assets/forwarding/v2 v2.0.0/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
+github.com/noble-assets/authority v1.0.2 h1:aqcQJDyFF6n5Etm4qOAtB2yBJ1AskizevJbyKL32lJc=
+github.com/noble-assets/authority v1.0.2/go.mod h1:NeduRYMyYEZ2sep+wFenvj/LWJTB9UUYw0GPldF+Bkk=
+github.com/noble-assets/forwarding/v2 v2.0.1 h1:k7Nz5GRd7V8KDF7X8k/nNJacPZeSUrlVMjk1umxEdnU=
+github.com/noble-assets/forwarding/v2 v2.0.1/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
 github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3lOwkbO+Y=
 github.com/noble-assets/globalfee v1.0.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
