@@ -18,7 +18,6 @@ package noble
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"slices"
 	"time"
@@ -52,8 +51,7 @@ type ProposalHandler struct {
 
 	jesterClient   jester.QueryServiceClient
 	wormholeServer wormholetypes.QueryServer
-	// dollarPortalServer dollarportaltypes.MsgServer
-	dollarKeeper *dollarkeeper.Keeper
+	dollarKeeper   *dollarkeeper.Keeper
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultProcessProposalHandler sdk.ProcessProposalHandler
@@ -78,8 +76,7 @@ func NewProposalHandler(
 
 		jesterClient:   jesterClient,
 		wormholeServer: wormholekeeper.NewQueryServer(wormholeKeeper),
-		// dollarPortalServer: dollarkeeper.NewPortalMsgServer(dollarKeeper),
-		dollarKeeper: dollarKeeper,
+		dollarKeeper:   dollarKeeper,
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
@@ -126,8 +123,6 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				})
 
 				if wormholeRes != nil && !wormholeRes.Executed {
-					// signer, _ := h.addressCodec.BytesToString(req.ProposerAddress)
-
 					nonExecutedVAAs = append(nonExecutedVAAs, &dollarportaltypes.MsgDeliverInjection{
 						Vaa: raw,
 					})
@@ -142,15 +137,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
 			}
-			// err = builder.SetSignatures(signing.SignatureV2{
-			// 	Data: &signing.SingleSignatureData{
-			// 		SignMode:  signing.SignMode_SIGN_MODE_UNSPECIFIED,
-			// 		Signature: []byte(""),
-			// 	},
-			// })
-			// if err != nil {
-			// 	return nil, errors.Wrap(err, "failed to set signatures of injected jester tx")
-			// }
+
 			tx := builder.GetTx()
 
 			bz, err := h.txConfig.TxEncoder()(tx)
@@ -186,6 +173,10 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 		}
 
 		return resAccept, nil
+
+		// TODO:
+		// Now that we are using a decodable sdk messages, do we still need to remove the jester tx?
+		// Do we even need to reimplement ProcessProposal?
 	}
 }
 
@@ -208,13 +199,7 @@ func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	}
 }
 
-// isJesterTx is a utility that returns if a given transaction is from Jester.
-func (h *ProposalHandler) isJesterTx(bytes []byte) bool {
-	var jesterResponse jester.GetVoteExtensionResponse
-	return json.Unmarshal(bytes, &jesterResponse) == nil
-}
-
-// handleJesterTx is a utility that handles an injected transaction from Jester.
+// handleJesterTx is a utility that checks for, then processes transcations form Jester.
 func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 	logger := ctx.Logger()
 
@@ -232,7 +217,12 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 
 	var count int
 	for _, raw := range tx.GetMsgs() {
-		msg := raw.(*dollarportaltypes.MsgDeliverInjection)
+		msg, ok := raw.(*dollarportaltypes.MsgDeliverInjection)
+
+		// If the first message is not a MsgDeliverInjection, no VAAs were injected.
+		if !ok {
+			break
+		}
 
 		vaa, err := vaautils.Unmarshal(msg.Vaa)
 		if err != nil {
@@ -246,16 +236,6 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 			count++
 		}
 
-		// 	cachedCtx, writeCache := ctx.CacheContext()
-		// 	_, err = h.dollarPortalServer.Deliver(cachedCtx, msg)
-
-		// 	if err == nil {
-		// 		writeCache()
-		// 		count++
-		// 	} else {
-		// 		logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
-		// 	}
-		// }
 	}
 	if count > 0 {
 		logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
