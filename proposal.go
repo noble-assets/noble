@@ -22,8 +22,6 @@ import (
 	"slices"
 	"time"
 
-	"cosmossdk.io/core/address"
-
 	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -46,15 +44,13 @@ import (
 const jesterIndex = 0
 
 type ProposalHandler struct {
-	addressCodec address.Codec
-	txConfig     client.TxConfig
+	txConfig client.TxConfig
 
 	jesterClient   jester.QueryServiceClient
 	wormholeServer wormholetypes.QueryServer
 	dollarKeeper   *dollarkeeper.Keeper
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
-	defaultProcessProposalHandler sdk.ProcessProposalHandler
 	defaultPreBlocker             sdk.PreBlocker
 }
 
@@ -62,7 +58,6 @@ func NewProposalHandler(
 	app *baseapp.BaseApp,
 	mempool mempool.Mempool,
 	preBlocker sdk.PreBlocker,
-	addressCodec address.Codec,
 	txConfig client.TxConfig,
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
@@ -71,15 +66,13 @@ func NewProposalHandler(
 	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
 
 	return &ProposalHandler{
-		addressCodec: addressCodec,
-		txConfig:     txConfig,
+		txConfig: txConfig,
 
 		jesterClient:   jesterClient,
 		wormholeServer: wormholekeeper.NewQueryServer(wormholeKeeper),
 		dollarKeeper:   dollarKeeper,
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
-		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
 		defaultPreBlocker:             preBlocker,
 	}
 }
@@ -153,33 +146,6 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	}
 }
 
-// ProcessProposal is the logic called by all validators except the current
-// block proposer to process a block proposal. Noble modifies this by first
-// removing the injected transaction from our sidecar service, Jester, then
-// executing the default proposal processing logic provided by the Cosmos SDK.
-func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
-	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
-		resAccept := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}
-		resReject := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}
-
-		if len(req.Txs) == 0 {
-			return resAccept, nil
-		}
-
-		req.Txs = req.Txs[jesterIndex+1:]
-		res, err := h.defaultProcessProposalHandler(ctx, req)
-		if err != nil || (res != nil && !res.IsAccepted()) {
-			return resReject, errors.Wrap(err, "default ProcessProposal handler failed")
-		}
-
-		return resAccept, nil
-
-		// TODO:
-		// Now that we are using a decodable sdk messages, do we still need to remove the jester tx?
-		// Do we even need to reimplement ProcessProposal?
-	}
-}
-
 // PreBlocker processes all injected $USDN transfers from Jester.
 func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
@@ -199,7 +165,7 @@ func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	}
 }
 
-// handleJesterTx is a utility that checks for, then processes transcations form Jester.
+// handleJesterTx is a utility that processes messages from Jester.
 func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 	logger := ctx.Logger()
 
@@ -218,7 +184,6 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 	var count int
 	for _, raw := range tx.GetMsgs() {
 		msg, ok := raw.(*dollarportaltypes.MsgDeliverInjection)
-
 		// If the first message is not a MsgDeliverInjection, no VAAs were injected.
 		if !ok {
 			break
@@ -230,7 +195,7 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 			continue
 		}
 
-		if err := h.dollarKeeper.DeliverInjections(ctx, msg); err != nil {
+		if err := h.dollarKeeper.Deliver(ctx, msg.Vaa); err != nil {
 			logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
 		} else {
 			count++
