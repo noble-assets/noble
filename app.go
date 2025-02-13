@@ -41,7 +41,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/noble-assets/noble/v9/jester"
@@ -309,70 +308,44 @@ func NewApp(
 	return app, nil
 }
 
-// InitSimAppForTestnet is broken down into two sections:
-// Required Changes: Changes that, if not made, will cause the testnet to halt or panic
-// Optional Changes: Changes to customize the testnet to one's liking (lower vote times, fund accounts, etc)
-func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.PubKey, newOperatorAddress, upgradeToTrigger string) *App {
-	//
-	// Required Changes:
-	//
+// InitAppForTestnet executes the necessary state transitions on the
+// provided application in order to start an in-place testnet.
+func InitAppForTestnet(app *App, pubKey crypto.PubKey, rawConsensusAddress bytes.HexBytes, rawOperatorAddress string, upgradeToTrigger string) *App {
+	ctx := app.NewUncachedContext(true, cmtproto.Header{})
 
-	ctx := app.BaseApp.NewUncachedContext(true, cmtproto.Header{})
-	pubkey := &ed25519.PubKey{Key: newValPubKey.Bytes()}
-	pubkeyAny, err := codectypes.NewAnyWithValue(pubkey)
+	// ===== Cosmos SDK: Staking  =====
+
+	cmtPubKey := &ed25519.PubKey{Key: pubKey.Bytes()}
+	operatorAddress := sdk.MustBech32ifyAddressBytes("noblevaloper", sdk.MustAccAddressFromBech32(rawOperatorAddress))
+	validator, err := stakingtypes.NewValidator(
+		operatorAddress,
+		cmtPubKey,
+		stakingtypes.Description{Moniker: "Testnet Validator"},
+	)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to create new validator: " + err.Error())
 	}
 
-	// STAKING
-	//
+	validator.Status = stakingtypes.Bonded
+	validator.Tokens = math.NewInt(1000000)
+	validator.DelegatorShares = math.LegacyNewDec(1000000)
 
-	// Create Validator struct for our new validator.
-	_, bz, err := bech32.DecodeAndConvert(newOperatorAddress)
-	if err != nil {
-		cmtos.Exit(err.Error())
-	}
-	bech32Addr, err := bech32.ConvertAndEncode("osmovaloper", bz)
-	if err != nil {
-		cmtos.Exit(err.Error())
-	}
-	newVal := stakingtypes.Validator{
-		OperatorAddress: bech32Addr,
-		ConsensusPubkey: pubkeyAny,
-		Jailed:          false,
-		Status:          stakingtypes.Bonded,
-		Tokens:          math.NewInt(900000000000000),
-		DelegatorShares: math.LegacyNewDec(10000000),
-		Description: stakingtypes.Description{
-			Moniker: "Testnet Validator",
-		},
-		// TODO: Properly initialize this!
-		//Commission: stakingtypes.Commission{
-		//	CommissionRates: stakingtypes.CommissionRates{
-		//		Rate:          math.MustNewDecFromStr("0.05"),
-		//		MaxRate:       math.MustNewDecFromStr("0.1"),
-		//		MaxChangeRate: math.MustNewDecFromStr("0.05"),
-		//	},
-		//},
-		MinSelfDelegation: math.OneInt(),
-	}
+	stakingStore := ctx.KVStore(app.GetKey(stakingtypes.ModuleName))
 
-	// Remove all validators from power store
-	stakingKey := app.GetKey(stakingtypes.ModuleName)
-	stakingStore := ctx.KVStore(stakingKey)
-	iterator, err := app.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	// Remove all validators from last validators store
+	iterator, err := app.StakingKeeper.LastValidatorsIterator(ctx)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to create last validators iterator: " + err.Error())
 	}
 	for ; iterator.Valid(); iterator.Next() {
 		stakingStore.Delete(iterator.Key())
 	}
 	iterator.Close()
 
-	// Remove all valdiators from last validators store
-	iterator, err = app.StakingKeeper.LastValidatorsIterator(ctx)
+	// Remove all validators from power store
+	iterator, err = app.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to create validators power store iterator: " + err.Error())
 	}
 	for ; iterator.Valid(); iterator.Next() {
 		stakingStore.Delete(iterator.Key())
@@ -386,59 +359,42 @@ func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.
 	}
 	iterator.Close()
 
-	// Remove all validators from unbonding queue
-	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorQueueKey)
-	for ; iterator.Valid(); iterator.Next() {
-		stakingStore.Delete(iterator.Key())
-	}
-	iterator.Close()
-
 	// Add our validator to power and last validators store
-	err = app.StakingKeeper.SetValidator(ctx, newVal)
+	err = app.StakingKeeper.SetValidator(ctx, validator)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to set validator: " + err.Error())
 	}
-	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, newVal)
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, validator)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to set validator by consensus address: " + err.Error())
 	}
-	err = app.StakingKeeper.SetValidatorByPowerIndex(ctx, newVal)
+	err = app.StakingKeeper.SetValidatorByPowerIndex(ctx, validator)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to set validator by power index: " + err.Error())
 	}
-	valAddr, err := sdk.ValAddressFromBech32(newVal.GetOperator())
+	valAddress, _ := sdk.ValAddressFromBech32(validator.GetOperator())
+	err = app.StakingKeeper.SetLastValidatorPower(ctx, valAddress, 0)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to set last validator power: " + err.Error())
 	}
-	err = app.StakingKeeper.SetLastValidatorPower(ctx, valAddr, 0)
-	if err != nil {
-		cmtos.Exit(err.Error())
-	}
-	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr); err != nil {
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddress); err != nil {
 		panic(err)
 	}
 
-	// SLASHING
-	//
+	// ===== Cosmos SDK: Slashing =====
 
-	// Set validator signing info for our new validator.
-	newConsAddr := sdk.ConsAddress(newValAddr.Bytes())
+	consensusAddress := sdk.ConsAddress(rawConsensusAddress.Bytes())
 	newValidatorSigningInfo := slashingtypes.ValidatorSigningInfo{
-		Address:     newConsAddr.String(),
+		Address:     consensusAddress.String(),
 		StartHeight: app.LastBlockHeight() - 1,
 		Tombstoned:  false,
 	}
-	err = app.SlashingKeeper.SetValidatorSigningInfo(ctx, newConsAddr, newValidatorSigningInfo)
+	err = app.SlashingKeeper.SetValidatorSigningInfo(ctx, consensusAddress, newValidatorSigningInfo)
 	if err != nil {
-		cmtos.Exit(err.Error())
+		cmtos.Exit("failed to set validator signing info: " + err.Error())
 	}
 
-	//
-	// Optional Changes:
-	//
-
-	// UPGRADE
-	//
+	// ===== Cosmos SDK: Upgrade  =====
 
 	if upgradeToTrigger != "" {
 		upgradePlan := upgradetypes.Plan{
@@ -447,7 +403,7 @@ func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.
 		}
 		err = app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
 		if err != nil {
-			panic(err)
+			cmtos.Exit("failed to schedule upgrade: " + err.Error())
 		}
 	}
 

@@ -46,6 +46,11 @@ import (
 	"github.com/noble-assets/noble/v9/jester"
 )
 
+func addStartFlags(startCmd *cobra.Command) {
+	crisis.AddModuleInitFlags(startCmd)
+	jester.AddFlags(startCmd)
+}
+
 func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager module.BasicManager) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
@@ -58,11 +63,8 @@ func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager 
 		snapshot.Cmd(newApp),
 	)
 
-	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, func(startCmd *cobra.Command) {
-		jester.AddFlags(startCmd)
-		crisis.AddModuleInitFlags(startCmd)
-	})
-	server.AddTestnetCreatorCommand(rootCmd, newTestnetApp, nil)
+	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, addStartFlags)
+	server.AddTestnetCreatorCommand(rootCmd, newTestnetApp, addStartFlags)
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(
@@ -132,8 +134,8 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 }
 
 // newTestnetApp starts by running the normal newApp method. From there, the
-// app interface returned is modified in order for a testnet to be created from
-// the provided app.
+// app interface returned is modified in order for an in-place testnet to be
+// created from the provided app.
 func newTestnetApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
 	app := newApp(logger, db, traceStore, appOpts).(*noble.App)
 
@@ -154,7 +156,7 @@ func newTestnetApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts s
 		panic("upgradeToTrigger is not of type string")
 	}
 
-	return noble.InitAppForTestnet(app, newValAddr, newValPubKey, newOperatorAddress, upgradeToTrigger)
+	return noble.InitAppForTestnet(app, newValPubKey, newValAddr, newOperatorAddress, upgradeToTrigger)
 }
 
 // appExport creates a new app (optionally at a given height) and exports state.
