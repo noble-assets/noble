@@ -1,15 +1,5 @@
 # CHANGELOG
 
-## v8.0.6
-
-*Feb 13, 2025*
-
-This is a consensus breaking patch to the v8 Helium release line.
-
-### DEPENDENCIES
-
-- Bump Packet Forward Middleware to [`v8.1.1`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1) to resolve [GHSA-6fgm-x6ff-w78f](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-6fgm-x6ff-w78f) security advisory. ([#488](https://github.com/noble-assets/noble/pull/488))
-
 ## v8.0.5
 
 *Feb 3, 2025*

@@ -4,9 +4,9 @@ modules:
       "@type": cosmos.app.runtime.v1alpha1.Module
       app_name: Noble
       pre_blockers: [ upgrade ]
-      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz ]
+      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap ]
       end_blockers: [ crisis, staking, feegrant, forwarding ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, dollar, swap ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -34,6 +34,9 @@ modules:
           permissions: [ burner, minter ]
         - account: aura
           permissions: [ burner, minter ]
+        - account: dollar
+          permissions: [ burner, minter ]
+        - account: dollar/yield
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
@@ -114,6 +117,11 @@ modules:
   - name: authority
     config:
       "@type": noble.authority.module.v1.Module
+  - name: dollar
+    config:
+      "@type": noble.dollar.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+      denom: uusdn
   - name: forwarding
     config:
       "@type": noble.forwarding.module.v1.Module
@@ -122,3 +130,14 @@ modules:
     config:
       "@type": noble.globalfee.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
+  - name: swap
+    config:
+      "@type": noble.swap.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+      base_denom: uusdn
+      base_minimum_deposit: 1000000
+      stableswap:
+        unbonding_block_delta: 30
+  - name: wormhole
+    config:
+      "@type": wormhole.module.v1.Module

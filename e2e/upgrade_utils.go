@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +18,18 @@ package e2e
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	sdkupgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/docker/docker/client"
 	authoritytypes "github.com/noble-assets/authority/types"
+	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
@@ -40,14 +47,23 @@ type ChainUpgrade struct {
 	Image       ibc.DockerImage
 	UpgradeName string // if upgradeName is empty, assumes patch/rolling update
 	Emergency   bool
-	PreUpgrade  func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet)
-	PostUpgrade func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet)
+	PreUpgrade  func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *ICATestSuite)
+	PostUpgrade func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, icaTs *ICATestSuite)
+}
+
+func GhcrImage(version string) ibc.DockerImage {
+	return ibc.DockerImage{
+		Repository: ghcrRepo,
+		Version:    version,
+		UIDGID:     containerUidGid,
+	}
 }
 
 func TestChainUpgrade(
 	t *testing.T,
 	genesisVersion string,
 	upgrades []ChainUpgrade,
+	testICA bool,
 ) {
 	if testing.Short() {
 		t.Skip()
@@ -56,15 +72,23 @@ func TestChainUpgrade(
 
 	ctx := context.Background()
 
-	genesisImage := []ibc.DockerImage{
-		{
-			Repository: ghcrRepo,
-			Version:    genesisVersion,
-			UIDGID:     containerUidGid,
-		},
+	genesisImage := []ibc.DockerImage{GhcrImage(genesisVersion)}
+
+	var (
+		nw     NobleWrapper
+		client *client.Client
+		icaTs  *ICATestSuite
+		err    error
+	)
+
+	switch {
+	case testICA:
+		nw, client, icaTs, err = setupICATestSuite(t, ctx, genesisImage)
+		require.NoError(t, err)
+	default:
+		nw, client = NobleSpinUp(t, ctx, genesisImage, false)
 	}
 
-	nw, client := NobleSpinUp(t, ctx, genesisImage, false)
 	noble := nw.Chain
 	authority := nw.Authority
 
@@ -72,7 +96,7 @@ func TestChainUpgrade(
 
 	for _, upgrade := range upgrades {
 		if upgrade.PreUpgrade != nil {
-			upgrade.PreUpgrade(t, ctx, noble, authority)
+			upgrade.PreUpgrade(t, ctx, noble, authority, icaTs)
 		}
 
 		if upgrade.UpgradeName == "" {
@@ -144,37 +168,22 @@ func TestChainUpgrade(
 
 			haltHeight := height + haltHeightDelta
 
-			broadcaster := cosmos.NewBroadcaster(t, noble)
-
-			upgradePlan, err := tx.SetMsgs([]sdk.Msg{
-				&sdkupgradetypes.MsgSoftwareUpgrade{
-					Authority: authoritytypes.ModuleAddress.String(),
-					Plan: sdkupgradetypes.Plan{
-						Name:   upgrade.UpgradeName,
-						Height: haltHeight,
-						Info:   upgrade.UpgradeName + " chain upgrade",
-					},
-				},
-			})
-			require.NoError(t, err)
-
-			_, err = cosmos.BroadcastTx(
-				ctx,
-				broadcaster,
-				authority,
-				&authoritytypes.MsgExecute{
-					Signer:   authority.FormattedAddress(),
-					Messages: upgradePlan,
-				},
-			)
-			require.NoError(t, err, "error submitting software upgrade tx")
+			// Upgrades prior to and including the helium upgrade require the use of the old paramauthority module.
+			switch {
+			case upgrade.UpgradeName == "helium":
+				err := submitPreV8UpgradeTx(t, ctx, noble, upgrade, authority, haltHeight)
+				require.NoError(t, err, "error submitting software upgrade tx")
+			default:
+				err := submitPostV8UpgradeTx(t, ctx, noble, upgrade, authority, haltHeight)
+				require.NoError(t, err, "error submitting software upgrade tx")
+			}
 
 			stdout, stderr, err := noble.Validators[0].ExecQuery(ctx, "upgrade", "plan")
 			require.NoError(t, err, "error submitting software upgrade tx")
 
 			logger.Debug("Upgrade", zap.String("plan_stdout", string(stdout)), zap.String("plan_stderr", string(stderr)))
 
-			timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*10)
+			timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*20)
 			defer timeoutCtxCancel()
 
 			height, err = noble.Height(ctx)
@@ -218,7 +227,137 @@ func TestChainUpgrade(
 		}
 
 		if upgrade.PostUpgrade != nil {
-			upgrade.PostUpgrade(t, ctx, noble, authority)
+			upgrade.PostUpgrade(t, ctx, noble, authority, icaTs)
 		}
 	}
+}
+
+// setupICATestSuite attempts to spin up Noble and a counterparty chain, initialize an IBC path between the two chains,
+// and setup any other necessary values that are required for testing interchain accounts.
+func setupICATestSuite(
+	t *testing.T,
+	ctx context.Context,
+	genesisImage []ibc.DockerImage,
+) (NobleWrapper, *client.Client, *ICATestSuite, error) {
+	t.Helper()
+
+	nw, ibcSimd, _, r, ibcPathName, _, eRep, client, _ := NobleSpinUpIBC(t, ctx, genesisImage, false)
+
+	err := r.StartRelayer(ctx, eRep, ibcPathName)
+	if err != nil {
+		return NobleWrapper{}, nil, nil, fmt.Errorf("error starting relayer: %w", err)
+	}
+
+	t.Cleanup(func() {
+		_ = r.StopRelayer(ctx, eRep)
+	})
+
+	connections, err := r.GetConnections(ctx, eRep, ibcSimd.Config().ChainID)
+	if err != nil {
+		return NobleWrapper{}, nil, nil, fmt.Errorf("error querying ibc connections on %s: %w", ibcSimd.Config().ChainID, err)
+	}
+	if len(connections) == 0 {
+		return NobleWrapper{}, nil, nil, fmt.Errorf("ibc connection not found on chain: %s", ibcSimd.Config().ChainID)
+	}
+
+	controllerConnectionID := connections[0].ID
+
+	connections, err = r.GetConnections(ctx, eRep, nw.Chain.Config().ChainID)
+	if err != nil {
+		return NobleWrapper{}, nil, nil, fmt.Errorf("error querying ibc connections on %s: %w", nw.Chain.Config().ChainID, err)
+	}
+	if len(connections) == 0 {
+		return NobleWrapper{}, nil, nil, fmt.Errorf("ibc connection not found on chain: %s", nw.Chain.Config().ChainID)
+	}
+
+	hostConnectionID := connections[0].ID
+
+	initBal := math.NewInt(int64(10_000_000))
+
+	users := interchaintest.GetAndFundTestUsers(t, ctx, "user", initBal, ibcSimd)
+	ownerAddress := users[0].FormattedAddress()
+
+	icaTs := &ICATestSuite{
+		Host:                   nw.Chain,
+		Controller:             ibcSimd,
+		Relayer:                r,
+		Rep:                    eRep,
+		OwnerAddress:           ownerAddress,
+		InitBal:                initBal,
+		HostConnectionID:       hostConnectionID,
+		ControllerConnectionID: controllerConnectionID,
+		Encoding:               "proto3",
+	}
+
+	return nw, client, icaTs, nil
+}
+
+// submitPreV8UpgradeTx attempts to submit the software upgrade tx for pre Noble v8.0.0 releases.
+// The software upgrade tx logic is compatible with the old paramauthority module.
+func submitPreV8UpgradeTx(
+	t *testing.T,
+	ctx context.Context,
+	noble *cosmos.CosmosChain,
+	upgrade ChainUpgrade,
+	authority ibc.Wallet,
+	haltHeight int64,
+) error {
+	t.Helper()
+
+	cmd := []string{
+		"upgrade", "software-upgrade", upgrade.UpgradeName,
+		"--upgrade-height", strconv.Itoa(int(haltHeight)),
+		"--upgrade-info", "",
+	}
+
+	_, err := noble.Validators[0].ExecTx(ctx, authority.KeyName(), cmd...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// submitPostV8UpgradeTx attempts to submit the software upgrade tx for Noble v8.0.0 and later releases.
+// The software upgrade tx logic is compatible with the Noble Authority module.
+func submitPostV8UpgradeTx(
+	t *testing.T,
+	ctx context.Context,
+	noble *cosmos.CosmosChain,
+	upgrade ChainUpgrade,
+	authority ibc.Wallet,
+	haltHeight int64,
+) error {
+	t.Helper()
+
+	broadcaster := cosmos.NewBroadcaster(t, noble)
+
+	upgradePlan, err := tx.SetMsgs([]sdk.Msg{
+		&sdkupgradetypes.MsgSoftwareUpgrade{
+			Authority: authoritytypes.ModuleAddress.String(),
+			Plan: sdkupgradetypes.Plan{
+				Name:   upgrade.UpgradeName,
+				Height: haltHeight,
+				Info:   upgrade.UpgradeName + " chain upgrade",
+			},
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = cosmos.BroadcastTx(
+		ctx,
+		broadcaster,
+		authority,
+		&authoritytypes.MsgExecute{
+			Signer:   authority.FormattedAddress(),
+			Messages: upgradePlan,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

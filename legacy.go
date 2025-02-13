@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +42,8 @@ import (
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	authoritytypes "github.com/noble-assets/authority/types"
 	"github.com/noble-assets/forwarding/v2"
+	"github.com/noble-assets/wormhole"
+	wormholetypes "github.com/noble-assets/wormhole/types"
 )
 
 func (app *App) RegisterLegacyModules() error {
@@ -90,12 +94,15 @@ func (app *App) RegisterLegacyModules() error {
 	)
 	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
+	// Create custom ICS4Wrapper so that we can block outgoing $USDN IBC transfers.
+	ics4Wrapper := NewNobleICS4Wrapper(app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
+
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(transfertypes.ModuleName)
 	app.TransferKeeper = transferkeeper.NewKeeper(
 		app.appCodec,
 		app.GetKey(transfertypes.StoreKey),
 		app.GetSubspace(transfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
+		ics4Wrapper,
 		app.IBCKeeper.ChannelKeeper,
 		app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -126,10 +133,14 @@ func (app *App) RegisterLegacyModules() error {
 
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icahost.NewIBCModule(app.ICAHostKeeper)).
-		AddRoute(transfertypes.ModuleName, transferStack)
+		AddRoute(transfertypes.ModuleName, transferStack).
+		AddRoute(wormholetypes.ModuleName, wormhole.NewIBCModule(app.WormholeKeeper))
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.ForwardingKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
+
+	scopedWormholeKeeper := app.CapabilityKeeper.ScopeToModule(wormholetypes.ModuleName)
+	app.WormholeKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.IBCKeeper.PortKeeper, scopedWormholeKeeper)
 
 	return app.RegisterModules(
 		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper, true),

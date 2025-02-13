@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +28,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	controllertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	hosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	"github.com/docker/docker/client"
 	florintypes "github.com/monerium/module-noble/v2/types"
 	authoritytypes "github.com/noble-assets/authority/types"
@@ -101,6 +106,10 @@ type CCTPRoles struct {
 func NobleEncoding() *testutil.TestEncodingConfig {
 	cfg := cosmos.DefaultEncoding()
 
+	icatypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	hosttypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	controllertypes.RegisterInterfaces(cfg.InterfaceRegistry)
+
 	// register custom types
 	fiattokenfactorytypes.RegisterInterfaces(cfg.InterfaceRegistry)
 	cctptypes.RegisterInterfaces(cfg.InterfaceRegistry)
@@ -108,6 +117,16 @@ func NobleEncoding() *testutil.TestEncodingConfig {
 	auratypes.RegisterInterfaces(cfg.InterfaceRegistry)
 	florintypes.RegisterInterfaces(cfg.InterfaceRegistry)
 	authoritytypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	return &cfg
+}
+
+func SimdEncoding() *testutil.TestEncodingConfig {
+	cfg := cosmos.DefaultEncoding()
+
+	icatypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	hosttypes.RegisterInterfaces(cfg.InterfaceRegistry)
+	controllertypes.RegisterInterfaces(cfg.InterfaceRegistry)
+
 	return &cfg
 }
 
@@ -149,12 +168,21 @@ func NobleChainSpec(
 func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 	return func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
 		updatedGenesis := []cosmos.GenesisKV{
-			cosmos.NewGenesisKV("app_state.authority.owner", nw.Authority.FormattedAddress()),
 			cosmos.NewGenesisKV("app_state.bank.denom_metadata", []banktypes.Metadata{DenomMetadataUsdc}),
 			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.owner", fiattokenfactorytypes.Owner{Address: nw.FiatTfRoles.Owner.FormattedAddress()}),
 			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.paused", fiattokenfactorytypes.Paused{Paused: false}),
 			cosmos.NewGenesisKV("app_state.fiat-tokenfactory.mintingDenom", fiattokenfactorytypes.MintingDenom{Denom: DenomMetadataUsdc.Base}),
 			cosmos.NewGenesisKV("app_state.staking.params.bond_denom", "ustake"),
+			cosmos.NewGenesisKV("app_state.interchainaccounts.host_genesis_state.params.allow_messages", []string{"*"}),
+		}
+
+		// Modify the genesis file with the authority address for the appropriate module.
+		// Prior to v8.0.0 the SL paramauthoritymodule was used, and post v8.0.0 the Noble authority module is used.
+		if cc.Images[0].Version == "v7.0.0" {
+			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.params.params.authority", nw.Authority.FormattedAddress()))
+			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.upgrade.params.authority", nw.Authority.FormattedAddress()))
+		} else {
+			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.authority.owner", nw.Authority.FormattedAddress()))
 		}
 
 		if setupAllCircleRoles {
@@ -403,7 +431,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, version []ibc.DockerImage, s
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -457,8 +485,16 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
-		{Name: "ibc-go-simd", Version: "v8.5.1", NumValidators: &numValidators, NumFullNodes: &numFullNodes},
+		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		{
+			Name:    "ibc-go-simd",
+			Version: "v8.5.1",
+			ChainConfig: ibc.ChainConfig{
+				EncodingConfig: SimdEncoding(),
+			},
+			NumValidators: &numValidators,
+			NumFullNodes:  &numFullNodes,
+		},
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -484,10 +520,9 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage
 		})
 
 	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:  t.Name(),
-		Client:    client,
-		NetworkID: network,
-
+		TestName:         t.Name(),
+		Client:           client,
+		NetworkID:        network,
 		SkipPathCreation: false,
 	}))
 	t.Cleanup(func() {

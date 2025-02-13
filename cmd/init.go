@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +46,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	soloclient "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-	"github.com/noble-assets/noble/v8"
+	"github.com/noble-assets/noble/v9"
 )
 
 var (

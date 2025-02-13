@@ -1,0 +1,1 @@
+- Bump Authority to [`v1.0.2`](https://github.com/noble-assets/authority/releases/tag/v1.0.2) to include a new helper CLI command. ([#480](https://github.com/noble-assets/noble/pull/480))
