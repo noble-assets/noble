@@ -103,6 +103,7 @@ import (
 
 	// Noble Modules
 	dollarkeeper "dollar.noble.xyz/keeper"
+	dollartypes "dollar.noble.xyz/types"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
@@ -330,7 +331,10 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
+			app.AccountKeeper.AddressCodec(),
+			app.BankKeeper,
 			app.DollarKeeper,
+			app.GetKey(dollartypes.ModuleName),
 		),
 	)
 

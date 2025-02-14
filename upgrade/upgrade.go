@@ -20,43 +20,121 @@ import (
 	"context"
 	"fmt"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	dollarkeeper "dollar.noble.xyz/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"github.com/ethereum/go-ethereum/common"
+
+	dollarkeeper "dollar.noble.xyz/keeper"
+	dollartypes "dollar.noble.xyz/types"
+	dollarportaltypes "dollar.noble.xyz/types/portal"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
+	addressCodec address.Codec,
+	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
+	dollarKey *storetypes.KVStoreKey,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		chainID := sdk.UnwrapSDKContext(ctx).ChainID()
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		chainID := sdkCtx.ChainID()
 		if chainID != TestnetChainID {
 			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, chainID)
 		}
 
-		vm, err := mm.RunMigrations(ctx, cfg, vm)
+		// Since M^0 redeployed their entire system on Ethereum Sepolia, we
+		// have to reconfigure the entire Noble Dollar state. By deleting the
+		// consensus version of the module before RunMigrations, this allows
+		// InitGenesis to be rerun. However before migrations, we must first
+		// burn the entire $USDN and then clear the entire module state.
+
+		delete(vm, dollartypes.ModuleName)
+
+		err := BurnNobleDollarSupply(ctx, addressCodec, bankKeeper, dollarKeeper)
 		if err != nil {
 			return vm, err
 		}
 
-		return vm, MigrateDollarPortalState(ctx, dollarKeeper)
+		err = ClearDollarModuleState(sdkCtx, dollarKey)
+		if err != nil {
+			return vm, err
+		}
+
+		vm, err = mm.RunMigrations(ctx, cfg, vm)
+		if err != nil {
+			return vm, err
+		}
+
+		err = ConfigureDollarModule(ctx, dollarKeeper)
+		if err != nil {
+			return vm, err
+		}
+
+		return vm, nil
 	}
 }
 
-// MigrateDollarPortalState migrates the state of the Noble Dollar Portal.
-func MigrateDollarPortalState(ctx context.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
-	err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
+// BurnNobleDollarSupply burns the entire $USDN supply from the only Noble Dollar user on testnet.
+func BurnNobleDollarSupply(ctx context.Context, addressCodec address.Codec, bankKeeper bankkeeper.Keeper, dollarKeeper *dollarkeeper.Keeper) error {
+	account, err := addressCodec.StringToBytes("noble1exg6r3tz2tup8ewnmttkkhd7qfx39rguzqngyc")
 	if err != nil {
-		return errors.Wrap(err, "unable to migrate dollar portal owner")
+		return errors.Wrap(err, "unable to decode user address")
 	}
 
-	err = dollarKeeper.PortalNonce.Set(ctx, 1)
+	denom := dollarKeeper.GetDenom()
+	coins := sdk.NewCoins(bankKeeper.GetBalance(ctx, account, denom))
+
+	err = bankKeeper.SendCoinsFromAccountToModule(ctx, account, dollartypes.ModuleName, coins)
 	if err != nil {
-		return errors.Wrap(err, "unable to migrate dollar portal nonce")
+		return errors.Wrap(err, "failed to transfer usdn to dollar module")
+	}
+	err = bankKeeper.BurnCoins(ctx, dollartypes.ModuleName, coins)
+	if err != nil {
+		return errors.Wrap(err, "unable to burn usdn from dollar module")
+	}
+
+	supply := bankKeeper.GetSupply(ctx, dollarKeeper.GetDenom())
+	if !supply.IsZero() {
+		return fmt.Errorf("expected no usdn supply, got %s", supply.Amount)
+	}
+
+	return nil
+}
+
+// ClearDollarModuleState clears the entire key-value store of the Noble Dollar module.
+func ClearDollarModuleState(ctx sdk.Context, dollarKey *storetypes.KVStoreKey) error {
+	dollarStore := ctx.KVStore(dollarKey)
+	iterator := dollarStore.Iterator(nil, nil)
+
+	for ; iterator.Valid(); iterator.Next() {
+		dollarStore.Delete(iterator.Key())
+	}
+
+	return iterator.Close()
+}
+
+// ConfigureDollarModule sets both the Dollar Portal submodule owner and an initial peer.
+func ConfigureDollarModule(ctx context.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
+	err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
+	if err != nil {
+		return errors.Wrap(err, "unable to set dollar portal owner in state")
+	}
+
+	err = dollarKeeper.PortalPeers.Set(ctx, 10002, dollarportaltypes.Peer{
+		// https://sepolia.etherscan.io/address/0xb1725758f7255B025cdbF2814Bc428B403623562
+		Transceiver: common.FromHex("0x000000000000000000000000b1725758f7255b025cdbf2814bc428b403623562"),
+		// https://sepolia.etherscan.io/address/0xf1669804140fA31cdAA805A1B3Be91e6282D5e41
+		Manager: common.FromHex("0x000000000000000000000000f1669804140fa31cdaa805a1b3be91e6282d5e41"),
+	})
+	if err != nil {
+		return errors.Wrap(err, "unable to set dollar portal peer in state")
 	}
 
 	return nil
