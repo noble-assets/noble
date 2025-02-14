@@ -53,7 +53,7 @@ func CreateUpgradeHandler(
 		// have to reconfigure the entire Noble Dollar state. By deleting the
 		// consensus version of the module before RunMigrations, this allows
 		// InitGenesis to be rerun. However before migrations, we must first
-		// burn the entire $USDN and then clear the entire module state.
+		// burn all $USDN supply and then clear the entire module state.
 
 		delete(vm, dollartypes.ModuleName)
 
@@ -72,7 +72,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		err = ConfigureDollarModule(ctx, dollarKeeper)
+		err = ConfigureDollarPortalState(ctx, dollarKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -120,8 +120,8 @@ func ClearDollarModuleState(ctx sdk.Context, dollarKey *storetypes.KVStoreKey) e
 	return iterator.Close()
 }
 
-// ConfigureDollarModule sets both the Dollar Portal submodule owner and an initial peer.
-func ConfigureDollarModule(ctx context.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
+// ConfigureDollarPortalState sets both the Noble Dollar Portal owner and an initial peer.
+func ConfigureDollarPortalState(ctx context.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
 	err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
 	if err != nil {
 		return errors.Wrap(err, "unable to set dollar portal owner in state")
