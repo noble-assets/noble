@@ -1,5 +1,7 @@
 # Local Net Quick Start
 
+Before running any of the scripts below, ensure you have built Noble using `make build`.
+
 - [1 Val Network](#1-val-network)
 - [3 Val Network](#3-val-network)
 - [In-place testnet](#in-place-testnet)
@@ -31,6 +33,8 @@ sh ./local_3val.sh -r
 ## In-Place Testnet
 
 Synchronize a mainnet (or testnet) node using state sync, then create an `in-place-testnet`.
+
+Note: your noble binary in the `build` folder must be compatible with the relevant network.
 
 ```sh
 #mainnet
