@@ -34,8 +34,8 @@ Synchronize a mainnet (or testnet) node using state sync, then create an `in-pla
 
 ```sh
 #mainnet
-sh main-in-place.sh -r
+sh local_in_place.sh -r
 
 #testnet
-sh main-in-place.sh -r -t
+sh local_in_place.sh -r -t
 ```
