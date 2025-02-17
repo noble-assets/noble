@@ -335,6 +335,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.BankKeeper,
 			app.DollarKeeper,
 			app.GetKey(dollartypes.ModuleName),
+			app.WormholeKeeper,
 		),
 	)
 

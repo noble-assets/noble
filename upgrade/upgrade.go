@@ -32,6 +32,9 @@ import (
 	dollarkeeper "dollar.noble.xyz/keeper"
 	dollartypes "dollar.noble.xyz/types"
 	dollarportaltypes "dollar.noble.xyz/types/portal"
+
+	wormholekeeper "github.com/noble-assets/wormhole/keeper"
+	wormholetypes "github.com/noble-assets/wormhole/types"
 )
 
 func CreateUpgradeHandler(
@@ -41,6 +44,7 @@ func CreateUpgradeHandler(
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	dollarKey *storetypes.KVStoreKey,
+	wormholeKeeper *wormholekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -73,6 +77,14 @@ func CreateUpgradeHandler(
 		}
 
 		err = ConfigureDollarPortalState(ctx, dollarKeeper)
+		if err != nil {
+			return vm, err
+		}
+
+		// Because we removed the GuardianSetExpiry element from the Wormhole
+		// configuration, we have to reinitialize the state to avoid running
+		// into unmarshaling errors.
+		err = ConfigureWormholeState(ctx, wormholeKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -135,6 +147,21 @@ func ConfigureDollarPortalState(ctx context.Context, dollarKeeper *dollarkeeper.
 	})
 	if err != nil {
 		return errors.Wrap(err, "unable to set dollar portal peer in state")
+	}
+
+	return nil
+}
+
+// ConfigureWormholeState sets the Wormhole configuration.
+func ConfigureWormholeState(ctx context.Context, wormholeKeeper *wormholekeeper.Keeper) (err error) {
+	err = wormholeKeeper.Config.Set(ctx, wormholetypes.Config{
+		ChainId:          4009,
+		GuardianSetIndex: 0,
+		GovChain:         1,
+		GovAddress:       common.FromHex("0x0000000000000000000000000000000000000000000000000000000000000004"),
+	})
+	if err != nil {
+		return errors.Wrap(err, "unable to set wormhole config in state")
 	}
 
 	return nil
