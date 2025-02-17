@@ -5,7 +5,7 @@ alias nobled=../build/nobled
 # Handle termination gracefully
 cleanup() {
     echo "Stopping processes..."
-    kill "$NOBLED_PID" "$SYNC_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
+    kill "$NOBLED_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
     exit 0
 }
 trap cleanup SIGINT SIGTERM
