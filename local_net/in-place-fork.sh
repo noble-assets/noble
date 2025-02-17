@@ -41,52 +41,31 @@ s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ;
 s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ;
 s|^persistent_peers *=.*|persistent_peers = \"$PEERS\"|" $HOME1/config/config.toml
 
-nobled start --home "$HOME1" > "$HOME1/logs.log" 2>&1 &
+nobled start --halt-height $LATEST_HEIGHT --home "$HOME1" > "$HOME1/logs.log" 2>&1 &
 NOBLED_PID=$!
 
 # Handle termination gracefully
 cleanup() {
     echo "Stopping processes..."
-    kill "$NOBLED_PID" "$SYNC_PID" "$TAIL_PID" "$TESTNET_PID" 2>/dev/null
+    kill "$NOBLED_PID" "$SYNC_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
     exit 0
 }
 
 trap cleanup SIGINT SIGTERM
 
-# Check catching_up status
-watch_sync_status() {
-    RPC_URL="localhost:26657/status"
-
-    while true; do
-        CATCHING_UP=$(curl -s "$RPC_URL" | jq -r '.result.sync_info.catching_up')
-
-        if [[ "$CATCHING_UP" == "false" ]]; then
-            break
-        fi
-
-        echo "Syncing node..."
-        sleep 5
-    done
-}
-
-# Run the sync check in the background
-watch_sync_status & 
-SYNC_PID=$!
-
 # Show noble logs
 tail -f "$HOME1/logs.log" &
 TAIL_PID=$!
 
-# Wait for sync check to finish
-wait $SYNC_PID
-echo "Node is fully synced! Stopping noble to prepare for in-place testnet."
-kill $NOBLED_PID
-sleep 5
+# Wait for node to halt because of `--halt-height` flag
+wait $NOBLED_PID
+echo "Node is synced! Preparing for in-place testnet..."
+sleep 2
 
-# Operator address that will control the chain
+# Create operator address that will control the chain
 OPERATOR=$(nobled keys add operator --home $HOME1 --keyring-backend test --output json | jq -r .address)
 printf 'y\n' | nobled in-place-testnet inPlace "$OPERATOR" --home "$HOME1" >> "$HOME1/logs.log" 2>&1 &
-TESTNET_PID=$!
+NOBLED_PID2=$!
 
 cat <<'EOF'
 ######################################################################
@@ -98,4 +77,4 @@ EOF
 echo 👑 Operator: $OPERATOR
 
 # Keep tailing logs in the foreground to prevent script from exiting
-wait "$TESTNET_PID"
+wait "$NOBLED_PID2"
