@@ -4,12 +4,22 @@ source ./utils.sh
 
 alias nobled=../build/nobled
 
+# Handle termination gracefully
+cleanup() {
+    echo "Stopping processes..."
+    kill "$NOBLED_PID" "$SYNC_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
+    exit 0
+}
+trap cleanup SIGINT SIGTERM
+
 HOME1=.duke
 
 CHAINID="noble-1"
 PEERS="4f9df51e0800e79e0d45fd376c11236b99be4e12@99.79.58.157:26656,3402e50ad4d838b26f8341a956c7b4b8a3c61ee5@65.109.93.44:21556"
 SNAP_RPC="https://noble-rpc.polkachu.com:443"
 GENESIS="https://raw.githubusercontent.com/noble-assets/networks/refs/heads/main/mainnet/noble-1/genesis.json"
+
+UPGRADE_ARG=""
 
 for arg in "$@"; do
     case $arg in
@@ -21,6 +31,10 @@ for arg in "$@"; do
             PEERS="f2067cc7a23a4b2525f5f98430797b1e5c92e3aa@35.183.110.236:26656,8b22414f37d381a99ba99cd1edc5b884d43b7e53@65.109.23.114:21556"
             SNAP_RPC="https://noble-testnet-rpc.polkachu.com:443"
             GENESIS="https://raw.githubusercontent.com/noble-assets/networks/refs/heads/main/testnet/grand-1/genesis.json"
+            ;;
+        -u|--trigger-testnet-upgrade)
+            UPGRADE_ARG="$2"
+            shift  # Move past the upgrade argument
             ;;
     esac
     shift
@@ -44,15 +58,6 @@ s|^persistent_peers *=.*|persistent_peers = \"$PEERS\"|" $HOME1/config/config.to
 nobled start --halt-height $LATEST_HEIGHT --home "$HOME1" > "$HOME1/logs.log" 2>&1 &
 NOBLED_PID=$!
 
-# Handle termination gracefully
-cleanup() {
-    echo "Stopping processes..."
-    kill "$NOBLED_PID" "$SYNC_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
-    exit 0
-}
-
-trap cleanup SIGINT SIGTERM
-
 # Show noble logs
 tail -f "$HOME1/logs.log" &
 TAIL_PID=$!
@@ -64,7 +69,13 @@ sleep 2
 
 # Create operator address that will control the chain
 OPERATOR=$(nobled keys add operator --home $HOME1 --keyring-backend test --output json | jq -r .address)
-printf 'y\n' | nobled in-place-testnet inPlace "$OPERATOR" --home "$HOME1" >> "$HOME1/logs.log" 2>&1 &
+
+if [[ -n "$UPGRADE_ARG" ]]; then
+    printf 'y\n' | nobled in-place-testnet inPlace "$OPERATOR" --trigger-testnet-upgrade "$UPGRADE_ARG" --home "$HOME1" >> "$HOME1/logs.log" 2>&1 &
+else
+    printf 'y\n' | nobled in-place-testnet inPlace "$OPERATOR" --home "$HOME1" >> "$HOME1/logs.log" 2>&1 &
+fi
+
 NOBLED_PID2=$!
 
 cat <<'EOF'

@@ -2,11 +2,11 @@
 
 Before running any of the scripts below, ensure you have built Noble using `make build`.
 
-- [Single Validator Network](#sing-validator-network)
-- [3 Val Network](#multi-validator-network)
-- [In-place Testnet Fork](#in-place-testnet-fork)
+- [Single Validator Network](#single-validator-network)
+- [Multi Validator Network](#multi-validator-network)
+- [In-Place Testnet Fork](#in-place-testnet-fork)
 
-## Sing Validator Network
+## Single Validator Network
 
 Start a single validator local Noble network.
 
@@ -37,9 +37,17 @@ Synchronize a mainnet (or testnet) node using state sync, then create an `in-pla
 Note: your noble binary in the `build` folder must be compatible with the relevant network.
 
 ```sh
-#mainnet
+# ARGS:
+#   -r|--reset                   - delete chain home folder resetting network
+#   -t|--testnet                 - sync testnet instead of mainnet
+#   -u|--trigger-testnet-upgrade - trigger an upgrade handler to run on the first block of the forked testnet
+
+# mainnet example:
 sh in-place-fork.sh -r
 
-#testnet
+# testnet example:
 sh in-place-fork.sh -r -t
+
+# trigger upgrade example:
+sh in-place-fork.sh -r -t -u "v9.0.0-rc.0"
 ```
