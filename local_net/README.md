@@ -2,26 +2,26 @@
 
 Before running any of the scripts below, ensure you have built Noble using `make build`.
 
-- [1 Val Network](#1-val-network)
-- [3 Val Network](#3-val-network)
-- [In-place testnet](#in-place-testnet)
+- [Single Validator Network](#sing-validator-network)
+- [3 Val Network](#multi-validator-network)
+- [In-place Testnet Fork](#in-place-testnet-fork)
 
-## 1 Val Network
+## Sing Validator Network
 
 Start a single validator local Noble network.
 
 ```sh
-sh ./local.sh -r
+sh single-val.sh -r
 ```
 
-## 3 Val Network
+## Multi Validator Network
 
 Start a three validator local Noble network.
 
-Note: this requries [tmux](https://github.com/tmux/tmux/wiki).
+Note: this requires [tmux](https://github.com/tmux/tmux/wiki).
 
 ```sh
-sh ./local_3val.sh -r
+sh multi-val.sh -r
 
 # How to kill:
 #   `ctr-c` kill 1 out of the three nodes
@@ -30,7 +30,7 @@ sh ./local_3val.sh -r
     tmux kill-session -t 3v-network # kill tmux session
 ```
 
-## In-Place Testnet
+## In-Place Testnet Fork
 
 Synchronize a mainnet (or testnet) node using state sync, then create an `in-place-testnet`.
 
@@ -38,8 +38,8 @@ Note: your noble binary in the `build` folder must be compatible with the releva
 
 ```sh
 #mainnet
-sh local_in_place.sh -r
+sh in-place-fork.sh -r
 
 #testnet
-sh local_in_place.sh -r -t
+sh in-place-fork.sh -r -t
 ```
