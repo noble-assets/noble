@@ -40,7 +40,7 @@ Note: your noble binary in the `build` folder must be compatible with the releva
 # ARGS:
 #   -r|--reset                   - delete chain home folder resetting network
 #   -t|--testnet                 - sync testnet instead of mainnet
-#   -u|--trigger-testnet-upgrade - trigger an upgrade handler to run on the first block of the forked testnet
+#   -u|--trigger-testnet-upgrade - trigger an upgrade handler to run on the first block of the forked network
 
 # mainnet example:
 sh in-place-fork.sh -r
