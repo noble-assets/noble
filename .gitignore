@@ -9,5 +9,4 @@ play_sh/
 bin/
 build/
 .duke/
-go.work
 go.work.sum

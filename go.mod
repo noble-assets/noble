@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	dollar.noble.xyz v1.0.0-alpha.5
+	dollar.noble.xyz v1.0.0-alpha.5.0.20250215111552-d15b6d48047f // v1.0.0-alpha.6
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cometbft/cometbft v0.38.17
@@ -30,7 +30,7 @@ require (
 	github.com/noble-assets/forwarding/v2 v2.0.1
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
-	github.com/noble-assets/wormhole v1.0.0-alpha.2
+	github.com/noble-assets/wormhole v1.0.0-alpha.2.0.20250217102148-2ea0fc123b51 // v1.0.0-alpha.3
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
 	github.com/spf13/cast v1.7.0
 	github.com/spf13/cobra v1.8.1
@@ -39,7 +39,7 @@ require (
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.1.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v1.0.0-alpha.4
+	swap.noble.xyz v1.0.0-alpha.4.0.20250217095505-c0d50e43a4b2 // v1.0.0-alpha.5
 )
 
 require (
