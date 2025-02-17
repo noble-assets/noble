@@ -83,7 +83,7 @@ func CreateUpgradeHandler(
 
 		// Because we removed the GuardianSetExpiry element from the Wormhole
 		// configuration, we have to reinitialize the state to avoid running
-		// into unmarshaling errors.
+		// into unmarshalling errors.
 		err = ConfigureWormholeState(ctx, wormholeKeeper)
 		if err != nil {
 			return vm, err
