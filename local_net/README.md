@@ -4,7 +4,7 @@ Before running any of the scripts below, ensure you have built Noble using `make
 
 - [Single Validator Network](#single-validator-network)
 - [Multi Validator Network](#multi-validator-network)
-- [In-Place Testnet Fork](#in-place-testnet-fork)
+- [In-Place Network Fork](#in-place-network-fork)
 
 ## Single Validator Network
 
@@ -30,7 +30,7 @@ sh multi-val.sh -r
     tmux kill-session -t 3v-network # kill tmux session
 ```
 
-## In-Place Testnet Fork
+## In-Place Network Fork
 
 Synchronize a mainnet (or testnet) node using state sync, then create an `in-place-testnet`.
 
