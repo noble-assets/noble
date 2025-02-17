@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ./utils.sh
-
 alias nobled=../build/nobled
 
 # Handle termination gracefully
