@@ -31,7 +31,6 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/keeper"
 	dollartypes "dollar.noble.xyz/types"
-	dollarportaltypes "dollar.noble.xyz/types/portal"
 
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
@@ -132,21 +131,11 @@ func ClearDollarModuleState(ctx sdk.Context, dollarKey *storetypes.KVStoreKey) e
 	return iterator.Close()
 }
 
-// ConfigureDollarPortalState sets both the Noble Dollar Portal owner and an initial peer.
+// ConfigureDollarPortalState sets the Noble Dollar Portal owner.
 func ConfigureDollarPortalState(ctx context.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
 	err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
 	if err != nil {
 		return errors.Wrap(err, "unable to set dollar portal owner in state")
-	}
-
-	err = dollarKeeper.PortalPeers.Set(ctx, 10002, dollarportaltypes.Peer{
-		// https://sepolia.etherscan.io/address/0xb1725758f7255B025cdbF2814Bc428B403623562
-		Transceiver: common.FromHex("0x000000000000000000000000b1725758f7255b025cdbf2814bc428b403623562"),
-		// https://sepolia.etherscan.io/address/0xf1669804140fA31cdAA805A1B3Be91e6282D5e41
-		Manager: common.FromHex("0x000000000000000000000000f1669804140fa31cdaa805a1b3be91e6282d5e41"),
-	})
-	if err != nil {
-		return errors.Wrap(err, "unable to set dollar portal peer in state")
 	}
 
 	return nil
