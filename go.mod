@@ -9,6 +9,7 @@ require (
 	cosmossdk.io/depinject v1.1.0
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.4.1
+	cosmossdk.io/math v1.4.0
 	cosmossdk.io/store v1.1.1
 	cosmossdk.io/tools/confix v0.1.2
 	cosmossdk.io/x/evidence v0.1.1
@@ -39,7 +40,7 @@ require (
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.1.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v1.0.0-alpha.4.0.20250217095505-c0d50e43a4b2 // v1.0.0-alpha.5
+	swap.noble.xyz v1.0.0-alpha.4.0.20250217181427-6754cde4a2c3 // v1.0.0-alpha.5
 )
 
 require (
@@ -54,7 +55,6 @@ require (
 	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/api v0.7.6 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
-	cosmossdk.io/math v1.4.0 // indirect
 	cosmossdk.io/x/tx v0.13.8 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect

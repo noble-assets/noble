@@ -2141,5 +2141,5 @@ sigs.k8s.io/yaml v1.1.0/go.mod h1:UJmg0vDUVViEyp3mgSv9WPwZCDxu4rQW1olrI1uml+o=
 sigs.k8s.io/yaml v1.4.0 h1:Mk1wCc2gy/F0THH0TAp1QYyJNzRm2KCLy3o5ASXVI5E=
 sigs.k8s.io/yaml v1.4.0/go.mod h1:Ejl7/uTz7PSA4eKMyQCUTnhZYNmLIl+5c2lQPGR2BPY=
 sourcegraph.com/sourcegraph/appdash v0.0.0-20190731080439-ebfcffb1b5c0/go.mod h1:hI742Nqp5OhwiqlzhgfbWU4mW4yO10fP+LoT9WOswdU=
-swap.noble.xyz v1.0.0-alpha.4.0.20250217095505-c0d50e43a4b2 h1:4+FzYkNIeB70yd828Mse15c3r/eEac/KAZNFwkAqWVs=
-swap.noble.xyz v1.0.0-alpha.4.0.20250217095505-c0d50e43a4b2/go.mod h1:QQzrClLCg0Fr+XIlc/ZcAXr5qqB2m5klg+rbtoE9rxo=
+swap.noble.xyz v1.0.0-alpha.4.0.20250217181427-6754cde4a2c3 h1:rnYTqqMBQltdM9Luz7VS+/V4hZLWcNcoMRiUc3X7tVE=
+swap.noble.xyz v1.0.0-alpha.4.0.20250217181427-6754cde4a2c3/go.mod h1:QQzrClLCg0Fr+XIlc/ZcAXr5qqB2m5klg+rbtoE9rxo=
