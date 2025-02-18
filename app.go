@@ -378,7 +378,7 @@ func InitAppForTestnet(app *App, pubKey crypto.PubKey, rawConsensusAddress bytes
 		cmtos.Exit("failed to set last validator power: " + err.Error())
 	}
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddress); err != nil {
-		panic(err)
+		cmtos.Exit("failed to execute after validator created hooks: " + err.Error())
 	}
 
 	// ===== Cosmos SDK: Slashing =====
