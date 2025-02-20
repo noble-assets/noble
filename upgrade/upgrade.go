@@ -111,7 +111,7 @@ func BurnNobleDollarSupply(ctx context.Context, addressCodec address.Codec, bank
 		return errors.Wrap(err, "unable to burn usdn from dollar module")
 	}
 
-	supply := bankKeeper.GetSupply(ctx, dollarKeeper.GetDenom())
+	supply := bankKeeper.GetSupply(ctx, denom)
 	if !supply.IsZero() {
 		return fmt.Errorf("expected no usdn supply, got %s", supply.Amount)
 	}
