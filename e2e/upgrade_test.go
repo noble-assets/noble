@@ -25,10 +25,6 @@ import (
 func TestChainUpgrade(t *testing.T) {
 	t.Skip()
 
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-
 	genesisVersion := "v9.0.0-rc.2"
 
 	upgrades := []e2e.ChainUpgrade{
