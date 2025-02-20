@@ -38,7 +38,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
-	jester.noble.xyz/api v0.1.0
+	jester.noble.xyz/api v0.2.0
 	mvdan.cc/gofumpt v0.7.0
 	swap.noble.xyz v1.0.0-beta.0
 )
@@ -349,7 +349,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/grpc v1.70.0 // indirect
-	google.golang.org/protobuf v1.36.4 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
