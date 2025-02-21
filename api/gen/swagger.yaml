@@ -38815,6 +38815,46 @@ paths:
           type: string
       tags:
         - Dollar
+  /noble/dollar/portal/v1/destination_tokens/{chain_id}:
+    get:
+      operationId: DestinationTokens
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              destination_tokens:
+                type: array
+                items:
+                  type: string
+                  format: byte
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: chain_id
+          in: path
+          required: true
+          type: integer
+          format: int64
+      tags:
+        - Dollar Portal
   /noble/dollar/portal/v1/nonce:
     get:
       operationId: Nonce
@@ -39019,6 +39059,7 @@ paths:
                       type: string
                     index:
                       type: string
+                      format: int64
                     amount:
                       type: string
                     time:
@@ -42423,9 +42464,6 @@ paths:
                   guardian_set_index:
                     type: integer
                     format: int64
-                  guardian_set_expiry:
-                    type: string
-                    format: uint64
                   gov_chain:
                     type: integer
                     format: int64
