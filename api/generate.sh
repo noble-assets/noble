@@ -1,5 +1,5 @@
-rm -rf api/proto
-rm -rf api/tmp-swagger-gen
+rm -rf ./api/proto
+rm -rf ./api/tmp-swagger-gen
 
 # IMPORTANT: These versions should match the go.mod!
 buf export buf.build/cosmos/cosmos-sdk:v0.50.0 --output api/proto

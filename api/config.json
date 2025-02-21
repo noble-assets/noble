@@ -111,9 +111,9 @@
       },
       "operationIds": {
         "rename": {
-          "Paused": "FTFPaused",
           "Minters": "FTFMinters",
-          "Owner": "FTFOwner"
+          "Owner": "FTFOwner",
+          "Paused": "FTFPaused"
         }
       }
     },
@@ -207,6 +207,11 @@
         "rename": {
           "Query": "Slashing"
         }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "SlashingParams"
+        }
       }
     },
     {
@@ -229,18 +234,26 @@
         "rename": {
           "Query": "Upgrade"
         }
+      },
+      "operationIds": {
+        "rename": {
+          "Authority": "UpgradeAuthority",
+          "UpgradedConsensusState": "UpgradeUpgradedConsensusState"
+        }
       }
     },
     {
-      "url": "./api/tmp-swagger-gen/florin/v1/query.swagger.json",
+      "url": "./api/tmp-swagger-gen/florin/v2/query.swagger.json",
       "tags": {
         "rename": {
           "Query": "Florin"
-        },
-        "operationIds": {
-          "rename": {
-            "Owner": "FlorinOwner"
-          }
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Admins": "FlorinAdmins",
+          "Authority": "FlorinAuthority",
+          "Owner": "FlorinOwner"
         }
       }
     },
@@ -253,7 +266,8 @@
       },
       "operationIds": {
         "rename": {
-          "Owner": "FlorinBlocklistOwner"
+          "Admins": "FlorinBlacklistAdmins",
+          "Owner": "FlorinBlacklistOwner"
         }
       }
     },
@@ -315,7 +329,7 @@
       },
       "operationIds": {
         "rename": {
-          "Params": "IBCICAControllerParams"
+          "Params": "ICAControllerParams"
         }
       }
     },
@@ -328,7 +342,7 @@
       },
       "operationIds": {
         "rename": {
-          "Params": "IBCICAHostParams"
+          "Params": "ICAHostParams"
         }
       }
     },
@@ -410,6 +424,8 @@
       },
       "operationIds": {
         "rename": {
+          "Nonce": "DollarPortalNonce",
+          "Owner": "DollarPortalOwner",
           "Paused": "DollarPortalPaused"
         }
       }
@@ -438,6 +454,7 @@
       },
       "operationIds": {
         "rename": {
+          "Address": "ForwardingAddress",
           "Stats": "ForwardingStats"
         }
       }
@@ -459,7 +476,8 @@
       },
       "operationIds": {
         "rename": {
-          "Paused": "SwapPaused"
+          "Paused": "SwapPaused",
+          "Pool": "SwapPool"
         }
       }
     },
@@ -485,8 +503,9 @@
       },
       "operationIds": {
         "rename": {
-          "Paused": "AuraPaused",
-          "Owner": "AuraOwner"
+          "Minters": "AuraMinters",
+          "Owner": "AuraOwner",
+          "Paused": "AuraPaused"
         }
       }
     },
@@ -499,8 +518,8 @@
       },
       "operationIds": {
         "rename": {
-          "Owner": "AuraBlocklistOwner",
-          "Address": "AuraBlocklistAddress"
+          "Address": "AuraBlocklistAddress",
+          "Owner": "AuraBlocklistOwner"
         }
       }
     },
@@ -509,6 +528,11 @@
       "tags": {
         "rename": {
           "Query": "Wormhole"
+        }
+      },
+      "operationsIds": {
+        "rename": {
+          "Config": "WormholeConfig"
         }
       }
     }
