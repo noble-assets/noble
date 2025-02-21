@@ -195,9 +195,11 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 			continue
 		}
 
-		if err := h.dollarKeeper.Deliver(ctx, msg.Vaa); err != nil {
+		cachedCtx, writeCache := ctx.CacheContext()
+		if err := h.dollarKeeper.Deliver(cachedCtx, msg.Vaa); err != nil {
 			logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
 		} else {
+			writeCache()
 			count++
 		}
 

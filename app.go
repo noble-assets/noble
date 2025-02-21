@@ -23,26 +23,32 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cast"
-
 	"cosmossdk.io/core/appconfig"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/libs/bytes"
+	cmtos "github.com/cometbft/cometbft/libs/os"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	serverapi "github.com/cosmos/cosmos-sdk/server/api"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/noble-assets/noble/v9/api"
 	"github.com/noble-assets/noble/v9/jester"
 	"github.com/noble-assets/noble/v9/upgrade"
+	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
@@ -72,6 +78,7 @@ import (
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
 	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -82,7 +89,9 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
@@ -106,6 +115,7 @@ import (
 
 	// Noble Modules
 	dollarkeeper "dollar.noble.xyz/keeper"
+	dollartypes "dollar.noble.xyz/types"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
@@ -302,6 +312,108 @@ func NewApp(
 	return app, nil
 }
 
+// InitAppForTestnet executes the necessary state transitions on the
+// provided application in order to start an in-place testnet.
+func InitAppForTestnet(app *App, pubKey crypto.PubKey, rawConsensusAddress bytes.HexBytes, rawOperatorAddress string, upgradeToTrigger string) *App {
+	ctx := app.NewUncachedContext(true, cmtproto.Header{})
+
+	// ===== Cosmos SDK: Staking  =====
+
+	cmtPubKey := &ed25519.PubKey{Key: pubKey.Bytes()}
+	operatorAddress := sdk.MustBech32ifyAddressBytes("noblevaloper", sdk.MustAccAddressFromBech32(rawOperatorAddress))
+	validator, err := stakingtypes.NewValidator(
+		operatorAddress,
+		cmtPubKey,
+		stakingtypes.Description{Moniker: "Testnet Validator"},
+	)
+	if err != nil {
+		cmtos.Exit("failed to create new validator: " + err.Error())
+	}
+
+	validator.Status = stakingtypes.Bonded
+	validator.Tokens = math.NewInt(1000000)
+	validator.DelegatorShares = math.LegacyNewDec(1000000)
+
+	stakingStore := ctx.KVStore(app.GetKey(stakingtypes.ModuleName))
+
+	// Remove all validators from last validators store
+	iterator, err := app.StakingKeeper.LastValidatorsIterator(ctx)
+	if err != nil {
+		cmtos.Exit("failed to create last validators iterator: " + err.Error())
+	}
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from power store
+	iterator, err = app.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	if err != nil {
+		cmtos.Exit("failed to create validators power store iterator: " + err.Error())
+	}
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from validators store
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorsKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Add our validator to power and last validators store
+	err = app.StakingKeeper.SetValidator(ctx, validator)
+	if err != nil {
+		cmtos.Exit("failed to set validator: " + err.Error())
+	}
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, validator)
+	if err != nil {
+		cmtos.Exit("failed to set validator by consensus address: " + err.Error())
+	}
+	err = app.StakingKeeper.SetValidatorByPowerIndex(ctx, validator)
+	if err != nil {
+		cmtos.Exit("failed to set validator by power index: " + err.Error())
+	}
+	valAddress, _ := sdk.ValAddressFromBech32(validator.GetOperator())
+	err = app.StakingKeeper.SetLastValidatorPower(ctx, valAddress, 0)
+	if err != nil {
+		cmtos.Exit("failed to set last validator power: " + err.Error())
+	}
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddress); err != nil {
+		cmtos.Exit("failed to execute after validator created hooks: " + err.Error())
+	}
+
+	// ===== Cosmos SDK: Slashing =====
+
+	consensusAddress := sdk.ConsAddress(rawConsensusAddress.Bytes())
+	newValidatorSigningInfo := slashingtypes.ValidatorSigningInfo{
+		Address:     consensusAddress.String(),
+		StartHeight: app.LastBlockHeight() - 1,
+		Tombstoned:  false,
+	}
+	err = app.SlashingKeeper.SetValidatorSigningInfo(ctx, consensusAddress, newValidatorSigningInfo)
+	if err != nil {
+		cmtos.Exit("failed to set validator signing info: " + err.Error())
+	}
+
+	// ===== Cosmos SDK: Upgrade  =====
+
+	if upgradeToTrigger != "" {
+		upgradePlan := upgradetypes.Plan{
+			Name:   upgradeToTrigger,
+			Height: app.LastBlockHeight() + 10,
+		}
+		err = app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
+		if err != nil {
+			cmtos.Exit("failed to schedule upgrade: " + err.Error())
+		}
+	}
+
+	return app
+}
+
 func (app *App) LegacyAmino() *codec.LegacyAmino {
 	return app.legacyAmino
 }
@@ -344,6 +456,8 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.AccountKeeper.AddressCodec(),
 			app.BankKeeper,
 			app.DollarKeeper,
+			app.GetKey(dollartypes.ModuleName),
+			app.WormholeKeeper,
 		),
 	)
 
