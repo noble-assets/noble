@@ -22,13 +22,11 @@
 </div>
 <br>
 
-Noble is an [application-specific blockchain](https://docs.cosmos.network/main/learn/intro/why-app-specific) 
-built on the Cosmos SDK, purpose-built for asset issuance with a focus on stablecoins and real-world assets (RWAs). As an 
-IBC-enabled chain, Noble ensures seamless interoperability across the Cosmos ecosystem enabling fast and secure transactions.
-Additionally, Noble has implemented Circle's [Cross-Chain Transfer Protocol (CCTP)](https://www.circle.com/cross-chain-transfer-protocol) 
-to facilitate transfers across multiple blockchain networks.
+Noble is an [application-specific blockchain](https://docs.cosmos.network/main/learn/intro/why-app-specific) built on the Cosmos SDK, purpose-built for asset issuance with a focus on stablecoins and real-world assets (RWAs). As an IBC-enabled chain, Noble ensures seamless interoperability across the Cosmos ecosystem, enabling fast and secure transactions.
 
-You can learn more about the assets we offer [here](https://www.noble.xyz/#assets)!
+In addition to supporting various RWAs, Noble offers its own native real-world asset, Noble Dollar (USDN)—a yield-bearing stablecoin that gives developers and end users control over the underlying yield. Additionally, Noble has implemented Circle's [Cross-Chain Transfer Protocol (CCTP)](https://www.circle.com/cross-chain-transfer-protocol) to facilitate transfers of USDC across multiple blockchain networks.
+
+You can learn more about all the assets we offer [here](https://www.noble.xyz/#assets)!
 
 ## Documentation
 
