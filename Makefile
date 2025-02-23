@@ -1,6 +1,6 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
-VERSION := $(shell echo $(shell git describe --tags --always --dirty --match "v*") | sed 's/^v//')
+VERSION := $(shell git describe --tags --always --dirty --match "v*")
 LEDGER_ENABLED ?= true
 
 # process build tags

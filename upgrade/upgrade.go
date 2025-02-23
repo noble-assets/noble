@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -100,63 +101,97 @@ func FixICS27ChannelCapabilities(ctx sdk.Context, capabilityKeeper *capabilityke
 	capabilityKeeper.InitMemStore(ctx)
 }
 
-// ConfigureWormholeModule sets both the Wormhole module configuration and an initial guardian set.
+// ConfigureWormholeModule sets both the configuration and an initial guardian set for Wormhole.
 func ConfigureWormholeModule(ctx sdk.Context, wormholeKeeper *wormholekeeper.Keeper) (err error) {
+	err = wormholeKeeper.Config.Set(ctx, wormholetypes.Config{
+		ChainId:          4009,
+		GuardianSetIndex: 0,
+		GovChain:         1,
+		GovAddress:       common.FromHex("0x0000000000000000000000000000000000000000000000000000000000000004"),
+	})
+	if err != nil {
+		return errors.Wrap(err, "unable to set wormhole config in state")
+	}
+
 	switch ctx.ChainID() {
 	case TestnetChainID:
-		err = wormholeKeeper.Config.Set(ctx, wormholetypes.Config{
-			ChainId:           4009,
-			GuardianSetIndex:  0,
-			GuardianSetExpiry: 0,
-			GovChain:          1,
-			GovAddress:        common.FromHex("0x0000000000000000000000000000000000000000000000000000000000000004"),
-		})
-		if err != nil {
-			return errors.Wrap(err, "unable to set wormhole config in state")
-		}
-
 		err = wormholeKeeper.GuardianSets.Set(ctx, 0, wormholetypes.GuardianSet{
 			// https://github.com/wormhole-foundation/wormhole/blob/3797ed082150e6d66c0dce3fea7f2848364af7d5/ethereum/env/.env.sepolia.testnet#L7
 			Addresses:      [][]byte{common.FromHex("0x13947Bd48b18E53fdAeEe77F3473391aC727C638")},
 			ExpirationTime: 0,
 		})
 		if err != nil {
-			return errors.Wrap(err, "unable to set wormhole guardian set in state")
+			return errors.Wrap(err, "unable to set initial wormhole guardian set in state")
 		}
 
 		return nil
 	case MainnetChainID:
-		// TODO: Add the necessary configurations for mainnet here!
+		err = wormholeKeeper.GuardianSets.Set(ctx, 0, wormholetypes.GuardianSet{
+			// https://github.com/wormhole-foundation/wormhole/blob/3797ed082150e6d66c0dce3fea7f2848364af7d5/ethereum/env/.env.ethereum.mainnet#L4
+			Addresses:      [][]byte{common.FromHex("0x58CC3AE5C097b213cE3c81979e1B9f9570746AA5")},
+			ExpirationTime: 0,
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial wormhole guardian set in state")
+		}
+
 		return nil
 	default:
-		return fmt.Errorf("cannot configure the wormhole module on %s chain", ctx.ChainID())
+		return fmt.Errorf("cannot configure initial wormhole guardian set on %s chain", ctx.ChainID())
 	}
 }
 
-// ConfigureDollarModule sets both the Dollar Portal submodule owner and an initial peer.
+// ConfigureDollarModule sets the owner, a peer, and supported bridging paths for the Noble Dollar Portal.
 func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
 	switch ctx.ChainID() {
 	case TestnetChainID:
-		err = dollarKeeper.Owner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
+		err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
 		if err != nil {
 			return errors.Wrap(err, "unable to set dollar portal owner in state")
 		}
 
-		err = dollarKeeper.Peers.Set(ctx, 10002, portaltypes.Peer{
-			// https://sepolia.etherscan.io/address/0x29CbF1e07166D31446307aE07999fa6d16223990
-			Transceiver: common.FromHex("0x00000000000000000000000029cbf1e07166d31446307ae07999fa6d16223990"),
-			// https://sepolia.etherscan.io/address/0x1B7aE194B20C555B9d999c835F74cDCE36A67a74
-			Manager: common.FromHex("0x0000000000000000000000001b7ae194b20c555b9d999c835f74cdce36a67a74"),
+		err = dollarKeeper.PortalPeers.Set(ctx, 10002, portaltypes.Peer{
+			// https://sepolia.etherscan.io/address/0x0763196A091575adF99e2306E5e90E0Be5154841
+			Transceiver: common.FromHex("0x0000000000000000000000000763196a091575adf99e2306e5e90e0be5154841"),
+			// https://sepolia.etherscan.io/address/0xD925C84b55E4e44a53749fF5F2a5A13F63D128fd
+			Manager: common.FromHex("0x000000000000000000000000d925c84b55e4e44a53749ff5f2a5a13f63d128fd"),
 		})
 		if err != nil {
 			return errors.Wrap(err, "unable to set dollar portal peer in state")
 		}
 
+		// $USDN -> $M
+		err = dollarKeeper.PortalBridgingPaths.Set(
+			ctx,
+			collections.Join(
+				uint16(10002),
+				// https://sepolia.etherscan.io/address/0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b
+				common.FromHex("0x000000000000000000000000866a2bf4e572cbcf37d5071a7a58503bfb36be1b"),
+			),
+			true,
+		)
+		if err != nil {
+			return errors.Wrap(err, "unable to set first dollar portal bridging path in state")
+		}
+		// $USDN -> $wM
+		err = dollarKeeper.PortalBridgingPaths.Set(
+			ctx,
+			collections.Join(
+				uint16(10002),
+				// https://sepolia.etherscan.io/address/0x437cc33344a0B27A429f795ff6B469C72698B291
+				common.FromHex("0x000000000000000000000000437cc33344a0b27a429f795ff6b469c72698b291"),
+			),
+			true,
+		)
+		if err != nil {
+			return errors.Wrap(err, "unable to set second dollar portal bridging path in state")
+		}
+
 		return nil
 	case MainnetChainID:
 		// TODO: Add the necessary configurations for mainnet here!
 		return nil
 	default:
-		return fmt.Errorf("cannot configure the dollar module on %s chain", ctx.ChainID())
+		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
 	}
 }
