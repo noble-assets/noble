@@ -1,24 +1,16 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./images/noble_full_light.png">
-    <img alt="Noble Logo" width=300 src="./images/noble_full_dark.png">
+    <img src="https://github.com/user-attachments/assets/5eafb881-ce88-4b16-b61e-019da8327def" />
   </picture>
   <br><br>
-  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/noble-assets/noble">
-  <a href="https://pkg.go.dev/github.com/noble-assets/noble/v9"><img src="https://pkg.go.dev/badge/github.com/noble-assets/noble/v9.svg" alt="Go Reference"></a>
-  <a href="https://github.com/noble-assets/noble/actions"><img src="https://github.com/noble-assets/noble/actions/workflows/draft-release.yaml/badge.svg" alt="Build Status"></a>
-  <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Frpc.noble.xyz%2Fstatus%3F&query=%24.result.sync_info.latest_block_height&label=Height">
+  <a href="https://github.com/noble-assets/noble/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/noble-assets/noble?style=for-the-badge&label=Latest%20Release&color=BAC3FF"></a>
+  <a href="https://mintscan.io/noble/block"><img alt="Block Height" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Frpc.noble.xyz%2Fblock&query=result.block.header.height&style=for-the-badge&label=Block%20Height&color=BAC3FF"></a>
   <br><br>
-  <a href="https://www.noble.xyz/">✨noble.xyz✨</a>
+  <a href="https://noble.xyz">✨ noble.xyz ✨</a>
   <br>
-  <a href="https://express.noble.xyz/">✨express.noble.xyz✨</a>
-  <br><br>
-  <a href="https://x.com/noble_xyz">
-    <img src="https://img.shields.io/badge/-000000?logo=x&logoColor=white&style=for-the-badge" alt="X (Twitter)" style="display: inline-block;" hspace="8">
-  </a>
-  <a href="https://discord.gg/qefFy28Z">
-    <img src="https://img.shields.io/badge/-5865F2?logo=discord&logoColor=white&style=for-the-badge" alt="Discord" style="display: inline-block;">
-  </a>
+  <a href="https://dollar.noble.xyz">✨ dollar.noble.xyz ✨</a>
+  <br>
+  <a href="https://express.noble.xyz">✨ express.noble.xyz ✨</a>
 </div>
 <br>
 
