@@ -35,6 +35,7 @@ import (
 
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
+	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
 	dollarkeeper "dollar.noble.xyz/keeper"
 	portaltypes "dollar.noble.xyz/types/portal"
@@ -104,10 +105,10 @@ func FixICS27ChannelCapabilities(ctx sdk.Context, capabilityKeeper *capabilityke
 // ConfigureWormholeModule sets both the configuration and an initial guardian set for Wormhole.
 func ConfigureWormholeModule(ctx sdk.Context, wormholeKeeper *wormholekeeper.Keeper) (err error) {
 	err = wormholeKeeper.Config.Set(ctx, wormholetypes.Config{
-		ChainId:          4009,
+		ChainId:          uint16(vaautils.ChainIDNoble),
 		GuardianSetIndex: 0,
-		GovChain:         1,
-		GovAddress:       common.FromHex("0x0000000000000000000000000000000000000000000000000000000000000004"),
+		GovChain:         uint16(vaautils.GovernanceChain),
+		GovAddress:       vaautils.GovernanceEmitter.Bytes(),
 	})
 	if err != nil {
 		return errors.Wrap(err, "unable to set wormhole config in state")
@@ -143,14 +144,27 @@ func ConfigureWormholeModule(ctx sdk.Context, wormholeKeeper *wormholekeeper.Kee
 
 // ConfigureDollarModule sets the owner, a peer, and supported bridging paths for the Noble Dollar Portal.
 func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
+	// NOTE: The $M token address is the same across all EVM networks.
+	//
+	// https://etherscan.io/address/0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b
+	// https://sepolia.etherscan.io/address/0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b
+	m := common.FromHex("0x000000000000000000000000866a2bf4e572cbcf37d5071a7a58503bfb36be1b")
+	// NOTE: The $wM token address is the same across all EVM networks.
+	//
+	// https://etherscan.io/address/0x437cc33344a0B27A429f795ff6B469C72698B291
+	// https://sepolia.etherscan.io/address/0x437cc33344a0B27A429f795ff6B469C72698B291
+	wm := common.FromHex("0x000000000000000000000000437cc33344a0b27a429f795ff6b469c72698b291")
+
 	switch ctx.ChainID() {
 	case TestnetChainID:
+		chainID := uint16(vaautils.ChainIDSepolia)
+
 		err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
 		if err != nil {
 			return errors.Wrap(err, "unable to set dollar portal owner in state")
 		}
 
-		err = dollarKeeper.PortalPeers.Set(ctx, 10002, portaltypes.Peer{
+		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
 			// https://sepolia.etherscan.io/address/0x0763196A091575adF99e2306E5e90E0Be5154841
 			Transceiver: common.FromHex("0x0000000000000000000000000763196a091575adf99e2306e5e90e0be5154841"),
 			// https://sepolia.etherscan.io/address/0xD925C84b55E4e44a53749fF5F2a5A13F63D128fd
@@ -161,35 +175,40 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 		}
 
 		// $USDN -> $M
-		err = dollarKeeper.PortalBridgingPaths.Set(
-			ctx,
-			collections.Join(
-				uint16(10002),
-				// https://sepolia.etherscan.io/address/0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b
-				common.FromHex("0x000000000000000000000000866a2bf4e572cbcf37d5071a7a58503bfb36be1b"),
-			),
-			true,
-		)
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
 		if err != nil {
 			return errors.Wrap(err, "unable to set first dollar portal bridging path in state")
 		}
 		// $USDN -> $wM
-		err = dollarKeeper.PortalBridgingPaths.Set(
-			ctx,
-			collections.Join(
-				uint16(10002),
-				// https://sepolia.etherscan.io/address/0x437cc33344a0B27A429f795ff6B469C72698B291
-				common.FromHex("0x000000000000000000000000437cc33344a0b27a429f795ff6b469c72698b291"),
-			),
-			true,
-		)
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, wm), true)
 		if err != nil {
 			return errors.Wrap(err, "unable to set second dollar portal bridging path in state")
 		}
 
 		return nil
 	case MainnetChainID:
-		// TODO: Add the necessary configurations for mainnet here!
+		chainID := uint16(vaautils.ChainIDEthereum)
+
+		// TODO: Add portal owner configuration!
+
+		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
+			// TODO: Confirm Noble's mainnnet transceiver address with M^0
+
+			// https://etherscan.io/address/0x83Ae82Bd4054e815fB7B189C39D9CE670369ea16
+			Manager: common.FromHex("0x00000000000000000000000083ae82bd4054e815fb7b189c39d9ce670369ea16"),
+		})
+
+		// $USDN -> $M
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
+		if err != nil {
+			return errors.Wrap(err, "unable to set first dollar portal bridging path in state")
+		}
+		// $USDN -> $wM
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, wm), true)
+		if err != nil {
+			return errors.Wrap(err, "unable to set second dollar portal bridging path in state")
+		}
+
 		return nil
 	default:
 		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
