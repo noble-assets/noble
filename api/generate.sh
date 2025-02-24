@@ -17,4 +17,4 @@ buf export buf.build/noble-assets/swap:v1.0.0-beta.0 --output api/proto
 buf export buf.build/noble-assets/wormhole:v1.0.0-beta.0 --output api/proto
 
 buf generate
-swagger-combine ./api/config.json -o ./api/gen/swagger.yaml -f yaml
+swagger-combine ./api/config.json -o ./api/gen/swagger.yaml -f yaml --includeDefinitions true

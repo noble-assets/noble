@@ -26,6 +26,7 @@
         "Params",
         "Slashing",
         "Staking",
+        "Tx",
         "Upgrade"
       ]
     },
@@ -226,6 +227,17 @@
           "Params": "StakingParams",
           "Pool": "StakingPool"
         }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/tx/v1beta1/service.swagger.json",
+      "tags": {
+        "rename": {
+          "Service": "Tx"
+        }
+      },
+      "dereference": {
+        "circular": "ignore"
       }
     },
     {
