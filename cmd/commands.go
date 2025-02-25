@@ -20,6 +20,8 @@ import (
 
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/libs/bytes"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -35,10 +37,15 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/noble-assets/noble/v8"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/noble-assets/noble/v8"
 )
+
+func addStartFlags(startCmd *cobra.Command) {
+	crisis.AddModuleInitFlags(startCmd)
+}
 
 func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager module.BasicManager) {
 	cfg := sdk.GetConfig()
@@ -52,9 +59,8 @@ func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager 
 		snapshot.Cmd(newApp),
 	)
 
-	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, func(startCmd *cobra.Command) {
-		crisis.AddModuleInitFlags(startCmd)
-	})
+	server.AddCommands(rootCmd, noble.DefaultNodeHome, newApp, appExport, addStartFlags)
+	server.AddTestnetCreatorCommand(rootCmd, newTestnetApp, addStartFlags)
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(
@@ -121,6 +127,32 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 	}
 
 	return app
+}
+
+// newTestnetApp starts by running the normal newApp method. From there, the
+// app interface returned is modified in order for an in-place testnet to be
+// created from the provided app.
+func newTestnetApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+	app := newApp(logger, db, traceStore, appOpts).(*noble.App)
+
+	newValAddr, ok := appOpts.Get(server.KeyNewValAddr).(bytes.HexBytes)
+	if !ok {
+		panic("newValAddr is not of type bytes.HexBytes")
+	}
+	newValPubKey, ok := appOpts.Get(server.KeyUserPubKey).(crypto.PubKey)
+	if !ok {
+		panic("newValPubKey is not of type crypto.PubKey")
+	}
+	newOperatorAddress, ok := appOpts.Get(server.KeyNewOpAddr).(string)
+	if !ok {
+		panic("newOperatorAddress is not of type string")
+	}
+	upgradeToTrigger, ok := appOpts.Get(server.KeyTriggerTestnetUpgrade).(string)
+	if !ok {
+		panic("upgradeToTrigger is not of type string")
+	}
+
+	return noble.InitAppForTestnet(app, newValPubKey, newValAddr, newOperatorAddress, upgradeToTrigger)
 }
 
 // appExport creates a new app (optionally at a given height) and exports state.
