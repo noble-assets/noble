@@ -63,6 +63,7 @@ install:
 
 gofumpt_cmd=mvdan.cc/gofumpt
 golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
+BUILDER_VERSION=0.15.3
 
 FILES := $(shell find . -name "*.go")
 license:
@@ -77,6 +78,10 @@ lint:
 	@echo "🤖 Running linter..."
 	@go run $(golangci_lint_cmd) run --timeout=10m
 	@echo "✅ Completed linting!"
+
+swagger:
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		ghcr.io/cosmos/proto-builder:$(BUILDER_VERSION) sh ./api/generate.sh
 
 ###############################################################################
 ###                                 Testing                                 ###

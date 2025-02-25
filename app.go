@@ -39,10 +39,13 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	serverapi "github.com/cosmos/cosmos-sdk/server/api"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	"github.com/noble-assets/noble/v9/api"
 	"github.com/noble-assets/noble/v9/jester"
 	"github.com/noble-assets/noble/v9/upgrade"
 	"github.com/spf13/cast"
@@ -416,6 +419,14 @@ func (app *App) LegacyAmino() *codec.LegacyAmino {
 
 func (app *App) SimulationManager() *module.SimulationManager {
 	return nil
+}
+
+func (app *App) RegisterAPIRoutes(apiSvr *serverapi.Server, apiConfig serverconfig.APIConfig) {
+	app.App.RegisterAPIRoutes(apiSvr, apiConfig)
+
+	if err := api.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
+		panic(err)
+	}
 }
 
 //
