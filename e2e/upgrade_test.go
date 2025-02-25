@@ -150,7 +150,7 @@ var guardianSetUpdates = map[int][]byte{
 // Wormhole Guardian Sets can be correctly updated and registered.
 func ExecuteGuardianSetUpdates(t *testing.T, ctx context.Context, validator *cosmos.ChainNode, wallet ibc.Wallet) error {
 	for index := 1; index <= 4; index++ {
-		t.Logf("Registering Wormohle Guardian Set %d", index)
+		t.Logf("Registering Wormhole Guardian Set %d", index)
 
 		_, err := validator.ExecTx(
 			ctx, wallet.KeyName(),
