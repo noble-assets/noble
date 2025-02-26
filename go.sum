@@ -463,8 +463,6 @@ github.com/cosmos/gogoproto v1.7.0 h1:79USr0oyXAbxg3rspGh/m4SWNyoz/GLaAh0QlCe2fr
 github.com/cosmos/gogoproto v1.7.0/go.mod h1:yWChEv5IUEYURQasfyBW5ffkMHR/90hiHgbNgrtp4j0=
 github.com/cosmos/iavl v1.2.2 h1:qHhKW3I70w+04g5KdsdVSHRbFLgt3yY3qTMd4Xa4rC8=
 github.com/cosmos/iavl v1.2.2/go.mod h1:GiM43q0pB+uG53mLxLDzimxM9l/5N9UuSY3/D0huuVw=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.1.1 h1:+EGYrTsQ2hu8pBwCWAgqc0g/zSklvBFehda9URLfvOU=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.1.1/go.mod h1:8sbOclBgOCgBPesufd3ZlLRHvJ3dOeN9+dXhn3KbKOc=
 github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9svjthrX2+oXdZvzgGI=
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
 github.com/cosmos/ibc-go/v8 v8.5.2 h1:27s9oeD2AxLQF3e9BQsYt9doONyZ7FwZi/qkBv6Sdks=
@@ -1096,6 +1094,8 @@ github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3l
 github.com/noble-assets/globalfee v1.0.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
 github.com/noble-assets/halo/v2 v2.0.1/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
+github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.1.1-noble h1:d0cMfZRqEsQ34oNQRfzwxKysdzlCtCbO/Q12PoSwyzA=
+github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.1.1-noble/go.mod h1:8sbOclBgOCgBPesufd3ZlLRHvJ3dOeN9+dXhn3KbKOc=
 github.com/noble-assets/wormhole v1.0.0-beta.0 h1:AiOkdQw0X9FmuIPOT+SRc+o10uDoozcKz0wPh7vEQrQ=
 github.com/noble-assets/wormhole v1.0.0-beta.0/go.mod h1:s7T9FC+bxHwlLED8pmXumdqwhr56CGJqTdhhcIj4A/Q=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
