@@ -1,6 +1,7 @@
 <div align="center">
   <picture>
-    <img src="https://github.com/user-attachments/assets/5eafb881-ce88-4b16-b61e-019da8327def" />
+    <source media="(prefers-color-scheme: dark)" srcset="./images/dark_banner.png">
+    <img alt="Noble Banner" width=300 src="./images/light_banner.png">
   </picture>
   <br><br>
   <a href="https://github.com/noble-assets/noble/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/noble-assets/noble?style=for-the-badge&label=Latest%20Release&color=BAC3FF"></a>
@@ -16,7 +17,7 @@
 
 Noble is an [application-specific blockchain](https://docs.cosmos.network/main/learn/intro/why-app-specific) built on the Cosmos SDK, purpose-built for asset issuance with a focus on stablecoins and real-world assets (RWAs). As an IBC-enabled chain, Noble ensures seamless interoperability across the Cosmos ecosystem, enabling fast and secure transactions.
 
-In addition to supporting various RWAs, Noble offers its own native real-world asset, Noble Dollar (USDN)—a yield-bearing stablecoin that gives developers and end users control over the underlying yield. Additionally, Noble has implemented Circle's [Cross-Chain Transfer Protocol (CCTP)](https://www.circle.com/cross-chain-transfer-protocol) to facilitate transfers of USDC across multiple blockchain networks.
+In addition to supporting various RWAs, Noble offers its own native real-world asset, Noble Dollar (USDN) — a yield-bearing stablecoin that gives developers and end users control over the underlying yield. Additionally, Noble has implemented Circle's [Cross-Chain Transfer Protocol (CCTP)](https://www.circle.com/cross-chain-transfer-protocol) to facilitate native transfers of USDC across multiple blockchain networks.
 
 You can learn more about all the assets we offer [here](https://www.noble.xyz/#assets)!
 
@@ -26,9 +27,7 @@ For all documentation outside of installation, please visit our [official docume
 
 ## Installation
 
-Install from source:
-
-[Golang](https://go.dev/) is required.
+When installing from source, [Golang](https://go.dev) is required.
 
 ```sh
 git clone https://github.com/noble-assets/noble.git
@@ -44,7 +43,7 @@ Noble is also available via:
 
 ## Local Net Quickstart
 
-Looking to spin up a stand alone local Noble chain? Leverage our quickstart guide and scripts [here](./local_net/)!
+Looking to spin up a standalone local Noble chain? Leverage our quickstart guide and scripts [here](../local_net)!
 
 ## Contributing
 
