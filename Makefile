@@ -1,6 +1,6 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
-VERSION := $(shell echo $(shell git describe --tags --always --dirty --match "v*") | sed 's/^v//')
+VERSION := $(shell git describe --tags --always --dirty --match "v*")
 LEDGER_ENABLED ?= true
 
 # process build tags
@@ -63,8 +63,9 @@ install:
 
 gofumpt_cmd=mvdan.cc/gofumpt
 golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
+BUILDER_VERSION=0.15.3
 
-FILES := $(shell find $(shell go list -f '{{.Dir}}' ./...) -name "*.go" -a -not -name "*.pb.go" -a -not -name "*.pb.gw.go" -a -not -name "*.pulsar.go" | sed "s|$(shell pwd)/||g")
+FILES := $(shell find . -name "*.go")
 license:
 	@go-license --config .github/license.yml $(FILES)
 
@@ -77,6 +78,10 @@ lint:
 	@echo "🤖 Running linter..."
 	@go run $(golangci_lint_cmd) run --timeout=10m
 	@echo "✅ Completed linting!"
+
+swagger:
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		ghcr.io/cosmos/proto-builder:$(BUILDER_VERSION) sh ./api/generate.sh
 
 ###############################################################################
 ###                                 Testing                                 ###

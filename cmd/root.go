@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
+	"github.com/noble-assets/noble/v9/jester"
 	"github.com/spf13/cobra"
 )
 
@@ -72,11 +75,14 @@ func NewRootCmd() *cobra.Command {
 			srvCfg := serverconfig.DefaultConfig()
 			srvCfg.MinGasPrices = "0uusdc,0ausdy,0ueure"
 			srvCfg.API.Enable = true
+			srvCfg.API.Swagger = true
 			// overwrite default commit timeout from the cometbft configuration
 			cmtCfg := cmtcfg.DefaultConfig()
 			cmtCfg.Consensus.TimeoutCommit = 500 * time.Millisecond
 
-			return server.InterceptConfigsPreRunHandler(cmd, serverconfig.DefaultConfigTemplate, srvCfg, cmtCfg)
+			customAppTemplate, appConfig := jester.AppendJesterConfig(srvCfg)
+
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, appConfig, cmtCfg)
 		},
 	}
 

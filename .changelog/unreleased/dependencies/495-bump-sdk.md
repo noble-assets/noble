@@ -1,0 +1,1 @@
+- Bump Cosmos SDK to [`v0.50.12`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([#495](https://github.com/noble-assets/noble/pull/495))

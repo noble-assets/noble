@@ -1,0 +1,1 @@
+- Update the capabilities of previously created ICA channels from the ICA Controller module back to the ICA Host module. ([#432](https://github.com/noble-assets/noble/pull/432))

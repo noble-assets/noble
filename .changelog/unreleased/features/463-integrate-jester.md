@@ -1,0 +1,1 @@
+- Integrate our custom Jester sidecar, that enables the automatic relaying of $USDN transfers to Noble. ([#463](https://github.com/noble-assets/noble/pull/463))

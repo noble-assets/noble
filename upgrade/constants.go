@@ -1,4 +1,6 @@
-// Copyright 2024 NASD Inc. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright 2025 NASD Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,4 +17,22 @@
 package upgrade
 
 // UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "v8.1"
+const UpgradeName = "argentum"
+
+// UpgradeASCII is the ASCII art shown to node operators upon successful upgrade.
+const UpgradeASCII = `
+
+	 █████╗ ██████╗  ██████╗ ███████╗███╗   ██╗████████╗██╗   ██╗███╗   ███╗
+	██╔══██╗██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝██║   ██║████╗ ████║
+	███████║██████╔╝██║  ███╗█████╗  ██╔██╗ ██║   ██║   ██║   ██║██╔████╔██║
+	██╔══██║██╔══██╗██║   ██║██╔══╝  ██║╚██╗██║   ██║   ██║   ██║██║╚██╔╝██║
+	██║  ██║██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║   ╚██████╔╝██║ ╚═╝ ██║
+	╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝
+
+`
+
+// TestnetChainID is the Chain ID of the Noble testnet.
+const TestnetChainID = "grand-1"
+
+// MainnetChainID is the Chain ID of the Noble mainnet.
+const MainnetChainID = "noble-1"
