@@ -48933,7 +48933,7 @@ paths:
       tags:
         - Swap
   /noble/swap/v1/simulate_swap:
-    get:
+    post:
       summary: Simulates a token swap simulation.
       operationId: SimulateSwap
       responses:
@@ -49187,26 +49187,56 @@ paths:
                           "value": "1.212s"
                         }
       parameters:
-        - name: signer
-          in: query
-          required: false
-          type: string
-        - name: amount.denom
-          in: query
-          required: false
-          type: string
-        - name: amount.amount
-          in: query
-          required: false
-          type: string
-        - name: min.denom
-          in: query
-          required: false
-          type: string
-        - name: min.amount
-          in: query
-          required: false
-          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              signer:
+                type: string
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+              routes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    pool_id:
+                      type: string
+                      format: uint64
+                      description: ID of the Pool.
+                    denom_to:
+                      type: string
+                      description: Destination denom after the Swap in the Pool.
+              min:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
       tags:
         - Swap
   /noble/swap/stableswap/v1/bonded-positions/{provider}:
@@ -76352,6 +76382,47 @@ definitions:
                 - PERFECTPRICE
               default: UNSPECIFIED
               title: buf:lint:ignore ENUM_VALUE_PREFIX
+  noble.swap.v1.QuerySimulateSwap:
+    type: object
+    properties:
+      signer:
+        type: string
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      routes:
+        type: array
+        items:
+          type: object
+          properties:
+            pool_id:
+              type: string
+              format: uint64
+              description: ID of the Pool.
+            denom_to:
+              type: string
+              description: Destination denom after the Swap in the Pool.
+      min:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   noble.swap.v1.Rate:
     type: object
     properties:
