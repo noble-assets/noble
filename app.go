@@ -453,11 +453,12 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
+			app.AccountKeeper,
 			app.CapabilityKeeper,
 			app.DollarKeeper,
-			app.WormholeKeeper,
+			app.GlobalFeeKeeper,
 			app.SwapKeeper,
-			app.AccountKeeper,
+			app.WormholeKeeper,
 		),
 	)
 

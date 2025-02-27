@@ -27,9 +27,16 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
+
+	authoritytypes "github.com/noble-assets/authority/types"
+
+	dollarkeeper "dollar.noble.xyz/keeper"
+	portaltypes "dollar.noble.xyz/types/portal"
+
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
@@ -40,9 +47,6 @@ import (
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
-	dollarkeeper "dollar.noble.xyz/keeper"
-	portaltypes "dollar.noble.xyz/types/portal"
-
 	swapkeeper "swap.noble.xyz/keeper"
 	swaptypes "swap.noble.xyz/types"
 	stableswaptypes "swap.noble.xyz/types/stableswap"
@@ -52,11 +56,12 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	accountKeeper authkeeper.AccountKeeper,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
-	wormholeKeeper *wormholekeeper.Keeper,
+	globalFeeKeeper *globalfeekeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
-	accountKeeper keeper.AccountKeeper,
+	wormholeKeeper *wormholekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -77,6 +82,10 @@ func CreateUpgradeHandler(
 		}
 
 		if err := ConfigureSwapModule(sdkCtx, swapKeeper, accountKeeper); err != nil {
+			return vm, err
+		}
+
+		if err := ConfigureGlobalFeeModule(ctx, dollarKeeper, globalFeeKeeper); err != nil {
 			return vm, err
 		}
 
@@ -202,14 +211,20 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	case MainnetChainID:
 		chainID := uint16(vaautils.ChainIDEthereum)
 
-		// TODO: Add portal owner configuration!
+		err = dollarKeeper.PortalOwner.Set(ctx, authoritytypes.ModuleAddress.String())
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal owner in state")
+		}
 
 		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
-			// TODO: Confirm Noble's mainnnet transceiver address with M^0
-
+			// https://etherscan.io/address/0xc7Dd372c39E38BF11451ab4A8427B4Ae38ceF644
+			Transceiver: common.FromHex("0x000000000000000000000000c7dd372c39e38bf11451ab4a8427b4ae38cef644"),
 			// https://etherscan.io/address/0x83Ae82Bd4054e815fB7B189C39D9CE670369ea16
 			Manager: common.FromHex("0x00000000000000000000000083ae82bd4054e815fb7b189c39d9ce670369ea16"),
 		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal peer in state")
+		}
 
 		// $USDN -> $M
 		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
@@ -228,8 +243,8 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	}
 }
 
-// ConfigureSwapModule initializes the initial Swap Module state.
-func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper keeper.AccountKeeper) (err error) {
+// ConfigureSwapModule creates an initial USDC/USDN swap pool.
+func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper authkeeper.AccountKeeper) (err error) {
 	switch ctx.ChainID() {
 	case MainnetChainID:
 		// Create the initial uusdn<>uusdc pool, following the same logic of the StableSwap `CreatePool` function:
@@ -292,6 +307,30 @@ func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, account
 		}
 
 		return nil
+	default:
+		return fmt.Errorf("cannot create initial swap pool on %s chain", ctx.ChainID())
+	}
+}
+
+// ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar.
+func ConfigureGlobalFeeModule(ctx context.Context, dollarKeeper *dollarkeeper.Keeper, globalFeeKeeper *globalfeekeeper.Keeper) (err error) {
+	gasPrices, err := globalFeeKeeper.GasPrices.Get(ctx)
+	if err != nil {
+		return errors.Wrap(err, "unable to get gas prices from state")
+	}
+
+	if !gasPrices.Value.IsZero() {
+		gasPrices.Value = gasPrices.Value.Add(
+			sdk.NewDecCoinFromDec(
+				dollarKeeper.GetDenom(),
+				math.LegacyMustNewDecFromStr("0.1"),
+			),
+		).Sort()
+	}
+
+	err = globalFeeKeeper.GasPrices.Set(ctx, gasPrices)
+	if err != nil {
+		return errors.Wrap(err, "unable to set gas prices in state")
 	}
 
 	return nil
