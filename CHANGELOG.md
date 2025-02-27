@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v8.0.6
+
+*Feb 27, 2025*
+
+This is a consensus breaking patch to the v8 Helium release line.
+
+### DEPENDENCIES
+
+- Bump IBC to [`v8.6.0`](https://github.com/cosmos/ibc-go/releases/v8.6.0) to resolve [ASA-2025-004](https://github.com/cosmos/ibc-go/security/advisories/GHSA-jg6f-48ff-5xrw) security advisory. ([#502](https://github.com/noble-assets/noble/pull/502))
+
 ## v8.0.5
 
 *Feb 3, 2025*
