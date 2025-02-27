@@ -264,6 +264,11 @@ func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, account
 			return errors.Wrap(err, "unable to set initial swap pool in state")
 		}
 
+		// Add the new Pool ID to the `Paused` state.
+		if err = swapKeeper.SetPaused(ctx, poolId, false); err != nil {
+			return errors.Wrapf(err, "unable to create paused pool initial entry")
+		}
+
 		err = swapKeeper.Stableswap.SetPool(ctx, 0, stableswaptypes.Pool{
 			ProtocolFeePercentage: 50,      //TODO: wait final params
 			RewardsFee:            2500000, //TODO: wait final params
