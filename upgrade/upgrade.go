@@ -21,7 +21,6 @@ import (
 	"fmt"
 
 	"cosmossdk.io/collections"
-	"cosmossdk.io/core/header"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -58,7 +57,6 @@ func CreateUpgradeHandler(
 	wormholeKeeper *wormholekeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
 	accountKeeper keeper.AccountKeeper,
-	headerService header.Service,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -78,7 +76,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		if err := ConfigureSwapModule(sdkCtx, swapKeeper, accountKeeper, headerService); err != nil {
+		if err := ConfigureSwapModule(sdkCtx, swapKeeper, accountKeeper); err != nil {
 			return vm, err
 		}
 
@@ -231,7 +229,7 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 }
 
 // ConfigureSwapModule initializes the initial Swap Module state.
-func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper keeper.AccountKeeper, headerService header.Service) (err error) {
+func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper keeper.AccountKeeper) (err error) {
 	switch ctx.ChainID() {
 	case MainnetChainID:
 		// Create the initial uusdn<>uusdc pool, following the same logic of the StableSwap `CreatePool` function:
@@ -281,7 +279,7 @@ func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, account
 			RewardsFee:            2500000, //TODO: wait final params
 			InitialA:              800,     //TODO: wait final params
 			FutureA:               800,     //TODO: wait final params
-			InitialATime:          headerService.GetHeaderInfo(ctx).Time.Unix(),
+			InitialATime:          ctx.HeaderInfo().Time.Unix(),
 			FutureATime:           0, //TODO: wait final params
 			RateMultipliers: sdk.NewCoins(
 				sdk.NewCoin("uusdn", math.NewInt(1e18)),
