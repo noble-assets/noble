@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Noble API Reference</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </head>
+    <body>
+        <script id="api-reference" data-url="swagger.yaml"></script>
+
+        <script>
+            <!-- github.com/scalar/scalar/blob/main/documentation/configuration.md -->
+            const configuration = {
+                hideModels: true,
+                favicon: "https://framerusercontent.com/images/6YIo77FB71jyaGPixH56VDc8KY.svg"
+            };
+
+            document.getElementById("api-reference").dataset.configuration = JSON.stringify(configuration)
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/gh/noble-assets/scalar-api-reference@e8a8524bd52a6f236f530fc5e7f5503141a2a465/dist/browser/standalone.min.js"></script>
+    </body>
+</html>

@@ -20,138 +20,197 @@ import (
 	"context"
 	"fmt"
 
-	"cosmossdk.io/core/address"
+	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
-	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/ethereum/go-ethereum/common"
 
-	dollarkeeper "dollar.noble.xyz/keeper"
-	dollartypes "dollar.noble.xyz/types"
+	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
 
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
+	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
+
+	dollarkeeper "dollar.noble.xyz/keeper"
+	portaltypes "dollar.noble.xyz/types/portal"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
-	addressCodec address.Codec,
-	bankKeeper bankkeeper.Keeper,
+	logger log.Logger,
+	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
-	dollarKey *storetypes.KVStoreKey,
 	wormholeKeeper *wormholekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		vm, err := mm.RunMigrations(ctx, cfg, vm)
+		if err != nil {
+			return vm, err
+		}
+
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		chainID := sdkCtx.ChainID()
-		if chainID != TestnetChainID {
-			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, chainID)
-		}
 
-		// Since M^0 redeployed their entire system on Ethereum Sepolia, we
-		// have to reconfigure the entire Noble Dollar state. By deleting the
-		// consensus version of the module before RunMigrations, this allows
-		// InitGenesis to be rerun. However before migrations, we must first
-		// burn all $USDN supply and then clear the entire module state.
+		FixICS27ChannelCapabilities(sdkCtx, capabilityKeeper)
 
-		delete(vm, dollartypes.ModuleName)
-
-		err := BurnNobleDollarSupply(ctx, addressCodec, bankKeeper, dollarKeeper)
-		if err != nil {
+		if err := ConfigureWormholeModule(sdkCtx, wormholeKeeper); err != nil {
 			return vm, err
 		}
 
-		err = ClearDollarModuleState(sdkCtx, dollarKey)
-		if err != nil {
+		if err := ConfigureDollarModule(sdkCtx, dollarKeeper); err != nil {
 			return vm, err
 		}
 
-		vm, err = mm.RunMigrations(ctx, cfg, vm)
-		if err != nil {
-			return vm, err
-		}
-
-		err = ConfigureDollarPortalState(ctx, dollarKeeper)
-		if err != nil {
-			return vm, err
-		}
-
-		// Because we removed the GuardianSetExpiry element from the Wormhole
-		// configuration, we have to reinitialize the state to avoid running
-		// into unmarshalling errors.
-		err = ConfigureWormholeState(ctx, wormholeKeeper)
-		if err != nil {
-			return vm, err
-		}
+		logger.Info("Welcome to a new generation of Noble!" + UpgradeASCII)
 
 		return vm, nil
 	}
 }
 
-// BurnNobleDollarSupply burns the entire $USDN supply from the only Noble Dollar user on testnet.
-func BurnNobleDollarSupply(ctx context.Context, addressCodec address.Codec, bankKeeper bankkeeper.Keeper, dollarKeeper *dollarkeeper.Keeper) error {
-	account, err := addressCodec.StringToBytes("noble1exg6r3tz2tup8ewnmttkkhd7qfx39rguzqngyc")
-	if err != nil {
-		return errors.Wrap(err, "unable to decode user address")
+// FixICS27ChannelCapabilities finds all capabilities wrongfully owned by the
+// ICA Controller module and replaces them with the ICA Host module. This was
+// introduced in the v8 Helium upgrade after we executed the recommended ICS27
+// migration logic for chains that utilize the ICA Controller module.
+func FixICS27ChannelCapabilities(ctx sdk.Context, capabilityKeeper *capabilitykeeper.Keeper) {
+	index := capabilityKeeper.GetLatestIndex(ctx)
+
+	for i := uint64(1); i < index; i++ {
+		wrapper, ok := capabilityKeeper.GetOwners(ctx, i)
+		if !ok {
+			continue
+		}
+
+		for _, owner := range wrapper.GetOwners() {
+			if owner.Module == icacontrollertypes.SubModuleName {
+				wrapper.Remove(owner)
+				wrapper.Set(capabilitytypes.Owner{
+					Module: icahosttypes.SubModuleName,
+					Name:   owner.Name,
+				})
+			}
+		}
+
+		capabilityKeeper.SetOwners(ctx, i, wrapper)
 	}
 
-	denom := dollarKeeper.GetDenom()
-	coins := sdk.NewCoins(bankKeeper.GetBalance(ctx, account, denom))
-
-	err = bankKeeper.SendCoinsFromAccountToModule(ctx, account, dollartypes.ModuleName, coins)
-	if err != nil {
-		return errors.Wrap(err, "failed to transfer usdn to dollar module")
-	}
-	err = bankKeeper.BurnCoins(ctx, dollartypes.ModuleName, coins)
-	if err != nil {
-		return errors.Wrap(err, "unable to burn usdn from dollar module")
-	}
-
-	supply := bankKeeper.GetSupply(ctx, denom)
-	if !supply.IsZero() {
-		return fmt.Errorf("expected no usdn supply, got %s", supply.Amount)
-	}
-
-	return nil
+	capabilityKeeper.InitMemStore(ctx)
 }
 
-// ClearDollarModuleState clears the entire key-value store of the Noble Dollar module.
-func ClearDollarModuleState(ctx sdk.Context, dollarKey *storetypes.KVStoreKey) error {
-	dollarStore := ctx.KVStore(dollarKey)
-	iterator := dollarStore.Iterator(nil, nil)
-
-	for ; iterator.Valid(); iterator.Next() {
-		dollarStore.Delete(iterator.Key())
-	}
-
-	return iterator.Close()
-}
-
-// ConfigureDollarPortalState sets the Noble Dollar Portal owner.
-func ConfigureDollarPortalState(ctx context.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
-	err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
-	if err != nil {
-		return errors.Wrap(err, "unable to set dollar portal owner in state")
-	}
-
-	return nil
-}
-
-// ConfigureWormholeState sets the Wormhole configuration.
-func ConfigureWormholeState(ctx context.Context, wormholeKeeper *wormholekeeper.Keeper) (err error) {
+// ConfigureWormholeModule sets both the configuration and an initial guardian set for Wormhole.
+func ConfigureWormholeModule(ctx sdk.Context, wormholeKeeper *wormholekeeper.Keeper) (err error) {
 	err = wormholeKeeper.Config.Set(ctx, wormholetypes.Config{
-		ChainId:          4009,
+		ChainId:          uint16(vaautils.ChainIDNoble),
 		GuardianSetIndex: 0,
-		GovChain:         1,
-		GovAddress:       common.FromHex("0x0000000000000000000000000000000000000000000000000000000000000004"),
+		GovChain:         uint16(vaautils.GovernanceChain),
+		GovAddress:       vaautils.GovernanceEmitter.Bytes(),
 	})
 	if err != nil {
 		return errors.Wrap(err, "unable to set wormhole config in state")
 	}
 
-	return nil
+	switch ctx.ChainID() {
+	case TestnetChainID:
+		err = wormholeKeeper.GuardianSets.Set(ctx, 0, wormholetypes.GuardianSet{
+			// https://github.com/wormhole-foundation/wormhole/blob/3797ed082150e6d66c0dce3fea7f2848364af7d5/ethereum/env/.env.sepolia.testnet#L7
+			Addresses:      [][]byte{common.FromHex("0x13947Bd48b18E53fdAeEe77F3473391aC727C638")},
+			ExpirationTime: 0,
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial wormhole guardian set in state")
+		}
+
+		return nil
+	case MainnetChainID:
+		err = wormholeKeeper.GuardianSets.Set(ctx, 0, wormholetypes.GuardianSet{
+			// https://github.com/wormhole-foundation/wormhole/blob/3797ed082150e6d66c0dce3fea7f2848364af7d5/ethereum/env/.env.ethereum.mainnet#L4
+			Addresses:      [][]byte{common.FromHex("0x58CC3AE5C097b213cE3c81979e1B9f9570746AA5")},
+			ExpirationTime: 0,
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial wormhole guardian set in state")
+		}
+
+		return nil
+	default:
+		return fmt.Errorf("cannot configure initial wormhole guardian set on %s chain", ctx.ChainID())
+	}
+}
+
+// ConfigureDollarModule sets the owner, a peer, and supported bridging paths for the Noble Dollar Portal.
+func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (err error) {
+	// NOTE: The $M token address is the same across all EVM networks.
+	//
+	// https://etherscan.io/address/0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b
+	// https://sepolia.etherscan.io/address/0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b
+	m := common.FromHex("0x000000000000000000000000866a2bf4e572cbcf37d5071a7a58503bfb36be1b")
+	// NOTE: The $wM token address is the same across all EVM networks.
+	//
+	// https://etherscan.io/address/0x437cc33344a0B27A429f795ff6B469C72698B291
+	// https://sepolia.etherscan.io/address/0x437cc33344a0B27A429f795ff6B469C72698B291
+	wm := common.FromHex("0x000000000000000000000000437cc33344a0b27a429f795ff6b469c72698b291")
+
+	switch ctx.ChainID() {
+	case TestnetChainID:
+		chainID := uint16(vaautils.ChainIDSepolia)
+
+		err = dollarKeeper.PortalOwner.Set(ctx, "noble1mx48c5tv6ss9k7793n3a7sv48nfjllhxkd6tq3")
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal owner in state")
+		}
+
+		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
+			// https://sepolia.etherscan.io/address/0x0763196A091575adF99e2306E5e90E0Be5154841
+			Transceiver: common.FromHex("0x0000000000000000000000000763196a091575adf99e2306e5e90e0be5154841"),
+			// https://sepolia.etherscan.io/address/0xD925C84b55E4e44a53749fF5F2a5A13F63D128fd
+			Manager: common.FromHex("0x000000000000000000000000d925c84b55e4e44a53749ff5f2a5a13f63d128fd"),
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal peer in state")
+		}
+
+		// $USDN -> $M
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
+		if err != nil {
+			return errors.Wrap(err, "unable to set first dollar portal bridging path in state")
+		}
+		// $USDN -> $wM
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, wm), true)
+		if err != nil {
+			return errors.Wrap(err, "unable to set second dollar portal bridging path in state")
+		}
+
+		return nil
+	case MainnetChainID:
+		chainID := uint16(vaautils.ChainIDEthereum)
+
+		// TODO: Add portal owner configuration!
+
+		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
+			// TODO: Confirm Noble's mainnnet transceiver address with M^0
+
+			// https://etherscan.io/address/0x83Ae82Bd4054e815fB7B189C39D9CE670369ea16
+			Manager: common.FromHex("0x00000000000000000000000083ae82bd4054e815fb7b189c39d9ce670369ea16"),
+		})
+
+		// $USDN -> $M
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
+		if err != nil {
+			return errors.Wrap(err, "unable to set first dollar portal bridging path in state")
+		}
+		// $USDN -> $wM
+		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, wm), true)
+		if err != nil {
+			return errors.Wrap(err, "unable to set second dollar portal bridging path in state")
+		}
+
+		return nil
+	default:
+		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
+	}
 }
