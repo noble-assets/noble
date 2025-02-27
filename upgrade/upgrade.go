@@ -28,6 +28,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/ethereum/go-ethereum/common"
 
+	authoritytypes "github.com/noble-assets/authority/types"
+
+	dollarkeeper "dollar.noble.xyz/keeper"
+	portaltypes "dollar.noble.xyz/types/portal"
+
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
@@ -36,9 +41,6 @@ import (
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
-
-	dollarkeeper "dollar.noble.xyz/keeper"
-	portaltypes "dollar.noble.xyz/types/portal"
 )
 
 func CreateUpgradeHandler(
@@ -189,14 +191,20 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	case MainnetChainID:
 		chainID := uint16(vaautils.ChainIDEthereum)
 
-		// TODO: Add portal owner configuration!
+		err = dollarKeeper.PortalOwner.Set(ctx, authoritytypes.ModuleAddress.String())
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal owner in state")
+		}
 
 		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
-			// TODO: Confirm Noble's mainnnet transceiver address with M^0
-
+			// https://etherscan.io/address/0xc7Dd372c39E38BF11451ab4A8427B4Ae38ceF644
+			Transceiver: common.FromHex("0x000000000000000000000000c7dd372c39e38bf11451ab4a8427b4ae38cef644"),
 			// https://etherscan.io/address/0x83Ae82Bd4054e815fB7B189C39D9CE670369ea16
 			Manager: common.FromHex("0x00000000000000000000000083ae82bd4054e815fb7b189c39d9ce670369ea16"),
 		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal peer in state")
+		}
 
 		// $USDN -> $M
 		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
