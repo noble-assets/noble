@@ -238,12 +238,14 @@ func ConfigureGlobalFeeModule(ctx context.Context, dollarKeeper *dollarkeeper.Ke
 		return errors.Wrap(err, "unable to get gas prices from state")
 	}
 
-	gasPrices.Value = gasPrices.Value.Add(
-		sdk.NewDecCoinFromDec(
-			dollarKeeper.GetDenom(),
-			math.LegacyMustNewDecFromStr("0.1"),
-		),
-	).Sort()
+	if !gasPrices.Value.IsZero() {
+		gasPrices.Value = gasPrices.Value.Add(
+			sdk.NewDecCoinFromDec(
+				dollarKeeper.GetDenom(),
+				math.LegacyMustNewDecFromStr("0.1"),
+			),
+		).Sort()
+	}
 
 	err = globalFeeKeeper.GasPrices.Set(ctx, gasPrices)
 	if err != nil {
