@@ -31,6 +31,9 @@ import (
 
 	authoritytypes "github.com/noble-assets/authority/types"
 
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
 	dollarkeeper "dollar.noble.xyz/keeper"
 	portaltypes "dollar.noble.xyz/types/portal"
 
@@ -50,6 +53,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	bankKeeper bankkeeper.Keeper,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	globalFeeKeeper *globalfeekeeper.Keeper,
@@ -60,6 +64,25 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vm, err
 		}
+
+		bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
+			Description: "Nobles Composable Yield Dollar",
+			DenomUnits: []*banktypes.DenomUnit{
+				{
+					Denom:    "uusdn",
+					Exponent: 0,
+					Aliases:  []string{"microusdn"},
+				},
+				{
+					Denom:    "usdn",
+					Exponent: 6,
+				},
+			},
+			Base:    "uusdn",
+			Display: "usdn",
+			Name:    "Noble Dollar",
+			Symbol:  "USDN",
+		})
 
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 
