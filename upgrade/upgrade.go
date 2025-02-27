@@ -21,11 +21,15 @@ import (
 	"fmt"
 
 	"cosmossdk.io/collections"
+	"cosmossdk.io/core/header"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
@@ -39,6 +43,10 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/keeper"
 	portaltypes "dollar.noble.xyz/types/portal"
+
+	swapkeeper "swap.noble.xyz/keeper"
+	swaptypes "swap.noble.xyz/types"
+	stableswaptypes "swap.noble.xyz/types/stableswap"
 )
 
 func CreateUpgradeHandler(
@@ -48,6 +56,9 @@ func CreateUpgradeHandler(
 	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
+	swapKeeper *swapkeeper.Keeper,
+	accountKeeper keeper.AccountKeeper,
+	headerService header.Service,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -64,6 +75,10 @@ func CreateUpgradeHandler(
 		}
 
 		if err := ConfigureDollarModule(sdkCtx, dollarKeeper); err != nil {
+			return vm, err
+		}
+
+		if err := ConfigureSwapModule(sdkCtx, swapKeeper, accountKeeper, headerService); err != nil {
 			return vm, err
 		}
 
@@ -213,4 +228,61 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	default:
 		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
 	}
+}
+
+// ConfigureSwapModule initializes the initial Swap Module state.
+func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper keeper.AccountKeeper, headerService header.Service) (err error) {
+	switch ctx.ChainID() {
+	case MainnetChainID:
+		poolId, err := swapKeeper.IncreaseNextPoolID(ctx)
+		if err != nil {
+			return errors.Wrapf(err, "unable to set next pool id")
+		}
+
+		// Create the Pool address.
+		prefix := fmt.Sprintf("%s/pool/%d", swaptypes.ModuleName, poolId)
+		account := authtypes.NewEmptyModuleAccount(prefix)
+		account = accountKeeper.NewAccount(ctx, account).(*authtypes.ModuleAccount)
+		accountKeeper.SetModuleAccount(ctx, account)
+
+		// Create the Protocol Fees Pool address.
+		protocolFeesAccount := authtypes.NewEmptyModuleAccount(fmt.Sprintf("%s/protocol_fees", prefix))
+		protocolFees := accountKeeper.NewAccount(ctx, protocolFeesAccount).(*authtypes.ModuleAccount)
+		accountKeeper.SetModuleAccount(ctx, protocolFees)
+
+		// Create the Rewards Fees Pool address.
+		rewardFeesAccount := authtypes.NewEmptyModuleAccount(fmt.Sprintf("%s/reward_fees", prefix))
+		rewardFees := accountKeeper.NewAccount(ctx, rewardFeesAccount).(*authtypes.ModuleAccount)
+		accountKeeper.SetModuleAccount(ctx, rewardFees)
+		err = swapKeeper.SetPool(ctx, 0, swaptypes.Pool{
+			Id:        poolId,
+			Address:   account.GetAddress().String(),
+			Algorithm: swaptypes.STABLESWAP,
+			Pair:      "uusdc",
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial swap pool in state")
+		}
+
+		err = swapKeeper.Stableswap.SetPool(ctx, 0, stableswaptypes.Pool{
+			ProtocolFeePercentage: 50,      //TODO: wait final params
+			RewardsFee:            2500000, //TODO: wait final params
+			InitialA:              800,     //TODO: wait final params
+			FutureA:               800,     //TODO: wait final params
+			InitialATime:          headerService.GetHeaderInfo(ctx).Time.Unix(),
+			FutureATime:           0, //TODO: wait final params
+			RateMultipliers: sdk.NewCoins(
+				sdk.NewCoin("uusdn", math.NewInt(1e18)),
+				sdk.NewCoin("uusdc", math.NewInt(1e18)),
+			),
+			TotalShares: math.LegacyZeroDec(),
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial swap pool in state")
+		}
+
+		return nil
+	}
+
+	return nil
 }
