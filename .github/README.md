@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./images/dark_banner.png">
-    <img alt="Noble Banner" width=300 src="./images/light_banner.png">
+    <img alt="Noble Banner" src="./images/light_banner.png">
   </picture>
   <br><br>
   <a href="https://github.com/noble-assets/noble/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/noble-assets/noble?style=for-the-badge&label=Latest%20Release&color=BAC3FF"></a>
