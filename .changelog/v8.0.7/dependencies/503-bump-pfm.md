@@ -1,0 +1,1 @@
+- Bump PFM to be compatible with IBC [`v8.6.0`](https://github.com/cosmos/ibc-go/releases/v8.6.0) ([#503](https://github.com/noble-assets/noble/pull/503))
