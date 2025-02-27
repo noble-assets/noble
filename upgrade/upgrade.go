@@ -234,6 +234,10 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper keeper.AccountKeeper, headerService header.Service) (err error) {
 	switch ctx.ChainID() {
 	case MainnetChainID:
+		// Create the initial uusdn<>uusdc pool, following the same logic of the StableSwap `CreatePool` function:
+		// https://github.com/noble-assets/swap/blob/f94f41da984bdfbdebb013f70ed8ce05d2993726/keeper/msg_stableswap_server.go#L46-L169
+
+		// Increase and get the next Pool ID.
 		poolId, err := swapKeeper.IncreaseNextPoolID(ctx)
 		if err != nil {
 			return errors.Wrapf(err, "unable to set next pool id")
@@ -254,6 +258,8 @@ func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, account
 		rewardFeesAccount := authtypes.NewEmptyModuleAccount(fmt.Sprintf("%s/reward_fees", prefix))
 		rewardFees := accountKeeper.NewAccount(ctx, rewardFeesAccount).(*authtypes.ModuleAccount)
 		accountKeeper.SetModuleAccount(ctx, rewardFees)
+
+		// Set the new Pool on state.
 		err = swapKeeper.SetPool(ctx, 0, swaptypes.Pool{
 			Id:        poolId,
 			Address:   account.GetAddress().String(),
@@ -269,6 +275,7 @@ func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, account
 			return errors.Wrapf(err, "unable to create paused pool initial entry")
 		}
 
+		// Set the `StableSwap` data on state.
 		err = swapKeeper.Stableswap.SetPool(ctx, 0, stableswaptypes.Pool{
 			ProtocolFeePercentage: 50,      //TODO: wait final params
 			RewardsFee:            2500000, //TODO: wait final params
