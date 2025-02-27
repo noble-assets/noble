@@ -23,6 +23,7 @@ import (
 	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -32,6 +33,8 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/keeper"
 	portaltypes "dollar.noble.xyz/types/portal"
+
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
@@ -49,6 +52,7 @@ func CreateUpgradeHandler(
 	logger log.Logger,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
+	globalFeeKeeper *globalfeekeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -66,6 +70,10 @@ func CreateUpgradeHandler(
 		}
 
 		if err := ConfigureDollarModule(sdkCtx, dollarKeeper); err != nil {
+			return vm, err
+		}
+
+		if err := ConfigureGlobalFeeModule(ctx, dollarKeeper, globalFeeKeeper); err != nil {
 			return vm, err
 		}
 
@@ -221,4 +229,26 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	default:
 		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
 	}
+}
+
+// ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar.
+func ConfigureGlobalFeeModule(ctx context.Context, dollarKeeper *dollarkeeper.Keeper, globalFeeKeeper *globalfeekeeper.Keeper) (err error) {
+	gasPrices, err := globalFeeKeeper.GasPrices.Get(ctx)
+	if err != nil {
+		return errors.Wrap(err, "unable to get gas prices from state")
+	}
+
+	gasPrices.Value = gasPrices.Value.Add(
+		sdk.NewDecCoinFromDec(
+			dollarKeeper.GetDenom(),
+			math.LegacyMustNewDecFromStr("0.1"),
+		),
+	).Sort()
+
+	err = globalFeeKeeper.GasPrices.Set(ctx, gasPrices)
+	if err != nil {
+		return errors.Wrap(err, "unable to set gas prices in state")
+	}
+
+	return nil
 }

@@ -455,6 +455,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.Logger(),
 			app.CapabilityKeeper,
 			app.DollarKeeper,
+			app.GlobalFeeKeeper,
 			app.WormholeKeeper,
 		),
 	)
