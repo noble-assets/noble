@@ -1,0 +1,1 @@
+- Bump IBC to [`v8.6.1`](https://github.com/cosmos/ibc-go/releases/v8.6.1) to resolve [ASA-2025-004](https://github.com/cosmos/ibc-go/security/advisories/GHSA-jg6f-48ff-5xrw) security advisory. ([#506](https://github.com/noble-assets/noble/pull/506))

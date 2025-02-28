@@ -9,7 +9,7 @@ require (
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cosmos/cosmos-sdk v0.50.12
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/ibc-go/v8 v8.5.2
+	github.com/cosmos/ibc-go/v8 v8.6.1
 	github.com/docker/docker v24.0.9+incompatible
 	github.com/ethereum/go-ethereum v1.14.13
 	github.com/monerium/module-noble/v2 v2.0.0

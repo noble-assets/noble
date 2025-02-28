@@ -22,9 +22,9 @@ require (
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-sdk v0.50.12
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.1.1
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
-	github.com/cosmos/ibc-go/v8 v8.5.2
+	github.com/cosmos/ibc-go/v8 v8.6.1
 	github.com/ethereum/go-ethereum v1.14.13
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/mux v1.8.1
@@ -362,7 +362,7 @@ require (
 )
 
 // use noble version of pfm
-replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.1.1-noble
+replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble
 
 // use cosmos compatible syndtr/goleveldb
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
