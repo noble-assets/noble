@@ -21,8 +21,9 @@ This and other notable changes are documented below.
 - Bump `cosmossdk.io/client/v2` to support returning maps inside AutoCLI queries. ([#464](https://github.com/noble-assets/noble/pull/464))
 - Bump Authority to [`v1.0.2`](https://github.com/noble-assets/authority/releases/tag/v1.0.2) to include a new helper CLI command. ([#480](https://github.com/noble-assets/noble/pull/480))
 - Bump Forwarding to [`v2.0.1`](https://github.com/noble-assets/forwarding/releases/tag/v2.0.1) to check recipient length and harden validation when registering accounts. ([#481](https://github.com/noble-assets/noble/pull/481))
-- Bump Packet Forward Middleware to [`v8.1.1`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1) to resolve [GHSA-6fgm-x6ff-w78f](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-6fgm-x6ff-w78f) security advisory. ([#488](https://github.com/noble-assets/noble/pull/488))
+- Bump Packet Forward Middleware to [`v8.2.0`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.2.0) to resolve [GHSA-6fgm-x6ff-w78f](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-6fgm-x6ff-w78f) security advisory. ([#488](https://github.com/noble-assets/noble/pull/488), [#506](https://github.com/noble-assets/noble/pull/506))
 - Bump Cosmos SDK to [`v0.50.12`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([#495](https://github.com/noble-assets/noble/pull/495))
+- Bump IBC to [`v8.6.1`](https://github.com/cosmos/ibc-go/releases/v8.6.1) to resolve [ASA-2025-004](https://github.com/cosmos/ibc-go/security/advisories/GHSA-jg6f-48ff-5xrw) security advisory. ([#506](https://github.com/noble-assets/noble/pull/506))
 
 ### FEATURES
 
