@@ -31,6 +31,9 @@ import (
 
 	authoritytypes "github.com/noble-assets/authority/types"
 
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
 	dollarkeeper "dollar.noble.xyz/keeper"
 	portaltypes "dollar.noble.xyz/types/portal"
 
@@ -50,6 +53,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	bankKeeper bankkeeper.Keeper,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	globalFeeKeeper *globalfeekeeper.Keeper,
@@ -72,6 +76,8 @@ func CreateUpgradeHandler(
 		if err := ConfigureDollarModule(sdkCtx, dollarKeeper); err != nil {
 			return vm, err
 		}
+
+		ConfigureBankModule(ctx, bankKeeper)
 
 		if err := ConfigureGlobalFeeModule(ctx, dollarKeeper, globalFeeKeeper); err != nil {
 			return vm, err
@@ -229,6 +235,28 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	default:
 		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
 	}
+}
+
+// ConfigureBankModule sets the bank metadata for the Noble Dollar.
+func ConfigureBankModule(ctx context.Context, bankKeeper bankkeeper.Keeper) {
+	bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
+		Description: "Noble Dollar",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "uusdn",
+				Exponent: 0,
+				Aliases:  []string{"microusdn"},
+			},
+			{
+				Denom:    "usdn",
+				Exponent: 6,
+			},
+		},
+		Base:    "uusdn",
+		Display: "usdn",
+		Name:    "Noble Dollar",
+		Symbol:  "USDN",
+	})
 }
 
 // ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar.
