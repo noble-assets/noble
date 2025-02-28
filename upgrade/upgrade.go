@@ -65,25 +65,6 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
-			Description: "Noble Dollar",
-			DenomUnits: []*banktypes.DenomUnit{
-				{
-					Denom:    "uusdn",
-					Exponent: 0,
-					Aliases:  []string{"microusdn"},
-				},
-				{
-					Denom:    "usdn",
-					Exponent: 6,
-				},
-			},
-			Base:    "uusdn",
-			Display: "usdn",
-			Name:    "Noble Dollar",
-			Symbol:  "USDN",
-		})
-
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 		FixICS27ChannelCapabilities(sdkCtx, capabilityKeeper)
@@ -95,6 +76,8 @@ func CreateUpgradeHandler(
 		if err := ConfigureDollarModule(sdkCtx, dollarKeeper); err != nil {
 			return vm, err
 		}
+
+		ConfigureBankModule(ctx, bankKeeper)
 
 		if err := ConfigureGlobalFeeModule(ctx, dollarKeeper, globalFeeKeeper); err != nil {
 			return vm, err
@@ -252,6 +235,28 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	default:
 		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
 	}
+}
+
+// ConfigureBankModule sets the bank metadata for the Noble Dollar.
+func ConfigureBankModule(ctx context.Context, bankKeeper bankkeeper.Keeper) {
+	bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
+		Description: "Noble Dollar",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "uusdn",
+				Exponent: 0,
+				Aliases:  []string{"microusdn"},
+			},
+			{
+				Denom:    "usdn",
+				Exponent: 6,
+			},
+		},
+		Base:    "uusdn",
+		Display: "usdn",
+		Name:    "Noble Dollar",
+		Symbol:  "USDN",
+	})
 }
 
 // ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar.
