@@ -296,12 +296,12 @@ func ConfigureSwapModule(ctx sdk.Context, accountKeeper authkeeper.AccountKeeper
 
 		// Set the `StableSwap` data on state.
 		err = swapKeeper.Stableswap.SetPool(ctx, 0, stableswaptypes.Pool{
-			ProtocolFeePercentage: 50,       //TODO: wait final params
-			RewardsFee:            25000000, // 0,25% TODO: confirm final params
-			InitialA:              800,      //TODO: wait final params
-			FutureA:               800,      //TODO: wait final params
+			ProtocolFeePercentage: 100,
+			RewardsFee:            10000000,
+			InitialA:              800,
+			FutureA:               800,
 			InitialATime:          ctx.HeaderInfo().Time.Unix(),
-			FutureATime:           0, //TODO: wait final params
+			FutureATime:           0,
 			RateMultipliers: sdk.NewCoins(
 				sdk.NewCoin("uusdn", math.NewInt(1e18)),
 				sdk.NewCoin("uusdc", math.NewInt(1e18)),
