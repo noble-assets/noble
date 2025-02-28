@@ -454,6 +454,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.Configurator(),
 			app.Logger(),
 			app.AccountKeeper,
+			app.BankKeeper,
 			app.CapabilityKeeper,
 			app.DollarKeeper,
 			app.GlobalFeeKeeper,
