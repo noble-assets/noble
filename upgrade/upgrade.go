@@ -81,7 +81,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		if err := ConfigureSwapModule(sdkCtx, swapKeeper, accountKeeper); err != nil {
+		if err := ConfigureSwapModule(sdkCtx, accountKeeper, swapKeeper); err != nil {
 			return vm, err
 		}
 
@@ -243,8 +243,8 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	}
 }
 
-// ConfigureSwapModule creates an initial USDC/USDN swap pool.
-func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, accountKeeper authkeeper.AccountKeeper) (err error) {
+// ConfigureSwapModule creates an initial USDN<>USDC swap pool.
+func ConfigureSwapModule(ctx sdk.Context, accountKeeper authkeeper.AccountKeeper, swapKeeper *swapkeeper.Keeper) (err error) {
 	switch ctx.ChainID() {
 	case MainnetChainID:
 		// Create the initial uusdn<>uusdc pool, following the same logic of the StableSwap `CreatePool` function:
@@ -290,10 +290,10 @@ func ConfigureSwapModule(ctx sdk.Context, swapKeeper *swapkeeper.Keeper, account
 
 		// Set the `StableSwap` data on state.
 		err = swapKeeper.Stableswap.SetPool(ctx, 0, stableswaptypes.Pool{
-			ProtocolFeePercentage: 50,      //TODO: wait final params
-			RewardsFee:            2500000, //TODO: wait final params
-			InitialA:              800,     //TODO: wait final params
-			FutureA:               800,     //TODO: wait final params
+			ProtocolFeePercentage: 50,       //TODO: wait final params
+			RewardsFee:            25000000, // 0,25% TODO: confirm final params
+			InitialA:              800,      //TODO: wait final params
+			FutureA:               800,      //TODO: wait final params
 			InitialATime:          ctx.HeaderInfo().Time.Unix(),
 			FutureATime:           0, //TODO: wait final params
 			RateMultipliers: sdk.NewCoins(
