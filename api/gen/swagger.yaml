@@ -46463,6 +46463,73 @@ paths:
                   additionalProperties: {}
       tags:
         - Dollar Vaults
+  /noble/dollar/vaults/v1/pending_rewards:
+    get:
+      operationId: PendingRewards
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              pending_rewards:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Dollar Vaults
+  /noble/dollar/vaults/v1/pending_rewards/{provider}:
+    get:
+      operationId: PendingRewardsByProvider
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              pending_rewards:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          type: string
+      tags:
+        - Dollar Vaults
   /noble/dollar/vaults/v1/positions/{provider}:
     get:
       operationId: DollarVaultsPositionsByProvider
@@ -75654,6 +75721,16 @@ definitions:
         default: NONE
         description: '- NONE: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX'
         title: buf:lint:ignore ENUM_VALUE_PREFIX
+  noble.dollar.vaults.v1.QueryPendingRewardsByProviderResponse:
+    type: object
+    properties:
+      pending_rewards:
+        type: string
+  noble.dollar.vaults.v1.QueryPendingRewardsResponse:
+    type: object
+    properties:
+      pending_rewards:
+        type: string
   noble.dollar.vaults.v1.QueryPositionsByProviderResponse:
     type: object
     properties:
