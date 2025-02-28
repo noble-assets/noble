@@ -31,6 +31,7 @@ This and other notable changes are documented below.
 - Integrate our custom Dollar module, that enables the issuance of Noble's stablecoin $USDN. ([#448](https://github.com/noble-assets/noble/pull/448))
 - Integrate our custom Swap module, that enables the exchange of tokens issued on Noble. ([#449](https://github.com/noble-assets/noble/pull/449))
 - Integrate our custom Jester sidecar, that enables the automatic relaying of $USDN transfers to Noble. ([#463](https://github.com/noble-assets/noble/pull/463))
+- Enable Swagger documentation in API endpoint. ([#470](https://github.com/noble-assets/noble/pull/470))
 - Enable functionality for in-place forking a synced testnet or mainnet node. ([#487](https://github.com/noble-assets/noble/pull/487))
 
 ### IMPROVEMENTS
