@@ -23,10 +23,23 @@ import (
 	"cosmossdk.io/collections"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
+
+	authoritytypes "github.com/noble-assets/authority/types"
+
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	dollarkeeper "dollar.noble.xyz/keeper"
+	portaltypes "dollar.noble.xyz/types/portal"
+
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
@@ -37,16 +50,21 @@ import (
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
-	dollarkeeper "dollar.noble.xyz/keeper"
-	portaltypes "dollar.noble.xyz/types/portal"
+	swapkeeper "swap.noble.xyz/keeper"
+	swaptypes "swap.noble.xyz/types"
+	stableswaptypes "swap.noble.xyz/types/stableswap"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	accountKeeper authkeeper.AccountKeeper,
+	bankKeeper bankkeeper.Keeper,
 	capabilityKeeper *capabilitykeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
+	globalFeeKeeper *globalfeekeeper.Keeper,
+	swapKeeper *swapkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -64,6 +82,16 @@ func CreateUpgradeHandler(
 		}
 
 		if err := ConfigureDollarModule(sdkCtx, dollarKeeper); err != nil {
+			return vm, err
+		}
+
+		if err := ConfigureSwapModule(sdkCtx, accountKeeper, swapKeeper); err != nil {
+			return vm, err
+		}
+
+		ConfigureBankModule(ctx, bankKeeper)
+
+		if err := ConfigureGlobalFeeModule(ctx, dollarKeeper, globalFeeKeeper); err != nil {
 			return vm, err
 		}
 
@@ -189,14 +217,20 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	case MainnetChainID:
 		chainID := uint16(vaautils.ChainIDEthereum)
 
-		// TODO: Add portal owner configuration!
+		err = dollarKeeper.PortalOwner.Set(ctx, authoritytypes.ModuleAddress.String())
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal owner in state")
+		}
 
 		err = dollarKeeper.PortalPeers.Set(ctx, chainID, portaltypes.Peer{
-			// TODO: Confirm Noble's mainnnet transceiver address with M^0
-
+			// https://etherscan.io/address/0xc7Dd372c39E38BF11451ab4A8427B4Ae38ceF644
+			Transceiver: common.FromHex("0x000000000000000000000000c7dd372c39e38bf11451ab4a8427b4ae38cef644"),
 			// https://etherscan.io/address/0x83Ae82Bd4054e815fB7B189C39D9CE670369ea16
 			Manager: common.FromHex("0x00000000000000000000000083ae82bd4054e815fb7b189c39d9ce670369ea16"),
 		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set dollar portal peer in state")
+		}
 
 		// $USDN -> $M
 		err = dollarKeeper.PortalBridgingPaths.Set(ctx, collections.Join(chainID, m), true)
@@ -213,4 +247,119 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	default:
 		return fmt.Errorf("cannot configure the dollar portal on %s chain", ctx.ChainID())
 	}
+}
+
+// ConfigureSwapModule creates an initial USDN<>USDC swap pool.
+func ConfigureSwapModule(ctx sdk.Context, accountKeeper authkeeper.AccountKeeper, swapKeeper *swapkeeper.Keeper) (err error) {
+	switch ctx.ChainID() {
+	case MainnetChainID:
+		// Create the initial uusdn<>uusdc pool, following the same logic of the StableSwap `CreatePool` function:
+		// https://github.com/noble-assets/swap/blob/f94f41da984bdfbdebb013f70ed8ce05d2993726/keeper/msg_stableswap_server.go#L46-L169
+
+		// Increase and get the next Pool ID.
+		poolId, err := swapKeeper.IncreaseNextPoolID(ctx)
+		if err != nil {
+			return errors.Wrapf(err, "unable to set next pool id")
+		}
+
+		// Create the Pool address.
+		prefix := fmt.Sprintf("%s/pool/%d", swaptypes.ModuleName, poolId)
+		account := authtypes.NewEmptyModuleAccount(prefix)
+		account = accountKeeper.NewAccount(ctx, account).(*authtypes.ModuleAccount)
+		accountKeeper.SetModuleAccount(ctx, account)
+
+		// Create the Protocol Fees Pool address.
+		protocolFeesAccount := authtypes.NewEmptyModuleAccount(fmt.Sprintf("%s/protocol_fees", prefix))
+		protocolFees := accountKeeper.NewAccount(ctx, protocolFeesAccount).(*authtypes.ModuleAccount)
+		accountKeeper.SetModuleAccount(ctx, protocolFees)
+
+		// Create the Rewards Fees Pool address.
+		rewardFeesAccount := authtypes.NewEmptyModuleAccount(fmt.Sprintf("%s/reward_fees", prefix))
+		rewardFees := accountKeeper.NewAccount(ctx, rewardFeesAccount).(*authtypes.ModuleAccount)
+		accountKeeper.SetModuleAccount(ctx, rewardFees)
+
+		// Set the new Pool on state.
+		err = swapKeeper.SetPool(ctx, 0, swaptypes.Pool{
+			Id:        poolId,
+			Address:   account.GetAddress().String(),
+			Algorithm: swaptypes.STABLESWAP,
+			Pair:      "uusdc",
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial swap pool in state")
+		}
+
+		// Add the new Pool ID to the `Paused` state.
+		if err = swapKeeper.SetPaused(ctx, poolId, false); err != nil {
+			return errors.Wrapf(err, "unable to create paused pool initial entry")
+		}
+
+		// Set the `StableSwap` data on state.
+		err = swapKeeper.Stableswap.SetPool(ctx, 0, stableswaptypes.Pool{
+			ProtocolFeePercentage: 100,
+			RewardsFee:            10000000,
+			InitialA:              800,
+			FutureA:               800,
+			InitialATime:          ctx.HeaderInfo().Time.Unix(),
+			FutureATime:           0,
+			RateMultipliers: sdk.NewCoins(
+				sdk.NewCoin("uusdn", math.NewInt(1e18)),
+				sdk.NewCoin("uusdc", math.NewInt(1e18)),
+			),
+			TotalShares: math.LegacyZeroDec(),
+		})
+		if err != nil {
+			return errors.Wrap(err, "unable to set initial swap pool in state")
+		}
+
+		return nil
+	default:
+		return fmt.Errorf("cannot create initial swap pool on %s chain", ctx.ChainID())
+	}
+}
+
+// ConfigureBankModule sets the bank metadata for the Noble Dollar.
+func ConfigureBankModule(ctx context.Context, bankKeeper bankkeeper.Keeper) {
+	bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
+		Description: "Noble Dollar",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "uusdn",
+				Exponent: 0,
+				Aliases:  []string{"microusdn"},
+			},
+			{
+				Denom:    "usdn",
+				Exponent: 6,
+			},
+		},
+		Base:    "uusdn",
+		Display: "usdn",
+		Name:    "Noble Dollar",
+		Symbol:  "USDN",
+	})
+}
+
+// ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar.
+func ConfigureGlobalFeeModule(ctx context.Context, dollarKeeper *dollarkeeper.Keeper, globalFeeKeeper *globalfeekeeper.Keeper) (err error) {
+	gasPrices, err := globalFeeKeeper.GasPrices.Get(ctx)
+	if err != nil {
+		return errors.Wrap(err, "unable to get gas prices from state")
+	}
+
+	if !gasPrices.Value.IsZero() {
+		gasPrices.Value = gasPrices.Value.Add(
+			sdk.NewDecCoinFromDec(
+				dollarKeeper.GetDenom(),
+				math.LegacyMustNewDecFromStr("0.1"),
+			),
+		).Sort()
+	}
+
+	err = globalFeeKeeper.GasPrices.Set(ctx, gasPrices)
+	if err != nil {
+		return errors.Wrap(err, "unable to set gas prices in state")
+	}
+
+	return nil
 }
