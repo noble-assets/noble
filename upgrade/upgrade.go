@@ -25,22 +25,18 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/ethereum/go-ethereum/common"
-
-	authoritytypes "github.com/noble-assets/authority/types"
-
 	dollarkeeper "dollar.noble.xyz/keeper"
 	portaltypes "dollar.noble.xyz/types/portal"
-
-	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
-
+	"github.com/ethereum/go-ethereum/common"
+	authoritytypes "github.com/noble-assets/authority/types"
+	forwardingtypes "github.com/noble-assets/forwarding/v2/types"
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
@@ -231,7 +227,8 @@ func ConfigureDollarModule(ctx sdk.Context, dollarKeeper *dollarkeeper.Keeper) (
 	}
 }
 
-// ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar.
+// ConfigureGlobalFeeModule updates the minimum gas prices to include the Noble Dollar and register
+// the forwarding MsgRegisterAccount into the bypass messages.
 func ConfigureGlobalFeeModule(ctx context.Context, dollarKeeper *dollarkeeper.Keeper, globalFeeKeeper *globalfeekeeper.Keeper) (err error) {
 	gasPrices, err := globalFeeKeeper.GasPrices.Get(ctx)
 	if err != nil {
@@ -250,6 +247,12 @@ func ConfigureGlobalFeeModule(ctx context.Context, dollarKeeper *dollarkeeper.Ke
 	err = globalFeeKeeper.GasPrices.Set(ctx, gasPrices)
 	if err != nil {
 		return errors.Wrap(err, "unable to set gas prices in state")
+	}
+
+	forwardingRegisterAccount := sdk.MsgTypeURL(&forwardingtypes.MsgRegisterAccount{})
+	err = globalFeeKeeper.BypassMessages.Set(ctx, forwardingRegisterAccount)
+	if err != nil {
+		return errors.Wrap(err, "unable to set message register account into bypass messages")
 	}
 
 	return nil
