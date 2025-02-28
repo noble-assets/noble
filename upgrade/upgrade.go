@@ -66,7 +66,7 @@ func CreateUpgradeHandler(
 		}
 
 		bankKeeper.SetDenomMetaData(ctx, banktypes.Metadata{
-			Description: "Nobles Composable Yield Dollar",
+			Description: "Noble Dollar",
 			DenomUnits: []*banktypes.DenomUnit{
 				{
 					Denom:    "uusdn",
