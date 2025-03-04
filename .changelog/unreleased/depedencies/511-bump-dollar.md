@@ -1,0 +1,1 @@
+- Bump Dollar to [`v1.0.1`](https://github.com/noble-assets/dollar/releases/tag/v1.0.1) to correct recipient address in event. ([#511](https://github.com/noble-assets/noble/pull/511))
