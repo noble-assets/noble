@@ -20,12 +20,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 
 	"cosmossdk.io/math"
 	dollartypes "dollar.noble.xyz/types"
+	portaltypes "dollar.noble.xyz/types/portal"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -36,6 +37,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/require"
+	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 )
 
 func TestChainUpgrade(t *testing.T) {
@@ -224,7 +226,8 @@ func ExecuteGuardianSetUpdates(t *testing.T, ctx context.Context, validator *cos
 	return nil
 }
 
-// ExecutePortalTransactions ... TODO
+// ExecutePortalTransactions ensures that post Argentum upgrade, that the
+// initial Noble Dollar Portal messages can be delivered.
 func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cosmos.ChainNode, wallet ibc.Wallet) error {
 	// 1. Index Propagation, 1.034586303552
 	// https://etherscan.io/tx/0x9ff1d42bb1c425b683b83cea70782066bc1cde47c9da7a843be67f5f483e5215
@@ -242,7 +245,7 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 	}
 	require.Equal(t, math.LegacyMustNewDecFromStr("1.034586303552"), index)
 
-	// TODO: 2. Transfer of 1 $M for $USDN
+	// 2. Transfer of 1 $M for $USDN, Index = 1.034586859032
 	// https://etherscan.io/tx/0x5a2063704dfe1e8379fac019dad77bcbef806f352e2bd853301a1d64ba194129
 	// https://wormholescan.io/#/tx/0x5a2063704dfe1e8379fac019dad77bcbef806f352e2bd853301a1d64ba194129?network=Mainnet&view=overview
 	vaa = "AQAAAAQNANmG1ElQ5Rlx2LJTiRyFo3g6Zd4uujUOU04PqKjAKGzUcH9IXZcp7YIOpS/+UrBer0lwTW/J4x42Za/usmUqQhgAAd0z6mePw50gNpUr2HPCPC3dPjjkBMnR3R6vv/tI4ztyIIATcpBl9GtZ1QRyJpV34Hv351NhZUNK+KlOubTpJhQBAs1r9ssSOgnR8Sh6VqFOWNsTCLmpql2fV+YOBZSAsE0MffB2pv1SnWR7unI51wQYLaI7GZUFOSwc9tpM9HvncM4AAzwafd/jCfCWhrTn02uNzoa9jR1O4CSTCZ7M/ZOLEwYfa2U/Da0PeudHbwZe5mLoVFETh8Gh0KFaUAFVV1xRQaoBBHqcJj46wqZEOtGTh3nnnRWw4llvyFu9jOtuDluVhQBZYnbJZj03PCBmCxKxkZvYgJa/ApYAi6w/pi+eq3nufBkABmdaDJvwX7PDwRisVQD1KU99y0ez971Fn+VJKqKveXzOKY3DCC/ytipKt8kIe8jq3eJ+ZpDnyQo2ZwKohVNFJzYBB8KGEoy9yb60EPWjXFB3Bj/qNzyj6j+Mn229AuVY/h6+Ii3Ivje1ZiNOyJYHdC/QN/9nRp5TkJ90Z0Dr5m19vKoBCWSmrEDu3+N4QHNT1yFmFFStOZtJZEt7CO5KEq+W4tU9dy5nYmmf9Le696F1ALoSLN/4yC/OsP1ycL9iX2SICmEBCpkv4eCKTRKvt7K1V/DNIzwF4HmnK9orrOPtfgF/S1RkId7DZFQ9NTZD3DgTic4iRIz3Lv4huHq0s9n8PVkhxlkADA4EGp8trEKdrkfg6SGRUHLZ7p/cVa59Q7QPFdcI1rdmQQ7+06RUxABeu+GfpzUXhUL3Jc5LJuULXW2/HSRQuDUADbWbkdC0ocJlyTdOiBaA1T6m0US0Wom1fM7v79lQs/b3FIX6+8qPJRCALbn9w9q7/qVD2mPu6s3YfZyNkwB1e9wAEPTBN58JqZc/xLL8V/y+I8uwQHGFRmsywyVoxXjGod53GwzPr3sMvT4+p/FUtjglA7q4BY4vLr3EbtwDtqOdbrEBETQEyjaCj1xDt4JZTZvckLqSR4CDWGKAYI8pp5RH871jPgbugxNugyKzAbxui436ifQdRTdD3EdZtkxBtD0NvosAZ8X69wAAAAAAAgAAAAAAAAAAAAAAAMfdNyw544vxFFGrSoQntK44zvZEAAAAAAAAAAMBmUX/EAAAAAAAAAAAAAAAAIOugr1AVOgV+3sYnDnZzmcDaeoWAAAAAAAAAAAAAAAALoWVBroinBg/iYXVT+chCSP7m8oAuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA/PdC2Bphg9KcRn1GYrvZmF+qWxMAeZlOVFQGAAAAAAAPQj8AAAAAAAAAAAAAAACGaiv05XLLzzfVBxp6WFA7+za+GwAAAAAAAAAAAAAAADj6JvVmIfFz80NjymQuRaJLkXjsD6kAKAAAAPDiLqYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdXVzZG4AAA=="
@@ -252,13 +255,36 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 		return err
 	}
 
-	raw, _, err := validator.ExecQuery(ctx, "tx", hash)
+	tx, err := QueryTransaction(ctx, validator, hash)
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(raw))
 
-	// TODO: 3. Transfer of 1 $wM for $USDN
+	for _, rawEvent := range tx.Events {
+		switch rawEvent.Type {
+		case "noble.dollar.portal.v1.MTokenReceived":
+			event, err := sdk.ParseTypedEvent(rawEvent)
+			if err != nil {
+				return err
+			}
+
+			mTokenReceived := event.(*portaltypes.MTokenReceived)
+			destinationToken := strings.TrimLeft(string(mTokenReceived.DestinationToken), "\u0000")
+			sender := common.BytesToAddress(mTokenReceived.Sender[12:]).String()
+			messageId := strings.ToUpper(common.Bytes2Hex(mTokenReceived.MessageId))
+
+			require.Equal(t, uint32(vaautils.ChainIDEthereum), mTokenReceived.SourceChainId)
+			require.Equal(t, "uusdn", destinationToken)
+			require.Equal(t, "0xfcF742d81A6183D29c467d4662BBd9985faa5B13", sender)
+			// TODO: Verify recipient once Dollar v1.0.1 is released!
+			//require.Equal(t, "noble18razdatxy8ch8u6rv09xgtj95f9ez78vvcwjau", mTokenReceived.Recipient)
+			require.Equal(t, math.NewInt(999999), mTokenReceived.Amount)
+			require.Equal(t, int64(1034586859032), mTokenReceived.Index)
+			require.Equal(t, "3BD0CC34D4AEB8E09D125590D13AB7229F8F1BDB4B17F2A1E1AAAC017F9E4830", messageId)
+		}
+	}
+
+	// 3. Transfer of 1 $wM for $USDN, Index = 1.034586989732
 	// https://etherscan.io/tx/0x517ca887c67f6c6741eda76e0855f30c025f7b7d68916a32e438debbc622c2d3
 	// https://wormholescan.io/#/tx/0x517ca887c67f6c6741eda76e0855f30c025f7b7d68916a32e438debbc622c2d3?network=Mainnet&view=overview
 	vaa = "AQAAAAQNABSDpxF5RvSH/ZAR1Kl3EGj9urzecO77UUdtJp5q8wNTFEonaKKr8auAqXTHgT2Y+wmsfiroJZs7U0IdOHCR3F4AAW593ttl+E9twoNH8B3009QWL/qBpTqwGohWwma1k5guDWxk54C9BV+z9qXgUSiO4R9JXk/jMZ/LseEHVq7fa/QBAu6Vate5VtptXU9fkRawTyYkHXv2chuTQtDKGPvl9pUeEwM4Xh38wMn+YfKkDJvvMcZ646nJbgrlaJ2+zIwRXqQABOe+RLyQQovE3YHTvVKOnXP7vMviIf8KCfHCuEUfFwsWLu+jBTHj+1vhS8b0mFVT6Ry6z7SlaqDgk11j6O8vSg0ABr5iCYhct8CVPNnRr2mpGO06bdNTFnnV2QZfDJrvDWRketW9vaV6YrGXYsDstLy6Go8Lf6x14at1iQ7FyyWA26sABx/Ts62kO+5tS8Yb6nJMRXX2uJmWadQ65GuTTqQlXeU8NTrax9RNxneE2L0hAEyD/PAAr46qL1LH7aPjsQOplCwBCfrCdWjpOKxMQdKV0cogVpFeEhjGmLchgEkrHIJdNCJHRyWVaVs4Eio9wuIH+Bzar/OxWNcLjl3oHpm+4IUpzyYBCkgkltgR5d53CwvIf8TtItTA7ZieYepzyOOZ1zskJNEzIX3jIPHbrQnrwC9GM1VHNXQCfViS6OK3VHoDCtaPz2UADJcykKZSVnMlTmsfZRmQcChIwE03CAzl07bez3Aep1JBViALRnlxtpMFZNVkKe2BW+gsYCHkIpQ4BVky0yk2Y2EBDRKCjUXDp/oeYp9Jt6pmH7mKhLLJu4jwupo8Cr6CkTEfIVbF/+I7Bc2/lvFr5OYvFYCiYK3lTBJ/ot2Yc8t7PAEBDwk4Lt93AQxuSkXt2EN9cF4IA0mxgpTRyOPFsGjJS9x0WOTk0IlIYGK6VV258Iwxlu2fqX/UMV3HeNpWzQSSz1EBECYEJiqHea+/GJIS+OR4zVzcRawukFvmwGoC/qFI1w30WGeCzFPAydzczmfy5t4UQMap268+ibQx/IJestp9D50AEbTH5phuh5N3BCgUGr6xHu5iTjRo1G7A+HPtAfYCYgNuJcrL5yphYXGdclBBtIDzenfVdsaDVPfiUuEaNV6JSGYBZ8X7VwAAAAAAAgAAAAAAAAAAAAAAAMfdNyw544vxFFGrSoQntK44zvZEAAAAAAAAAAQBmUX/EAAAAAAAAAAAAAAAAIOugr1AVOgV+3sYnDnZzmcDaeoWAAAAAAAAAAAAAAAALoWVBroinBg/iYXVT+chCSP7m8oAuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA/PdC2Bphg9KcRn1GYrvZmF+qWxMAeZlOVFQGAAAAAAAPQkAAAAAAAAAAAAAAAACGaiv05XLLzzfVBxp6WFA7+za+GwAAAAAAAAAAAAAAADj6JvVmIfFz80NjymQuRaJLkXjsD6kAKAAAAPDiMKSkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdXVzZG4AAA=="
@@ -268,16 +294,39 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 		return err
 	}
 
-	raw, _, err = validator.ExecQuery(ctx, "tx", hash)
+	tx, err = QueryTransaction(ctx, validator, hash)
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(raw))
+
+	for _, rawEvent := range tx.Events {
+		switch rawEvent.Type {
+		case "noble.dollar.portal.v1.MTokenReceived":
+			event, err := sdk.ParseTypedEvent(rawEvent)
+			if err != nil {
+				return err
+			}
+
+			mTokenReceived := event.(*portaltypes.MTokenReceived)
+			destinationToken := strings.TrimLeft(string(mTokenReceived.DestinationToken), "\u0000")
+			sender := common.BytesToAddress(mTokenReceived.Sender[12:]).String()
+			messageId := strings.ToUpper(common.Bytes2Hex(mTokenReceived.MessageId))
+
+			require.Equal(t, uint32(vaautils.ChainIDEthereum), mTokenReceived.SourceChainId)
+			require.Equal(t, "uusdn", destinationToken)
+			require.Equal(t, "0xfcF742d81A6183D29c467d4662BBd9985faa5B13", sender)
+			// TODO: Verify recipient once Dollar v1.0.1 is released!
+			//require.Equal(t, "noble18razdatxy8ch8u6rv09xgtj95f9ez78vvcwjau", mTokenReceived.Recipient)
+			require.Equal(t, math.NewInt(1000000), mTokenReceived.Amount)
+			require.Equal(t, int64(1034586989732), mTokenReceived.Index)
+			require.Equal(t, "6211441CEB201621C8B9273FA15CF9FA5059773BA00912CADF1990E066DFB34B", messageId)
+		}
+	}
 
 	return nil
 }
 
-// QueryIndex ... TODO
+// QueryIndex is a utility for querying the latest Noble Dollar index.
 func QueryIndex(ctx context.Context, validator *cosmos.ChainNode) (math.LegacyDec, error) {
 	raw, _, err := validator.ExecQuery(ctx, "dollar", "index")
 	if err != nil {
@@ -291,4 +340,20 @@ func QueryIndex(ctx context.Context, validator *cosmos.ChainNode) (math.LegacyDe
 	}
 
 	return res.Index, nil
+}
+
+// QueryTransaction is a utility for querying a transaction response.
+func QueryTransaction(ctx context.Context, validator *cosmos.ChainNode, hash string) (*sdk.TxResponse, error) {
+	raw, _, err := validator.ExecQuery(ctx, "tx", hash)
+	if err != nil {
+		return nil, err
+	}
+
+	var res sdk.TxResponse
+	err = jsonpb.Unmarshal(bytes.NewReader(raw), &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
