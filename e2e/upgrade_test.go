@@ -234,7 +234,7 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 	// https://wormholescan.io/#/tx/0x9ff1d42bb1c425b683b83cea70782066bc1cde47c9da7a843be67f5f483e5215?network=Mainnet&view=overview
 	vaa := "AQAAAAQNAPotO0uTdQhgxz7rJfKntivZulNYWHlT0sAS78ksAc0EJ0CWOoFAPh8fGXacMhB55OX2dg+wxdTmc9cBJxZNyroBAX6/fISRub2csRxJaXw6QTL2vleRBQ3xn0269H5d6pF3Mf4h/7s+EIrSGvPp2QCfF1OTC97ALEB5/UPMQxFNJlwBAn6No27IaD2LJsKObDpV2kSq0PusnviMeG+CusXAT35uToRdEnsoY8iT+vfssMXQ36fLj1kAmZ3WSrQUVkYtYMcBBkxLqFX01H/Zsp3Pe0TNT7E7iTR1dh2hbEJqzAKu6YMIUoXyvV9omqX3l/d1gBz2lzBHxWUu8uP4L08zjGjLLi4AB0W8JAJvYH/VSds6asV9adUNcev+WveV/03y2a9JrykDVlOATBuQnkrFllp6foaW9U0wO9ElelCS/r6+j3kp3QoBCE+4r/g6eD14Gq/JUV16aWfV9xcz+qViY6JEhwpavPzIZkYRp96Dse+tXiOdSAsRruQ2Oqbk5YEKJq1C1nhbFwAACWoUAr5CjTwpB2ngLajUw2BiOaGdrneCDgcXOGuqNtNQSxxAJT1Q88czeVLfYnqhfTtUY5qBVKNT9qo+8dCANTwBCsDDWFwvhSeiH7YhBm3Zdyf+TtMCBIFwXXiBmS8b9I0NBPD7+KLl+IxqL+LHKzyEdFSU8kP1kC7jLO2wYbbtk6MADddW7L5gfC5GfM1Bli8vTIB4kKgjBupAqGwPqof582pNeVc+cRTv8QczZYNgmlHicKU21YEoUFxFackMbgT1EB0BDrS43I3yaoYI6eHz5iiHmbNNAr8E4jmynE2NbYQFuZfOQt59vdDtuV1l4Z5pvn3BPBn7HuA/nNSpo4Pll+RWkocBD1thCw+USxN9zLqvYEGHkNGWiuCGDyBn93LXRAozikB5CAq2eLrOMnt4g/H4HX3Mpo1pseOHCDc3vojFHesZTtEBEIOn+5uezSoF8BpnAAbeFM81YFSQxuwgSBijI1PPqNDSdqJgQWKOsKuA2E0lA+OvMhOYQojxQhY6pgtlPiqBVQUBETSUDicCPJ7FHhcvfDceN7c2gk36uMJsTpKD0vvODTJ5DBhfiLiFEkGJaEGNoF/QJGZmqQTOGIxQRnt+OmyVg6gBZ8X5XwAAAAAAAgAAAAAAAAAAAAAAAMfdNyw544vxFFGrSoQntK44zvZEAAAAAAAAAAIBmUX/EAAAAAAAAAAAAAAAAIOugr1AVOgV+3sYnDnZzmcDaeoWAAAAAAAAAAAAAAAALoWVBroinBg/iYXVT+chCSP7m8oAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/PdC2Bphg9KcRn1GYrvZmF+qWxMADk0wSVQAAADw4iYsQA+pAAA="
 
-	_, err := validator.ExecTx(ctx, wallet.KeyName(), "dollar", "portal", "deliver", vaa)
+	hash, err := validator.ExecTx(ctx, wallet.KeyName(), "dollar", "portal", "deliver", vaa)
 	if err != nil {
 		return err
 	}
@@ -245,17 +245,45 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 	}
 	require.Equal(t, math.LegacyMustNewDecFromStr("1.034586303552"), index)
 
+	tx, err := QueryTransaction(ctx, validator, hash)
+	if err != nil {
+		return err
+	}
+
+	for _, rawEvent := range tx.Events {
+		switch rawEvent.Type {
+		case "noble.dollar.v1.IndexUpdated":
+			event, err := sdk.ParseTypedEvent(rawEvent)
+			if err != nil {
+				return err
+			}
+
+			indexUpdated := event.(*dollartypes.IndexUpdated)
+
+			require.Equal(t, int64(1e12), indexUpdated.OldIndex)
+			require.Equal(t, int64(1034586303552), indexUpdated.NewIndex)
+			require.Equal(t, math.ZeroInt(), indexUpdated.TotalPrincipal)
+			require.Equal(t, math.ZeroInt(), indexUpdated.YieldAccrued)
+		}
+	}
+
 	// 2. Transfer of 1 $M for $USDN, Index = 1.034586859032
 	// https://etherscan.io/tx/0x5a2063704dfe1e8379fac019dad77bcbef806f352e2bd853301a1d64ba194129
 	// https://wormholescan.io/#/tx/0x5a2063704dfe1e8379fac019dad77bcbef806f352e2bd853301a1d64ba194129?network=Mainnet&view=overview
 	vaa = "AQAAAAQNANmG1ElQ5Rlx2LJTiRyFo3g6Zd4uujUOU04PqKjAKGzUcH9IXZcp7YIOpS/+UrBer0lwTW/J4x42Za/usmUqQhgAAd0z6mePw50gNpUr2HPCPC3dPjjkBMnR3R6vv/tI4ztyIIATcpBl9GtZ1QRyJpV34Hv351NhZUNK+KlOubTpJhQBAs1r9ssSOgnR8Sh6VqFOWNsTCLmpql2fV+YOBZSAsE0MffB2pv1SnWR7unI51wQYLaI7GZUFOSwc9tpM9HvncM4AAzwafd/jCfCWhrTn02uNzoa9jR1O4CSTCZ7M/ZOLEwYfa2U/Da0PeudHbwZe5mLoVFETh8Gh0KFaUAFVV1xRQaoBBHqcJj46wqZEOtGTh3nnnRWw4llvyFu9jOtuDluVhQBZYnbJZj03PCBmCxKxkZvYgJa/ApYAi6w/pi+eq3nufBkABmdaDJvwX7PDwRisVQD1KU99y0ez971Fn+VJKqKveXzOKY3DCC/ytipKt8kIe8jq3eJ+ZpDnyQo2ZwKohVNFJzYBB8KGEoy9yb60EPWjXFB3Bj/qNzyj6j+Mn229AuVY/h6+Ii3Ivje1ZiNOyJYHdC/QN/9nRp5TkJ90Z0Dr5m19vKoBCWSmrEDu3+N4QHNT1yFmFFStOZtJZEt7CO5KEq+W4tU9dy5nYmmf9Le696F1ALoSLN/4yC/OsP1ycL9iX2SICmEBCpkv4eCKTRKvt7K1V/DNIzwF4HmnK9orrOPtfgF/S1RkId7DZFQ9NTZD3DgTic4iRIz3Lv4huHq0s9n8PVkhxlkADA4EGp8trEKdrkfg6SGRUHLZ7p/cVa59Q7QPFdcI1rdmQQ7+06RUxABeu+GfpzUXhUL3Jc5LJuULXW2/HSRQuDUADbWbkdC0ocJlyTdOiBaA1T6m0US0Wom1fM7v79lQs/b3FIX6+8qPJRCALbn9w9q7/qVD2mPu6s3YfZyNkwB1e9wAEPTBN58JqZc/xLL8V/y+I8uwQHGFRmsywyVoxXjGod53GwzPr3sMvT4+p/FUtjglA7q4BY4vLr3EbtwDtqOdbrEBETQEyjaCj1xDt4JZTZvckLqSR4CDWGKAYI8pp5RH871jPgbugxNugyKzAbxui436ifQdRTdD3EdZtkxBtD0NvosAZ8X69wAAAAAAAgAAAAAAAAAAAAAAAMfdNyw544vxFFGrSoQntK44zvZEAAAAAAAAAAMBmUX/EAAAAAAAAAAAAAAAAIOugr1AVOgV+3sYnDnZzmcDaeoWAAAAAAAAAAAAAAAALoWVBroinBg/iYXVT+chCSP7m8oAuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA/PdC2Bphg9KcRn1GYrvZmF+qWxMAeZlOVFQGAAAAAAAPQj8AAAAAAAAAAAAAAACGaiv05XLLzzfVBxp6WFA7+za+GwAAAAAAAAAAAAAAADj6JvVmIfFz80NjymQuRaJLkXjsD6kAKAAAAPDiLqYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdXVzZG4AAA=="
 
-	hash, err := validator.ExecTx(ctx, wallet.KeyName(), "dollar", "portal", "deliver", vaa)
+	hash, err = validator.ExecTx(ctx, wallet.KeyName(), "dollar", "portal", "deliver", vaa)
 	if err != nil {
 		return err
 	}
 
-	tx, err := QueryTransaction(ctx, validator, hash)
+	totalSupply, err := QueryTotalSupply(ctx, validator)
+	if err != nil {
+		return err
+	}
+	require.Equal(t, math.NewInt(999999), totalSupply)
+
+	tx, err = QueryTransaction(ctx, validator, hash)
 	if err != nil {
 		return err
 	}
@@ -280,6 +308,18 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 			require.Equal(t, math.NewInt(999999), mTokenReceived.Amount)
 			require.Equal(t, int64(1034586859032), mTokenReceived.Index)
 			require.Equal(t, "3BD0CC34D4AEB8E09D125590D13AB7229F8F1BDB4B17F2A1E1AAAC017F9E4830", messageId)
+		case "noble.dollar.v1.IndexUpdated":
+			event, err := sdk.ParseTypedEvent(rawEvent)
+			if err != nil {
+				return err
+			}
+
+			indexUpdated := event.(*dollartypes.IndexUpdated)
+
+			require.Equal(t, int64(1034586303552), indexUpdated.OldIndex)
+			require.Equal(t, int64(1034586859032), indexUpdated.NewIndex)
+			require.Equal(t, math.ZeroInt(), indexUpdated.TotalPrincipal)
+			require.Equal(t, math.ZeroInt(), indexUpdated.YieldAccrued)
 		}
 	}
 
@@ -292,6 +332,12 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 	if err != nil {
 		return err
 	}
+
+	totalSupply, err = QueryTotalSupply(ctx, validator)
+	if err != nil {
+		return err
+	}
+	require.Equal(t, math.NewInt(1999999), totalSupply)
 
 	tx, err = QueryTransaction(ctx, validator, hash)
 	if err != nil {
@@ -318,6 +364,18 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 			require.Equal(t, math.NewInt(1000000), mTokenReceived.Amount)
 			require.Equal(t, int64(1034586989732), mTokenReceived.Index)
 			require.Equal(t, "6211441CEB201621C8B9273FA15CF9FA5059773BA00912CADF1990E066DFB34B", messageId)
+		case "noble.dollar.v1.IndexUpdated":
+			event, err := sdk.ParseTypedEvent(rawEvent)
+			if err != nil {
+				return err
+			}
+
+			indexUpdated := event.(*dollartypes.IndexUpdated)
+
+			require.Equal(t, int64(1034586859032), indexUpdated.OldIndex)
+			require.Equal(t, int64(1034586989732), indexUpdated.NewIndex)
+			require.Equal(t, math.NewInt(966569), indexUpdated.TotalPrincipal)
+			require.Equal(t, math.ZeroInt(), indexUpdated.YieldAccrued)
 		}
 	}
 
@@ -354,4 +412,20 @@ func QueryTransaction(ctx context.Context, validator *cosmos.ChainNode, hash str
 	}
 
 	return &res, nil
+}
+
+// QueryTotalSupply is a utility for querying the USDN total supply.
+func QueryTotalSupply(ctx context.Context, validator *cosmos.ChainNode) (math.Int, error) {
+	raw, _, err := validator.ExecQuery(ctx, "bank", "total-supply-of", "uusdn")
+	if err != nil {
+		return math.ZeroInt(), err
+	}
+
+	var res banktypes.QuerySupplyOfResponse
+	err = jsonpb.Unmarshal(bytes.NewReader(raw), &res)
+	if err != nil {
+		return math.ZeroInt(), err
+	}
+
+	return res.Amount.Amount, nil
 }
