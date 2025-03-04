@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v9.0.1
+
+*Mar 4, 2025*
+
+This is a non-consensus breaking patch to the v9 Argentum release line.
+
+### DEPENDENCIES
+
+- Bump Authority to [`v1.0.3`](https://github.com/noble-assets/authority/releases/tag/v1.0.3) to correctly implement codec interface. ([#509](https://github.com/noble-assets/noble/pull/509))
+- Bump Dollar to [`v1.0.1`](https://github.com/noble-assets/dollar/releases/tag/v1.0.1) to correct recipient address in event. ([#511](https://github.com/noble-assets/noble/pull/511))
+
 ## v9.0.0
 
 *Feb 28, 2025*
