@@ -276,8 +276,7 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 			require.Equal(t, uint32(vaautils.ChainIDEthereum), mTokenReceived.SourceChainId)
 			require.Equal(t, "uusdn", destinationToken)
 			require.Equal(t, "0xfcF742d81A6183D29c467d4662BBd9985faa5B13", sender)
-			// TODO: Verify recipient once Dollar v1.0.1 is released!
-			//require.Equal(t, "noble18razdatxy8ch8u6rv09xgtj95f9ez78vvcwjau", mTokenReceived.Recipient)
+			require.Equal(t, "noble18razdatxy8ch8u6rv09xgtj95f9ez78vvcwjau", mTokenReceived.Recipient)
 			require.Equal(t, math.NewInt(999999), mTokenReceived.Amount)
 			require.Equal(t, int64(1034586859032), mTokenReceived.Index)
 			require.Equal(t, "3BD0CC34D4AEB8E09D125590D13AB7229F8F1BDB4B17F2A1E1AAAC017F9E4830", messageId)
@@ -315,8 +314,7 @@ func ExecutePortalTransactions(t *testing.T, ctx context.Context, validator *cos
 			require.Equal(t, uint32(vaautils.ChainIDEthereum), mTokenReceived.SourceChainId)
 			require.Equal(t, "uusdn", destinationToken)
 			require.Equal(t, "0xfcF742d81A6183D29c467d4662BBd9985faa5B13", sender)
-			// TODO: Verify recipient once Dollar v1.0.1 is released!
-			//require.Equal(t, "noble18razdatxy8ch8u6rv09xgtj95f9ez78vvcwjau", mTokenReceived.Recipient)
+			require.Equal(t, "noble18razdatxy8ch8u6rv09xgtj95f9ez78vvcwjau", mTokenReceived.Recipient)
 			require.Equal(t, math.NewInt(1000000), mTokenReceived.Amount)
 			require.Equal(t, int64(1034586989732), mTokenReceived.Index)
 			require.Equal(t, "6211441CEB201621C8B9273FA15CF9FA5059773BA00912CADF1990E066DFB34B", messageId)
