@@ -1,6 +1,6 @@
 module github.com/noble-assets/noble/v10
 
-go 1.23
+go 1.22.11
 
 require (
 	connectrpc.com/connect v1.18.1
@@ -17,7 +17,7 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
 	dollar.noble.xyz v1.0.1
-	github.com/bcp-innovations/hyperlane-cosmos v0.0.0-20250207132833-db328a1d4fd6
+	github.com/bcp-innovations/hyperlane-cosmos v0.0.0-20250304103734-261788112522
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cometbft/cometbft v0.38.17

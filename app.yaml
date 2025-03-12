@@ -110,7 +110,7 @@ modules:
   # Hyperlane Modules
   - name: hyperlane
     config:
-      "@type": hyperlane.core.module.Module
+      "@type": hyperlane.core.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
   
   # Monerium Modules
