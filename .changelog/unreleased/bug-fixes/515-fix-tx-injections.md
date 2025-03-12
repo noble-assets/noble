@@ -1,0 +1,1 @@
+- Properly handle empty transaction injections. ([#515](https://github.com/noble-assets/noble/pull/515))
