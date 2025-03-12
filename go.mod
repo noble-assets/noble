@@ -24,7 +24,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.12
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
-	github.com/cosmos/ibc-go/v8 v8.6.1
+	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/ethereum/go-ethereum v1.14.13
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/mux v1.8.1
