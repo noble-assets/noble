@@ -1,5 +1,64 @@
 # CHANGELOG
 
+## v9.0.2
+
+*Mar 12, 2025*
+
+This is a non-consensus breaking patch to the v9 Argentum release line.
+
+### DEPENDENCIES
+
+- Bump IBC to [`v8.7.0`](https://github.com/cosmos/ibc-go/releases/tag/v8.7.0) to resolve [ISA-2025-001](https://github.com/cosmos/ibc-go/security/advisories/GHSA-4wf3-5qj9-368v) security advisory. ([#513](https://github.com/noble-assets/noble/pull/513))
+
+## v9.0.1
+
+*Mar 4, 2025*
+
+This is a non-consensus breaking patch to the v9 Argentum release line.
+
+### DEPENDENCIES
+
+- Bump Authority to [`v1.0.3`](https://github.com/noble-assets/authority/releases/tag/v1.0.3) to correctly implement codec interface. ([#509](https://github.com/noble-assets/noble/pull/509))
+- Bump Dollar to [`v1.0.1`](https://github.com/noble-assets/dollar/releases/tag/v1.0.1) to correct recipient address in event. ([#511](https://github.com/noble-assets/noble/pull/511))
+
+## v9.0.0
+
+*Feb 28, 2025*
+
+This is the Argentum major release of Noble. It introduces various new modules
+that enable the issuance and use-cases of the Noble Dollar (USDN), Noble's
+yield bearing stablecoin. USDN is fully collateralized by U.S. Treasury bills
+via the M^0 protocol.
+
+This and other notable changes are documented below.
+
+### BUG FIXES
+
+- Update the capabilities of previously created ICA channels from the ICA Controller module back to the ICA Host module. ([#432](https://github.com/noble-assets/noble/pull/432))
+
+### DEPENDENCIES
+
+- Bump FiatTokenFactory to remove the limit check when decoding addresses. ([#455](https://github.com/noble-assets/noble/pull/455))
+- Bump `cosmossdk.io/client/v2` to support returning maps inside AutoCLI queries. ([#464](https://github.com/noble-assets/noble/pull/464))
+- Bump Authority to [`v1.0.2`](https://github.com/noble-assets/authority/releases/tag/v1.0.2) to include a new helper CLI command. ([#480](https://github.com/noble-assets/noble/pull/480))
+- Bump Forwarding to [`v2.0.1`](https://github.com/noble-assets/forwarding/releases/tag/v2.0.1) to check recipient length and harden validation when registering accounts. ([#481](https://github.com/noble-assets/noble/pull/481))
+- Bump Packet Forward Middleware to [`v8.2.0`](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.2.0) to resolve [GHSA-6fgm-x6ff-w78f](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-6fgm-x6ff-w78f) security advisory. ([#488](https://github.com/noble-assets/noble/pull/488), [#506](https://github.com/noble-assets/noble/pull/506))
+- Bump Cosmos SDK to [`v0.50.12`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([#495](https://github.com/noble-assets/noble/pull/495))
+- Bump IBC to [`v8.6.1`](https://github.com/cosmos/ibc-go/releases/v8.6.1) to resolve [ASA-2025-004](https://github.com/cosmos/ibc-go/security/advisories/GHSA-jg6f-48ff-5xrw) security advisory. ([#506](https://github.com/noble-assets/noble/pull/506))
+
+### FEATURES
+
+- Integrate our custom Wormhole module, that enables Wormhole messaging on Noble via IBC. ([#444](https://github.com/noble-assets/noble/pull/444))
+- Integrate our custom Dollar module, that enables the issuance of Noble's stablecoin $USDN. ([#448](https://github.com/noble-assets/noble/pull/448))
+- Integrate our custom Swap module, that enables the exchange of tokens issued on Noble. ([#449](https://github.com/noble-assets/noble/pull/449))
+- Integrate our custom Jester sidecar, that enables the automatic relaying of $USDN transfers to Noble. ([#463](https://github.com/noble-assets/noble/pull/463))
+- Enable Swagger documentation in API endpoint. ([#470](https://github.com/noble-assets/noble/pull/470))
+- Enable functionality for in-place forking a synced testnet or mainnet node. ([#487](https://github.com/noble-assets/noble/pull/487))
+
+### IMPROVEMENTS
+
+- Update module path for v9 release line. ([#443](https://github.com/noble-assets/noble/pull/443))
+
 ## v8.0.5
 
 *Feb 3, 2025*

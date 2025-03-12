@@ -21,8 +21,8 @@ import (
 	"os"
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/noble-assets/noble/v9"
-	"github.com/noble-assets/noble/v9/cmd"
+	"github.com/noble-assets/noble/v10"
+	"github.com/noble-assets/noble/v10/cmd"
 )
 
 func main() {

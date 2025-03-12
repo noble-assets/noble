@@ -28,7 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
-	"github.com/noble-assets/noble/v9/jester"
+	"github.com/noble-assets/noble/v10/jester"
 	"github.com/spf13/cobra"
 )
 
@@ -73,8 +73,9 @@ func NewRootCmd() *cobra.Command {
 
 			// overwrite the minimum gas price from the app configuration
 			srvCfg := serverconfig.DefaultConfig()
-			srvCfg.MinGasPrices = "0uusdc,0ausdy,0ueure"
+			srvCfg.MinGasPrices = "0ausdy,0ueure,0uusdc,0uusdn"
 			srvCfg.API.Enable = true
+			srvCfg.API.Swagger = true
 			// overwrite default commit timeout from the cometbft configuration
 			cmtCfg := cmtcfg.DefaultConfig()
 			cmtCfg.Consensus.TimeoutCommit = 500 * time.Millisecond

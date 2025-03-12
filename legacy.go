@@ -60,7 +60,6 @@ func (app *App) RegisterLegacyModules() error {
 
 	app.ParamsKeeper.Subspace(ibcexported.ModuleName).WithKeyTable(clienttypes.ParamKeyTable().RegisterParamSet(&connectiontypes.Params{}))
 	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
-	app.ParamsKeeper.Subspace(pfmtypes.ModuleName).WithKeyTable(pfmtypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(transfertypes.ModuleName).WithKeyTable(transfertypes.ParamKeyTable())
 
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -116,7 +115,6 @@ func (app *App) RegisterLegacyModules() error {
 		app.GetKey(pfmtypes.StoreKey),
 		app.TransferKeeper,
 		app.IBCKeeper.ChannelKeeper,
-		nil,
 		app.BankKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		authoritytypes.ModuleAddress.String(),
@@ -130,7 +128,6 @@ func (app *App) RegisterLegacyModules() error {
 		app.PFMKeeper,
 		0,
 		pfmkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
-		pfmkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
 	transferStack = blockibc.NewIBCMiddleware(transferStack, app.FTFKeeper)
 

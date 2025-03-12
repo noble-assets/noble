@@ -1,0 +1,1 @@
+- Bump Authority to [`v1.0.3`](https://github.com/noble-assets/authority/releases/tag/v1.0.3) to correctly implement codec interface. ([#509](https://github.com/noble-assets/noble/pull/509))

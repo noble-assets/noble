@@ -18,7 +18,6 @@ package noble
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"slices"
 	"time"
@@ -26,6 +25,7 @@ import (
 	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 
@@ -44,12 +44,13 @@ import (
 const jesterIndex = 0
 
 type ProposalHandler struct {
-	jesterClient       jester.QueryServiceClient
-	wormholeServer     wormholetypes.QueryServer
-	dollarPortalServer dollarportaltypes.MsgServer
+	txConfig client.TxConfig
+
+	jesterClient   jester.QueryServiceClient
+	wormholeServer wormholetypes.QueryServer
+	dollarKeeper   *dollarkeeper.Keeper
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
-	defaultProcessProposalHandler sdk.ProcessProposalHandler
 	defaultPreBlocker             sdk.PreBlocker
 }
 
@@ -57,6 +58,7 @@ func NewProposalHandler(
 	app *baseapp.BaseApp,
 	mempool mempool.Mempool,
 	preBlocker sdk.PreBlocker,
+	txConfig client.TxConfig,
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
@@ -64,12 +66,13 @@ func NewProposalHandler(
 	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
 
 	return &ProposalHandler{
-		jesterClient:       jesterClient,
-		wormholeServer:     wormholekeeper.NewQueryServer(wormholeKeeper),
-		dollarPortalServer: dollarkeeper.NewPortalMsgServer(dollarKeeper),
+		txConfig: txConfig,
+
+		jesterClient:   jesterClient,
+		wormholeServer: wormholekeeper.NewQueryServer(wormholeKeeper),
+		dollarKeeper:   dollarKeeper,
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
-		defaultProcessProposalHandler: defaultHandler.ProcessProposalHandler(),
 		defaultPreBlocker:             preBlocker,
 	}
 }
@@ -99,7 +102,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		}
 
 		if jesterRes != nil && jesterRes.Msg != nil && jesterRes.Msg.Dollar != nil && len(jesterRes.Msg.Dollar.Vaas) > 0 {
-			var nonExecutedVAAs [][]byte
+			var nonExecutedVAAs []sdk.Msg
 
 			for _, raw := range jesterRes.Msg.Dollar.Vaas {
 				vaa, err := vaautils.Unmarshal(raw)
@@ -113,52 +116,33 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				})
 
 				if wormholeRes != nil && !wormholeRes.Executed {
-					nonExecutedVAAs = append(nonExecutedVAAs, raw)
+					nonExecutedVAAs = append(nonExecutedVAAs, &dollarportaltypes.MsgDeliverInjection{
+						Vaa: raw,
+					})
 				} else {
 					logger.Warn("skipped already executed transfer from jester", "identifier", vaa.MessageID())
 				}
 			}
 
-			if len(nonExecutedVAAs) > 0 {
-				jesterRes.Msg.Dollar.Vaas = nonExecutedVAAs
+			builder := h.txConfig.NewTxBuilder()
 
-				bz, err := json.Marshal(jesterRes.Msg)
-				if err != nil {
-					return nil, errors.Wrap(err, "failed to marshal injected jester tx")
-				}
-				res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
-
-				logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
+			err := builder.SetMsgs(nonExecutedVAAs...)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
 			}
+
+			tx := builder.GetTx()
+
+			bz, err := h.txConfig.TxEncoder()(tx)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to marshal injected jester tx")
+			}
+			res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
+
+			logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 		}
 
 		return &abci.ResponsePrepareProposal{Txs: res.Txs}, nil
-	}
-}
-
-// ProcessProposal is the logic called by all validators except the current
-// block proposer to process a block proposal. Noble modifies this by first
-// removing the injected transaction from our sidecar service, Jester, then
-// executing the default proposal processing logic provided by the Cosmos SDK.
-func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
-	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
-		resAccept := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}
-		resReject := &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}
-
-		if len(req.Txs) == 0 {
-			return resAccept, nil
-		}
-
-		if h.isJesterTx(req.Txs[jesterIndex]) {
-			req.Txs = req.Txs[jesterIndex+1:]
-		}
-
-		res, err := h.defaultProcessProposalHandler(ctx, req)
-		if err != nil || (res != nil && !res.IsAccepted()) {
-			return resReject, errors.Wrap(err, "default ProcessProposal handler failed")
-		}
-
-		return resAccept, nil
 	}
 }
 
@@ -175,21 +159,13 @@ func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 		}
 
 		tx := req.Txs[jesterIndex]
-		if h.isJesterTx(tx) {
-			h.handleJesterTx(ctx, tx)
-		}
+		h.handleJesterTx(ctx, tx)
 
 		return res, nil
 	}
 }
 
-// isJesterTx is a utility that returns if a given transaction is from Jester.
-func (h *ProposalHandler) isJesterTx(bytes []byte) bool {
-	var jesterResponse jester.GetVoteExtensionResponse
-	return json.Unmarshal(bytes, &jesterResponse) == nil
-}
-
-// handleJesterTx is a utility that handles an injected transaction from Jester.
+// handleJesterTx is a utility that processes messages from Jester.
 func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 	logger := ctx.Logger()
 
@@ -199,37 +175,36 @@ func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
 		}
 	}()
 
-	var res jester.GetVoteExtensionResponse
-	if err := json.Unmarshal(bytes, &res); err != nil {
+	tx, err := h.txConfig.TxDecoder()(bytes)
+	if err != nil {
 		logger.Error("failed to unmarshal injected jester tx", "err", err)
 		return
 	}
 
-	if res.Dollar != nil && len(res.Dollar.Vaas) > 0 {
-		var count int
-
-		for _, raw := range res.Dollar.Vaas {
-			vaa, err := vaautils.Unmarshal(raw)
-			if err != nil {
-				logger.Error("failed to unmarshal transfer from jester", "err", err)
-				continue
-			}
-
-			cachedCtx, writeCache := ctx.CacheContext()
-			_, err = h.dollarPortalServer.Deliver(cachedCtx, &dollarportaltypes.MsgDeliver{
-				Vaa: raw,
-			})
-
-			if err == nil {
-				writeCache()
-				count++
-			} else {
-				logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
-			}
+	var count int
+	for _, raw := range tx.GetMsgs() {
+		msg, ok := raw.(*dollarportaltypes.MsgDeliverInjection)
+		// If the first message is not a MsgDeliverInjection, no VAAs were injected.
+		if !ok {
+			break
 		}
 
-		if count > 0 {
-			logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
+		vaa, err := vaautils.Unmarshal(msg.Vaa)
+		if err != nil {
+			logger.Error("failed to unmarshal transfer from jester", "err", err)
+			continue
 		}
+
+		cachedCtx, writeCache := ctx.CacheContext()
+		if err := h.dollarKeeper.Deliver(cachedCtx, msg.Vaa); err != nil {
+			logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
+		} else {
+			writeCache()
+			count++
+		}
+
+	}
+	if count > 0 {
+		logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
 	}
 }

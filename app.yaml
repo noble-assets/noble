@@ -128,6 +128,8 @@ modules:
       "@type": noble.dollar.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
       denom: uusdn
+      vaults_minimum_lock: 1e6
+      vaults_minimum_unlock: 1e6
   - name: forwarding
     config:
       "@type": noble.forwarding.module.v1.Module
@@ -141,7 +143,8 @@ modules:
       "@type": noble.swap.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
       base_denom: uusdn
-      base_minimum_deposit: 1000000
+      base_minimum_deposit: 1e6
+      max_add_liquidity_slippage_percentage: 0.5e4
       stableswap:
         unbonding_block_delta: 30
   - name: wormhole
