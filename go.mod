@@ -1,4 +1,4 @@
-module github.com/noble-assets/noble/v9
+module github.com/noble-assets/noble/v10
 
 go 1.22.11
 
