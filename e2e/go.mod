@@ -5,7 +5,6 @@ go 1.22.11
 require (
 	cosmossdk.io/math v1.4.0
 	cosmossdk.io/x/upgrade v0.1.4
-	dollar.noble.xyz v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cosmos/cosmos-sdk v0.50.12
@@ -16,11 +15,9 @@ require (
 	github.com/monerium/module-noble/v2 v2.0.0
 	github.com/noble-assets/authority v1.0.3
 	github.com/noble-assets/halo/v2 v2.0.1
-	github.com/noble-assets/wormhole v1.0.0
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
 	github.com/strangelove-ventures/interchaintest/v8 v8.8.0
 	github.com/stretchr/testify v1.10.0
-	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	go.uber.org/zap v1.27.0
 )
 
@@ -32,6 +29,7 @@ require (
 	cloud.google.com/go/iam v1.2.0 // indirect
 	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/api v0.7.6 // indirect
+	cosmossdk.io/client/v2 v2.0.0-beta.8 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/core v0.11.1 // indirect
 	cosmossdk.io/depinject v1.1.0 // indirect

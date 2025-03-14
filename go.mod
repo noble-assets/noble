@@ -5,7 +5,6 @@ go 1.22.11
 require (
 	connectrpc.com/connect v1.18.1
 	cosmossdk.io/client/v2 v2.0.0-beta.8
-	cosmossdk.io/collections v0.4.0
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/depinject v1.1.0
 	cosmossdk.io/errors v1.0.1
@@ -25,7 +24,6 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
 	github.com/cosmos/ibc-go/v8 v8.7.0
-	github.com/ethereum/go-ethereum v1.14.13
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/mux v1.8.1
 	github.com/monerium/module-noble/v2 v2.0.0
@@ -56,6 +54,7 @@ require (
 	cloud.google.com/go/iam v1.2.0 // indirect
 	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/api v0.7.6 // indirect
+	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/x/tx v0.13.8 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect
@@ -131,6 +130,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/dvsekhvalnov/jose2go v1.6.0 // indirect
 	github.com/emicklei/dot v1.6.2 // indirect
+	github.com/ethereum/go-ethereum v1.14.13 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
