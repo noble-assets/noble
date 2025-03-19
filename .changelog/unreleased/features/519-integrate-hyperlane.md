@@ -1,0 +1,1 @@
+- Integrate the Hyperlane Core module, that enables messaging via the Hyperlane protocol. ([#519](https://github.com/noble-assets/noble/pull/519))
