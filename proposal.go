@@ -124,22 +124,24 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				}
 			}
 
-			builder := h.txConfig.NewTxBuilder()
+			if len(nonExecutedVAAs) > 0 {
+				builder := h.txConfig.NewTxBuilder()
 
-			err := builder.SetMsgs(nonExecutedVAAs...)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
+				err := builder.SetMsgs(nonExecutedVAAs...)
+				if err != nil {
+					return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
+				}
+
+				tx := builder.GetTx()
+
+				bz, err := h.txConfig.TxEncoder()(tx)
+				if err != nil {
+					return nil, errors.Wrap(err, "failed to marshal injected jester tx")
+				}
+				res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
+
+				logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 			}
-
-			tx := builder.GetTx()
-
-			bz, err := h.txConfig.TxEncoder()(tx)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to marshal injected jester tx")
-			}
-			res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
-
-			logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 		}
 
 		return &abci.ResponsePrepareProposal{Txs: res.Txs}, nil
