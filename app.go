@@ -488,3 +488,27 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 
 	return keys
 }
+
+// GetAppStatus returns important information about the current state of the application
+// including version, block height, and chain ID. This is useful for monitoring
+// and debugging purposes.
+func (app *App) GetAppStatus() map[string]interface{} {
+	status := make(map[string]interface{})
+
+	ctx := app.BaseApp.NewContext(true)
+
+	// Get current block height
+	height := app.BaseApp.LastBlockHeight()
+
+	// Get app version
+	version := "unknown"
+	if plan, err := app.UpgradeKeeper.CurrentPlan(ctx, &upgradetypes.QueryCurrentPlanRequest{}); err == nil && plan != nil {
+		version = plan.Plan.Name
+	}
+
+	status["version"] = version
+	status["height"] = height
+	status["chain_id"] = app.BaseApp.ChainID()
+
+	return status
+}
