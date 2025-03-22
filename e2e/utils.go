@@ -234,7 +234,7 @@ func preGenesisAll(ctx context.Context, nw *NobleWrapper, setupAllCircleRoles bo
 }
 
 // createTokenfactoryRoles Creates wallets to be tied to TF roles with 0 amount. Meant to run pre-genesis.
-// After creating thw wallets, it recovers the key on the specified validator.
+// After creating the wallets, it recovers the key on the specified validator.
 //
 // setupAllCircleRoles: if true, a wallet for all Tokenfactory and CCTP roles will be created,
 // if false, only the Owner role will be created
