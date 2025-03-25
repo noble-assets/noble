@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v9.0.3
+
+*Mar 25, 2025*
+
+This is a consensus breaking patch to the v9 Argentum release line.
+
+### DEPENDENCIES
+
+- Bump Swap to [`v1.0.1`](https://github.com/noble-assets/swap/releases/tag/v1.0.1) ([#522](https://github.com/noble-assets/noble/pull/522))
+
 ## v9.0.2
 
 *Mar 12, 2025*
