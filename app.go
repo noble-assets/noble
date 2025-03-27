@@ -53,7 +53,7 @@ import (
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
-	_ "dollar.noble.xyz"
+	_ "dollar.noble.xyz/v2"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
@@ -114,7 +114,7 @@ import (
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
-	dollarkeeper "dollar.noble.xyz/keeper"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
