@@ -67,7 +67,7 @@ func TestCCTP_ReceiveMessageWithCaller(t *testing.T) {
 		bCtx, bCancel := context.WithTimeout(ctx, 20*time.Second)
 		defer bCancel()
 
-		// Adding an attester to protocal
+		// Adding an attester to protocol
 		tx, err := cosmos.BroadcastTx(
 			bCtx,
 			broadcaster,
