@@ -428,6 +428,19 @@
       }
     },
     {
+      "url": "./api/tmp-swagger-gen/noble/dollar/v2/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Dollar"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Stats": "DollarV2Stats"
+        }
+      }
+    },
+    {
       "url": "./api/tmp-swagger-gen/noble/dollar/portal/v1/query.swagger.json",
       "tags": {
         "rename": {

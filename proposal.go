@@ -36,8 +36,8 @@ import (
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
-	dollarkeeper "dollar.noble.xyz/keeper"
-	dollarportaltypes "dollar.noble.xyz/types/portal"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	dollarportaltypes "dollar.noble.xyz/v2/types/portal"
 )
 
 // jesterIndex is the index of the injected Jester response in a block.

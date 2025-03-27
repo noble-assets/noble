@@ -46249,6 +46249,126 @@ paths:
           type: string
       tags:
         - Dollar
+  /noble/dollar/v2/stats:
+    get:
+      operationId: DollarV2Stats
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total_holders:
+                type: string
+                format: uint64
+              total_principal:
+                type: string
+              total_yield_accrued:
+                type: string
+              total_external_yield:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    chain_id:
+                      type: string
+                    amount:
+                      type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Dollar
+  /noble/dollar/v2/yield_recipient/{provider}/{identifier}:
+    get:
+      operationId: YieldRecipient
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              yield_recipient:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          type: string
+          enum:
+            - IBC
+        - name: identifier
+          in: path
+          required: true
+          type: string
+      tags:
+        - Dollar
+  /noble/dollar/v2/yield_recipients:
+    get:
+      operationId: YieldRecipients
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              yield_recipients:
+                type: object
+                additionalProperties:
+                  type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Dollar
   /noble/dollar/portal/v1/destination_tokens/{chain_id}:
     get:
       operationId: DestinationTokens
@@ -75624,6 +75744,49 @@ definitions:
     properties:
       claimable_amount:
         type: string
+  noble.dollar.v2.Provider:
+    type: string
+    enum:
+      - IBC
+    default: IBC
+  noble.dollar.v2.QueryStatsResponse:
+    type: object
+    properties:
+      total_holders:
+        type: string
+        format: uint64
+      total_principal:
+        type: string
+      total_yield_accrued:
+        type: string
+      total_external_yield:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            chain_id:
+              type: string
+            amount:
+              type: string
+  noble.dollar.v2.QueryStatsResponse.ExternalYield:
+    type: object
+    properties:
+      chain_id:
+        type: string
+      amount:
+        type: string
+  noble.dollar.v2.QueryYieldRecipientResponse:
+    type: object
+    properties:
+      yield_recipient:
+        type: string
+  noble.dollar.v2.QueryYieldRecipientsResponse:
+    type: object
+    properties:
+      yield_recipients:
+        type: object
+        additionalProperties:
+          type: string
   noble.dollar.portal.v1.Peer:
     type: object
     properties:
