@@ -20,10 +20,17 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+
+	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
-	storeUpgrades := storetypes.StoreUpgrades{}
+	storeUpgrades := storetypes.StoreUpgrades{
+		Added: []string{
+			// Hyperlane Modules
+			hyperlanetypes.ModuleName,
+		},
+	}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
 }

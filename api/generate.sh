@@ -13,6 +13,8 @@ buf export buf.build/noble-assets/florin:v2.0.0 --output api/proto
 buf export buf.build/noble-assets/forwarding:v2.0.1 --output api/proto
 buf export buf.build/noble-assets/globalfee:v1.0.0 --output api/proto
 buf export buf.build/noble-assets/halo:v2.0.1 --output api/proto
+# TODO: Switch to official version once pushed! https://github.com/bcp-innovations/hyperlane-cosmos/issues/96
+buf export buf.build/noble-assets/hyperlane:v1.0.0-beta0 --output api/proto
 buf export buf.build/noble-assets/swap:v1.0.0 --output api/proto
 buf export buf.build/noble-assets/wormhole:v1.0.0 --output api/proto
 

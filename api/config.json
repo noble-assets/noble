@@ -47,6 +47,12 @@
       ]
     },
     {
+      "name": "Hyperlane",
+      "tags": [
+        "Hyperlane"
+      ]
+    },
+    {
       "name": "IBC",
       "tags": [
         "Channel",
@@ -321,6 +327,30 @@
         "rename": {
           "Paused": "HaloEntitlementsPaused",
           "Owner": "HaloEntitlementsOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/interchain_security/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/post_dispatch/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
         }
       }
     },
