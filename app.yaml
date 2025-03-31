@@ -6,7 +6,7 @@ modules:
       pre_blockers: [ upgrade ]
       begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap ]
       end_blockers: [ crisis, staking, feegrant, forwarding ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, dollar, swap ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, dollar, swap, warp ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -37,6 +37,8 @@ modules:
         - account: dollar
           permissions: [ burner, minter ]
         - account: dollar/yield
+        - account: warp
+          permissions: [ burner, minter ]
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
@@ -106,7 +108,15 @@ modules:
       "@type": halo.module.v1.Module
       denom: uusyc
       underlying: uusdc
-  
+
+  # Hyperlane Modules
+  - name: warp
+    config:
+      "@type": hyperlane.warp.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+      enabled_tokens:
+        - 1 # Enable Collateral tokens
+
   # Monerium Modules
   - name: florin
     config:
