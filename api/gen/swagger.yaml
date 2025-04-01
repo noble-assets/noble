@@ -35,7 +35,7 @@ x-tagGroups:
   - name: Hyperlane
     tags:
       - Hyperlane
-      - Hyperlane Warp
+      - Warp
   - name: IBC
     tags:
       - Channel
