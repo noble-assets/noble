@@ -15,7 +15,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	dollar.noble.xyz/v2 v2.0.0-20250327183233-e024d7f098b3
+	dollar.noble.xyz/v2 v2.0.0-20250401091042-303c4d8d0512
 	github.com/bcp-innovations/hyperlane-cosmos v1.0.0-beta0
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
@@ -37,7 +37,6 @@ require (
 	github.com/spf13/cast v1.7.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/stretchr/testify v1.10.0
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.2.0
 	mvdan.cc/gofumpt v0.7.0
@@ -299,6 +298,7 @@ require (
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tdakkota/asciicheck v0.2.0 // indirect
