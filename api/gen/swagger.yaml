@@ -35,6 +35,7 @@ x-tagGroups:
   - name: Hyperlane
     tags:
       - Hyperlane
+      - Hyperlane Warp
   - name: IBC
     tags:
       - Channel
@@ -33222,6 +33223,439 @@ paths:
           type: string
       tags:
         - Hyperlane
+  /hyperlane/v1/tokens:
+    get:
+      summary: Tokens ...
+      operationId: Tokens
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tokens:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    owner:
+                      type: string
+                    token_type:
+                      type: string
+                      enum:
+                        - HYP_TOKEN_TYPE_UNSPECIFIED
+                        - HYP_TOKEN_TYPE_COLLATERAL
+                        - HYP_TOKEN_TYPE_SYNTHETIC
+                      default: HYP_TOKEN_TYPE_UNSPECIFIED
+                      description: |-
+                        HypTokenType ...
+
+                         - HYP_TOKEN_TYPE_UNSPECIFIED: HYP_TOKEN_TYPE_UNSPECIFIED ...
+                         - HYP_TOKEN_TYPE_COLLATERAL: HYP_TOKEN_TYPE_COLLATERAL ...
+                         - HYP_TOKEN_TYPE_SYNTHETIC: HYP_TOKEN_TYPE_SYNTHETIC ...
+                    origin_mailbox:
+                      type: string
+                    origin_denom:
+                      type: string
+                    ism_id:
+                      type: string
+                  title: WrappedHypToken
+                description: params defines the parameters of the module.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: QueryTokensResponse ...
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Hyperlane Warp
+  /hyperlane/v1/tokens/{id}:
+    get:
+      summary: Token ...
+      operationId: Token
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              token:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  owner:
+                    type: string
+                  token_type:
+                    type: string
+                    enum:
+                      - HYP_TOKEN_TYPE_UNSPECIFIED
+                      - HYP_TOKEN_TYPE_COLLATERAL
+                      - HYP_TOKEN_TYPE_SYNTHETIC
+                    default: HYP_TOKEN_TYPE_UNSPECIFIED
+                    description: |-
+                      HypTokenType ...
+
+                       - HYP_TOKEN_TYPE_UNSPECIFIED: HYP_TOKEN_TYPE_UNSPECIFIED ...
+                       - HYP_TOKEN_TYPE_COLLATERAL: HYP_TOKEN_TYPE_COLLATERAL ...
+                       - HYP_TOKEN_TYPE_SYNTHETIC: HYP_TOKEN_TYPE_SYNTHETIC ...
+                  origin_mailbox:
+                    type: string
+                  origin_denom:
+                    type: string
+                  ism_id:
+                    type: string
+                title: WrappedHypToken
+            description: QueryTokenResponse ...
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Hyperlane Warp
+  /hyperlane/v1/tokens/{id}/bridged_supply:
+    get:
+      summary: BridgedSupply ...
+      operationId: BridgedSupply
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              bridged_supply:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: QueryBridgedSupplyResponse ...
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Hyperlane Warp
+  /hyperlane/v1/tokens/{id}/quote_remote_transfer/{destination_domain}:
+    get:
+      summary: QuoteRemoteTransfer ...
+      operationId: QuoteRemoteTransfer
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              gas_payment:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+            description: QueryQuoteRemoteTransferResponse ...
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - name: destination_domain
+          in: path
+          required: true
+          type: string
+      tags:
+        - Hyperlane Warp
+  /hyperlane/v1/tokens/{id}/remote_routers:
+    get:
+      summary: RemoteRouters ...
+      operationId: RemoteRouters
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              remote_routers:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    receiver_domain:
+                      type: integer
+                      format: int64
+                    receiver_contract:
+                      type: string
+                    gas:
+                      type: string
+                  description: RemoteRouter ...
+                description: Remote Routers ...
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: QueryRemoteRoutersResponse ...
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Hyperlane Warp
   /ibc/apps/fee/v1/channels/{channel_id}/ports/{port_id}/fee_enabled:
     get:
       summary: >-
@@ -73795,6 +74229,212 @@ definitions:
             description: root ...
         title: TreeResponse
     title: WrappedMerkleTreeHookResponse
+  hyperlane.warp.v1.HypTokenType:
+    type: string
+    enum:
+      - HYP_TOKEN_TYPE_UNSPECIFIED
+      - HYP_TOKEN_TYPE_COLLATERAL
+      - HYP_TOKEN_TYPE_SYNTHETIC
+    default: HYP_TOKEN_TYPE_UNSPECIFIED
+    description: |-
+      HypTokenType ...
+
+       - HYP_TOKEN_TYPE_UNSPECIFIED: HYP_TOKEN_TYPE_UNSPECIFIED ...
+       - HYP_TOKEN_TYPE_COLLATERAL: HYP_TOKEN_TYPE_COLLATERAL ...
+       - HYP_TOKEN_TYPE_SYNTHETIC: HYP_TOKEN_TYPE_SYNTHETIC ...
+  hyperlane.warp.v1.QueryBridgedSupplyResponse:
+    type: object
+    properties:
+      bridged_supply:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: QueryBridgedSupplyResponse ...
+  hyperlane.warp.v1.QueryQuoteRemoteTransferResponse:
+    type: object
+    properties:
+      gas_payment:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+    description: QueryQuoteRemoteTransferResponse ...
+  hyperlane.warp.v1.QueryRemoteRoutersResponse:
+    type: object
+    properties:
+      remote_routers:
+        type: array
+        items:
+          type: object
+          properties:
+            receiver_domain:
+              type: integer
+              format: int64
+            receiver_contract:
+              type: string
+            gas:
+              type: string
+          description: RemoteRouter ...
+        description: Remote Routers ...
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: QueryRemoteRoutersResponse ...
+  hyperlane.warp.v1.QueryTokenResponse:
+    type: object
+    properties:
+      token:
+        type: object
+        properties:
+          id:
+            type: string
+          owner:
+            type: string
+          token_type:
+            type: string
+            enum:
+              - HYP_TOKEN_TYPE_UNSPECIFIED
+              - HYP_TOKEN_TYPE_COLLATERAL
+              - HYP_TOKEN_TYPE_SYNTHETIC
+            default: HYP_TOKEN_TYPE_UNSPECIFIED
+            description: |-
+              HypTokenType ...
+
+               - HYP_TOKEN_TYPE_UNSPECIFIED: HYP_TOKEN_TYPE_UNSPECIFIED ...
+               - HYP_TOKEN_TYPE_COLLATERAL: HYP_TOKEN_TYPE_COLLATERAL ...
+               - HYP_TOKEN_TYPE_SYNTHETIC: HYP_TOKEN_TYPE_SYNTHETIC ...
+          origin_mailbox:
+            type: string
+          origin_denom:
+            type: string
+          ism_id:
+            type: string
+        title: WrappedHypToken
+    description: QueryTokenResponse ...
+  hyperlane.warp.v1.QueryTokensResponse:
+    type: object
+    properties:
+      tokens:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            owner:
+              type: string
+            token_type:
+              type: string
+              enum:
+                - HYP_TOKEN_TYPE_UNSPECIFIED
+                - HYP_TOKEN_TYPE_COLLATERAL
+                - HYP_TOKEN_TYPE_SYNTHETIC
+              default: HYP_TOKEN_TYPE_UNSPECIFIED
+              description: |-
+                HypTokenType ...
+
+                 - HYP_TOKEN_TYPE_UNSPECIFIED: HYP_TOKEN_TYPE_UNSPECIFIED ...
+                 - HYP_TOKEN_TYPE_COLLATERAL: HYP_TOKEN_TYPE_COLLATERAL ...
+                 - HYP_TOKEN_TYPE_SYNTHETIC: HYP_TOKEN_TYPE_SYNTHETIC ...
+            origin_mailbox:
+              type: string
+            origin_denom:
+              type: string
+            ism_id:
+              type: string
+          title: WrappedHypToken
+        description: params defines the parameters of the module.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: QueryTokensResponse ...
+  hyperlane.warp.v1.RemoteRouter:
+    type: object
+    properties:
+      receiver_domain:
+        type: integer
+        format: int64
+      receiver_contract:
+        type: string
+      gas:
+        type: string
+    description: RemoteRouter ...
+  hyperlane.warp.v1.WrappedHypToken:
+    type: object
+    properties:
+      id:
+        type: string
+      owner:
+        type: string
+      token_type:
+        type: string
+        enum:
+          - HYP_TOKEN_TYPE_UNSPECIFIED
+          - HYP_TOKEN_TYPE_COLLATERAL
+          - HYP_TOKEN_TYPE_SYNTHETIC
+        default: HYP_TOKEN_TYPE_UNSPECIFIED
+        description: |-
+          HypTokenType ...
+
+           - HYP_TOKEN_TYPE_UNSPECIFIED: HYP_TOKEN_TYPE_UNSPECIFIED ...
+           - HYP_TOKEN_TYPE_COLLATERAL: HYP_TOKEN_TYPE_COLLATERAL ...
+           - HYP_TOKEN_TYPE_SYNTHETIC: HYP_TOKEN_TYPE_SYNTHETIC ...
+      origin_mailbox:
+        type: string
+      origin_denom:
+        type: string
+      ism_id:
+        type: string
+    title: WrappedHypToken
   ibc.applications.fee.v1.Fee:
     type: object
     properties:
