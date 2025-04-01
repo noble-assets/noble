@@ -54,6 +54,7 @@ import (
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
 	_ "dollar.noble.xyz"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/core"
 	_ "github.com/bcp-innovations/hyperlane-cosmos/x/warp"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
@@ -112,6 +113,7 @@ import (
 	halokeeper "github.com/noble-assets/halo/v2/keeper"
 
 	// Hyperlane Modules
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
 	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
 
 	// Monerium Modules
@@ -170,7 +172,8 @@ type App struct {
 	// Hashnote Modules
 	HaloKeeper *halokeeper.Keeper
 	// Hyperlane Modules
-	WarpKeeper warpkeeper.Keeper
+	HyperlaneKeeper *hyperlanekeeper.Keeper
+	WarpKeeper      warpkeeper.Keeper
 	// Monerium Modules
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
@@ -249,6 +252,7 @@ func NewApp(
 		// Hashnote Modules
 		&app.HaloKeeper,
 		// Hyperlane Modules
+		&app.HyperlaneKeeper,
 		&app.WarpKeeper,
 		// Monerium Modules
 		&app.FlorinKeeper,
