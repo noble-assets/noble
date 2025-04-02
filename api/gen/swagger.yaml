@@ -33359,7 +33359,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - Hyperlane Warp
+        - Warp
   /hyperlane/v1/tokens/{id}:
     get:
       summary: Token ...
@@ -33422,7 +33422,7 @@ paths:
           required: true
           type: string
       tags:
-        - Hyperlane Warp
+        - Warp
   /hyperlane/v1/tokens/{id}/bridged_supply:
     get:
       summary: BridgedSupply ...
@@ -33473,7 +33473,7 @@ paths:
           required: true
           type: string
       tags:
-        - Hyperlane Warp
+        - Warp
   /hyperlane/v1/tokens/{id}/quote_remote_transfer/{destination_domain}:
     get:
       summary: QuoteRemoteTransfer ...
@@ -33530,7 +33530,7 @@ paths:
           required: true
           type: string
       tags:
-        - Hyperlane Warp
+        - Warp
   /hyperlane/v1/tokens/{id}/remote_routers:
     get:
       summary: RemoteRouters ...
@@ -33655,7 +33655,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - Hyperlane Warp
+        - Warp
   /ibc/apps/fee/v1/channels/{channel_id}/ports/{port_id}/fee_enabled:
     get:
       summary: >-

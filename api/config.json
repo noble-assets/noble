@@ -359,7 +359,7 @@
       "url": "./api/tmp-swagger-gen/hyperlane/warp/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Hyperlane Warp"
+          "Query": "Warp"
         }
       }
     },
