@@ -1,0 +1,1 @@
+- Bump Swap to [`v1.0.1`](https://github.com/noble-assets/swap/releases/tag/v1.0.1) ([#522](https://github.com/noble-assets/noble/pull/522))
