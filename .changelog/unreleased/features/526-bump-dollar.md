@@ -1,0 +1,1 @@
+- Upgrade the Dollar module to enable transfers and yield distribution across specific channels. ([#526](https://github.com/noble-assets/noble/pull/526))
