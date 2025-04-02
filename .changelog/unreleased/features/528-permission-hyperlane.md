@@ -1,0 +1,1 @@
+- Introduce a new ante handler that permissions Hyperlane and Warp messages. ([#528](https://github.com/noble-assets/noble/pull/528))

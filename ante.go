@@ -78,6 +78,8 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		fiattokenfactory.NewIsPausedDecorator(options.cdc, options.FTFKeeper),
 		fiattokenfactory.NewIsBlacklistedDecorator(options.FTFKeeper),
 
+		NewPermissionedHyperlaneDecorator(options.cdc),
+
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
