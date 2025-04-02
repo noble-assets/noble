@@ -49,7 +49,8 @@
     {
       "name": "Hyperlane",
       "tags": [
-        "Hyperlane"
+        "Hyperlane",
+        "Warp"
       ]
     },
     {
@@ -351,6 +352,14 @@
       "tags": {
         "rename": {
           "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/warp/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane Warp"
         }
       }
     },

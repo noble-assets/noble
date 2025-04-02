@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 
 	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
+	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
@@ -29,6 +30,7 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 		Added: []string{
 			// Hyperlane Modules
 			hyperlanetypes.ModuleName,
+			warptypes.ModuleName,
 		},
 	}
 
