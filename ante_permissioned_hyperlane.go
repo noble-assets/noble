@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -28,12 +27,10 @@ var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
 
 // PermissionedHyperlaneDecorator is a custom ante handler that permissions all
 // Hyperlane messages on Noble except for a remote transfer on a Warp Route.
-type PermissionedHyperlaneDecorator struct {
-	cdc codec.Codec
-}
+type PermissionedHyperlaneDecorator struct{}
 
-func NewPermissionedHyperlaneDecorator(cdc codec.Codec) PermissionedHyperlaneDecorator {
-	return PermissionedHyperlaneDecorator{cdc: cdc}
+func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
+	return PermissionedHyperlaneDecorator{}
 }
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
