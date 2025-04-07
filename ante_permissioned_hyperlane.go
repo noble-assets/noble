@@ -25,8 +25,7 @@ import (
 
 var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
 
-// PermissionedHyperlaneDecorator is a custom ante handler that permissions all
-// Hyperlane messages on Noble except for a remote transfer on a Warp Route.
+// PermissionedHyperlaneDecorator is a custom ante handler that permissions all Hyperlane actions on Noble.
 type PermissionedHyperlaneDecorator struct{}
 
 func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
