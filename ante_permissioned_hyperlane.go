@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"strings"
 
-	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -39,10 +38,6 @@ func NewPermissionedHyperlaneDecorator(cdc codec.Codec) PermissionedHyperlaneDec
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	for _, msg := range tx.GetMsgs() {
-		if _, ok := msg.(*warptypes.MsgRemoteTransfer); ok {
-			continue
-		}
-
 		typeUrl := sdk.MsgTypeURL(msg)
 		if strings.HasPrefix(typeUrl, "/hyperlane") {
 			return ctx, fmt.Errorf("%s is currently a permissioned action", typeUrl)
