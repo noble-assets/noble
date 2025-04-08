@@ -17,7 +17,6 @@
 package noble
 
 import (
-	autocctp "autocctp.dev"
 	autocctptypes "autocctp.dev/types"
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
@@ -70,11 +69,6 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	if options.SignModeHandler == nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
-	}
-
-	sigVerificationDecorator := autocctp.SigVerificationDecorator{
-		options.FTFKeeper, options.BankKeeper, options.AccountKeeper,
-		forwarding.NewSigVerificationDecorator(options.AccountKeeper, options.BankKeeper, options.SignModeHandler),
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
