@@ -1,0 +1,1 @@
+- Integrate out custom AutoCCTP module, that enables automatic CCTP tokens forwarding from IBC supported chains to CCTP supported ones. ([#529](https://github.com/noble-assets/noble/pull/529))
