@@ -23,11 +23,30 @@ import (
 	"os"
 	"path/filepath"
 
+	_ "autocctp.dev"
+	autocctpkeeper "autocctp.dev/keeper"
 	"cosmossdk.io/core/appconfig"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
+	_ "cosmossdk.io/x/evidence"
+	evidencekeeper "cosmossdk.io/x/evidence/keeper"
+	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
+	_ "cosmossdk.io/x/feegrant/module"
+	_ "cosmossdk.io/x/upgrade"
+	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+	_ "dollar.noble.xyz"
+	dollarkeeper "dollar.noble.xyz/keeper"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/core"
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/warp"
+	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
+	_ "github.com/circlefin/noble-cctp/x/cctp"
+	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
+	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
+	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/libs/bytes"
 	cmtos "github.com/cometbft/cometbft/libs/os"
@@ -44,88 +63,55 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v10/api"
-	"github.com/noble-assets/noble/v10/jester"
-	"github.com/noble-assets/noble/v10/upgrade"
-	"github.com/spf13/cast"
-
-	_ "cosmossdk.io/x/evidence"
-	_ "cosmossdk.io/x/feegrant/module"
-	_ "cosmossdk.io/x/upgrade"
-	_ "dollar.noble.xyz"
-	_ "github.com/bcp-innovations/hyperlane-cosmos/x/core"
-	_ "github.com/bcp-innovations/hyperlane-cosmos/x/warp"
-	_ "github.com/circlefin/noble-cctp/x/cctp"
-	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/authz/module"
 	_ "github.com/cosmos/cosmos-sdk/x/bank"
-	_ "github.com/cosmos/cosmos-sdk/x/consensus"
-	_ "github.com/cosmos/cosmos-sdk/x/crisis"
-	_ "github.com/cosmos/cosmos-sdk/x/params"
-	_ "github.com/cosmos/cosmos-sdk/x/slashing"
-	_ "github.com/cosmos/cosmos-sdk/x/staking"
-	_ "github.com/monerium/module-noble/v2"
-	_ "github.com/noble-assets/authority"
-	_ "github.com/noble-assets/forwarding/v2"
-	"github.com/noble-assets/globalfee"
-	_ "github.com/noble-assets/halo/v2"
-	_ "github.com/noble-assets/wormhole"
-	_ "github.com/ondoprotocol/usdy-noble/v2"
-	_ "swap.noble.xyz"
-
-	// Cosmos Modules
-	evidencekeeper "cosmossdk.io/x/evidence/keeper"
-	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
-	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	_ "github.com/cosmos/cosmos-sdk/x/consensus"
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	_ "github.com/cosmos/cosmos-sdk/x/crisis"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	_ "github.com/cosmos/cosmos-sdk/x/params"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	_ "github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	_ "github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-
-	// Circle Modules
-	cctpkeeper "github.com/circlefin/noble-cctp/x/cctp/keeper"
-	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
-
-	// Ondo Modules
-	aurakeeper "github.com/ondoprotocol/usdy-noble/v2/keeper"
-
-	// Hashnote Modules
-	halokeeper "github.com/noble-assets/halo/v2/keeper"
-
-	// Hyperlane Modules
-	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
-	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
-
-	// Monerium Modules
+	_ "github.com/monerium/module-noble/v2"
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
-
-	// Noble Modules
-	dollarkeeper "dollar.noble.xyz/keeper"
+	_ "github.com/noble-assets/authority"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
+	_ "github.com/noble-assets/forwarding/v2"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
+	"github.com/noble-assets/globalfee"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	_ "github.com/noble-assets/halo/v2"
+	halokeeper "github.com/noble-assets/halo/v2/keeper"
+	_ "github.com/noble-assets/wormhole"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
+	_ "github.com/ondoprotocol/usdy-noble/v2"
+	aurakeeper "github.com/ondoprotocol/usdy-noble/v2/keeper"
+	"github.com/spf13/cast"
+	_ "swap.noble.xyz"
 	swapkeeper "swap.noble.xyz/keeper"
+
+	"github.com/noble-assets/noble/v10/api"
+	"github.com/noble-assets/noble/v10/jester"
+	"github.com/noble-assets/noble/v10/upgrade"
 )
 
 var DefaultNodeHome string
@@ -183,6 +169,7 @@ type App struct {
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
+	AutoCCTPKeeper   *autocctpkeeper.Keeper
 }
 
 func init() {
@@ -265,6 +252,7 @@ func NewApp(
 		&app.GlobalFeeKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
+		&app.AutoCCTPKeeper,
 	); err != nil {
 		return nil, err
 	}
@@ -288,6 +276,7 @@ func NewApp(
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
+			SigGasConsumer:  SigVerificationGasConsumer,
 		},
 		cdc:        app.appCodec,
 		BankKeeper: app.BankKeeper,
@@ -492,4 +481,12 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 	}
 
 	return keys
+}
+
+// RegisterCCTPServer is a method used to register the CCTP server into the AutoCCTP keeper after
+// building the app.
+func (app *App) RegisterCCTPServer() {
+	cctpServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
+
+	app.AutoCCTPKeeper.SetCCTPServer(cctpServer)
 }

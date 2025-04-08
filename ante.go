@@ -17,12 +17,15 @@
 package noble
 
 import (
+	autocctptypes "autocctp.dev/types"
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
@@ -92,4 +95,16 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
+}
+
+// SigVerificationGasConsumer is a custom implementation of the signature verification gas
+// consumption to handle the public keys defined in the AutoCCTP and Forwarding modules.
+func SigVerificationGasConsumer(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error {
+	switch sig.PubKey.(type) {
+	case *autocctptypes.PubKey:
+		return nil
+	// TODO: @ste add same logic for forwarding
+	default:
+		return ante.DefaultSigVerificationGasConsumer(meter, sig, params)
+	}
 }
