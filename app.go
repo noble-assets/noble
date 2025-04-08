@@ -275,6 +275,7 @@ func NewApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	app.RegisterCCTPServer()
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
 	}

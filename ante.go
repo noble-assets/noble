@@ -17,6 +17,7 @@
 package noble
 
 import (
+	autocctp "autocctp.dev"
 	autocctptypes "autocctp.dev/types"
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
@@ -71,6 +72,11 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
 	}
 
+	sigVerificationDecorator := autocctp.SigVerificationDecorator{
+		options.FTFKeeper, options.BankKeeper, options.AccountKeeper,
+		forwarding.NewSigVerificationDecorator(options.AccountKeeper, options.BankKeeper, options.SignModeHandler),
+	}
+
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
@@ -103,7 +109,8 @@ func SigVerificationGasConsumer(meter storetypes.GasMeter, sig signing.Signature
 	switch sig.PubKey.(type) {
 	case *autocctptypes.PubKey:
 		return nil
-	// TODO: @ste add same logic for forwarding
+	case *forwardingtypes.ForwardingPubKey:
+		return nil
 	default:
 		return ante.DefaultSigVerificationGasConsumer(meter, sig, params)
 	}
