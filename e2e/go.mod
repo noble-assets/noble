@@ -1,8 +1,6 @@
 module github.com/noble-assets/noble/e2e
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.24
 
 require (
 	cosmossdk.io/math v1.4.0

@@ -1,8 +1,6 @@
 module github.com/noble-assets/noble/v10
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.24
 
 require (
 	connectrpc.com/connect v1.18.1
