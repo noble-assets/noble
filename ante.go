@@ -108,7 +108,7 @@ func NewSigVerificationDecorator(options HandlerOptions) sdk.AnteDecorator {
 }
 
 // SigVerificationGasConsumer is a custom implementation of the signature verification gas
-// consumption to handle the public keys defined in the AutoCCTP and Forwarding modules.
+// consumer to handle the public keys defined in the AutoCCTP and Forwarding modules.
 func SigVerificationGasConsumer(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error {
 	switch sig.PubKey.(type) {
 	case *autocctptypes.PubKey:
