@@ -76,6 +76,7 @@
       "name": "Noble",
       "tags": [
         "Authority",
+        "AutoCCTP",
         "Forwarding",
         "Globalfee"
       ]
@@ -449,6 +450,14 @@
       "operationIds": {
         "rename": {
           "Owner": "AuthorityOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/autocctp/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "AutoCCTP"
         }
       }
     },
