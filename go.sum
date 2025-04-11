@@ -4,6 +4,8 @@
 4d63.com/gochecknoglobals v0.2.1/go.mod h1:KRE8wtJB3CXCsb1xy421JfTHIIbmT3U5ruxw2Qu8fSU=
 adr36.dev v1.0.0-rc.0 h1:OD9DiHToxlbQvsWacOoAeQhagxyLF+9SsxQXMkMOjG8=
 adr36.dev v1.0.0-rc.0/go.mod h1:yVB1502McHaUMgOhGM+n9KC7aeSxkpwVNgchSU3WBJI=
+autocctp.dev v1.0.0-alpha.0 h1:NLjO07W6iVTeVuTErxp4bsTLizjNwrbSp/Q37Lx08Lk=
+autocctp.dev v1.0.0-alpha.0/go.mod h1:AVL5z2RsWlWxeqBsN2arGXEvXKM+OQBnyosBmni7GvY=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.38.0/go.mod h1:990N+gfupTy94rShfmMCWGDn0LpTmnzTp2qbd1dvSRU=
