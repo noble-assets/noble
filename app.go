@@ -50,6 +50,7 @@ import (
 	"github.com/noble-assets/noble/v10/upgrade"
 	"github.com/spf13/cast"
 
+	_ "autocctp.dev"
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
@@ -75,7 +76,6 @@ import (
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
-	_ "autocctp.dev"
 
 	// Cosmos Modules
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
@@ -121,13 +121,13 @@ import (
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
+	autocctpkeeper "autocctp.dev/keeper"
 	dollarkeeper "dollar.noble.xyz/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
-	autocctpkeeper "autocctp.dev/keeper"
 )
 
 var DefaultNodeHome string

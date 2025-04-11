@@ -1,3 +1,4 @@
+#!/bin/bash
 rm -rf ./api/proto
 rm -rf ./api/tmp-swagger-gen
 

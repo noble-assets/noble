@@ -17,6 +17,7 @@
 package noble
 
 import (
+	"autocctp.dev"
 	autocctptypes "autocctp.dev/types"
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
@@ -37,6 +38,7 @@ import (
 type BankKeeper interface {
 	authtypes.BankKeeper
 	forwardingtypes.BankKeeper
+	autocctptypes.BankKeeper
 }
 
 // HandlerOptions extends the options required by the default Cosmos SDK
@@ -88,13 +90,21 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, options.SigGasConsumer),
-		forwarding.NewSigVerificationDecorator(options.AccountKeeper, options.BankKeeper, options.SignModeHandler),
+
+		NewSigVerificationDecorator(options),
+
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 
 		ibcante.NewRedundantRelayDecorator(options.IBCKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
+}
+
+func NewSigVerificationDecorator(options HandlerOptions) sdk.AnteDecorator {
+	defaultAnte := ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler)
+	forwardingAnte := forwarding.NewSigVerificationDecorator(options.BankKeeper, defaultAnte)
+	return autocctp.NewSigVerificationDecorator(options.FTFKeeper, options.BankKeeper, options.AccountKeeper, forwardingAnte)
 }
 
 // SigVerificationGasConsumer is a custom implementation of the signature verification gas
