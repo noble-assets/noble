@@ -180,12 +180,12 @@ type App struct {
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
+	AutoCCTPKeeper   *autocctpkeeper.Keeper
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
-	AutoCCTPKeeper   *autocctpkeeper.Keeper
 }
 
 func init() {
@@ -263,12 +263,12 @@ func NewApp(
 		&app.AuraKeeper,
 		// Noble Modules
 		&app.AuthorityKeeper,
+		&app.AutoCCTPKeeper,
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
-		&app.AutoCCTPKeeper,
 	); err != nil {
 		return nil, err
 	}
