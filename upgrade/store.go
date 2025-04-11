@@ -17,12 +17,12 @@
 package upgrade
 
 import (
+	autocctptypes "autocctp.dev/types"
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	"github.com/cosmos/cosmos-sdk/baseapp"
-
 	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
 	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
@@ -31,6 +31,8 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 			// Hyperlane Modules
 			hyperlanetypes.ModuleName,
 			warptypes.ModuleName,
+			// Noble Modules
+			autocctptypes.ModuleName,
 		},
 	}
 
