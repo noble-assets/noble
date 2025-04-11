@@ -3,44 +3,10 @@ modules:
     config:
       "@type": cosmos.app.runtime.v1alpha1.Module
       app_name: Noble
-      pre_blockers: [upgrade]
-      begin_blockers:
-        [capability, authority, slashing, evidence, staking, ibc, authz, swap]
-      end_blockers: [crisis, staking, feegrant, forwarding, autocctp]
-      init_genesis:
-        [
-          capability,
-          transfer,
-          auth,
-          bank,
-          staking,
-          slashing,
-          crisis,
-          fiat-tokenfactory,
-          globalfee,
-          genutil,
-          ibc,
-          interchainaccounts,
-          packetfowardmiddleware,
-          evidence,
-          authz,
-          feegrant,
-          params,
-          upgrade,
-          vesting,
-          cctp,
-          forwarding,
-          autocctp,
-          aura,
-          halo,
-          florin,
-          authority,
-          wormhole,
-          dollar,
-          swap,
-          hyperlane,
-          warp,
-        ]
+      pre_blockers: [ upgrade ]
+      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap ]
+      end_blockers: [ crisis, staking, feegrant, forwarding, autocctp ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, autocctp, aura, halo, florin, authority, wormhole, dollar, swap, hyperlane, warp ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -54,22 +20,22 @@ modules:
         - account: fee_collector
         - account: interchainaccounts
         - account: bonded_tokens_pool
-          permissions: [burner, staking]
+          permissions: [ burner, staking ]
         - account: not_bonded_tokens_pool
-          permissions: [burner, staking]
+          permissions: [ burner, staking ]
         - account: transfer
-          permissions: [burner, minter]
+          permissions: [ burner, minter ]
         - account: fiat-tokenfactory
-          permissions: [burner, minter]
+          permissions: [ burner, minter ]
         - account: cctp
         - account: halo
-          permissions: [burner, minter]
+          permissions: [ burner, minter ]
         - account: florin
-          permissions: [burner, minter]
+          permissions: [ burner, minter ]
         - account: aura
-          permissions: [burner, minter]
+          permissions: [ burner, minter ]
         - account: dollar
-          permissions: [burner, minter]
+          permissions: [ burner, minter ]
         - account: dollar/yield
         - account: hyperlane
         - account: warp
@@ -81,7 +47,7 @@ modules:
     config:
       "@type": cosmos.bank.module.v1.Module
       blocked_module_accounts_override:
-        [auth, bonded_tokens_pool, not_bonded_tokens_pool]
+        [ auth, bonded_tokens_pool, not_bonded_tokens_pool ]
       authority: authority # Utilize our custom x/authority module.
   - name: consensus
     config:
