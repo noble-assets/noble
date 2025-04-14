@@ -49,7 +49,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		err = ClaimSwapPoolYield(ctx, logger, addressCodec, authorityKeeper, bankKeeper, dollarKeeper, swapKeeper)
+		err = ClaimSwapPoolsYield(ctx, logger, addressCodec, authorityKeeper, bankKeeper, dollarKeeper, swapKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -60,9 +60,9 @@ func CreateUpgradeHandler(
 	}
 }
 
-// ClaimSwapPoolYield claims the $USDN yield accrued inside the Noble Swap
+// ClaimSwapPoolsYield claims the $USDN yield accrued inside the Noble Swap
 // pools and sends it to the authority address.
-func ClaimSwapPoolYield(
+func ClaimSwapPoolsYield(
 	ctx context.Context,
 	logger log.Logger,
 	addressCodec address.Codec,
