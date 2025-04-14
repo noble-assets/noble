@@ -500,10 +500,10 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 	return keys
 }
 
-// RegisterCCTPServer is a method used to register the CCTP server into the AutoCCTP keeper after
+// RegisterCCTPServer is a method used to register the CCTP servers into the AutoCCTP keeper after
 // building the app.
 func (app *App) RegisterCCTPServer() {
 	cctpServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
 
-	app.AutoCCTPKeeper.SetCCTPServer(cctpServer)
+	app.AutoCCTPKeeper.SetCCTPService(cctpServer, app.CCTPKeeper)
 }
