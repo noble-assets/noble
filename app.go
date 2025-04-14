@@ -471,6 +471,9 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
+			app.BankKeeper,
+			app.DollarKeeper,
+			app.SwapKeeper,
 		),
 	)
 
