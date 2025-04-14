@@ -3,7 +3,7 @@ module github.com/noble-assets/noble/v10
 go 1.24
 
 require (
-	autocctp.dev v1.0.0-alpha.0
+	autocctp.dev v1.0.0-alpha.1
 	connectrpc.com/connect v1.18.1
 	cosmossdk.io/client/v2 v2.0.0-beta.8
 	cosmossdk.io/core v0.11.1
