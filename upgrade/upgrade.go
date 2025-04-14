@@ -18,8 +18,10 @@ package upgrade
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	dollarkeeper "dollar.noble.xyz/keeper"
@@ -27,7 +29,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	authoritytypes "github.com/noble-assets/authority/types"
+	authoritykeeper "github.com/noble-assets/authority/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
 
@@ -35,6 +37,8 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	addressCodec address.Codec,
+	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
@@ -45,7 +49,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		err = ClaimSwapPoolYield(ctx, logger, bankKeeper, dollarKeeper, swapKeeper)
+		err = ClaimSwapPoolYield(ctx, logger, addressCodec, authorityKeeper, bankKeeper, dollarKeeper, swapKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -61,10 +65,21 @@ func CreateUpgradeHandler(
 func ClaimSwapPoolYield(
 	ctx context.Context,
 	logger log.Logger,
+	addressCodec address.Codec,
+	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
 ) error {
+	authority, err := authorityKeeper.Owner.Get(ctx)
+	if err != nil {
+		return errors.New("unable to get underlying authority address from state")
+	}
+	authorityBz, err := addressCodec.StringToBytes(authority)
+	if err != nil {
+		return errors.New("unable to decode underlying authority address")
+	}
+
 	dollarServer := dollarkeeper.NewMsgServer(dollarKeeper)
 
 	pools := swapKeeper.GetPools(ctx)
@@ -79,7 +94,7 @@ func ClaimSwapPoolYield(
 			return fmt.Errorf("unable to claim yield for pool %d", pool.Id)
 		}
 
-		err = bankKeeper.SendCoins(ctx, address, authoritytypes.ModuleAddress, sdk.NewCoins(sdk.NewCoin(dollarKeeper.GetDenom(), yield)))
+		err = bankKeeper.SendCoins(ctx, address, authorityBz, sdk.NewCoins(sdk.NewCoin(dollarKeeper.GetDenom(), yield)))
 		if err != nil {
 			return fmt.Errorf("unable to transfer yield for pool %d", pool.Id)
 		}
