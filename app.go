@@ -50,6 +50,7 @@ import (
 	"github.com/noble-assets/noble/v10/upgrade"
 	"github.com/spf13/cast"
 
+	_ "autocctp.dev"
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
@@ -120,6 +121,7 @@ import (
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
+	autocctpkeeper "autocctp.dev/keeper"
 	dollarkeeper "dollar.noble.xyz/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
@@ -178,6 +180,7 @@ type App struct {
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
+	AutoCCTPKeeper   *autocctpkeeper.Keeper
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
@@ -260,6 +263,7 @@ func NewApp(
 		&app.AuraKeeper,
 		// Noble Modules
 		&app.AuthorityKeeper,
+		&app.AutoCCTPKeeper,
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
@@ -271,6 +275,7 @@ func NewApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	app.RegisterCCTPServer()
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
 	}
@@ -288,6 +293,7 @@ func NewApp(
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
+			SigGasConsumer:  SigVerificationGasConsumer,
 		},
 		cdc:        app.appCodec,
 		BankKeeper: app.BankKeeper,
@@ -492,4 +498,12 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 	}
 
 	return keys
+}
+
+// RegisterCCTPServer is a method used to register the CCTP server into the AutoCCTP keeper after
+// building the app.
+func (app *App) RegisterCCTPServer() {
+	cctpServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
+
+	app.AutoCCTPKeeper.SetCCTPServer(cctpServer)
 }

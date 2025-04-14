@@ -3,6 +3,7 @@ module github.com/noble-assets/noble/v10
 go 1.24
 
 require (
+	autocctp.dev v1.0.0-alpha.0
 	connectrpc.com/connect v1.18.1
 	cosmossdk.io/client/v2 v2.0.0-beta.8
 	cosmossdk.io/core v0.11.1
@@ -29,7 +30,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/monerium/module-noble/v2 v2.0.0
 	github.com/noble-assets/authority v1.0.3
-	github.com/noble-assets/forwarding/v2 v2.0.1
+	github.com/noble-assets/forwarding/v2 v2.0.2
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
 	github.com/noble-assets/wormhole v1.0.0

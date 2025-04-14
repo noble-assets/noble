@@ -4,6 +4,8 @@
 4d63.com/gochecknoglobals v0.2.1/go.mod h1:KRE8wtJB3CXCsb1xy421JfTHIIbmT3U5ruxw2Qu8fSU=
 adr36.dev v1.0.0-rc.0 h1:OD9DiHToxlbQvsWacOoAeQhagxyLF+9SsxQXMkMOjG8=
 adr36.dev v1.0.0-rc.0/go.mod h1:yVB1502McHaUMgOhGM+n9KC7aeSxkpwVNgchSU3WBJI=
+autocctp.dev v1.0.0-alpha.0 h1:NLjO07W6iVTeVuTErxp4bsTLizjNwrbSp/Q37Lx08Lk=
+autocctp.dev v1.0.0-alpha.0/go.mod h1:AVL5z2RsWlWxeqBsN2arGXEvXKM+OQBnyosBmni7GvY=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.38.0/go.mod h1:990N+gfupTy94rShfmMCWGDn0LpTmnzTp2qbd1dvSRU=
@@ -1090,8 +1092,8 @@ github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
 github.com/noble-assets/authority v1.0.3 h1:ycr6MZI/cz94A/BDkru9/crPoAjRxgThjd9o7mBacRQ=
 github.com/noble-assets/authority v1.0.3/go.mod h1:NeduRYMyYEZ2sep+wFenvj/LWJTB9UUYw0GPldF+Bkk=
-github.com/noble-assets/forwarding/v2 v2.0.1 h1:k7Nz5GRd7V8KDF7X8k/nNJacPZeSUrlVMjk1umxEdnU=
-github.com/noble-assets/forwarding/v2 v2.0.1/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
+github.com/noble-assets/forwarding/v2 v2.0.2 h1:Qw+7Ar/7Prpjiieq9O5vXRPiZ0e5I1Hhxz1NQIOdjgo=
+github.com/noble-assets/forwarding/v2 v2.0.2/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
 github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3lOwkbO+Y=
 github.com/noble-assets/globalfee v1.0.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
