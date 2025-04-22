@@ -30,6 +30,11 @@ jobs:
       - name: Build and push Docker image
         uses: strangelove-ventures/heighliner-build-action@v1.0.3
         with:
+          # Heighliner fork supporting Go v1.24
+          heighliner-owner: 'noble-assets'
+          heighliner-tag: 'v1.7.3'
+
+          # Heighliner chains.yaml config
           chain: noble
           dockerfile: cosmos
           build-target: make install

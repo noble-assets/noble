@@ -45,15 +45,18 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v9/api"
-	"github.com/noble-assets/noble/v9/jester"
-	"github.com/noble-assets/noble/v9/upgrade"
+	"github.com/noble-assets/noble/v10/api"
+	"github.com/noble-assets/noble/v10/jester"
+	"github.com/noble-assets/noble/v10/upgrade"
 	"github.com/spf13/cast"
 
+	_ "autocctp.dev"
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
 	_ "dollar.noble.xyz"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/core"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/warp"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
@@ -110,10 +113,15 @@ import (
 	// Hashnote Modules
 	halokeeper "github.com/noble-assets/halo/v2/keeper"
 
+	// Hyperlane Modules
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
+	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
+
 	// Monerium Modules
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
+	autocctpkeeper "autocctp.dev/keeper"
 	dollarkeeper "dollar.noble.xyz/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
@@ -165,10 +173,14 @@ type App struct {
 	AuraKeeper *aurakeeper.Keeper
 	// Hashnote Modules
 	HaloKeeper *halokeeper.Keeper
+	// Hyperlane Modules
+	HyperlaneKeeper *hyperlanekeeper.Keeper
+	WarpKeeper      warpkeeper.Keeper
 	// Monerium Modules
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
+	AutoCCTPKeeper   *autocctpkeeper.Keeper
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
@@ -242,12 +254,16 @@ func NewApp(
 		&app.FTFKeeper,
 		// Hashnote Modules
 		&app.HaloKeeper,
+		// Hyperlane Modules
+		&app.HyperlaneKeeper,
+		&app.WarpKeeper,
 		// Monerium Modules
 		&app.FlorinKeeper,
 		// Ondo Modules
 		&app.AuraKeeper,
 		// Noble Modules
 		&app.AuthorityKeeper,
+		&app.AutoCCTPKeeper,
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
@@ -259,6 +275,7 @@ func NewApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	app.RegisterCCTPServer()
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
 	}
@@ -276,6 +293,7 @@ func NewApp(
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
+			SigGasConsumer:  SigVerificationGasConsumer,
 		},
 		cdc:        app.appCodec,
 		BankKeeper: app.BankKeeper,
@@ -453,13 +471,11 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
-			app.AccountKeeper,
+			app.AccountKeeper.AddressCodec(),
+			app.AuthorityKeeper,
 			app.BankKeeper,
-			app.CapabilityKeeper,
 			app.DollarKeeper,
-			app.GlobalFeeKeeper,
 			app.SwapKeeper,
-			app.WormholeKeeper,
 		),
 	)
 
@@ -487,4 +503,12 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 	}
 
 	return keys
+}
+
+// RegisterCCTPServer is a method used to register the CCTP server into the AutoCCTP keeper after
+// building the app.
+func (app *App) RegisterCCTPServer() {
+	cctpServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
+
+	app.AutoCCTPKeeper.SetCCTPServer(cctpServer)
 }

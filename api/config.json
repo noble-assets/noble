@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Noble API Reference",
-    "version": "9.0.0"
+    "version": "10.0.0"
   },
   "x-tagGroups": [
     {
@@ -47,6 +47,13 @@
       ]
     },
     {
+      "name": "Hyperlane",
+      "tags": [
+        "Hyperlane",
+        "Warp"
+      ]
+    },
+    {
       "name": "IBC",
       "tags": [
         "Channel",
@@ -69,6 +76,7 @@
       "name": "Noble",
       "tags": [
         "Authority",
+        "AutoCCTP",
         "Forwarding",
         "Globalfee"
       ]
@@ -325,6 +333,38 @@
       }
     },
     {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/interchain_security/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/post_dispatch/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/warp/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Warp"
+        }
+      }
+    },
+    {
       "url": "./api/tmp-swagger-gen/ibc/applications/fee/v1/query.swagger.json",
       "tags": {
         "rename": {
@@ -410,6 +450,14 @@
       "operationIds": {
         "rename": {
           "Owner": "AuthorityOwner"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/autocctp/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "AutoCCTP"
         }
       }
     },

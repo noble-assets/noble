@@ -1,0 +1,1 @@
+- Integrate the Hyperlane Warp module, that enables token transfers via the Hyperlane protocol. ([#527](https://github.com/noble-assets/noble/pull/527))
