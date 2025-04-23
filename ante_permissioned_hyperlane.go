@@ -21,6 +21,8 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/noble-assets/noble/v10/upgrade"
 )
 
 var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
@@ -33,10 +35,15 @@ func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
 }
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	for _, msg := range tx.GetMsgs() {
-		typeUrl := sdk.MsgTypeURL(msg)
-		if strings.HasPrefix(typeUrl, "/hyperlane") {
-			return ctx, fmt.Errorf("%s is currently a permissioned action", typeUrl)
+	// NOTE: We choose to only permission Hyperlane on mainnet in order to
+	// allow quicker iteration on testnet. TODO(@john): Once the exact user
+	// messages are determined on testnet, enable them here for mainnet!
+	if ctx.ChainID() == upgrade.MainnetChainID {
+		for _, msg := range tx.GetMsgs() {
+			typeUrl := sdk.MsgTypeURL(msg)
+			if strings.HasPrefix(typeUrl, "/hyperlane") {
+				return ctx, fmt.Errorf("%s is currently a permissioned action", typeUrl)
+			}
 		}
 	}
 
