@@ -50917,6 +50917,7 @@ paths:
           type: string
           enum:
             - IBC
+            - HYPERLANE
         - name: identifier
           in: path
           required: true
@@ -81516,6 +81517,7 @@ definitions:
     type: string
     enum:
       - IBC
+      - HYPERLANE
     default: IBC
   noble.dollar.v2.QueryStatsResponse:
     type: object
