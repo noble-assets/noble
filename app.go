@@ -475,6 +475,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.AuthorityKeeper,
 			app.BankKeeper,
 			app.DollarKeeper,
+			app.HyperlaneKeeper,
 			app.SwapKeeper,
 		),
 	)

@@ -17,7 +17,7 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
 	dollar.noble.xyz v1.0.1
-	github.com/bcp-innovations/hyperlane-cosmos v1.0.0-beta0
+	github.com/bcp-innovations/hyperlane-cosmos v1.0.0-rc0
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cometbft/cometbft v0.38.17
