@@ -54,7 +54,7 @@ import (
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
-	_ "dollar.noble.xyz"
+	_ "dollar.noble.xyz/v2"
 	_ "github.com/bcp-innovations/hyperlane-cosmos/x/core"
 	_ "github.com/bcp-innovations/hyperlane-cosmos/x/warp"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
@@ -122,7 +122,7 @@ import (
 
 	// Noble Modules
 	autocctpkeeper "autocctp.dev/keeper"
-	dollarkeeper "dollar.noble.xyz/keeper"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
