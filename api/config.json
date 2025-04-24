@@ -459,6 +459,12 @@
         "rename": {
           "Query": "AutoCCTP"
         }
+      },
+      "operationIds": {
+        "rename": {
+          "Address": "AutoCCTPAddress",
+          "Stats": "AutoCCTPStats"
+        }
       }
     },
     {

@@ -49788,7 +49788,7 @@ paths:
   /noble/autocctp/v1/address/{destination_domain}/{mint_recipient}/{fallback_recipient}:
     get:
       summary: Queries Address.
-      operationId: Address
+      operationId: AutoCCTPAddress
       responses:
         '200':
           description: A successful response.
@@ -50032,7 +50032,7 @@ paths:
   /noble/autocctp/v1/stats:
     get:
       summary: Queries Stats.
-      operationId: Stats
+      operationId: AutoCCTPStats
       responses:
         '200':
           description: A successful response.
