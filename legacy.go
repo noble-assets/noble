@@ -18,6 +18,7 @@ package noble
 
 import (
 	storetypes "cosmossdk.io/store/types"
+	"dollar.noble.xyz/v2"
 	"github.com/circlefin/noble-fiattokenfactory/x/blockibc"
 	pfm "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
@@ -95,7 +96,7 @@ func (app *App) RegisterLegacyModules() error {
 	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
 	// Create custom ICS4Wrapper so that we can block outgoing $USDN IBC transfers.
-	ics4Wrapper := NewNobleICS4Wrapper(app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
+	ics4Wrapper := dollar.NewICS4Wrapper(app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
 
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(transfertypes.ModuleName)
 	app.TransferKeeper = transferkeeper.NewKeeper(
