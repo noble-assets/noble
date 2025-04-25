@@ -275,7 +275,7 @@ func NewApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
-	app.RegisterCCTPServer()
+	app.RegisterCCTPService()
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
 	}
@@ -505,10 +505,10 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 	return keys
 }
 
-// RegisterCCTPServer is a method used to register the CCTP server into the AutoCCTP keeper after
-// building the app.
-func (app *App) RegisterCCTPServer() {
-	cctpServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
+// RegisterCCTPService is a method used to register the CCTP message and query servers into the
+// AutoCCTP keeper after building the app.
+func (app *App) RegisterCCTPService() {
+	cctpMsgServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
 
-	app.AutoCCTPKeeper.SetCCTPServer(cctpServer)
+	app.AutoCCTPKeeper.SetCCTPService(cctpMsgServer, app.CCTPKeeper)
 }
