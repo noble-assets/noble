@@ -20,16 +20,24 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	dollartypes "dollar.noble.xyz/v2/types"
+	ismkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/01_interchain_security/keeper"
+	ismtypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/01_interchain_security/types"
+	pdhkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/02_post_dispatch/keeper"
+	pdhtypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/02_post_dispatch/types"
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
+	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
+	authoritytypes "github.com/noble-assets/authority/types"
 	swapkeeper "swap.noble.xyz/keeper"
 )
 
@@ -41,6 +49,7 @@ func CreateUpgradeHandler(
 	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
+	hyperlaneKeeper *hyperlanekeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -50,6 +59,11 @@ func CreateUpgradeHandler(
 		}
 
 		err = ClaimSwapPoolsYield(ctx, logger, addressCodec, authorityKeeper, bankKeeper, dollarKeeper, swapKeeper)
+		if err != nil {
+			return vm, err
+		}
+
+		err = InitializeHyperlaneModule(ctx, logger, addressCodec, hyperlaneKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -100,6 +114,103 @@ func ClaimSwapPoolsYield(
 		}
 
 		logger.Info("claimed swap pool yield", "pool", pool.Id, "yield", yield)
+	}
+
+	return nil
+}
+
+// InitializeHyperlaneModule creates a default Hyperlane ISM and Mailbox.
+func InitializeHyperlaneModule(
+	ctx context.Context,
+	logger log.Logger,
+	addressCodec address.Codec,
+	hyperlaneKeeper *hyperlanekeeper.Keeper,
+) error {
+	chainId := sdk.UnwrapSDKContext(ctx).ChainID()
+
+	var localDomain uint32
+	switch chainId {
+	case TestnetChainID:
+		localDomain = TestnetHyperlaneDomain
+	case MainnetChainID:
+		localDomain = MainnetHyperlaneDomain
+	default:
+		return fmt.Errorf("cannot initialize hyperlane module on %s chain", chainId)
+	}
+
+	authority, err := addressCodec.BytesToString(authoritytypes.ModuleAddress)
+	if err != nil {
+		return errors.New("unable to encode authority address")
+	}
+
+	ismServer := ismkeeper.NewMsgServerImpl(&hyperlaneKeeper.IsmKeeper)
+	pdhServer := pdhkeeper.NewMsgServerImpl(&hyperlaneKeeper.PostDispatchKeeper)
+	hyperlaneServer := hyperlanekeeper.NewMsgServerImpl(hyperlaneKeeper)
+
+	createRoutingIsmRes, err := ismServer.CreateRoutingIsm(ctx, &ismtypes.MsgCreateRoutingIsm{Creator: authority})
+	if err != nil {
+		return fmt.Errorf("unable to create routing ism: %w", err)
+	}
+	ismId := createRoutingIsmRes.Id
+	logger.Info("created noble hyperlane ism", "id", ismId)
+
+	if isms, found := HyperlaneDefaultISMs[chainId]; found {
+		for _, ism := range isms {
+			sort.Strings(ism.Validators)
+
+			res, err := ismServer.CreateMerkleRootMultisigIsm(ctx, &ismtypes.MsgCreateMerkleRootMultisigIsm{
+				Creator:    authority,
+				Validators: ism.Validators,
+				Threshold:  ism.Threshold,
+			})
+			if err != nil {
+				return fmt.Errorf("unable to create default ism for domain %d: %w", ism.Domain, err)
+			}
+			underlyingIsmId := res.Id
+			logger.Info(fmt.Sprintf("created default hyperlane ism for %s", ism.Name), "domain", ism.Domain, "id", underlyingIsmId)
+
+			_, err = ismServer.SetRoutingIsmDomain(ctx, &ismtypes.MsgSetRoutingIsmDomain{
+				IsmId: ismId,
+				Route: ismtypes.Route{
+					Ism:    underlyingIsmId,
+					Domain: ism.Domain,
+				},
+				Owner: authority,
+			})
+			if err != nil {
+				return fmt.Errorf("unable to set default ism in routing ism: %w", err)
+			}
+		}
+	}
+
+	createMailboxRes, err := hyperlaneServer.CreateMailbox(ctx, &hyperlanetypes.MsgCreateMailbox{
+		Owner:       authority,
+		LocalDomain: localDomain,
+		DefaultIsm:  ismId,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to create mailbox: %w", err)
+	}
+	mailboxId := createMailboxRes.Id
+	logger.Info("created noble hyperlane mailbox", "id", mailboxId)
+
+	createMerkleTreeHookRes, err := pdhServer.CreateMerkleTreeHook(ctx, &pdhtypes.MsgCreateMerkleTreeHook{
+		Owner:     authority,
+		MailboxId: mailboxId,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to create merkle tree hook: %w", err)
+	}
+	requiredHook := createMerkleTreeHookRes.Id
+	logger.Info("created noble hyperlane merkle tree hook", "id", requiredHook)
+
+	_, err = hyperlaneServer.SetMailbox(ctx, &hyperlanetypes.MsgSetMailbox{
+		Owner:        authority,
+		MailboxId:    mailboxId,
+		RequiredHook: &requiredHook,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to set mailbox: %w", err)
 	}
 
 	return nil
