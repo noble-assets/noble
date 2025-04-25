@@ -56,7 +56,15 @@ var HyperlaneDefaultISMs = map[string][]struct {
 	Threshold  uint32
 }{
 	TestnetChainID: {
-		// TODO: auroratestnet
+		{
+			// https://docs.hyperlane.xyz/docs/reference/default-ism-validators#auroratestnet
+			Domain: 1313161555,
+			Name:   "auroratestnet",
+			Validators: []string{
+				"0xab1a2c76bf4cced43fde7bc1b5b57b9be3e7f937", // Abacus Works
+			},
+			Threshold: 1,
+		},
 		{
 			// https://docs.hyperlane.xyz/docs/reference/default-ism-validators#hyperliquidevmtestnet
 			Domain: 998,
