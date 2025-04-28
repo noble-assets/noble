@@ -50751,6 +50751,82 @@ paths:
           type: string
       tags:
         - Dollar
+  /noble/dollar/v2/retry_amount/{provider}/{identifier}:
+    get:
+      operationId: RetryAmount
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              retry_amount:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          type: string
+          enum:
+            - IBC
+            - HYPERLANE
+        - name: identifier
+          in: path
+          required: true
+          type: string
+      tags:
+        - Dollar
+  /noble/dollar/v2/retry_amounts:
+    get:
+      operationId: RetryAmounts
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              retry_amounts:
+                type: object
+                additionalProperties:
+                  type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Dollar
   /noble/dollar/v2/stats:
     get:
       operationId: DollarV2Stats
@@ -81280,6 +81356,18 @@ definitions:
       - IBC
       - HYPERLANE
     default: IBC
+  noble.dollar.v2.QueryRetryAmountResponse:
+    type: object
+    properties:
+      retry_amount:
+        type: string
+  noble.dollar.v2.QueryRetryAmountsResponse:
+    type: object
+    properties:
+      retry_amounts:
+        type: object
+        additionalProperties:
+          type: string
   noble.dollar.v2.QueryStatsResponse:
     type: object
     properties:
