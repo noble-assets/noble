@@ -17,7 +17,7 @@
 package upgrade
 
 // UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "stratrum"
+const UpgradeName = "stratum"
 
 // UpgradeASCII is the ASCII art shown to node operators upon successful upgrade.
 const UpgradeASCII = `
