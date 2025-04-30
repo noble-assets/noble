@@ -3,7 +3,7 @@ modules:
     config:
       "@type": cosmos.app.runtime.v1alpha1.Module
       app_name: Noble
-      pre_blockers: [ upgrade ]
+      pre_blockers: [ upgrade, auth ]
       begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap ]
       end_blockers: [ crisis, staking, feegrant, forwarding, autocctp ]
       init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, autocctp, aura, halo, florin, authority, wormhole, dollar, swap, hyperlane, warp ]
