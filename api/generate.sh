@@ -18,6 +18,7 @@ buf export buf.build/noble-assets/globalfee:v1.0.0 --output api/proto
 buf export buf.build/noble-assets/halo:v2.0.1 --output api/proto
 buf export buf.build/noble-assets/swap:v1.0.0 --output api/proto
 buf export buf.build/noble-assets/wormhole:v1.0.0 --output api/proto
+buf export buf.build/noble-assets/rate-limiting:v8.0.0 --output api/proto
 
 buf generate
 swagger-combine ./api/config.json -o ./api/gen/swagger.yaml -f yaml --includeDefinitions true

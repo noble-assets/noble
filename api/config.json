@@ -62,7 +62,8 @@
         "Fee",
         "ICA Controller",
         "ICA Host",
-        "Transfer"
+        "Transfer",
+        "Rate Limit"
       ]
     },
     {
@@ -609,9 +610,17 @@
           "Query": "Wormhole"
         }
       },
-      "operationsIds": {
+      "operationIds": {
         "rename": {
           "Config": "WormholeConfig"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/ratelimit/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Rate Limit"
         }
       }
     }
