@@ -1,0 +1,1 @@
+- Register AutoCCTP MsgRegisterAccountSignerlessly into `x/globalfee` module bypass messages to not charge fees on signerless account registration. ([#544](https://github.com/noble-assets/noble/pull/544))
