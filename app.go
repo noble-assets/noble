@@ -167,7 +167,7 @@ type App struct {
 	ICAHostKeeper    icahostkeeper.Keeper
 	PFMKeeper        *pfmkeeper.Keeper
 	TransferKeeper   transferkeeper.Keeper
-	RatelimitKeeper  ratelimitkeeper.Keeper
+	RateLimitKeeper  ratelimitkeeper.Keeper
 
 	// Circle Modules
 	CCTPKeeper *cctpkeeper.Keeper

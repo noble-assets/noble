@@ -104,7 +104,7 @@ func (app *App) RegisterLegacyModules() error {
 	// Create custom ICS4Wrapper so that we can block outgoing $USDN IBC transfers.
 	ics4Wrapper := dollar.NewICS4Wrapper(app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
 
-	app.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
+	app.RateLimitKeeper = *ratelimitkeeper.NewKeeper(
 		app.appCodec,
 		runtime.NewKVStoreService(app.GetKey(ratelimittypes.StoreKey)),
 		app.GetSubspace(ratelimittypes.ModuleName),
@@ -119,7 +119,7 @@ func (app *App) RegisterLegacyModules() error {
 		app.appCodec,
 		app.GetKey(transfertypes.StoreKey),
 		app.GetSubspace(transfertypes.ModuleName),
-		app.RatelimitKeeper,
+		app.RateLimitKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -139,7 +139,7 @@ func (app *App) RegisterLegacyModules() error {
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
-	transferStack = ratelimit.NewIBCMiddleware(app.RatelimitKeeper, transferStack)
+	transferStack = ratelimit.NewIBCMiddleware(app.RateLimitKeeper, transferStack)
 	transferStack = forwarding.NewMiddleware(transferStack, app.AccountKeeper, app.ForwardingKeeper)
 	transferStack = pfm.NewIBCMiddleware(
 		transferStack,
@@ -168,6 +168,6 @@ func (app *App) RegisterLegacyModules() error {
 		transfer.NewAppModule(app.TransferKeeper),
 		tmclient.NewAppModule(),
 		soloclient.NewAppModule(),
-		ratelimit.NewAppModule(app.appCodec, app.RatelimitKeeper),
+		ratelimit.NewAppModule(app.appCodec, app.RateLimitKeeper),
 	)
 }

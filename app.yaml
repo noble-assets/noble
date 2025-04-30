@@ -6,7 +6,7 @@ modules:
       pre_blockers: [ upgrade ]
       begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap, ratelimit ]
       end_blockers: [ crisis, staking, feegrant, forwarding, autocctp, ratelimit ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, ratelimit, upgrade, vesting, cctp, forwarding, autocctp, aura, halo, florin, authority, wormhole, dollar, swap, hyperlane, warp ]
+      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, autocctp, aura, halo, florin, authority, wormhole, dollar, swap, hyperlane, warp, ratelimit ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc

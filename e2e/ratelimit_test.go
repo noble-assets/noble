@@ -22,10 +22,11 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	"github.com/noble-assets/noble/e2e"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/require"
+
+	"github.com/noble-assets/noble/e2e"
 )
 
 func TestRateLimit(t *testing.T) {
