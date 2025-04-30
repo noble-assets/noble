@@ -90,4 +90,19 @@ func TestRateLimit(t *testing.T) {
 	transfer.Amount = math.NewInt(1)
 	_, err = noble.SendIBCTransfer(ctx, nobleToSimChannelInfo[0].ChannelID, faucet, transfer, ibc.TransferOptions{})
 	require.Error(t, err, "expected rate limit to be hit, but tx was successful")
+
+	// remove rate limit via authority module
+	_, err = val.ExecTx(
+		ctx, nw.Authority.FormattedAddress(),
+		"authority",
+		"remove-rate-limit",
+		noble.Config().Denom,
+		nobleToSimChannelInfo[0].ChannelID,
+	)
+	require.NoError(t, err, "failed to execute remove rate limit tx")
+
+	// retry sending over the threshold, this should now succeed since rate limit is removed
+	ibcTx, err = noble.SendIBCTransfer(ctx, nobleToSimChannelInfo[0].ChannelID, faucet, transfer, ibc.TransferOptions{})
+	require.NoError(t, err)
+	require.NoError(t, ibcTx.Validate(), "failed to validate ibc tx")
 }
