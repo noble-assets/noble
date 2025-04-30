@@ -2,8 +2,6 @@ module github.com/noble-assets/noble/v10
 
 go 1.24
 
-retract v10.0.0-beta.0
-
 require (
 	autocctp.dev v1.0.0-beta.0
 	connectrpc.com/connect v1.18.1
