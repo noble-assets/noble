@@ -23,6 +23,7 @@ import (
 	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
 	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
@@ -33,6 +34,8 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 			warptypes.ModuleName,
 			// Noble Modules
 			autocctptypes.ModuleName,
+			// IBC Modules
+			ratelimittypes.ModuleName,
 		},
 	}
 
