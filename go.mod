@@ -30,7 +30,7 @@ require (
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/mux v1.8.1
 	github.com/monerium/module-noble/v2 v2.0.0
-	github.com/noble-assets/authority v1.0.3
+	github.com/noble-assets/authority v1.0.4
 	github.com/noble-assets/forwarding/v2 v2.0.2
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
@@ -370,6 +370,3 @@ replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => gi
 
 // use cosmos compatible syndtr/goleveldb
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-// TODO: Remove after tag
-replace github.com/noble-assets/authority v1.0.3 => github.com/noble-assets/authority v1.0.4-0.20250429215806-4a7c83151123

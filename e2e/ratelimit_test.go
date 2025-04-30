@@ -72,7 +72,7 @@ func TestRateLimit(t *testing.T) {
 	totalSupply, err := noble.BankQueryTotalSupplyOf(ctx, noble.Config().Denom)
 	require.NoError(t, err)
 
-	// calculate current threshole
+	// calculate current threshold
 	currentSendThreshold := totalSupply.Amount.Mul(math.NewInt(maxPercentSend)).Quo(math.NewInt(100))
 
 	// send up to the the current threshold, this should succeed
