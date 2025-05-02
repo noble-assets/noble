@@ -32,10 +32,10 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 			// Hyperlane Modules
 			hyperlanetypes.ModuleName,
 			warptypes.ModuleName,
-			// Noble Modules
-			autocctptypes.ModuleName,
 			// IBC Modules
 			ratelimittypes.ModuleName,
+			// Noble Modules
+			autocctptypes.ModuleName,
 		},
 	}
 

@@ -58,16 +58,16 @@ func (app *App) RegisterLegacyModules() error {
 		storetypes.NewKVStoreKey(ibcexported.StoreKey),
 		storetypes.NewKVStoreKey(icahosttypes.StoreKey),
 		storetypes.NewKVStoreKey(pfmtypes.StoreKey),
-		storetypes.NewKVStoreKey(transfertypes.StoreKey),
 		storetypes.NewKVStoreKey(ratelimittypes.StoreKey),
+		storetypes.NewKVStoreKey(transfertypes.StoreKey),
 	); err != nil {
 		return err
 	}
 
 	app.ParamsKeeper.Subspace(ibcexported.ModuleName).WithKeyTable(clienttypes.ParamKeyTable().RegisterParamSet(&connectiontypes.Params{}))
 	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
-	app.ParamsKeeper.Subspace(transfertypes.ModuleName).WithKeyTable(transfertypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(ratelimittypes.ModuleName).WithKeyTable(ratelimittypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(transfertypes.ModuleName).WithKeyTable(transfertypes.ParamKeyTable())
 
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
 		app.appCodec,

@@ -59,11 +59,10 @@
         "Channel",
         "Client",
         "Connection",
-        "Fee",
         "ICA Controller",
         "ICA Host",
-        "Transfer",
-        "Rate Limit"
+        "Rate Limit",
+        "Transfer"
       ]
     },
     {
@@ -104,6 +103,35 @@
     }
   ],
   "apis": [
+    {
+      "url": "./api/tmp-swagger-gen/aura/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Aura"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Minters": "AuraMinters",
+          "Owner": "AuraOwner",
+          "Paused": "AuraPaused"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/aura/blocklist/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Aura Blocklist"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Address": "AuraBlocklistAddress",
+          "Owner": "AuraBlocklistOwner"
+        }
+      }
+    },
     {
       "url": "./api/tmp-swagger-gen/circle/cctp/v1/query.swagger.json",
       "tags": {
@@ -366,14 +394,6 @@
       }
     },
     {
-      "url": "./api/tmp-swagger-gen/ibc/applications/fee/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Fee"
-        }
-      }
-    },
-    {
       "url": "./api/tmp-swagger-gen/ibc/applications/interchain_accounts/controller/v1/query.swagger.json",
       "tags": {
         "rename": {
@@ -575,31 +595,10 @@
       }
     },
     {
-      "url": "./api/tmp-swagger-gen/aura/v1/query.swagger.json",
+      "url": "./api/tmp-swagger-gen/ratelimit/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Aura"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Minters": "AuraMinters",
-          "Owner": "AuraOwner",
-          "Paused": "AuraPaused"
-        }
-      }
-    },
-    {
-      "url": "./api/tmp-swagger-gen/aura/blocklist/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Aura Blocklist"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Address": "AuraBlocklistAddress",
-          "Owner": "AuraBlocklistOwner"
+          "Query": "Rate Limit"
         }
       }
     },
@@ -613,14 +612,6 @@
       "operationIds": {
         "rename": {
           "Config": "WormholeConfig"
-        }
-      }
-    },
-    {
-      "url": "./api/tmp-swagger-gen/ratelimit/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Rate Limit"
         }
       }
     }
