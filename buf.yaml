@@ -1,4 +1,11 @@
 # yaml-language-server: $schema=https://json.schemastore.org/buf.json
 version: v2
 modules:
-  - path: api/proto
+  # TODO(@john): Figure out Swagger!
+  - path: proto
+    name: buf.build/noble-assets/noble
+deps:
+  - buf.build/cosmos/cosmos-proto:1935555c206d4afb9e94615dfd0fad31
+  - buf.build/cosmos/cosmos-sdk:v0.50.0
+  - buf.build/cosmos/gogo-proto:5e5b9fdd01804356895f8f79a6f1ddc1
+  - buf.build/googleapis/googleapis:cc916c31859748a68fd229a3c8d7a2e8

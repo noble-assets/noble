@@ -63,7 +63,6 @@ install:
 
 gofumpt_cmd=mvdan.cc/gofumpt
 golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
-BUILDER_VERSION=0.15.3
 
 FILES := $(shell find . -name "*.go")
 license:
@@ -82,6 +81,33 @@ lint:
 swagger:
 	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
 		ghcr.io/cosmos/proto-builder:$(BUILDER_VERSION) sh ./api/generate.sh
+
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+BUF_VERSION=1.53
+BUILDER_VERSION=0.16.0
+
+proto-all: proto-format proto-lint proto-gen
+
+proto-format:
+	@echo "🤖 Running protobuf formatter..."
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		bufbuild/buf:$(BUF_VERSION) format --diff --write
+	@echo "✅ Completed protobuf formatting!"
+
+proto-gen:
+	@echo "🤖 Generating code from protobuf..."
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		ghcr.io/cosmos/proto-builder:$(BUILDER_VERSION) sh ./proto/generate.sh
+	@echo "✅ Completed code generation!"
+
+proto-lint:
+	@echo "🤖 Running protobuf linter..."
+	@docker run --rm --volume "$(PWD)":/workspace --workdir /workspace \
+		bufbuild/buf:$(BUF_VERSION) lint
+	@echo "✅ Completed protobuf linting!"
 
 ###############################################################################
 ###                                 Testing                                 ###

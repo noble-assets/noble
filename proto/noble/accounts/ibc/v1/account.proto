@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package noble.accounts.ibc.v1;
+
+option go_package = "noble.xyz/x/accounts/types/ibc";
+
+// Attributes defines the custom attributes required by an IBC account.
+message Attributes {
+  string channel = 1;
+  string recipient = 2;
+  string fallback = 3;
+}

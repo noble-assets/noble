@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package noble.accounts.hyperlane.v1;
+
+option go_package = "noble.xyz/x/accounts/types/hyperlane";
+
+// Attributes defines the custom attributes required by a Hyperlane account.
+message Attributes {}

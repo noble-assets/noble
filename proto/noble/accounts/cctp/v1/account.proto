@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package noble.accounts.cctp.v1;
+
+option go_package = "noble.xyz/x/accounts/types/cctp";
+
+// Attributes defines the custom attributes required by a CCTP account.
+message Attributes {
+  uint32 destination_domain = 1;
+  bytes mint_recipient = 2;
+  string fallback_recipient = 3;
+  bytes destination_caller = 4;
+}

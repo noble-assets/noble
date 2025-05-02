@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package noble.accounts.v1;
+
+import "cosmos/auth/v1beta1/auth.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "noble.xyz/x/accounts/types";
+
+message Account {
+  option (cosmos_proto.implements_interface) = "cosmos.auth.v1beta1.AccountI";
+
+  cosmos.auth.v1beta1.BaseAccount base_account = 1 [(gogoproto.embed) = true];
+  google.protobuf.Any attributes = 2;
+}
+
+message PubKey {
+  option (gogoproto.goproto_stringer) = false;
+
+  bytes key = 1;
+}
