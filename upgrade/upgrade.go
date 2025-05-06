@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"sort"
 
+	autocctptypes "autocctp.dev/types"
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -38,6 +39,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	authoritytypes "github.com/noble-assets/authority/types"
+	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
 
@@ -49,11 +51,17 @@ func CreateUpgradeHandler(
 	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
+	globalFeeKeeper *globalfeekeeper.Keeper,
 	hyperlaneKeeper *hyperlanekeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
+		if err != nil {
+			return vm, err
+		}
+
+		err = SetBypassMessage(ctx, globalFeeKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -211,6 +219,19 @@ func InitializeHyperlaneModule(
 	})
 	if err != nil {
 		return fmt.Errorf("unable to set mailbox: %w", err)
+	}
+
+	return nil
+}
+
+// SetBypassMessage register the autocctp module message for signerless account registration into
+// the global fee module bypass messages.
+func SetBypassMessage(ctx context.Context, globalFeeKeeper *globalfeekeeper.Keeper) error {
+	autocctpMsgRegisterAccountSignerlessly := sdk.MsgTypeURL(&autocctptypes.MsgRegisterAccountSignerlessly{})
+
+	err := globalFeeKeeper.BypassMessages.Set(ctx, autocctpMsgRegisterAccountSignerlessly)
+	if err != nil {
+		return fmt.Errorf("unable to set message register account signerlessly into bypass messages: %w", err)
 	}
 
 	return nil
