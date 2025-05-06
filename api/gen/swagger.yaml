@@ -12977,6 +12977,157 @@ paths:
           type: boolean
       tags:
         - CometBFT
+  /cosmos/consensus/v1/params:
+    get:
+      summary: Params queries the parameters of x/consensus module.
+      operationId: ConsensusParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: >-
+                  params are the tendermint consensus params stored in the
+                  consensus module.
+
+                  Please note that `params.version` is not populated in this
+                  response, it is
+
+                  tracked separately in the x/upgrade module.
+                type: object
+                properties:
+                  block:
+                    type: object
+                    properties:
+                      max_bytes:
+                        type: string
+                        format: int64
+                        title: |-
+                          Max block size, in bytes.
+                          Note: must be greater than 0
+                      max_gas:
+                        type: string
+                        format: int64
+                        title: |-
+                          Max gas per block.
+                          Note: must be greater or equal to -1
+                    description: BlockParams contains limits on the block size.
+                  evidence:
+                    type: object
+                    properties:
+                      max_age_num_blocks:
+                        type: string
+                        format: int64
+                        description: >-
+                          Max age of evidence, in blocks.
+
+
+                          The basic formula for calculating this is:
+                          MaxAgeDuration / {average block
+
+                          time}.
+                      max_age_duration:
+                        type: string
+                        description: >-
+                          Max age of evidence, in time.
+
+
+                          It should correspond with an app's "unbonding period"
+                          or other similar
+
+                          mechanism for handling [Nothing-At-Stake
+
+                          attacks](https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ#what-is-the-nothing-at-stake-problem-and-how-can-it-be-fixed).
+                      max_bytes:
+                        type: string
+                        format: int64
+                        title: >-
+                          This sets the maximum size of total evidence in bytes
+                          that can be committed in a single block.
+
+                          and should fall comfortably under the max block bytes.
+
+                          Default is 1048576 or 1MB
+                    description: >-
+                      EvidenceParams determine how we handle evidence of
+                      malfeasance.
+                  validator:
+                    type: object
+                    properties:
+                      pub_key_types:
+                        type: array
+                        items:
+                          type: string
+                    description: >-
+                      ValidatorParams restrict the public key types validators
+                      can use.
+
+                      NOTE: uses ABCI pubkey naming, not Amino names.
+                  version:
+                    type: object
+                    properties:
+                      app:
+                        type: string
+                        format: uint64
+                    description: VersionParams contains the ABCI application version.
+                  abci:
+                    type: object
+                    properties:
+                      vote_extensions_enable_height:
+                        type: string
+                        format: int64
+                        description: >-
+                          vote_extensions_enable_height configures the first
+                          height during which
+
+                          vote extensions will be enabled. During this specified
+                          height, and for all
+
+                          subsequent heights, precommit messages that do not
+                          contain valid extension data
+
+                          will be considered invalid. Prior to this height, vote
+                          extensions will not
+
+                          be used or accepted by validators on the network.
+
+
+                          Once enabled, vote extensions will be created by the
+                          application in ExtendVote,
+
+                          passed to the application for validation in
+                          VerifyVoteExtension and given
+
+                          to the application to use when proposing a block
+                          during PrepareProposal.
+                    description: >-
+                      ABCIParams configure functionality specific to the
+                      Application Blockchain Interface.
+            description: >-
+              QueryParamsResponse defines the response type for querying
+              x/consensus parameters.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Consensus
   /cosmos/evidence/v1beta1/evidence:
     get:
       summary: AllEvidence queries all evidence.
@@ -65931,6 +66082,336 @@ definitions:
       application's
 
       state transition machine.
+  cosmos.consensus.v1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: >-
+          params are the tendermint consensus params stored in the consensus
+          module.
+
+          Please note that `params.version` is not populated in this response,
+          it is
+
+          tracked separately in the x/upgrade module.
+        type: object
+        properties:
+          block:
+            type: object
+            properties:
+              max_bytes:
+                type: string
+                format: int64
+                title: |-
+                  Max block size, in bytes.
+                  Note: must be greater than 0
+              max_gas:
+                type: string
+                format: int64
+                title: |-
+                  Max gas per block.
+                  Note: must be greater or equal to -1
+            description: BlockParams contains limits on the block size.
+          evidence:
+            type: object
+            properties:
+              max_age_num_blocks:
+                type: string
+                format: int64
+                description: >-
+                  Max age of evidence, in blocks.
+
+
+                  The basic formula for calculating this is: MaxAgeDuration /
+                  {average block
+
+                  time}.
+              max_age_duration:
+                type: string
+                description: >-
+                  Max age of evidence, in time.
+
+
+                  It should correspond with an app's "unbonding period" or other
+                  similar
+
+                  mechanism for handling [Nothing-At-Stake
+
+                  attacks](https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ#what-is-the-nothing-at-stake-problem-and-how-can-it-be-fixed).
+              max_bytes:
+                type: string
+                format: int64
+                title: >-
+                  This sets the maximum size of total evidence in bytes that can
+                  be committed in a single block.
+
+                  and should fall comfortably under the max block bytes.
+
+                  Default is 1048576 or 1MB
+            description: EvidenceParams determine how we handle evidence of malfeasance.
+          validator:
+            type: object
+            properties:
+              pub_key_types:
+                type: array
+                items:
+                  type: string
+            description: |-
+              ValidatorParams restrict the public key types validators can use.
+              NOTE: uses ABCI pubkey naming, not Amino names.
+          version:
+            type: object
+            properties:
+              app:
+                type: string
+                format: uint64
+            description: VersionParams contains the ABCI application version.
+          abci:
+            type: object
+            properties:
+              vote_extensions_enable_height:
+                type: string
+                format: int64
+                description: >-
+                  vote_extensions_enable_height configures the first height
+                  during which
+
+                  vote extensions will be enabled. During this specified height,
+                  and for all
+
+                  subsequent heights, precommit messages that do not contain
+                  valid extension data
+
+                  will be considered invalid. Prior to this height, vote
+                  extensions will not
+
+                  be used or accepted by validators on the network.
+
+
+                  Once enabled, vote extensions will be created by the
+                  application in ExtendVote,
+
+                  passed to the application for validation in
+                  VerifyVoteExtension and given
+
+                  to the application to use when proposing a block during
+                  PrepareProposal.
+            description: >-
+              ABCIParams configure functionality specific to the Application
+              Blockchain Interface.
+    description: >-
+      QueryParamsResponse defines the response type for querying x/consensus
+      parameters.
+  tendermint.types.ABCIParams:
+    type: object
+    properties:
+      vote_extensions_enable_height:
+        type: string
+        format: int64
+        description: >-
+          vote_extensions_enable_height configures the first height during which
+
+          vote extensions will be enabled. During this specified height, and for
+          all
+
+          subsequent heights, precommit messages that do not contain valid
+          extension data
+
+          will be considered invalid. Prior to this height, vote extensions will
+          not
+
+          be used or accepted by validators on the network.
+
+
+          Once enabled, vote extensions will be created by the application in
+          ExtendVote,
+
+          passed to the application for validation in VerifyVoteExtension and
+          given
+
+          to the application to use when proposing a block during
+          PrepareProposal.
+    description: >-
+      ABCIParams configure functionality specific to the Application Blockchain
+      Interface.
+  tendermint.types.BlockParams:
+    type: object
+    properties:
+      max_bytes:
+        type: string
+        format: int64
+        title: |-
+          Max block size, in bytes.
+          Note: must be greater than 0
+      max_gas:
+        type: string
+        format: int64
+        title: |-
+          Max gas per block.
+          Note: must be greater or equal to -1
+    description: BlockParams contains limits on the block size.
+  tendermint.types.ConsensusParams:
+    type: object
+    properties:
+      block:
+        type: object
+        properties:
+          max_bytes:
+            type: string
+            format: int64
+            title: |-
+              Max block size, in bytes.
+              Note: must be greater than 0
+          max_gas:
+            type: string
+            format: int64
+            title: |-
+              Max gas per block.
+              Note: must be greater or equal to -1
+        description: BlockParams contains limits on the block size.
+      evidence:
+        type: object
+        properties:
+          max_age_num_blocks:
+            type: string
+            format: int64
+            description: >-
+              Max age of evidence, in blocks.
+
+
+              The basic formula for calculating this is: MaxAgeDuration /
+              {average block
+
+              time}.
+          max_age_duration:
+            type: string
+            description: >-
+              Max age of evidence, in time.
+
+
+              It should correspond with an app's "unbonding period" or other
+              similar
+
+              mechanism for handling [Nothing-At-Stake
+
+              attacks](https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ#what-is-the-nothing-at-stake-problem-and-how-can-it-be-fixed).
+          max_bytes:
+            type: string
+            format: int64
+            title: >-
+              This sets the maximum size of total evidence in bytes that can be
+              committed in a single block.
+
+              and should fall comfortably under the max block bytes.
+
+              Default is 1048576 or 1MB
+        description: EvidenceParams determine how we handle evidence of malfeasance.
+      validator:
+        type: object
+        properties:
+          pub_key_types:
+            type: array
+            items:
+              type: string
+        description: |-
+          ValidatorParams restrict the public key types validators can use.
+          NOTE: uses ABCI pubkey naming, not Amino names.
+      version:
+        type: object
+        properties:
+          app:
+            type: string
+            format: uint64
+        description: VersionParams contains the ABCI application version.
+      abci:
+        type: object
+        properties:
+          vote_extensions_enable_height:
+            type: string
+            format: int64
+            description: >-
+              vote_extensions_enable_height configures the first height during
+              which
+
+              vote extensions will be enabled. During this specified height, and
+              for all
+
+              subsequent heights, precommit messages that do not contain valid
+              extension data
+
+              will be considered invalid. Prior to this height, vote extensions
+              will not
+
+              be used or accepted by validators on the network.
+
+
+              Once enabled, vote extensions will be created by the application
+              in ExtendVote,
+
+              passed to the application for validation in VerifyVoteExtension
+              and given
+
+              to the application to use when proposing a block during
+              PrepareProposal.
+        description: >-
+          ABCIParams configure functionality specific to the Application
+          Blockchain Interface.
+    description: |-
+      ConsensusParams contains consensus critical parameters that determine the
+      validity of blocks.
+  tendermint.types.EvidenceParams:
+    type: object
+    properties:
+      max_age_num_blocks:
+        type: string
+        format: int64
+        description: >-
+          Max age of evidence, in blocks.
+
+
+          The basic formula for calculating this is: MaxAgeDuration / {average
+          block
+
+          time}.
+      max_age_duration:
+        type: string
+        description: >-
+          Max age of evidence, in time.
+
+
+          It should correspond with an app's "unbonding period" or other similar
+
+          mechanism for handling [Nothing-At-Stake
+
+          attacks](https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ#what-is-the-nothing-at-stake-problem-and-how-can-it-be-fixed).
+      max_bytes:
+        type: string
+        format: int64
+        title: >-
+          This sets the maximum size of total evidence in bytes that can be
+          committed in a single block.
+
+          and should fall comfortably under the max block bytes.
+
+          Default is 1048576 or 1MB
+    description: EvidenceParams determine how we handle evidence of malfeasance.
+  tendermint.types.ValidatorParams:
+    type: object
+    properties:
+      pub_key_types:
+        type: array
+        items:
+          type: string
+    description: |-
+      ValidatorParams restrict the public key types validators can use.
+      NOTE: uses ABCI pubkey naming, not Amino names.
+  tendermint.types.VersionParams:
+    type: object
+    properties:
+      app:
+        type: string
+        format: uint64
+    description: VersionParams contains the ABCI application version.
   cosmos.evidence.v1beta1.QueryAllEvidenceResponse:
     type: object
     properties:
