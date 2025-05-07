@@ -194,6 +194,15 @@ func InitializeHyperlaneModule(
 	mailboxId := createMailboxRes.Id
 	logger.Info("created noble hyperlane mailbox", "id", mailboxId)
 
+	createNoopHookRes, err := pdhServer.CreateNoopHook(ctx, &pdhtypes.MsgCreateNoopHook{
+		Owner: authority,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to create noop hook: %w", err)
+	}
+	defaultHook := createNoopHookRes.Id
+	logger.Info("created noble hyperlane noop hook", "id", defaultHook)
+
 	createMerkleTreeHookRes, err := pdhServer.CreateMerkleTreeHook(ctx, &pdhtypes.MsgCreateMerkleTreeHook{
 		Owner:     authority,
 		MailboxId: mailboxId,
@@ -207,6 +216,7 @@ func InitializeHyperlaneModule(
 	_, err = hyperlaneServer.SetMailbox(ctx, &hyperlanetypes.MsgSetMailbox{
 		Owner:        authority,
 		MailboxId:    mailboxId,
+		DefaultHook:  &defaultHook,
 		RequiredHook: &requiredHook,
 	})
 	if err != nil {
