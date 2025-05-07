@@ -155,6 +155,8 @@ func (app *App) RegisterLegacyModules() error {
 		AddRoute(wormholetypes.ModuleName, wormhole.NewIBCModule(app.WormholeKeeper))
 	app.IBCKeeper.SetRouter(ibcRouter)
 
+	app.DollarKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
+
 	app.ForwardingKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
 
 	scopedWormholeKeeper := app.CapabilityKeeper.ScopeToModule(wormholetypes.ModuleName)
