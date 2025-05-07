@@ -36,6 +36,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	pfm "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
+	ratelimit "github.com/cosmos/ibc-apps/modules/rate-limiting/v8"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
@@ -105,6 +107,7 @@ func Initialize() {
 		transfertypes.ModuleName:   transfer.AppModule{},
 		tmclient.ModuleName:        tmclient.AppModule{},
 		soloclient.ModuleName:      soloclient.AppModule{},
+		ratelimittypes.ModuleName:  ratelimit.AppModule{},
 	}
 	for name, mod := range modules {
 		ModuleBasicManager[name] = module.CoreAppModuleBasicAdaptor(name, mod)

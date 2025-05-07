@@ -98,6 +98,7 @@ import (
 
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
+	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
@@ -165,6 +166,7 @@ type App struct {
 	IBCKeeper        *ibckeeper.Keeper
 	ICAHostKeeper    icahostkeeper.Keeper
 	PFMKeeper        *pfmkeeper.Keeper
+	RateLimitKeeper  ratelimitkeeper.Keeper
 	TransferKeeper   transferkeeper.Keeper
 	// Circle Modules
 	CCTPKeeper *cctpkeeper.Keeper
