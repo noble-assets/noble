@@ -1,0 +1,1 @@
+- Bump Swap to [`v1.0.2`](https://github.com/noble-assets/swap/releases/tag/v1.0.2) to improve `SimulateSwap` query. ([#549](https://github.com/noble-assets/noble/pull/549))
