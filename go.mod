@@ -41,7 +41,7 @@ require (
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.2.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v1.0.1
+	swap.noble.xyz v1.0.2
 )
 
 require (
