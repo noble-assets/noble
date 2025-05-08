@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v9.0.4
+
+*May 8, 2025*
+
+This is a non-consensus breaking patch to the v9 Argentum release line.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v1.0.2`](https://github.com/noble-assets/dollar/releases/tag/v1.0.2) to improve `PendingRewards` query. ([#549](https://github.com/noble-assets/noble/pull/549))
+- Bump Swap to [`v1.0.2`](https://github.com/noble-assets/swap/releases/tag/v1.0.2) to improve `SimulateSwap` query. ([#549](https://github.com/noble-assets/noble/pull/549))
+
 ## v9.0.3
 
 *Mar 25, 2025*
