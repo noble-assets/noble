@@ -46505,6 +46505,15 @@ paths:
             properties:
               pending_rewards:
                 type: string
+              positions_rewards:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    amount:
+                      type: string
+                    pending_rewards:
+                      type: string
         default:
           description: An unexpected error response.
           schema:
@@ -75708,6 +75717,13 @@ definitions:
       time:
         type: string
         format: date-time
+  noble.dollar.vaults.v1.PositionRewards:
+    type: object
+    properties:
+      amount:
+        type: string
+      pending_rewards:
+        type: string
   noble.dollar.vaults.v1.QueryPausedResponse:
     type: object
     properties:
@@ -75726,6 +75742,15 @@ definitions:
     properties:
       pending_rewards:
         type: string
+      positions_rewards:
+        type: array
+        items:
+          type: object
+          properties:
+            amount:
+              type: string
+            pending_rewards:
+              type: string
   noble.dollar.vaults.v1.QueryPendingRewardsResponse:
     type: object
     properties:
