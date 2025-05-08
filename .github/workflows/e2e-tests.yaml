@@ -23,6 +23,10 @@ jobs:
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
 
+          # Heighliner fork supporting Go v1.24
+          heighliner-owner: 'noble-assets'
+          heighliner-tag: 'v1.7.3'
+
           # Heighliner chains.yaml config
           chain: noble
           dockerfile: cosmos
@@ -47,7 +51,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version-file: 'go.mod'
 
       - name: Generate Matrix
         id: set-matrix
@@ -74,7 +78,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version-file: 'go.mod'
 
       - name: Download Tarball Artifact
         uses: actions/download-artifact@v4

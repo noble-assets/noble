@@ -17,12 +17,16 @@
 package noble
 
 import (
+	"autocctp.dev"
+	autocctptypes "autocctp.dev/types"
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
@@ -34,6 +38,7 @@ import (
 type BankKeeper interface {
 	authtypes.BankKeeper
 	forwardingtypes.BankKeeper
+	autocctptypes.BankKeeper
 }
 
 // HandlerOptions extends the options required by the default Cosmos SDK
@@ -78,16 +83,39 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		fiattokenfactory.NewIsPausedDecorator(options.cdc, options.FTFKeeper),
 		fiattokenfactory.NewIsBlacklistedDecorator(options.FTFKeeper),
 
+		NewPermissionedHyperlaneDecorator(),
+
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, options.SigGasConsumer),
-		forwarding.NewSigVerificationDecorator(options.AccountKeeper, options.BankKeeper, options.SignModeHandler),
+
+		NewSigVerificationDecorator(options),
+
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 
 		ibcante.NewRedundantRelayDecorator(options.IBCKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
+}
+
+func NewSigVerificationDecorator(options HandlerOptions) sdk.AnteDecorator {
+	defaultAnte := ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler)
+	forwardingAnte := forwarding.NewSigVerificationDecorator(options.BankKeeper, defaultAnte)
+	return autocctp.NewSigVerificationDecorator(options.FTFKeeper, options.BankKeeper, options.AccountKeeper, forwardingAnte)
+}
+
+// SigVerificationGasConsumer is a custom implementation of the signature verification gas
+// consumer to handle the public keys defined in the AutoCCTP and Forwarding modules.
+func SigVerificationGasConsumer(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error {
+	switch sig.PubKey.(type) {
+	case *autocctptypes.PubKey:
+		return nil
+	case *forwardingtypes.ForwardingPubKey:
+		return nil
+	default:
+		return ante.DefaultSigVerificationGasConsumer(meter, sig, params)
+	}
 }

@@ -1,0 +1,1 @@
+- Upgrade the Dollar module to enable $USDN yield distribution across specific IBC channels and Hyperlane routes. ([#526](https://github.com/noble-assets/noble/pull/526))
