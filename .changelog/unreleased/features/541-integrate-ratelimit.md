@@ -1,0 +1,1 @@
+- Integrate the IBC Rate Limit module, that enables more granular control over IBC token transfers. ([#541](https://github.com/noble-assets/noble/pull/541))
