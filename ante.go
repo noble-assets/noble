@@ -17,8 +17,6 @@
 package noble
 
 import (
-	"autocctp.dev"
-	autocctptypes "autocctp.dev/types"
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
@@ -38,7 +36,6 @@ import (
 type BankKeeper interface {
 	authtypes.BankKeeper
 	forwardingtypes.BankKeeper
-	autocctptypes.BankKeeper
 }
 
 // HandlerOptions extends the options required by the default Cosmos SDK
@@ -103,16 +100,13 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 func NewSigVerificationDecorator(options HandlerOptions) sdk.AnteDecorator {
 	defaultAnte := ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler)
-	forwardingAnte := forwarding.NewSigVerificationDecorator(options.BankKeeper, defaultAnte)
-	return autocctp.NewSigVerificationDecorator(options.FTFKeeper, options.BankKeeper, options.AccountKeeper, forwardingAnte)
+	return forwarding.NewSigVerificationDecorator(options.BankKeeper, defaultAnte)
 }
 
 // SigVerificationGasConsumer is a custom implementation of the signature verification gas
-// consumer to handle the public keys defined in the AutoCCTP and Forwarding modules.
+// consumer to handle public keys defined in the Forwarding module.
 func SigVerificationGasConsumer(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error {
 	switch sig.PubKey.(type) {
-	case *autocctptypes.PubKey:
-		return nil
 	case *forwardingtypes.ForwardingPubKey:
 		return nil
 	default:
