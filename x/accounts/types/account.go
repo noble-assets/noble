@@ -17,13 +17,41 @@
 package types
 
 import (
+	"bytes"
+	"fmt"
+
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	gogoproto "github.com/cosmos/gogoproto/types/any"
 )
 
-func NewAccount(baseAccount *authtypes.BaseAccount, attributes *gogoproto.Any) *Account {
+func NewAccount(baseAccount *authtypes.BaseAccount, attributes *codectypes.Any) *Account {
 	return &Account{
 		BaseAccount: baseAccount,
 		Attributes:  attributes,
 	}
 }
+
+var _ cryptotypes.PubKey = &PubKey{}
+
+func (pk *PubKey) String() string {
+	return fmt.Sprintf("PubKeyNoble{%X}", pk.Key)
+}
+
+func (pk *PubKey) Address() cryptotypes.Address { return pk.Key }
+
+func (pk *PubKey) Bytes() []byte { return pk.Key }
+
+func (*PubKey) VerifySignature(_ []byte, _ []byte) bool {
+	panic("PubKeyNoble.VerifySignature should never be invoked")
+}
+
+func (pk *PubKey) Equals(other cryptotypes.PubKey) bool {
+	if _, ok := other.(*PubKey); !ok {
+		return false
+	}
+
+	return bytes.Equal(pk.Bytes(), other.Bytes())
+}
+
+func (*PubKey) Type() string { return "noble" }

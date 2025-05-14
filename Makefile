@@ -64,7 +64,7 @@ install:
 gofumpt_cmd=mvdan.cc/gofumpt
 golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
 
-FILES := $(shell find . -name "*.go")
+FILES := $(shell find . -name "*.go" -not -path "./simapp/*" -not -name "*.pb.go" -not -name "*.pb.gw.go" -not -name "*.pulsar.go")
 license:
 	@go-license --config .github/license.yml $(FILES)
 

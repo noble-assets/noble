@@ -17,6 +17,4 @@
 package cctp
 
 // ModuleName defines the account prefix used when generating CCTP accounts.
-// NOTE: This is "autocctp" to maintain backwards compatibility with the
-// original module.
-const ModuleName = "autocctp"
+const ModuleName = "cctp"

@@ -21,28 +21,33 @@ import (
 	"fmt"
 
 	"cosmossdk.io/log"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gogoproto "github.com/cosmos/gogoproto/types/any"
 
 	"noble.xyz/x/accounts/types"
-	"noble.xyz/x/accounts/types/cctp"
-	cctplegacy "noble.xyz/x/accounts/types/cctp/legacy"
 	"noble.xyz/x/accounts/types/ibc"
 	ibclegacy "noble.xyz/x/accounts/types/ibc/legacy"
 )
 
 func MigrateLegacyAccounts(ctx context.Context, logger log.Logger, accountKeeper types.AccountKeeper) {
-	migratedIbcCount, migratedCctpCount := 0, 0
+	migratedIbcCount := 0
 
 	accountKeeper.IterateAccounts(ctx, func(account sdk.AccountI) bool {
 		if forwardingAccount, ok := account.(*ibclegacy.ForwardingAccount); ok {
+			pubKey := types.PubKey{Key: forwardingAccount.GetAddress()}
+			// TODO(@john): Figure out how to gracefully handle this error!
+			rawPubKey, _ := codectypes.NewAnyWithValue(&pubKey)
+
+			baseAccount := forwardingAccount.BaseAccount
+			baseAccount.PubKey = rawPubKey
+
 			attributes := &ibc.Attributes{
 				Channel:   forwardingAccount.Channel,
 				Recipient: forwardingAccount.Recipient,
 				Fallback:  forwardingAccount.Fallback,
 			}
 			// TODO(@john): Figure out how to gracefully handle this error!
-			rawAttributes, _ := gogoproto.NewAnyWithCacheWithValue(attributes)
+			rawAttributes, _ := codectypes.NewAnyWithValue(attributes)
 
 			newAccount := types.NewAccount(forwardingAccount.BaseAccount, rawAttributes)
 
@@ -52,27 +57,8 @@ func MigrateLegacyAccounts(ctx context.Context, logger log.Logger, accountKeeper
 			return false
 		}
 
-		if autocctpAccount, ok := account.(*cctplegacy.Account); ok {
-			attributes := &cctp.Attributes{
-				DestinationDomain: autocctpAccount.DestinationDomain,
-				MintRecipient:     autocctpAccount.MintRecipient,
-				FallbackRecipient: autocctpAccount.FallbackRecipient,
-				DestinationCaller: autocctpAccount.DestinationCaller,
-			}
-			// TODO(@john): Figure out how to gracefully handle this error!
-			rawAttributes, _ := gogoproto.NewAnyWithCacheWithValue(attributes)
-
-			newAccount := types.NewAccount(autocctpAccount.BaseAccount, rawAttributes)
-
-			accountKeeper.SetAccount(ctx, newAccount)
-			migratedCctpCount++
-
-			return false
-		}
-
 		return false
 	})
 
 	logger.Info(fmt.Sprintf("migrated %d forwarding accounts", migratedIbcCount))
-	logger.Info(fmt.Sprintf("migrated %d autocctp accounts", migratedCctpCount))
 }
