@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	stableswaptypes "swap.noble.xyz/types/stableswap"
 
 	"github.com/noble-assets/noble/v10/upgrade"
@@ -40,21 +41,39 @@ func NewPermissionedLiquidityDecorator() PermissionedLiquidityDecorator {
 func (d PermissionedLiquidityDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	if ctx.ChainID() == upgrade.MainnetChainID {
 		for _, msg := range tx.GetMsgs() {
-			typeUrl := sdk.MsgTypeURL(msg)
-
-			if addLiquidityMsg, ok := msg.(*stableswaptypes.MsgAddLiquidity); ok {
-				if addLiquidityMsg.Signer != PermissionedAccount {
-					return ctx, fmt.Errorf("%s is currently a permissioned action", typeUrl)
-				}
-			}
-
-			if removeLiquidityMsg, ok := msg.(*stableswaptypes.MsgRemoveLiquidity); ok {
-				if removeLiquidityMsg.Signer != PermissionedAccount {
-					return ctx, fmt.Errorf("%s is currently a permissioned action", typeUrl)
-				}
+			err := d.CheckMessage(msg)
+			if err != nil {
+				return ctx, err
 			}
 		}
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+func (d PermissionedLiquidityDecorator) CheckMessage(msg sdk.Msg) error {
+	switch m := msg.(type) {
+	case *stableswaptypes.MsgAddLiquidity:
+		if m.Signer != PermissionedAccount {
+			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
+		}
+	case *stableswaptypes.MsgRemoveLiquidity:
+		if m.Signer != PermissionedAccount {
+			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
+		}
+	case *authz.MsgExec:
+		execMsgs, err := m.GetMessages()
+		if err != nil {
+			return err
+		}
+
+		for _, execMsg := range execMsgs {
+			err = d.CheckMessage(execMsg)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

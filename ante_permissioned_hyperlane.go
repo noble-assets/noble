@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 
 	"github.com/noble-assets/noble/v10/upgrade"
 )
@@ -40,12 +41,35 @@ func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 	// messages are determined on testnet, enable them here for mainnet!
 	if ctx.ChainID() == upgrade.MainnetChainID {
 		for _, msg := range tx.GetMsgs() {
-			typeUrl := sdk.MsgTypeURL(msg)
-			if strings.HasPrefix(typeUrl, "/hyperlane") {
-				return ctx, fmt.Errorf("%s is currently a permissioned action", typeUrl)
+			err := d.CheckMessage(msg)
+			if err != nil {
+				return ctx, err
 			}
 		}
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
+	if m, ok := msg.(*authz.MsgExec); ok {
+		execMsgs, err := m.GetMessages()
+		if err != nil {
+			return err
+		}
+
+		for _, execMsg := range execMsgs {
+			err = d.CheckMessage(execMsg)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	typeUrl := sdk.MsgTypeURL(msg)
+	if strings.HasPrefix(typeUrl, "/hyperlane") {
+		return fmt.Errorf("%s is currently a permissioned action", typeUrl)
+	}
+
+	return nil
 }
