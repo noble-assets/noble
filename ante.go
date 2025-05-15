@@ -81,6 +81,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		fiattokenfactory.NewIsBlacklistedDecorator(options.FTFKeeper),
 
 		NewPermissionedHyperlaneDecorator(),
+		NewPermissionedLiquidityDecorator(),
 
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
