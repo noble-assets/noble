@@ -211,6 +211,19 @@
       }
     },
     {
+      "url": "./api/tmp-swagger-gen/cosmos/consensus/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Consensus"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "ConsensusParams"
+        }
+      }
+    },
+    {
       "url": "./api/tmp-swagger-gen/cosmos/evidence/v1beta1/query.swagger.json",
       "tags": {
         "rename": {
