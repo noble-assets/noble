@@ -23,12 +23,13 @@ require (
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-sdk v0.50.13
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0
+	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
 	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/mux v1.8.1
 	github.com/monerium/module-noble/v2 v2.0.0
-	github.com/noble-assets/authority v1.0.3
+	github.com/noble-assets/authority v1.0.4
 	github.com/noble-assets/forwarding/v2 v2.0.2
 	github.com/noble-assets/globalfee v1.0.0
 	github.com/noble-assets/halo/v2 v2.0.1
