@@ -18,27 +18,27 @@ package noble
 
 import (
 	"fmt"
-	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	stableswaptypes "swap.noble.xyz/types/stableswap"
 
 	"github.com/noble-assets/noble/v10/upgrade"
 )
 
-var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
+// PermissionedAccount is the account allowed to perform liquidity actions on Noble.
+const PermissionedAccount = "noble18vx4czzv4rgrfhm0pzhwu5janjdh4ssdkpu8vr"
 
-// PermissionedHyperlaneDecorator is a custom ante handler that permissions all Hyperlane actions on Noble.
-type PermissionedHyperlaneDecorator struct{}
+var _ sdk.AnteDecorator = &PermissionedLiquidityDecorator{}
 
-func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
-	return PermissionedHyperlaneDecorator{}
+// PermissionedLiquidityDecorator is a custom ante handler that permissions all liquidity actions on Noble.
+type PermissionedLiquidityDecorator struct{}
+
+func NewPermissionedLiquidityDecorator() PermissionedLiquidityDecorator {
+	return PermissionedLiquidityDecorator{}
 }
 
-func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	// NOTE: We choose to only permission Hyperlane on mainnet in order to
-	// allow quicker iteration on testnet. TODO(@john): Once the exact user
-	// messages are determined on testnet, enable them here for mainnet!
+func (d PermissionedLiquidityDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	if ctx.ChainID() == upgrade.MainnetChainID {
 		for _, msg := range tx.GetMsgs() {
 			err := d.CheckMessage(msg)
@@ -51,8 +51,17 @@ func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 	return next(ctx, tx, simulate)
 }
 
-func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
-	if m, ok := msg.(*authz.MsgExec); ok {
+func (d PermissionedLiquidityDecorator) CheckMessage(msg sdk.Msg) error {
+	switch m := msg.(type) {
+	case *stableswaptypes.MsgAddLiquidity:
+		if m.Signer != PermissionedAccount {
+			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
+		}
+	case *stableswaptypes.MsgRemoveLiquidity:
+		if m.Signer != PermissionedAccount {
+			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
+		}
+	case *authz.MsgExec:
 		execMsgs, err := m.GetMessages()
 		if err != nil {
 			return err
@@ -64,11 +73,6 @@ func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
 				return err
 			}
 		}
-	}
-
-	typeUrl := sdk.MsgTypeURL(msg)
-	if strings.HasPrefix(typeUrl, "/hyperlane") {
-		return fmt.Errorf("%s is currently a permissioned action", typeUrl)
 	}
 
 	return nil

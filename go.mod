@@ -3,7 +3,6 @@ module github.com/noble-assets/noble/v10
 go 1.24
 
 require (
-	autocctp.dev v1.0.0-beta.0
 	connectrpc.com/connect v1.18.1
 	cosmossdk.io/client/v2 v2.0.0-beta.8
 	cosmossdk.io/core v0.11.1
@@ -16,7 +15,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	dollar.noble.xyz/v2 v2.0.0-beta.1
+	dollar.noble.xyz/v2 v2.0.0-rc.0
 	github.com/bcp-innovations/hyperlane-cosmos v1.0.0
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
