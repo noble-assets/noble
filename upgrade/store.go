@@ -29,6 +29,10 @@ func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 			// IBC Modules
 			ratelimittypes.ModuleName,
 		},
+		Deleted: []string{
+			// Noble Modules
+			"autocctp",
+		},
 	}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
