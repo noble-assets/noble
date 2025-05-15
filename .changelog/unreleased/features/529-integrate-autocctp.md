@@ -1,1 +1,0 @@
-- Integrate our custom AutoCCTP module, that enables automated CCTP transfers via IBC enabled chains. ([#529](https://github.com/noble-assets/noble/pull/529))

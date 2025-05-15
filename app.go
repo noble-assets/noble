@@ -50,7 +50,6 @@ import (
 	"github.com/noble-assets/noble/v10/upgrade"
 	"github.com/spf13/cast"
 
-	_ "autocctp.dev"
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
@@ -122,7 +121,6 @@ import (
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
-	autocctpkeeper "autocctp.dev/keeper"
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
@@ -182,7 +180,6 @@ type App struct {
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
 	AuthorityKeeper  *authoritykeeper.Keeper
-	AutoCCTPKeeper   *autocctpkeeper.Keeper
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
@@ -265,7 +262,6 @@ func NewApp(
 		&app.AuraKeeper,
 		// Noble Modules
 		&app.AuthorityKeeper,
-		&app.AutoCCTPKeeper,
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
@@ -277,7 +273,6 @@ func NewApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
-	app.RegisterCCTPService()
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
 	}
@@ -506,12 +501,4 @@ func (app *App) kvStoreKeys() map[string]*storetypes.KVStoreKey {
 	}
 
 	return keys
-}
-
-// RegisterCCTPService is a method used to register the CCTP message and query servers into the
-// AutoCCTP keeper after building the app.
-func (app *App) RegisterCCTPService() {
-	cctpMsgServer := cctpkeeper.NewMsgServerImpl(app.CCTPKeeper)
-
-	app.AutoCCTPKeeper.SetCCTPService(cctpMsgServer, app.CCTPKeeper)
 }
