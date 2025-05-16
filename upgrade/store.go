@@ -20,19 +20,18 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-
-	dollartypes "dollar.noble.xyz/types"
-	wormholetypes "github.com/noble-assets/wormhole/types"
-	swaptypes "swap.noble.xyz/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 	storeUpgrades := storetypes.StoreUpgrades{
 		Added: []string{
+			// IBC Modules
+			ratelimittypes.ModuleName,
+		},
+		Deleted: []string{
 			// Noble Modules
-			dollartypes.ModuleName,
-			swaptypes.ModuleName,
-			wormholetypes.ModuleName,
+			"autocctp",
 		},
 	}
 

@@ -18,11 +18,13 @@ package noble
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	ftfkeeper "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
@@ -78,16 +80,37 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		fiattokenfactory.NewIsPausedDecorator(options.cdc, options.FTFKeeper),
 		fiattokenfactory.NewIsBlacklistedDecorator(options.FTFKeeper),
 
+		NewPermissionedHyperlaneDecorator(),
+		NewPermissionedLiquidityDecorator(),
+
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, options.SigGasConsumer),
-		forwarding.NewSigVerificationDecorator(options.AccountKeeper, options.BankKeeper, options.SignModeHandler),
+
+		NewSigVerificationDecorator(options),
+
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 
 		ibcante.NewRedundantRelayDecorator(options.IBCKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
+}
+
+func NewSigVerificationDecorator(options HandlerOptions) sdk.AnteDecorator {
+	defaultAnte := ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler)
+	return forwarding.NewSigVerificationDecorator(options.BankKeeper, defaultAnte)
+}
+
+// SigVerificationGasConsumer is a custom implementation of the signature verification gas
+// consumer to handle public keys defined in the Forwarding module.
+func SigVerificationGasConsumer(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error {
+	switch sig.PubKey.(type) {
+	case *forwardingtypes.ForwardingPubKey:
+		return nil
+	default:
+		return ante.DefaultSigVerificationGasConsumer(meter, sig, params)
+	}
 }

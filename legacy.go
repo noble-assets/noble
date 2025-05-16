@@ -18,10 +18,15 @@ package noble
 
 import (
 	storetypes "cosmossdk.io/store/types"
+	"dollar.noble.xyz/v2"
 	"github.com/circlefin/noble-fiattokenfactory/x/blockibc"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	pfm "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
 	pfmtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
+	ratelimit "github.com/cosmos/ibc-apps/modules/rate-limiting/v8"
+	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/keeper"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
@@ -53,6 +58,7 @@ func (app *App) RegisterLegacyModules() error {
 		storetypes.NewKVStoreKey(ibcexported.StoreKey),
 		storetypes.NewKVStoreKey(icahosttypes.StoreKey),
 		storetypes.NewKVStoreKey(pfmtypes.StoreKey),
+		storetypes.NewKVStoreKey(ratelimittypes.StoreKey),
 		storetypes.NewKVStoreKey(transfertypes.StoreKey),
 	); err != nil {
 		return err
@@ -60,6 +66,7 @@ func (app *App) RegisterLegacyModules() error {
 
 	app.ParamsKeeper.Subspace(ibcexported.ModuleName).WithKeyTable(clienttypes.ParamKeyTable().RegisterParamSet(&connectiontypes.Params{}))
 	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(ratelimittypes.ModuleName).WithKeyTable(ratelimittypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(transfertypes.ModuleName).WithKeyTable(transfertypes.ParamKeyTable())
 
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -95,14 +102,24 @@ func (app *App) RegisterLegacyModules() error {
 	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
 	// Create custom ICS4Wrapper so that we can block outgoing $USDN IBC transfers.
-	ics4Wrapper := NewNobleICS4Wrapper(app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
+	ics4Wrapper := dollar.NewICS4Wrapper(app.IBCKeeper.ChannelKeeper, app.DollarKeeper)
+
+	app.RateLimitKeeper = *ratelimitkeeper.NewKeeper(
+		app.appCodec,
+		runtime.NewKVStoreService(app.GetKey(ratelimittypes.StoreKey)),
+		app.GetSubspace(ratelimittypes.ModuleName),
+		authoritytypes.ModuleAddress.String(),
+		app.BankKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		ics4Wrapper,
+	)
 
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(transfertypes.ModuleName)
 	app.TransferKeeper = transferkeeper.NewKeeper(
 		app.appCodec,
 		app.GetKey(transfertypes.StoreKey),
 		app.GetSubspace(transfertypes.ModuleName),
-		ics4Wrapper,
+		app.RateLimitKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -122,6 +139,7 @@ func (app *App) RegisterLegacyModules() error {
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = ratelimit.NewIBCMiddleware(app.RateLimitKeeper, transferStack)
 	transferStack = forwarding.NewMiddleware(transferStack, app.AccountKeeper, app.ForwardingKeeper)
 	transferStack = pfm.NewIBCMiddleware(
 		transferStack,
@@ -137,6 +155,8 @@ func (app *App) RegisterLegacyModules() error {
 		AddRoute(wormholetypes.ModuleName, wormhole.NewIBCModule(app.WormholeKeeper))
 	app.IBCKeeper.SetRouter(ibcRouter)
 
+	app.DollarKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
+
 	app.ForwardingKeeper.SetIBCKeepers(app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
 
 	scopedWormholeKeeper := app.CapabilityKeeper.ScopeToModule(wormholetypes.ModuleName)
@@ -150,5 +170,6 @@ func (app *App) RegisterLegacyModules() error {
 		transfer.NewAppModule(app.TransferKeeper),
 		tmclient.NewAppModule(),
 		soloclient.NewAppModule(),
+		ratelimit.NewAppModule(app.appCodec, app.RateLimitKeeper),
 	)
 }

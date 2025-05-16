@@ -1,0 +1,1 @@
+- Bump supported Golang version to `v1.24` ([#530](https://github.com/noble-assets/noble/pull/530))
