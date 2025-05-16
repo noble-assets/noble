@@ -27,12 +27,12 @@ func TestChainUpgrade(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	genesisVersion := "v9.0.2"
+	genesisVersion := "v10.0.0-beta.1"
 
 	upgrades := []e2e.ChainUpgrade{
 		{
 			Image:       e2e.LocalImages[0],
-			UpgradeName: "stratum",
+			UpgradeName: "v10.0.0-rc.0",
 		},
 	}
 
