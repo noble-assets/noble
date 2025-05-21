@@ -22,10 +22,12 @@ import (
 	"slices"
 	"time"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 
@@ -38,6 +40,9 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	dollarportaltypes "dollar.noble.xyz/v2/types/portal"
+
+	"github.com/noble-assets/noble/v10/legacy"
+	"github.com/noble-assets/noble/v10/upgrade"
 )
 
 // jesterIndex is the index of the injected Jester response in a block.
@@ -52,6 +57,10 @@ type ProposalHandler struct {
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultPreBlocker             sdk.PreBlocker
+
+	// Requirements for the Noble Dollar v2.0.0-rc.1 -> v2.0.0-rc.2 migration.
+	cdc         codec.BinaryCodec
+	dollarStore store.KVStoreService
 }
 
 func NewProposalHandler(
@@ -62,6 +71,8 @@ func NewProposalHandler(
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
+	cdc codec.BinaryCodec,
+	dollarStore store.KVStoreService,
 ) *ProposalHandler {
 	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
 
@@ -74,6 +85,9 @@ func NewProposalHandler(
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultPreBlocker:             preBlocker,
+
+		cdc:         cdc,
+		dollarStore: dollarStore,
 	}
 }
 
@@ -151,6 +165,16 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 // PreBlocker processes all injected $USDN transfers from Jester.
 func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		// Migrate the Noble Dollar module from v2.0.0-rc.1 to v2.0.0-rc.2
+		if ctx.ChainID() == upgrade.TestnetChainID && ctx.BlockHeight() == 30446659 {
+			err := legacy.MigrateDollar(ctx, h.cdc, h.dollarStore, h.dollarKeeper)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to migrate dollar from v2.0.0-rc.1 to v2.0.0-rc.2")
+			}
+
+			ctx.Logger().Info("migrated dollar from v2.0.0-rc.1 to v2.0.0-rc.2")
+		}
+
 		res, err := h.defaultPreBlocker(ctx, req)
 		if err != nil {
 			return nil, errors.Wrap(err, "default PreBlocker failed")
