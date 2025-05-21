@@ -22,8 +22,10 @@ import (
 	"slices"
 	"time"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -40,8 +42,8 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	dollarportaltypes "dollar.noble.xyz/v2/types/portal"
+	dollartypes "dollar.noble.xyz/v2/types/v2"
 
-	"github.com/noble-assets/noble/v10/legacy"
 	"github.com/noble-assets/noble/v10/upgrade"
 )
 
@@ -165,11 +167,26 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 // PreBlocker processes all injected $USDN transfers from Jester.
 func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-		// Migrate the Noble Dollar module from v2.0.0-rc.1 to v2.0.0-rc.2
+		// This is a temporary migration for Noble's testnet (grand-1) to be performed at
+		// Block 30,446,659 that migrates the state of the Noble Dollar module from
+		// v2.0.0-rc.1 to v2.0.0-rc.2
 		if ctx.ChainID() == upgrade.TestnetChainID && ctx.BlockHeight() == 30446659 {
-			err := legacy.MigrateDollar(ctx, h.cdc, h.dollarStore, h.dollarKeeper)
+			err := h.dollarKeeper.Stats.Set(ctx, dollartypes.Stats{
+				TotalHolders:      37,
+				TotalPrincipal:    math.NewInt(94834253580),
+				TotalYieldAccrued: math.NewInt(922359307),
+			})
 			if err != nil {
-				return nil, errors.Wrap(err, "failed to migrate dollar from v2.0.0-rc.1 to v2.0.0-rc.2")
+				return nil, errors.Wrap(err, "failed to set stats for dollar")
+			}
+
+			err = h.dollarKeeper.TotalExternalYield.Set(
+				ctx,
+				collections.Join(int32(dollartypes.Provider_IBC), "channel-43"),
+				math.NewInt(7639046),
+			)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set total external yield for dollar")
 			}
 
 			ctx.Logger().Info("migrated dollar from v2.0.0-rc.1 to v2.0.0-rc.2")
