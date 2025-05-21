@@ -65,7 +65,7 @@ gofumpt_cmd=mvdan.cc/gofumpt
 golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
 BUILDER_VERSION=0.15.3
 
-FILES := $(shell find . -name "*.go")
+FILES := $(shell find . -name "*.go" -not -name "*.pb.go")
 license:
 	@go-license --config .github/license.yml $(FILES)
 
