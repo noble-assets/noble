@@ -122,6 +122,7 @@ import (
 
 	// Noble Modules
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	dollartypes "dollar.noble.xyz/v2/types"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
@@ -306,6 +307,7 @@ func NewApp(
 	proposalHandler := NewProposalHandler(
 		app.BaseApp, app.Mempool(), app.PreBlocker, app.txConfig,
 		jesterClient, app.DollarKeeper, app.WormholeKeeper,
+		app.appCodec, runtime.NewKVStoreService(app.GetKey(dollartypes.ModuleName)),
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
