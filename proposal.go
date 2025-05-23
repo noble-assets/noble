@@ -22,10 +22,14 @@ import (
 	"slices"
 	"time"
 
+	"cosmossdk.io/collections"
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 
@@ -36,8 +40,11 @@ import (
 	wormholetypes "github.com/noble-assets/wormhole/types"
 	vaautils "github.com/wormhole-foundation/wormhole/sdk/vaa"
 
-	dollarkeeper "dollar.noble.xyz/keeper"
-	dollarportaltypes "dollar.noble.xyz/types/portal"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	dollarportaltypes "dollar.noble.xyz/v2/types/portal"
+	dollartypes "dollar.noble.xyz/v2/types/v2"
+
+	"github.com/noble-assets/noble/v10/upgrade"
 )
 
 // jesterIndex is the index of the injected Jester response in a block.
@@ -52,6 +59,10 @@ type ProposalHandler struct {
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
 	defaultPreBlocker             sdk.PreBlocker
+
+	// Requirements for the Noble Dollar v2.0.0-rc.1 -> v2.0.0-rc.2 migration.
+	cdc         codec.BinaryCodec
+	dollarStore store.KVStoreService
 }
 
 func NewProposalHandler(
@@ -62,6 +73,8 @@ func NewProposalHandler(
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
+	cdc codec.BinaryCodec,
+	dollarStore store.KVStoreService,
 ) *ProposalHandler {
 	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
 
@@ -74,6 +87,9 @@ func NewProposalHandler(
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
 		defaultPreBlocker:             preBlocker,
+
+		cdc:         cdc,
+		dollarStore: dollarStore,
 	}
 }
 
@@ -124,22 +140,24 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				}
 			}
 
-			builder := h.txConfig.NewTxBuilder()
+			if len(nonExecutedVAAs) > 0 {
+				builder := h.txConfig.NewTxBuilder()
 
-			err := builder.SetMsgs(nonExecutedVAAs...)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
+				err := builder.SetMsgs(nonExecutedVAAs...)
+				if err != nil {
+					return nil, errors.Wrap(err, "failed to set messages of injected jester tx")
+				}
+
+				tx := builder.GetTx()
+
+				bz, err := h.txConfig.TxEncoder()(tx)
+				if err != nil {
+					return nil, errors.Wrap(err, "failed to marshal injected jester tx")
+				}
+				res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
+
+				logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 			}
-
-			tx := builder.GetTx()
-
-			bz, err := h.txConfig.TxEncoder()(tx)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to marshal injected jester tx")
-			}
-			res.Txs = slices.Insert(res.Txs, jesterIndex, bz)
-
-			logger.Info(fmt.Sprintf("injected %d pending transfers from jester", len(nonExecutedVAAs)))
 		}
 
 		return &abci.ResponsePrepareProposal{Txs: res.Txs}, nil
@@ -149,6 +167,31 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 // PreBlocker processes all injected $USDN transfers from Jester.
 func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		// This is a temporary migration for Noble's testnet (grand-1) to be performed at
+		// Block 30,446,659 that migrates the state of the Noble Dollar module from
+		// v2.0.0-rc.1 to v2.0.0-rc.2
+		if ctx.ChainID() == upgrade.TestnetChainID && ctx.BlockHeight() == 30446659 {
+			err := h.dollarKeeper.Stats.Set(ctx, dollartypes.Stats{
+				TotalHolders:      37,
+				TotalPrincipal:    math.NewInt(94834253580),
+				TotalYieldAccrued: math.NewInt(922359307),
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set stats for dollar")
+			}
+
+			err = h.dollarKeeper.TotalExternalYield.Set(
+				ctx,
+				collections.Join(int32(dollartypes.Provider_IBC), "channel-43"),
+				math.NewInt(7639046),
+			)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to set total external yield for dollar")
+			}
+
+			ctx.Logger().Info("migrated dollar from v2.0.0-rc.1 to v2.0.0-rc.2")
+		}
+
 		res, err := h.defaultPreBlocker(ctx, req)
 		if err != nil {
 			return nil, errors.Wrap(err, "default PreBlocker failed")

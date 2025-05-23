@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Noble API Reference",
-    "version": "9.0.0"
+    "version": "10.0.0"
   },
   "x-tagGroups": [
     {
@@ -47,14 +47,21 @@
       ]
     },
     {
+      "name": "Hyperlane",
+      "tags": [
+        "Hyperlane",
+        "Warp"
+      ]
+    },
+    {
       "name": "IBC",
       "tags": [
         "Channel",
         "Client",
         "Connection",
-        "Fee",
         "ICA Controller",
         "ICA Host",
+        "Rate Limit",
         "Transfer"
       ]
     },
@@ -95,6 +102,35 @@
     }
   ],
   "apis": [
+    {
+      "url": "./api/tmp-swagger-gen/aura/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Aura"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Minters": "AuraMinters",
+          "Owner": "AuraOwner",
+          "Paused": "AuraPaused"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/aura/blocklist/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Aura Blocklist"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Address": "AuraBlocklistAddress",
+          "Owner": "AuraBlocklistOwner"
+        }
+      }
+    },
     {
       "url": "./api/tmp-swagger-gen/circle/cctp/v1/query.swagger.json",
       "tags": {
@@ -170,6 +206,19 @@
       "tags": {
         "rename": {
           "Service": "CometBFT"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/cosmos/consensus/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Consensus"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "ConsensusParams"
         }
       }
     },
@@ -325,10 +374,34 @@
       }
     },
     {
-      "url": "./api/tmp-swagger-gen/ibc/applications/fee/v1/query.swagger.json",
+      "url": "./api/tmp-swagger-gen/hyperlane/core/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Fee"
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/interchain_security/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/core/post_dispatch/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Hyperlane"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/hyperlane/warp/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Warp"
         }
       }
     },
@@ -428,6 +501,19 @@
       }
     },
     {
+      "url": "./api/tmp-swagger-gen/noble/dollar/v2/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Dollar"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Stats": "DollarV2Stats"
+        }
+      }
+    },
+    {
       "url": "./api/tmp-swagger-gen/noble/dollar/portal/v1/query.swagger.json",
       "tags": {
         "rename": {
@@ -507,31 +593,10 @@
       }
     },
     {
-      "url": "./api/tmp-swagger-gen/aura/v1/query.swagger.json",
+      "url": "./api/tmp-swagger-gen/ratelimit/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Aura"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Minters": "AuraMinters",
-          "Owner": "AuraOwner",
-          "Paused": "AuraPaused"
-        }
-      }
-    },
-    {
-      "url": "./api/tmp-swagger-gen/aura/blocklist/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Aura Blocklist"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Address": "AuraBlocklistAddress",
-          "Owner": "AuraBlocklistOwner"
+          "Query": "Rate Limit"
         }
       }
     },
@@ -542,7 +607,7 @@
           "Query": "Wormhole"
         }
       },
-      "operationsIds": {
+      "operationIds": {
         "rename": {
           "Config": "WormholeConfig"
         }

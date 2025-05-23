@@ -45,15 +45,17 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v9/api"
-	"github.com/noble-assets/noble/v9/jester"
-	"github.com/noble-assets/noble/v9/upgrade"
+	"github.com/noble-assets/noble/v10/api"
+	"github.com/noble-assets/noble/v10/jester"
+	"github.com/noble-assets/noble/v10/upgrade"
 	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
 	_ "cosmossdk.io/x/feegrant/module"
 	_ "cosmossdk.io/x/upgrade"
-	_ "dollar.noble.xyz"
+	_ "dollar.noble.xyz/v2"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/core"
+	_ "github.com/bcp-innovations/hyperlane-cosmos/x/warp"
 	_ "github.com/circlefin/noble-cctp/x/cctp"
 	_ "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory"
 	_ "github.com/cosmos/cosmos-sdk/x/auth"
@@ -95,6 +97,7 @@ import (
 
 	// IBC Modules
 	pfmkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"
+	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/keeper"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	transferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
@@ -110,11 +113,16 @@ import (
 	// Hashnote Modules
 	halokeeper "github.com/noble-assets/halo/v2/keeper"
 
+	// Hyperlane Modules
+	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
+	warpkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/warp/keeper"
+
 	// Monerium Modules
 	florinkeeper "github.com/monerium/module-noble/v2/keeper"
 
 	// Noble Modules
-	dollarkeeper "dollar.noble.xyz/keeper"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	dollartypes "dollar.noble.xyz/v2/types"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
@@ -157,6 +165,7 @@ type App struct {
 	IBCKeeper        *ibckeeper.Keeper
 	ICAHostKeeper    icahostkeeper.Keeper
 	PFMKeeper        *pfmkeeper.Keeper
+	RateLimitKeeper  ratelimitkeeper.Keeper
 	TransferKeeper   transferkeeper.Keeper
 	// Circle Modules
 	CCTPKeeper *cctpkeeper.Keeper
@@ -165,6 +174,9 @@ type App struct {
 	AuraKeeper *aurakeeper.Keeper
 	// Hashnote Modules
 	HaloKeeper *halokeeper.Keeper
+	// Hyperlane Modules
+	HyperlaneKeeper *hyperlanekeeper.Keeper
+	WarpKeeper      warpkeeper.Keeper
 	// Monerium Modules
 	FlorinKeeper *florinkeeper.Keeper
 	// Noble Modules
@@ -242,6 +254,9 @@ func NewApp(
 		&app.FTFKeeper,
 		// Hashnote Modules
 		&app.HaloKeeper,
+		// Hyperlane Modules
+		&app.HyperlaneKeeper,
+		&app.WarpKeeper,
 		// Monerium Modules
 		&app.FlorinKeeper,
 		// Ondo Modules
@@ -276,6 +291,7 @@ func NewApp(
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: app.txConfig.SignModeHandler(),
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
+			SigGasConsumer:  SigVerificationGasConsumer,
 		},
 		cdc:        app.appCodec,
 		BankKeeper: app.BankKeeper,
@@ -291,6 +307,7 @@ func NewApp(
 	proposalHandler := NewProposalHandler(
 		app.BaseApp, app.Mempool(), app.PreBlocker, app.txConfig,
 		jesterClient, app.DollarKeeper, app.WormholeKeeper,
+		app.appCodec, runtime.NewKVStoreService(app.GetKey(dollartypes.ModuleName)),
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
@@ -452,14 +469,6 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
-			app.Logger(),
-			app.AccountKeeper,
-			app.BankKeeper,
-			app.CapabilityKeeper,
-			app.DollarKeeper,
-			app.GlobalFeeKeeper,
-			app.SwapKeeper,
-			app.WormholeKeeper,
 		),
 	)
 
