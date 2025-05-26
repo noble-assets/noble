@@ -134,7 +134,7 @@ It addresses the following consensus failure when upgrading Noble's mainnet to t
 
 ### BUG FIXES
 
-- In the v8 Helium upgrade handler, the Noble Core Team wanted to align a missconfiguration in the initial genesis file that resulted in 18 surplus $STAKE existing, bringing the total supply to 1,000,000,018. The migration plan involved burning the surplus 18 tokens via the Uupgrade module, however, the module account was never initialized and permissioned. ([#428](https://github.com/noble-assets/noble/pull/428))
+- In the v8 Helium upgrade handler, the Noble Core Team wanted to align a misconfiguration in the initial genesis file that resulted in 18 surplus $STAKE existing, bringing the total supply to 1,000,000,018. The migration plan involved burning the surplus 18 tokens via the Uupgrade module, however, the module account was never initialized and permissioned. ([#428](https://github.com/noble-assets/noble/pull/428))
 
 ## v8.0.0
 
