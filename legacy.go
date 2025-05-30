@@ -148,6 +148,7 @@ func (app *App) RegisterLegacyModules() error {
 		pfmkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 	)
 	transferStack = blockibc.NewIBCMiddleware(transferStack, app.FTFKeeper)
+	transferStack = dollar.NewIBCModule(transferStack, app.DollarKeeper)
 
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icahost.NewIBCModule(app.ICAHostKeeper)).
