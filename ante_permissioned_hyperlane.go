@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"strings"
 
+	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
@@ -36,9 +37,6 @@ func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
 }
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	// NOTE: We choose to only permission Hyperlane on mainnet in order to
-	// allow quicker iteration on testnet. TODO(@john): Once the exact user
-	// messages are determined on testnet, enable them here for mainnet!
 	if ctx.ChainID() == upgrade.MainnetChainID {
 		for _, msg := range tx.GetMsgs() {
 			err := d.CheckMessage(msg)
@@ -52,7 +50,10 @@ func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 }
 
 func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
-	if m, ok := msg.(*authz.MsgExec); ok {
+	switch m := msg.(type) {
+	case *warptypes.MsgRemoteTransfer:
+		return nil
+	case *authz.MsgExec:
 		execMsgs, err := m.GetMessages()
 		if err != nil {
 			return err
@@ -64,11 +65,11 @@ func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
 				return err
 			}
 		}
-	}
-
-	typeUrl := sdk.MsgTypeURL(msg)
-	if strings.HasPrefix(typeUrl, "/hyperlane") {
-		return fmt.Errorf("%s is currently a permissioned action", typeUrl)
+	default:
+		typeUrl := sdk.MsgTypeURL(msg)
+		if strings.HasPrefix(typeUrl, "/hyperlane") {
+			return fmt.Errorf("%s is currently a permissioned action", typeUrl)
+		}
 	}
 
 	return nil
