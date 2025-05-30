@@ -29,6 +29,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
@@ -40,10 +41,13 @@ func CreateUpgradeHandler(
 	addressCodec address.Codec,
 	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
+	clientKeeper clientkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
 		if err != nil {
 			return vm, err
@@ -54,7 +58,17 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		// TODO(@john, @justin): Are any Hyperlane configurations needed anymore?
+		// The IBC light client for the router_9600-1 chain has expired on
+		// Noble's mainnet. In IBC-Go v8.7.0, the MsgRecoverClient message does
+		// not support the LegacyAminoJSON signing mode, preventing recovery
+		// via the Noble Maintenance Multisig. As a result, the client must be
+		// manually recovered as part of this software upgrade.
+		if sdkCtx.ChainID() == MainnetChainID {
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-136", "07-tendermint-161")
+			if err != nil {
+				return vm, err
+			}
+		}
 
 		logger.Info(UpgradeASCII)
 
