@@ -23,9 +23,9 @@ jobs:
           platform: linux/amd64 # test runner architecture only
           git-ref: ${{ github.head_ref }} # source code ref
 
-          # Heighliner fork supporting Go v1.24
+          # Heighliner fork supporting Go v1.24 and musl.cc proxy
           heighliner-owner: 'noble-assets'
-          heighliner-tag: 'v1.7.3'
+          heighliner-tag: 'v1.7.4'
 
           # Heighliner chains.yaml config
           chain: noble
