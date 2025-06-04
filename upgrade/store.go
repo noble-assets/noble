@@ -20,20 +20,10 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
-	storeUpgrades := storetypes.StoreUpgrades{
-		Added: []string{
-			// IBC Modules
-			ratelimittypes.ModuleName,
-		},
-		Deleted: []string{
-			// Noble Modules
-			"autocctp",
-		},
-	}
+	storeUpgrades := storetypes.StoreUpgrades{}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
 }
