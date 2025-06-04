@@ -30,9 +30,9 @@ jobs:
       - name: Build and push Docker image
         uses: strangelove-ventures/heighliner-build-action@v1.0.3
         with:
-          # Heighliner fork supporting Go v1.24
+          # Heighliner fork supporting Go v1.24 and musl.cc proxy
           heighliner-owner: 'noble-assets'
-          heighliner-tag: 'v1.7.3'
+          heighliner-tag: 'v1.7.4'
 
           # Heighliner chains.yaml config
           chain: noble
