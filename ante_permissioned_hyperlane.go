@@ -25,8 +25,6 @@ import (
 	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-
-	"github.com/noble-assets/noble/v10/upgrade"
 )
 
 var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
@@ -39,12 +37,10 @@ func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
 }
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	if ctx.ChainID() == upgrade.MainnetChainID {
-		for _, msg := range tx.GetMsgs() {
-			err := d.CheckMessage(msg)
-			if err != nil {
-				return ctx, err
-			}
+	for _, msg := range tx.GetMsgs() {
+		err := d.CheckMessage(msg)
+		if err != nil {
+			return ctx, err
 		}
 	}
 
