@@ -3,7 +3,7 @@ rm -rf ./api/proto
 rm -rf ./api/tmp-swagger-gen
 
 # IMPORTANT: These versions should match the go.mod!
-buf export buf.build/bcp-innovations/hyperlane-cosmos:v1.0.0 --output api/proto
+buf export buf.build/bcp-innovations/hyperlane-cosmos:v1.0.1 --output api/proto
 buf export buf.build/cosmos/cosmos-sdk:v0.50.0 --output api/proto
 buf export buf.build/cosmos/ibc:e69c8f372b127401762cb251bb7b60371b4cef29 --output api/proto
 buf export buf.build/noble-assets/aura:v2.0.0 --output api/proto

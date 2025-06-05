@@ -34396,6 +34396,14 @@ paths:
           in: path
           required: true
           type: string
+        - name: custom_hook_id
+          in: query
+          required: false
+          type: string
+        - name: custom_hook_metadata
+          in: query
+          required: false
+          type: string
       tags:
         - Warp
   /hyperlane/v1/tokens/{id}/remote_routers:
