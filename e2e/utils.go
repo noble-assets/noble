@@ -431,7 +431,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, version []ibc.DockerImage, s
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -485,10 +485,10 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 		{
 			Name:    "ibc-go-simd",
-			Version: "v8.5.1",
+			Version: "v8.7.0",
 			ChainConfig: ibc.ChainConfig{
 				EncodingConfig: SimdEncoding(),
 			},
