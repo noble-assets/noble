@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## v10.0.0
+
+*Jun 6, 2025*
+
+This is the Stratum major release of Noble. It introduces [composable yield](https://www.noble.xyz/blog/composable-yield-a-new-paradigm-for-stablecoins) for the Noble Dollar (USDN), along with integration of the [Hyperlane](https://hyperlane.xyz/) protocol.
+
+This and other notable changes are documented below.
+
+### BUG FIXES
+
+- Ensure transaction injections from Jester are non-empty. ([#515](https://github.com/noble-assets/noble/pull/515))
+
+### DEPENDENCIES
+
+- Bump supported Golang version to `v1.24` ([#530](https://github.com/noble-assets/noble/pull/530))
+
+### FEATURES
+
+- Integrate the Hyperlane Core module, that enables messaging via the Hyperlane protocol. ([#519](https://github.com/noble-assets/noble/pull/519))
+- Upgrade the Dollar module to enable $USDN yield distribution across specific IBC channels and Hyperlane routes. ([#526](https://github.com/noble-assets/noble/pull/526))
+- Integrate the Hyperlane Warp module, that enables token transfers via the Hyperlane protocol. ([#527](https://github.com/noble-assets/noble/pull/527))
+- Introduce a new ante handler that permissions Hyperlane actions. ([#528](https://github.com/noble-assets/noble/pull/528))
+- Integrate the IBC Rate Limit module, that enables more granular control over IBC token transfers. ([#541](https://github.com/noble-assets/noble/pull/541))
+
+### IMPROVEMENTS
+
+- Update module path for v10 release line. ([#516](https://github.com/noble-assets/noble/pull/516))
+
 ## v9.0.4
 
 *May 8, 2025*
