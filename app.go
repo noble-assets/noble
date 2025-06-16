@@ -45,9 +45,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v10/api"
-	"github.com/noble-assets/noble/v10/jester"
-	"github.com/noble-assets/noble/v10/upgrade"
+	"github.com/noble-assets/noble/v11/api"
+	"github.com/noble-assets/noble/v11/jester"
+	"github.com/noble-assets/noble/v11/upgrade"
 	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
@@ -468,13 +468,6 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
-			app.AccountKeeper.AddressCodec(),
-			app.AuthorityKeeper,
-			app.BankKeeper,
-			app.IBCKeeper.ClientKeeper,
-			app.DollarKeeper,
-			app.HyperlaneKeeper,
-			app.SwapKeeper,
 		),
 	)
 
