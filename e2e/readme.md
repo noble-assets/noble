@@ -3,7 +3,7 @@
 
 We utilize the [interchaintest](https://github.com/strangelove-ventures/interchaintest) testing suite.
 
-All tests are located in the [interchaintest folder](../interchaintest/).
+All tests are located in the [e2e folder](./).
 
 ## How to Run tests:
 
