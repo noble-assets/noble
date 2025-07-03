@@ -17,6 +17,7 @@
 package noble
 
 import (
+	"context"
 	_ "embed"
 	"fmt"
 	"io"
@@ -489,6 +490,17 @@ func (app *App) RegisterUpgradeHandler() error {
 	if upgradeInfo.Name == upgrade.UpgradeName {
 		app.SetStoreLoader(upgrade.CreateStoreLoader(upgradeInfo.Height))
 	}
+
+	// To use v10.0.1 on both testnet and mainnet, we need to register an empty
+	// handler for the last performed testnet upgrade.
+	//
+	// ABF150C8FC258035809E9223A7DBE2EEE2960795301D4742B10B4C2B05A06BCD
+	app.UpgradeKeeper.SetUpgradeHandler(
+		"v10.0.0-rc.3",
+		func(_ context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+			return vm, nil
+		},
+	)
 
 	return nil
 }

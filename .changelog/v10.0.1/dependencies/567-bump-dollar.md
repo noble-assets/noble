@@ -1,0 +1,1 @@
+- Bump Dollar to [`v2.0.1`](https://github.com/noble-assets/dollar/releases/tag/v2.0.1) to gracefully handle transfer errors. ([#567](https://github.com/noble-assets/noble/pull/567))

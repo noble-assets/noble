@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v10.0.1
+
+*Jul 3, 2025*
+
+This is a patch to the v10 Stratum release line.
+
+If the Dollar module has no yield recipients enabled, this is non-consensus breaking.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v2.0.1`](https://github.com/noble-assets/dollar/releases/tag/v2.0.1) to gracefully handle transfer errors. ([#567](https://github.com/noble-assets/noble/pull/567))
+
 ## v10.0.0
 
 *Jun 6, 2025*
