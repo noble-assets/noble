@@ -1,4 +1,4 @@
-*Jul 3, 2025*
+*Jul 7, 2025*
 
 This is a patch to the v10 Stratum release line.
 
