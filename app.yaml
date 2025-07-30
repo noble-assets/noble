@@ -4,7 +4,7 @@ modules:
       "@type": cosmos.app.runtime.v1alpha1.Module
       app_name: Noble
       pre_blockers: [ upgrade ]
-      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap, ratelimit ]
+      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap, ratelimit, dollar ]
       end_blockers: [ crisis, staking, feegrant, forwarding, ratelimit ]
       init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, dollar, swap, hyperlane, warp, ratelimit ]
       override_store_keys:
@@ -139,6 +139,8 @@ modules:
       denom: uusdn
       vaults_minimum_lock: 1e6
       vaults_minimum_unlock: 1e6
+      vaults_season_one_end_timestamp: 1754402400 # Aug 5th, 2025 @ 14:00 UTC
+      vaults_interim_period_yield_collector: noble1yca7e7ajsaxvsret0jq9n06fjl8aqesmjrqtwa
   - name: forwarding
     config:
       "@type": noble.forwarding.module.v1.Module

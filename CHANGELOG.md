@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v10.1.0
+
+*Jul 30, 2025*
+
+This is a minor release to the v10 Stratum line, codenamed Ember.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v2.1.0`](https://github.com/noble-assets/dollar/releases/tag/v2.1.0) to introduce logic that handles the end of Vaults Season One. ([#570](https://github.com/noble-assets/noble/pull/570))
+
 ## v10.0.1
 
 *Jul 7, 2025*
