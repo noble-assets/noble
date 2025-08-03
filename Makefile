@@ -47,12 +47,21 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 ###                                  Build                                  ###
 ###############################################################################
 
-build:
+MODULES := . e2e
+
+tidy:
+	@cp go.work.example go.work
+	@for module in $(MODULES); do \
+		(cd $$module && go mod tidy); \
+	done
+	@go work use && go work sync
+
+build: tidy
 	@echo "🤖 Building nobled..."
 	@go build -mod=readonly $(BUILD_FLAGS) -o "$(PWD)/build/nobled" ./cmd/nobled
 	@echo "✅ Completed build!"
 
-install:
+install: tidy
 	@echo "🤖 Installing nobled..."
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/nobled
 	@echo "✅ Completed install!"
