@@ -17,7 +17,6 @@
 package noble
 
 import (
-	"context"
 	_ "embed"
 	"fmt"
 	"io"
@@ -46,9 +45,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v10/api"
-	"github.com/noble-assets/noble/v10/jester"
-	"github.com/noble-assets/noble/v10/upgrade"
+	"github.com/noble-assets/noble/v11/api"
+	"github.com/noble-assets/noble/v11/jester"
+	"github.com/noble-assets/noble/v11/upgrade"
 	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
@@ -469,13 +468,6 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
-			app.AccountKeeper.AddressCodec(),
-			app.AuthorityKeeper,
-			app.BankKeeper,
-			app.IBCKeeper.ClientKeeper,
-			app.DollarKeeper,
-			app.HyperlaneKeeper,
-			app.SwapKeeper,
 		),
 	)
 
@@ -490,17 +482,6 @@ func (app *App) RegisterUpgradeHandler() error {
 	if upgradeInfo.Name == upgrade.UpgradeName {
 		app.SetStoreLoader(upgrade.CreateStoreLoader(upgradeInfo.Height))
 	}
-
-	// To use v10.0.1 on both testnet and mainnet, we need to register an empty
-	// handler for the last performed testnet upgrade.
-	//
-	// ABF150C8FC258035809E9223A7DBE2EEE2960795301D4742B10B4C2B05A06BCD
-	app.UpgradeKeeper.SetUpgradeHandler(
-		"v10.0.0-rc.3",
-		func(_ context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-			return vm, nil
-		},
-	)
 
 	return nil
 }
