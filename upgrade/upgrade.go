@@ -23,6 +23,8 @@ import (
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -36,6 +38,7 @@ func CreateUpgradeHandler(
 	addressCodec address.Codec,
 	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
+	dollarKeeper *dollarkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -44,6 +47,11 @@ func CreateUpgradeHandler(
 		}
 
 		err = ClaimDistributionFunds(ctx, logger, addressCodec, authorityKeeper, bankKeeper)
+		if err != nil {
+			return vm, err
+		}
+
+		err = UpdateVaultsState(ctx, addressCodec, authorityKeeper, dollarKeeper)
 		if err != nil {
 			return vm, err
 		}
@@ -82,6 +90,43 @@ func ClaimDistributionFunds(ctx context.Context, logger log.Logger, addressCodec
 	}
 
 	logger.Info("claimed stuck distribution module funds", "amount", balance.String())
+
+	return nil
+}
+
+// UpdateVaultsState sets state variables around Vaults Season One and Season
+// Two. We do this so that we can remove these values from the app.yaml file,
+// allowing us to ship one binary for both mainnet and testnet.
+func UpdateVaultsState(ctx context.Context, addressCodec address.Codec, authorityKeeper *authoritykeeper.Keeper, dollarKeeper *dollarkeeper.Keeper) error {
+	switch sdk.UnwrapSDKContext(ctx).ChainID() {
+	case TestnetChainID:
+		err := dollarKeeper.VaultsSeasonOneEnded.Set(ctx, true)
+		if err != nil {
+			return errors.New("unable to mark vaults season one as ended")
+		}
+
+		authority, err := authorityKeeper.Owner.Get(ctx)
+		if err != nil {
+			return errors.New("unable to get underlying authority address from state")
+		}
+		authorityBz, err := addressCodec.StringToBytes(authority)
+		if err != nil {
+			return errors.New("unable to decode underlying authority address")
+		}
+		err = dollarKeeper.VaultsSeasonTwoYieldCollector.Set(ctx, authorityBz)
+		if err != nil {
+			return errors.New("unable to set vaults season two yield collector")
+		}
+	case MainnetChainID:
+		// NOTE: Vaults Season One has already been marked as ended on mainnet
+		// via the v10.1 Ember upgrade, so we safely skip that update here.
+
+		yieldCollector, _ := addressCodec.StringToBytes("noble17m7dleu26hgwk842hrvfmh8mvrtp7p68k4zq8l")
+		err := dollarKeeper.VaultsSeasonTwoYieldCollector.Set(ctx, yieldCollector)
+		if err != nil {
+			return errors.New("unable to set vaults season two yield collector")
+		}
+	}
 
 	return nil
 }
