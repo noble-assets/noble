@@ -72,6 +72,7 @@ import (
 	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
+	_ "github.com/noble-assets/nova"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
@@ -125,6 +126,7 @@ import (
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	novakeeper "github.com/noble-assets/nova/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
@@ -183,6 +185,7 @@ type App struct {
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
+	NovaKeeper       *novakeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
 }
@@ -265,6 +268,7 @@ func NewApp(
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
+		&app.NovaKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
 	); err != nil {
@@ -305,10 +309,12 @@ func NewApp(
 	jesterClient := jester.NewClient(cast.ToString(appOpts.Get(jester.FlagGRPCAddress)))
 	proposalHandler := NewProposalHandler(
 		app.BaseApp, app.Mempool(), app.PreBlocker, app.txConfig,
-		jesterClient, app.DollarKeeper, app.WormholeKeeper,
+		jesterClient, app.DollarKeeper, app.NovaKeeper, app.WormholeKeeper,
 	)
 
+	app.SetExtendVoteHandler(app.NovaKeeper.ExtendVoteHandler(app.txConfig))
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
+	app.SetProcessProposal(app.NovaKeeper.ProcessProposalHandler(app.txConfig))
 	app.SetPreBlocker(proposalHandler.PreBlocker())
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
@@ -468,6 +474,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
+			app.ConsensusKeeper,
 		),
 	)
 

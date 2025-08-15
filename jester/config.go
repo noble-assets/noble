@@ -22,28 +22,15 @@ import (
 )
 
 const (
-	defaultJesterAddress = "localhost:9091"
+	DefaultGRPCAddress = "localhost:9091"
+	FlagGRPCAddress    = "jester.grpc-address"
 )
 
-// AppendJesterConfig appends the Jester configuration to app.toml
-func AppendJesterConfig(srvCfg *serverconfig.Config) (customAppTemplate string, NobleAppConfig interface{}) {
-	type JesterConfig struct {
-		GRPCAddress string `mapstructure:"grpc-address"`
-	}
+type Config struct {
+	GRPCAddress string `mapstructure:"grpc-address"`
+}
 
-	type CustomAppConfig struct {
-		serverconfig.Config
-
-		JesterConfig JesterConfig `mapstructure:"jester"`
-	}
-
-	defaultJesterConfig := JesterConfig{
-		GRPCAddress: defaultJesterAddress,
-	}
-
-	NobleAppConfig = CustomAppConfig{Config: *srvCfg, JesterConfig: defaultJesterConfig}
-
-	customAppTemplate = serverconfig.DefaultConfigTemplate + `
+const ConfigTemplate = `
 ###############################################################################
 ###                             Jester (sidecar)                            ###
 ###############################################################################
@@ -54,15 +41,24 @@ func AppendJesterConfig(srvCfg *serverconfig.Config) (customAppTemplate string, 
 # This should not conflict with the CometBFT gRPC server.
 grpc-address = "{{ .JesterConfig.GRPCAddress }}"
 `
-	return customAppTemplate, NobleAppConfig
+
+// AppendConfig appends the Jester configuration to the Cosmos SDK app.toml
+func AppendConfig(config *serverconfig.Config) (customAppTemplate string, customAppConfig interface{}) {
+	type CustomAppConfig struct {
+		serverconfig.Config
+
+		JesterConfig Config `mapstructure:"jester"`
+	}
+
+	customAppTemplate = serverconfig.DefaultConfigTemplate + ConfigTemplate
+
+	defaultJesterConfig := Config{GRPCAddress: DefaultGRPCAddress}
+	customAppConfig = CustomAppConfig{Config: *config, JesterConfig: defaultJesterConfig}
+
+	return
 }
 
-// Flags
-
-const (
-	FlagGRPCAddress = "jester.grpc-address"
-)
-
+// AddFlags adds the Jester flags to the default Cosmos SDK start command.
 func AddFlags(cmd *cobra.Command) {
-	cmd.Flags().String(FlagGRPCAddress, defaultJesterAddress, "Jester's gRPC server address")
+	cmd.Flags().String(FlagGRPCAddress, DefaultGRPCAddress, "Jester's gRPC Address")
 }

@@ -30,6 +30,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 
 	"connectrpc.com/connect"
+	localjester "github.com/noble-assets/noble/v12/jester"
 	jester "jester.noble.xyz/api"
 
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
@@ -38,6 +39,8 @@ import (
 
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	dollarportaltypes "dollar.noble.xyz/v2/types/portal"
+
+	novakeeper "github.com/noble-assets/nova/keeper"
 )
 
 // jesterIndex is the index of the injected Jester response in a block.
@@ -51,7 +54,10 @@ type ProposalHandler struct {
 	dollarKeeper   *dollarkeeper.Keeper
 
 	defaultPrepareProposalHandler sdk.PrepareProposalHandler
+	novaPrepareProposalHandler    sdk.PrepareProposalHandler
 	defaultPreBlocker             sdk.PreBlocker
+	jesterPreBlocker              sdk.PreBlocker
+	novaPreBlocker                sdk.PreBlocker
 }
 
 func NewProposalHandler(
@@ -61,6 +67,7 @@ func NewProposalHandler(
 	txConfig client.TxConfig,
 	jesterClient jester.QueryServiceClient,
 	dollarKeeper *dollarkeeper.Keeper,
+	novaKeeper *novakeeper.Keeper,
 	wormholeKeeper *wormholekeeper.Keeper,
 ) *ProposalHandler {
 	defaultHandler := baseapp.NewDefaultProposalHandler(mempool, app)
@@ -73,7 +80,10 @@ func NewProposalHandler(
 		dollarKeeper:   dollarKeeper,
 
 		defaultPrepareProposalHandler: defaultHandler.PrepareProposalHandler(),
+		novaPrepareProposalHandler:    novaKeeper.PrepareProposalHandler(txConfig),
 		defaultPreBlocker:             preBlocker,
+		jesterPreBlocker:              localjester.PreBlockerHandler(txConfig, dollarKeeper),
+		novaPreBlocker:                novaKeeper.PreBlockerHandler(txConfig),
 	}
 }
 
@@ -90,6 +100,11 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		res, err := h.defaultPrepareProposalHandler(ctx, req)
 		if err != nil {
 			return nil, errors.Wrap(err, "default PrepareProposal handler failed")
+		}
+
+		res, err = h.novaPrepareProposalHandler(ctx, req)
+		if err != nil {
+			return nil, errors.Wrap(err, "nova PrepareProposal handler failed")
 		}
 
 		ctxWithTimeout, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
@@ -156,57 +171,16 @@ func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 			return nil, errors.Wrap(err, "default PreBlocker failed")
 		}
 
-		if len(req.Txs) == 0 {
-			return res, nil
+		_, err = h.jesterPreBlocker(ctx, req)
+		if err != nil {
+			return nil, errors.Wrap(err, "jester PreBlocker failed")
 		}
 
-		tx := req.Txs[jesterIndex]
-		h.handleJesterTx(ctx, tx)
+		_, err = h.novaPreBlocker(ctx, req)
+		if err != nil {
+			return nil, errors.Wrap(err, "nova PreBlocker failed")
+		}
 
 		return res, nil
-	}
-}
-
-// handleJesterTx is a utility that processes messages from Jester.
-func (h *ProposalHandler) handleJesterTx(ctx sdk.Context, bytes []byte) {
-	logger := ctx.Logger()
-
-	defer func() {
-		if r := recover(); r != nil {
-			logger.Error("recovered panic when handling transfers from jester", "err", r)
-		}
-	}()
-
-	tx, err := h.txConfig.TxDecoder()(bytes)
-	if err != nil {
-		logger.Error("failed to unmarshal injected jester tx", "err", err)
-		return
-	}
-
-	var count int
-	for _, raw := range tx.GetMsgs() {
-		msg, ok := raw.(*dollarportaltypes.MsgDeliverInjection)
-		// If the first message is not a MsgDeliverInjection, no VAAs were injected.
-		if !ok {
-			break
-		}
-
-		vaa, err := vaautils.Unmarshal(msg.Vaa)
-		if err != nil {
-			logger.Error("failed to unmarshal transfer from jester", "err", err)
-			continue
-		}
-
-		cachedCtx, writeCache := ctx.CacheContext()
-		if err := h.dollarKeeper.Deliver(cachedCtx, msg.Vaa); err != nil {
-			logger.Error("failed to process transfer from jester", "identifier", vaa.MessageID(), "err", err)
-		} else {
-			writeCache()
-			count++
-		}
-
-	}
-	if count > 0 {
-		logger.Info(fmt.Sprintf("processed %d transfers from jester", count))
 	}
 }

@@ -81,6 +81,12 @@
       ]
     },
     {
+      "name": "Nova",
+      "tags": [
+        "Nova"
+      ]
+    },
+    {
       "name": "Ondo",
       "tags": [
         "Aura",
@@ -589,6 +595,19 @@
       "operationIds": {
         "rename": {
           "PositionsByProvider": "StableswapPositionsByProvider"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/nova/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Nova"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Config": "NovaConfig"
         }
       }
     },
