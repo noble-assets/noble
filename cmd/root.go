@@ -28,8 +28,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
-	"github.com/noble-assets/noble/v12/jester"
 	"github.com/spf13/cobra"
+
+	"github.com/noble-assets/noble/v12"
 )
 
 // NewRootCmd creates a new root command for nobled. It is called once in the main function.
@@ -80,7 +81,7 @@ func NewRootCmd() *cobra.Command {
 			cmtCfg := cmtcfg.DefaultConfig()
 			cmtCfg.Consensus.TimeoutCommit = 500 * time.Millisecond
 
-			customAppTemplate, appConfig := jester.AppendJesterConfig(srvCfg)
+			customAppTemplate, appConfig := noble.AppendConfigs(srvCfg)
 
 			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, appConfig, cmtCfg)
 		},
