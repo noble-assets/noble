@@ -28,7 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
-	"github.com/noble-assets/noble/v10/jester"
+	"github.com/noble-assets/noble/v12/jester"
 	"github.com/spf13/cobra"
 )
 
