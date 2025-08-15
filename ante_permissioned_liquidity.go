@@ -23,7 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	stableswaptypes "swap.noble.xyz/types/stableswap"
 
-	"github.com/noble-assets/noble/v10/upgrade"
+	"github.com/noble-assets/noble/v12/upgrade"
 )
 
 // PermissionedAccount is the account allowed to perform liquidity actions on Noble.
