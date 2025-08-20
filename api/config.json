@@ -88,6 +88,15 @@
       ]
     },
     {
+      "name": "Orbiter",
+      "tags": [
+        "Orbiter Adapter",
+        "Orbiter Dispatcher",
+        "Orbiter Executor",
+        "Orbiter Forwarder"
+      ]
+    },
+    {
       "name": "Swap",
       "tags": [
         "Swap",
@@ -562,6 +571,43 @@
       "tags": {
         "rename": {
           "Query": "Globalfee"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/orbiter/component/adapter/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Orbiter Adapter"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "OrbiterAdapterParams"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/orbiter/component/dispatcher/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Orbiter Dispatcher"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/orbiter/component/executor/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Orbiter Executor"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/orbiter/component/forwarder/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Orbiter Forwarder"
         }
       }
     },
