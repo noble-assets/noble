@@ -72,6 +72,7 @@ import (
 	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
+	_ "github.com/noble-assets/orbiter"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
@@ -125,6 +126,7 @@ import (
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	orbiterkeeper "github.com/noble-assets/orbiter/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
@@ -185,6 +187,7 @@ type App struct {
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
+	OrbiterKeeper    *orbiterkeeper.Keeper
 }
 
 func init() {
@@ -267,11 +270,14 @@ func NewApp(
 		&app.GlobalFeeKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
+		&app.OrbiterKeeper,
 	); err != nil {
 		return nil, err
 	}
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+
+	app.RegisterOrbiterControllers()
 
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
