@@ -187,6 +187,10 @@ modules:
     config:
       "@type": noble.globalfee.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
+  - name: orbiter
+    config:
+      "@type": noble.orbiter.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
   - name: swap
     config:
       "@type": noble.swap.module.v1.Module
@@ -199,7 +203,3 @@ modules:
   - name: wormhole
     config:
       "@type": wormhole.module.v1.Module
-  - name: orbiter
-    config:
-      "@type": noble.orbiter.module.v1.Module
-      authority: authority # Utilize our custom x/authority module.
