@@ -69,7 +69,7 @@ FILES := $(shell find . -name "*.go" -not -name "*.pb.go")
 license:
 	@go-license --config .github/license.yml $(FILES)
 
-check_license:
+check-license:
 	@go-license --config .github/license.yml $(FILES) --verify
 
 format:
