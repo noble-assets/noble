@@ -22,9 +22,9 @@ import (
 
 func (app *App) RegisterOrbiterControllers() {
 	in := orbiter.ComponentsInputs{
-		Orbiters:   app.OrbiterKeeper,
 		BankKeeper: app.BankKeeper,
 		CCTPKeeper: app.CCTPKeeper,
+		Orbiters:   app.OrbiterKeeper,
 	}
 
 	orbiter.InjectComponents(in)
