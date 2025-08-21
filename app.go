@@ -185,9 +185,9 @@ type App struct {
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
+	OrbiterKeeper    *orbiterkeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
-	OrbiterKeeper    *orbiterkeeper.Keeper
 }
 
 func init() {
@@ -268,9 +268,9 @@ func NewApp(
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
+		&app.OrbiterKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
-		&app.OrbiterKeeper,
 	); err != nil {
 		return nil, err
 	}
