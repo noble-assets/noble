@@ -3,10 +3,56 @@ modules:
     config:
       "@type": cosmos.app.runtime.v1alpha1.Module
       app_name: Noble
-      pre_blockers: [ upgrade ]
-      begin_blockers: [ capability, authority, slashing, evidence, staking, ibc, authz, swap, ratelimit, dollar ]
-      end_blockers: [ crisis, staking, feegrant, forwarding, ratelimit ]
-      init_genesis: [ capability, transfer, auth, bank, staking, slashing, crisis, fiat-tokenfactory, globalfee, genutil, ibc, interchainaccounts, packetfowardmiddleware, evidence, authz, feegrant, params, upgrade, vesting, cctp, forwarding, aura, halo, florin, authority, wormhole, dollar, swap, hyperlane, warp, ratelimit ]
+      pre_blockers: [upgrade]
+      begin_blockers:
+        [
+          capability,
+          authority,
+          slashing,
+          evidence,
+          staking,
+          ibc,
+          authz,
+          swap,
+          ratelimit,
+          dollar,
+        ]
+      end_blockers: [crisis, staking, feegrant, forwarding, ratelimit]
+      init_genesis:
+        [
+          capability,
+          transfer,
+          auth,
+          bank,
+          staking,
+          slashing,
+          crisis,
+          fiat-tokenfactory,
+          globalfee,
+          genutil,
+          ibc,
+          interchainaccounts,
+          packetfowardmiddleware,
+          evidence,
+          authz,
+          feegrant,
+          params,
+          upgrade,
+          vesting,
+          cctp,
+          forwarding,
+          aura,
+          halo,
+          florin,
+          authority,
+          wormhole,
+          dollar,
+          swap,
+          hyperlane,
+          warp,
+          ratelimit,
+          orbiter,
+        ]
       override_store_keys:
         - module_name: auth
           kv_store_key: acc
@@ -20,25 +66,26 @@ modules:
         - account: fee_collector
         - account: interchainaccounts
         - account: bonded_tokens_pool
-          permissions: [ burner, staking ]
+          permissions: [burner, staking]
         - account: not_bonded_tokens_pool
-          permissions: [ burner, staking ]
+          permissions: [burner, staking]
         - account: transfer
-          permissions: [ burner, minter ]
+          permissions: [burner, minter]
         - account: fiat-tokenfactory
-          permissions: [ burner, minter ]
+          permissions: [burner, minter]
         - account: cctp
         - account: halo
-          permissions: [ burner, minter ]
+          permissions: [burner, minter]
         - account: florin
-          permissions: [ burner, minter ]
+          permissions: [burner, minter]
         - account: aura
-          permissions: [ burner, minter ]
+          permissions: [burner, minter]
         - account: dollar
-          permissions: [ burner, minter ]
+          permissions: [burner, minter]
         - account: dollar/yield
         - account: hyperlane
         - account: warp
+        - account: orbiter
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
@@ -47,7 +94,7 @@ modules:
     config:
       "@type": cosmos.bank.module.v1.Module
       blocked_module_accounts_override:
-        [ auth, bonded_tokens_pool, not_bonded_tokens_pool ]
+        [auth, bonded_tokens_pool, not_bonded_tokens_pool]
       authority: authority # Utilize our custom x/authority module.
   - name: consensus
     config:
@@ -87,7 +134,6 @@ modules:
   - name: vesting
     config:
       "@type": cosmos.vesting.module.v1.Module
-
   # Circle Modules
   - name: cctp
     config:
@@ -95,39 +141,33 @@ modules:
   - name: fiat-tokenfactory
     config:
       "@type": circle.fiattokenfactory.module.v1.Module
-
   # Ondo Modules
   - name: aura
     config:
       "@type": aura.module.v1.Module
       denom: ausdy
-
   # Hashnote Modules
   - name: halo
     config:
       "@type": halo.module.v1.Module
       denom: uusyc
       underlying: uusdc
-
   # Hyperlane Modules
   - name: hyperlane
     config:
       "@type": hyperlane.core.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
-
   - name: warp
     config:
       "@type": hyperlane.warp.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
       enabled_tokens:
         - 1 # Enable Collateral tokens
-
   # Monerium Modules
   - name: florin
     config:
       "@type": florin.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
-
   # Noble Modules
   - name: authority
     config:
@@ -146,6 +186,10 @@ modules:
   - name: globalfee
     config:
       "@type": noble.globalfee.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: orbiter
+    config:
+      "@type": noble.orbiter.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
   - name: swap
     config:

@@ -14,22 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package upgrade
+package noble
 
 import (
-	storetypes "cosmossdk.io/store/types"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	orbitertypes "github.com/noble-assets/orbiter/types/core"
+	orbiter "github.com/noble-assets/orbiter"
 )
 
-func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
-	storeUpgrades := storetypes.StoreUpgrades{
-		Added: []string{
-			// Noble Modules
-			orbitertypes.ModuleName,
-		},
+func (app *App) RegisterOrbiterControllers() {
+	in := orbiter.ComponentsInputs{
+		BankKeeper: app.BankKeeper,
+		CCTPKeeper: app.CCTPKeeper,
+		Orbiters:   app.OrbiterKeeper,
 	}
 
-	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)
+	orbiter.InjectComponents(in)
 }
