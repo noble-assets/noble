@@ -185,6 +185,9 @@ func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.Ch
 			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.authority.owner", nw.Authority.FormattedAddress()))
 		}
 
+		updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_one_ended", true))
+		updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_two_yield_collector", nw.Authority.FormattedAddress()))
+
 		if setupAllCircleRoles {
 			allFiatTFRoles := []cosmos.GenesisKV{
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: nw.FiatTfRoles.MasterMinter.FormattedAddress()}),
