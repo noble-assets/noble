@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v10.1.1
+
+*Aug 25, 2025*
+
+This is a non-consensus breaking patch to the v10.1 Ember release line.
+
+This upgrade is only relevant for validators.
+
+### DEPENDENCIES
+
+- Bump GlobalFee to [`v1.0.1`](https://github.com/noble-assets/globalfee/releases/tag/v1.0.1) to harden mempool checks of bypass messages. ([#582](https://github.com/noble-assets/noble/pull/582))
+
 ## v10.1.0
 
 *Jul 30, 2025*

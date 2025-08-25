@@ -13,7 +13,7 @@ buf export buf.build/noble-assets/dollar:v2.1.0 --output api/proto
 buf export buf.build/noble-assets/fiattokenfactory:5f9bd9dd2c5b5336b94bae4a47195bdf035f04af --output api/proto
 buf export buf.build/noble-assets/florin:v2.0.0 --output api/proto
 buf export buf.build/noble-assets/forwarding:v2.0.2 --output api/proto
-buf export buf.build/noble-assets/globalfee:v1.0.0 --output api/proto
+buf export buf.build/noble-assets/globalfee:v1.0.1 --output api/proto
 buf export buf.build/noble-assets/halo:v2.0.1 --output api/proto
 buf export buf.build/noble-assets/rate-limiting:v8.0.0 --output api/proto
 buf export buf.build/noble-assets/swap:v1.0.2 --output api/proto
