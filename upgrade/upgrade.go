@@ -121,8 +121,11 @@ func UpdateVaultsState(ctx context.Context, addressCodec address.Codec, authorit
 		// NOTE: Vaults Season One has already been marked as ended on mainnet
 		// via the v10.1 Ember upgrade, so we safely skip that update here.
 
-		yieldCollector, _ := addressCodec.StringToBytes("noble17m7dleu26hgwk842hrvfmh8mvrtp7p68k4zq8l")
-		err := dollarKeeper.VaultsSeasonTwoYieldCollector.Set(ctx, yieldCollector)
+		yieldCollector, err := addressCodec.StringToBytes("noble17m7dleu26hgwk842hrvfmh8mvrtp7p68k4zq8l")
+		if err != nil {
+			return errors.New("unable to decode vaults season two yield collector")
+		}
+		err = dollarKeeper.VaultsSeasonTwoYieldCollector.Set(ctx, yieldCollector)
 		if err != nil {
 			return errors.New("unable to set vaults season two yield collector")
 		}
