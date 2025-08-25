@@ -139,8 +139,6 @@ modules:
       denom: uusdn
       vaults_minimum_lock: 1e6
       vaults_minimum_unlock: 1e6
-      vaults_season_one_end_timestamp: 1754402400 # Aug 5th, 2025 @ 14:00 UTC
-      vaults_season_two_yield_collector: noble17m7dleu26hgwk842hrvfmh8mvrtp7p68k4zq8l
   - name: forwarding
     config:
       "@type": noble.forwarding.module.v1.Module
