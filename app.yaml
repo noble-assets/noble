@@ -41,7 +41,6 @@ modules:
           vesting,
           cctp,
           forwarding,
-          orbiter,
           aura,
           halo,
           florin,
@@ -52,6 +51,7 @@ modules:
           hyperlane,
           warp,
           ratelimit,
+          orbiter,
         ]
       override_store_keys:
         - module_name: auth
