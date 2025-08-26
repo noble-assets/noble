@@ -1,0 +1,1 @@
+- Bump [`go-viper/mapstructure`](https://github.com/go-viper/mapstructure) to [`v2.4.0`](https://github.com/go-viper/mapstructure/releases/tag/v2.4.0) to resolve [GHSA-2464-8j7c-4cjm](https://github.com/advisories/GHSA-2464-8j7c-4cjm) security advisory. ([#578](https://github.com/noble-assets/noble/pull/578))

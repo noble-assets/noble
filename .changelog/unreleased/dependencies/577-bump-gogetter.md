@@ -1,0 +1,1 @@
+- Bump [`hashicorp/go-getter`](https://github.com/hashicorp/go-getter) to [`v1.7.9`](https://github.com/hashicorp/go-getter/releases/tag/v1.7.9) to resolve [CVE-2025-8959](https://github.com/advisories/GHSA-wjrx-6529-hcj3) security advisory. ([#577](https://github.com/noble-assets/noble/pull/577))
