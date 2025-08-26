@@ -1613,8 +1613,8 @@ github.com/noble-assets/authority v1.0.4 h1:o+UNacQJLoV5las2E2zG/Oz7fCSeBQEcXY4p
 github.com/noble-assets/authority v1.0.4/go.mod h1:5siy0L2icXkwtXqatg/7Owr+hlFAYGkDOP8hjh15KoA=
 github.com/noble-assets/forwarding/v2 v2.0.2 h1:Qw+7Ar/7Prpjiieq9O5vXRPiZ0e5I1Hhxz1NQIOdjgo=
 github.com/noble-assets/forwarding/v2 v2.0.2/go.mod h1:bKHj4XWyTcJqr2/XliylHJ5Te4pTftCV0h4BpnLOmf0=
-github.com/noble-assets/globalfee v1.0.0 h1:NUNDXd5tdzB5A/O8Em/1g+GU92E4lojH3+3lOwkbO+Y=
-github.com/noble-assets/globalfee v1.0.0/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
+github.com/noble-assets/globalfee v1.0.1 h1:8OXkPe1nG3kAn+i/qH4oWr966uxgGGRjzrQ0DMwZuiM=
+github.com/noble-assets/globalfee v1.0.1/go.mod h1:DmNoTJ2LqGP4KpJuz+IEKp/5uf/3hRu3GSNBGhNUZkA=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
 github.com/noble-assets/halo/v2 v2.0.1/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble h1:nxz3n15ChWqK/PvRYg0sGpfsrsIM1uqK4z/I/6CvSbc=
