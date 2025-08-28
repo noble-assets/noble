@@ -43,6 +43,3 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ steps.normalize.outputs.tag }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
