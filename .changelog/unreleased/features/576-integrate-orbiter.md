@@ -1,1 +1,1 @@
-- Integrate Orbiter module, TODO. ([#576](https://github.com/noble-assets/noble/pull/576))
+- Integrate Orbiter module, that introduces a new system for cross-chain interop. ([#576](https://github.com/noble-assets/noble/pull/576))
