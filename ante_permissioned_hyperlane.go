@@ -20,10 +20,11 @@ import (
 	"fmt"
 	"strings"
 
+	ismtypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/01_interchain_security/types"
+	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
+	warptypes "github.com/bcp-innovations/hyperlane-cosmos/x/warp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-
-	"github.com/noble-assets/noble/v10/upgrade"
 )
 
 var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
@@ -36,15 +37,10 @@ func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
 }
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	// NOTE: We choose to only permission Hyperlane on mainnet in order to
-	// allow quicker iteration on testnet. TODO(@john): Once the exact user
-	// messages are determined on testnet, enable them here for mainnet!
-	if ctx.ChainID() == upgrade.MainnetChainID {
-		for _, msg := range tx.GetMsgs() {
-			err := d.CheckMessage(msg)
-			if err != nil {
-				return ctx, err
-			}
+	for _, msg := range tx.GetMsgs() {
+		err := d.CheckMessage(msg)
+		if err != nil {
+			return ctx, err
 		}
 	}
 
@@ -52,7 +48,14 @@ func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 }
 
 func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
-	if m, ok := msg.(*authz.MsgExec); ok {
+	switch m := msg.(type) {
+	case *ismtypes.MsgAnnounceValidator:
+		return nil
+	case *hyperlanetypes.MsgProcessMessage:
+		return nil
+	case *warptypes.MsgRemoteTransfer:
+		return nil
+	case *authz.MsgExec:
 		execMsgs, err := m.GetMessages()
 		if err != nil {
 			return err
@@ -64,11 +67,15 @@ func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
 				return err
 			}
 		}
-	}
+	default:
+		typeUrl := sdk.MsgTypeURL(msg)
+		if strings.HasPrefix(typeUrl, "/hyperlane") {
+			if strings.HasPrefix(typeUrl, "/hyperlane.core.post_dispatch") {
+				return nil
+			}
 
-	typeUrl := sdk.MsgTypeURL(msg)
-	if strings.HasPrefix(typeUrl, "/hyperlane") {
-		return fmt.Errorf("%s is currently a permissioned action", typeUrl)
+			return fmt.Errorf("%s is currently a permissioned action", typeUrl)
+		}
 	}
 
 	return nil

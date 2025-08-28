@@ -1,5 +1,67 @@
 # CHANGELOG
 
+## v10.1.1
+
+*Aug 25, 2025*
+
+This is a non-consensus breaking patch to the v10.1 Ember release line.
+
+This upgrade is only relevant for validators.
+
+### DEPENDENCIES
+
+- Bump GlobalFee to [`v1.0.1`](https://github.com/noble-assets/globalfee/releases/tag/v1.0.1) to harden mempool checks of bypass messages. ([#582](https://github.com/noble-assets/noble/pull/582))
+
+## v10.1.0
+
+*Jul 30, 2025*
+
+This is a minor release to the v10 Stratum line, codenamed Ember.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v2.1.0`](https://github.com/noble-assets/dollar/releases/tag/v2.1.0) to introduce logic that handles the end of Vaults Season One. ([#570](https://github.com/noble-assets/noble/pull/570))
+
+## v10.0.1
+
+*Jul 7, 2025*
+
+This is a patch to the v10 Stratum release line.
+
+If the Dollar module has no yield recipients enabled, this is non-consensus breaking.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v2.0.1`](https://github.com/noble-assets/dollar/releases/tag/v2.0.1) to gracefully handle transfer errors. ([#567](https://github.com/noble-assets/noble/pull/567))
+
+## v10.0.0
+
+*Jun 6, 2025*
+
+This is the Stratum major release of Noble. It introduces [composable yield](https://www.noble.xyz/blog/composable-yield-a-new-paradigm-for-stablecoins) for the Noble Dollar (USDN), along with integration of the [Hyperlane](https://hyperlane.xyz/) protocol.
+
+This and other notable changes are documented below.
+
+### BUG FIXES
+
+- Ensure transaction injections from Jester are non-empty. ([#515](https://github.com/noble-assets/noble/pull/515))
+
+### DEPENDENCIES
+
+- Bump supported Golang version to `v1.24` ([#530](https://github.com/noble-assets/noble/pull/530))
+
+### FEATURES
+
+- Integrate the Hyperlane Core module, that enables messaging via the Hyperlane protocol. ([#519](https://github.com/noble-assets/noble/pull/519))
+- Upgrade the Dollar module to enable $USDN yield distribution across specific IBC channels and Hyperlane routes. ([#526](https://github.com/noble-assets/noble/pull/526))
+- Integrate the Hyperlane Warp module, that enables token transfers via the Hyperlane protocol. ([#527](https://github.com/noble-assets/noble/pull/527))
+- Introduce a new ante handler that permissions Hyperlane actions. ([#528](https://github.com/noble-assets/noble/pull/528))
+- Integrate the IBC Rate Limit module, that enables more granular control over IBC token transfers. ([#541](https://github.com/noble-assets/noble/pull/541))
+
+### IMPROVEMENTS
+
+- Update module path for v10 release line. ([#516](https://github.com/noble-assets/noble/pull/516))
+
 ## v9.0.4
 
 *May 8, 2025*

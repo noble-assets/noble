@@ -185,6 +185,13 @@ func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.Ch
 			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.authority.owner", nw.Authority.FormattedAddress()))
 		}
 
+		// Modify the genesis file with the appropriate Dollar Vaults Season One and Two state.
+		// For v10.1.0, we opt to not set this state as these values were hardcoded in the app wiring!
+		if cc.Images[0].Version != "v10.1.0" {
+			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_one_ended", true))
+			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_two_yield_collector", nw.Authority.FormattedAddress()))
+		}
+
 		if setupAllCircleRoles {
 			allFiatTFRoles := []cosmos.GenesisKV{
 				cosmos.NewGenesisKV("app_state.fiat-tokenfactory.masterMinter", fiattokenfactorytypes.MasterMinter{Address: nw.FiatTfRoles.MasterMinter.FormattedAddress()}),
@@ -431,7 +438,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, version []ibc.DockerImage, s
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -485,10 +492,10 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "grand-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
 		{
 			Name:    "ibc-go-simd",
-			Version: "v8.5.1",
+			Version: "v8.7.0",
 			ChainConfig: ibc.ChainConfig{
 				EncodingConfig: SimdEncoding(),
 			},

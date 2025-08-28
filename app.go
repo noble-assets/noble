@@ -45,9 +45,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/noble-assets/noble/v10/api"
-	"github.com/noble-assets/noble/v10/jester"
-	"github.com/noble-assets/noble/v10/upgrade"
+	"github.com/noble-assets/noble/v11/api"
+	"github.com/noble-assets/noble/v11/jester"
+	"github.com/noble-assets/noble/v11/upgrade"
 	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
@@ -72,6 +72,7 @@ import (
 	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
+	_ "github.com/noble-assets/orbiter"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
@@ -122,10 +123,10 @@ import (
 
 	// Noble Modules
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
-	dollartypes "dollar.noble.xyz/v2/types"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	orbiterkeeper "github.com/noble-assets/orbiter/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
@@ -184,6 +185,7 @@ type App struct {
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
+	OrbiterKeeper    *orbiterkeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
 }
@@ -266,6 +268,7 @@ func NewApp(
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
+		&app.OrbiterKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
 	); err != nil {
@@ -273,6 +276,8 @@ func NewApp(
 	}
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+
+	app.RegisterOrbiterControllers()
 
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
@@ -307,7 +312,6 @@ func NewApp(
 	proposalHandler := NewProposalHandler(
 		app.BaseApp, app.Mempool(), app.PreBlocker, app.txConfig,
 		jesterClient, app.DollarKeeper, app.WormholeKeeper,
-		app.appCodec, runtime.NewKVStoreService(app.GetKey(dollartypes.ModuleName)),
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
@@ -469,6 +473,11 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
+			app.Logger(),
+			app.AccountKeeper.AddressCodec(),
+			app.AuthorityKeeper,
+			app.BankKeeper,
+			app.DollarKeeper,
 		),
 	)
 

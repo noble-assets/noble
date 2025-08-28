@@ -17,7 +17,19 @@
 package upgrade
 
 // UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "v10.0.0-rc.0"
+const UpgradeName = "flux"
+
+// UpgradeASCII is the ASCII art shown to node operators upon successful upgrade.
+const UpgradeASCII = `
+
+	███████╗██╗     ██╗   ██╗██╗  ██╗
+	██╔════╝██║     ██║   ██║╚██╗██╔╝
+	█████╗  ██║     ██║   ██║ ╚███╔╝ 
+	██╔══╝  ██║     ██║   ██║ ██╔██╗ 
+	██║     ███████╗╚██████╔╝██╔╝ ██╗
+	╚═╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
+
+`
 
 // TestnetChainID is the Chain ID of the Noble testnet.
 const TestnetChainID = "grand-1"
