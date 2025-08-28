@@ -7,6 +7,10 @@ RUN apk add --no-cache \
 
 WORKDIR /src
 
+COPY go.mod go.sum ./
+
+RUN go mod download
+
 COPY . .
 
 # https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide
