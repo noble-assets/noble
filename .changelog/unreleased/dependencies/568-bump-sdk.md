@@ -1,1 +1,0 @@
-- Bump Cosmos SDK to [`v0.50.14`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.14) to resolve [ISA-2025-005](https://github.com/advisories/GHSA-p22h-3m2v-cmgh) security advisory. ([#568](https://github.com/noble-assets/noble/pull/568))

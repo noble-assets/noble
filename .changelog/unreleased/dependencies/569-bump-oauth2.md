@@ -1,1 +1,0 @@
-- Bump [`golang.org/x/oauth2`](https://github.com/golang/oauth2) to [`v0.27.0`](https://github.com/golang/oauth2/releases/tag/v0.27.0) to resolve [CVE-2025-22868](https://github.com/advisories/GHSA-6v2p-p543-phr9) security advisory. ([#569](https://github.com/noble-assets/noble/pull/569))
