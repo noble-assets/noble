@@ -12,13 +12,7 @@ All tests are located in the [interchaintest folder](../interchaintest/).
 - Docker (running)
 - Golang
 
-1. If you don't already have [heighliner](https://github.com/strangelove-ventures/heighliner) installed, install it. Otherwise, skip this step.
-
-Heighliner is a tool used to help streamline the creation of the docker image we'll create in step 2.
-
-`make get-heighliner`
-
-2. Create local docker image that contains the `noble` binary. 
+1. Create local docker image that contains the `noble` binary. 
 If you make any code changes, you'll want to re-make the image before running tests. 
 
 `make local-image`
