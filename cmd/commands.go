@@ -42,8 +42,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/noble-assets/noble/v10"
-	"github.com/noble-assets/noble/v10/jester"
+	"github.com/noble-assets/noble/v11"
+	"github.com/noble-assets/noble/v11/jester"
 )
 
 func addStartFlags(startCmd *cobra.Command) {

@@ -19,26 +19,16 @@ package upgrade
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
-	dollartypes "dollar.noble.xyz/v2/types"
-	ismkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/01_interchain_security/keeper"
-	ismtypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/01_interchain_security/types"
-	pdhkeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/02_post_dispatch/keeper"
-	pdhtypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/02_post_dispatch/types"
-	hyperlanekeeper "github.com/bcp-innovations/hyperlane-cosmos/x/core/keeper"
-	hyperlanetypes "github.com/bcp-innovations/hyperlane-cosmos/x/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
-	authoritytypes "github.com/noble-assets/authority/types"
-	swapkeeper "swap.noble.xyz/keeper"
 )
 
 func CreateUpgradeHandler(
@@ -48,39 +38,22 @@ func CreateUpgradeHandler(
 	addressCodec address.Codec,
 	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
-	clientKeeper clientkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
-	hyperlaneKeeper *hyperlanekeeper.Keeper,
-	swapKeeper *swapkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
-
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
 		if err != nil {
 			return vm, err
 		}
 
-		err = ClaimSwapPoolsYield(ctx, logger, addressCodec, authorityKeeper, bankKeeper, dollarKeeper, swapKeeper)
+		err = ClaimDistributionFunds(ctx, logger, addressCodec, authorityKeeper, bankKeeper)
 		if err != nil {
 			return vm, err
 		}
 
-		err = InitializeHyperlaneModule(ctx, logger, addressCodec, hyperlaneKeeper)
+		err = UpdateVaultsState(ctx, addressCodec, authorityKeeper, dollarKeeper)
 		if err != nil {
 			return vm, err
-		}
-
-		// The IBC light client for the router_9600-1 chain has expired on
-		// Noble's mainnet. In IBC-Go v8.7.0, the MsgRecoverClient message does
-		// not support the LegacyAminoJSON signing mode, preventing recovery
-		// via the Noble Maintenance Multisig. As a result, the client must be
-		// manually recovered as part of this software upgrade.
-		if sdkCtx.ChainID() == MainnetChainID {
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-136", "07-tendermint-161")
-			if err != nil {
-				return vm, err
-			}
 		}
 
 		logger.Info(UpgradeASCII)
@@ -89,17 +62,19 @@ func CreateUpgradeHandler(
 	}
 }
 
-// ClaimSwapPoolsYield claims the $USDN yield accrued inside the Noble Swap
-// pools and sends it to the authority address.
-func ClaimSwapPoolsYield(
-	ctx context.Context,
-	logger log.Logger,
-	addressCodec address.Codec,
-	authorityKeeper *authoritykeeper.Keeper,
-	bankKeeper bankkeeper.Keeper,
-	dollarKeeper *dollarkeeper.Keeper,
-	swapKeeper *swapkeeper.Keeper,
-) error {
+// ClaimDistributionFunds transfers all transaction fees accrued by Noble prior
+// to the v8 Helium upgrade (November 2024) to the x/authority owner. The funds
+// are currently stuck as the x/distribution module was removed and replaced by
+// the x/authority module without a proper migration of funds.
+func ClaimDistributionFunds(ctx context.Context, logger log.Logger, addressCodec address.Codec, authorityKeeper *authoritykeeper.Keeper, bankKeeper bankkeeper.Keeper) error {
+	// NOTE: We hardcode the x/distribution module name to avoid an import.
+	address := authtypes.NewModuleAddress("distribution")
+	balance := bankKeeper.GetAllBalances(ctx, address)
+	if balance.IsZero() {
+		// We return early in the case that there are no claimable funds.
+		return nil
+	}
+
 	authority, err := authorityKeeper.Owner.Get(ctx)
 	if err != nil {
 		return errors.New("unable to get underlying authority address from state")
@@ -109,106 +84,51 @@ func ClaimSwapPoolsYield(
 		return errors.New("unable to decode underlying authority address")
 	}
 
-	dollarServer := dollarkeeper.NewMsgServer(dollarKeeper)
-
-	pools := swapKeeper.GetPools(ctx)
-	for _, pool := range pools {
-		yield, address, err := dollarKeeper.GetYield(ctx, pool.Address)
-		if err != nil {
-			return fmt.Errorf("unable to get yield for pool %d", pool.Id)
-		}
-
-		_, err = dollarServer.ClaimYield(ctx, &dollartypes.MsgClaimYield{Signer: pool.Address})
-		if err != nil {
-			return fmt.Errorf("unable to claim yield for pool %d", pool.Id)
-		}
-
-		err = bankKeeper.SendCoins(ctx, address, authorityBz, sdk.NewCoins(sdk.NewCoin(dollarKeeper.GetDenom(), yield)))
-		if err != nil {
-			return fmt.Errorf("unable to transfer yield for pool %d", pool.Id)
-		}
-
-		logger.Info("claimed swap pool yield", "pool", pool.Id, "yield", yield)
+	err = bankKeeper.SendCoins(ctx, address, authorityBz, balance)
+	if err != nil {
+		return errors.New("unable to transfer stuck distribution funds")
 	}
+
+	logger.Info("claimed stuck distribution module funds", "amount", balance.String())
 
 	return nil
 }
 
-// InitializeHyperlaneModule creates a default Hyperlane ISM and Mailbox.
-func InitializeHyperlaneModule(
-	ctx context.Context,
-	logger log.Logger,
-	addressCodec address.Codec,
-	hyperlaneKeeper *hyperlanekeeper.Keeper,
-) error {
-	chainId := sdk.UnwrapSDKContext(ctx).ChainID()
-
-	var localDomain uint32
-	switch chainId {
+// UpdateVaultsState sets state variables around Vaults Season One and Season
+// Two. We do this so that we can remove these values from the app.yaml file,
+// allowing us to ship one binary for both mainnet and testnet.
+func UpdateVaultsState(ctx context.Context, addressCodec address.Codec, authorityKeeper *authoritykeeper.Keeper, dollarKeeper *dollarkeeper.Keeper) error {
+	switch sdk.UnwrapSDKContext(ctx).ChainID() {
 	case TestnetChainID:
-		localDomain = TestnetHyperlaneDomain
+		err := dollarKeeper.VaultsSeasonOneEnded.Set(ctx, true)
+		if err != nil {
+			return errors.New("unable to mark vaults season one as ended")
+		}
+
+		authority, err := authorityKeeper.Owner.Get(ctx)
+		if err != nil {
+			return errors.New("unable to get underlying authority address from state")
+		}
+		authorityBz, err := addressCodec.StringToBytes(authority)
+		if err != nil {
+			return errors.New("unable to decode underlying authority address")
+		}
+		err = dollarKeeper.VaultsSeasonTwoYieldCollector.Set(ctx, authorityBz)
+		if err != nil {
+			return errors.New("unable to set vaults season two yield collector")
+		}
 	case MainnetChainID:
-		localDomain = MainnetHyperlaneDomain
-	default:
-		return fmt.Errorf("cannot initialize hyperlane module on %s chain", chainId)
-	}
+		// NOTE: Vaults Season One has already been marked as ended on mainnet
+		// via the v10.1 Ember upgrade, so we safely skip that update here.
 
-	authority, err := addressCodec.BytesToString(authoritytypes.ModuleAddress)
-	if err != nil {
-		return errors.New("unable to encode authority address")
-	}
-
-	ismServer := ismkeeper.NewMsgServerImpl(&hyperlaneKeeper.IsmKeeper)
-	pdhServer := pdhkeeper.NewMsgServerImpl(&hyperlaneKeeper.PostDispatchKeeper)
-	hyperlaneServer := hyperlanekeeper.NewMsgServerImpl(hyperlaneKeeper)
-
-	createRoutingIsmRes, err := ismServer.CreateRoutingIsm(ctx, &ismtypes.MsgCreateRoutingIsm{
-		Creator: authority,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to create routing ism: %w", err)
-	}
-	ismId := createRoutingIsmRes.Id
-	logger.Info("created default hyperlane ism", "id", ismId)
-
-	createMailboxRes, err := hyperlaneServer.CreateMailbox(ctx, &hyperlanetypes.MsgCreateMailbox{
-		Owner:       authority,
-		LocalDomain: localDomain,
-		DefaultIsm:  ismId,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to create mailbox: %w", err)
-	}
-	mailboxId := createMailboxRes.Id
-	logger.Info("created default hyperlane mailbox", "id", mailboxId)
-
-	createMerkleTreeHookRes, err := pdhServer.CreateMerkleTreeHook(ctx, &pdhtypes.MsgCreateMerkleTreeHook{
-		Owner:     authority,
-		MailboxId: mailboxId,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to create merkle tree hook: %w", err)
-	}
-	requiredHook := createMerkleTreeHookRes.Id
-	logger.Info("created required hook for default hyperlane mailbox", "id", requiredHook)
-
-	createNoopHookRes, err := pdhServer.CreateNoopHook(ctx, &pdhtypes.MsgCreateNoopHook{
-		Owner: authority,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to create noop hook: %w", err)
-	}
-	defaultHook := createNoopHookRes.Id
-	logger.Info("created default hook for default hyperlane mailbox", "id", defaultHook)
-
-	_, err = hyperlaneServer.SetMailbox(ctx, &hyperlanetypes.MsgSetMailbox{
-		Owner:        authority,
-		MailboxId:    mailboxId,
-		DefaultHook:  &defaultHook,
-		RequiredHook: &requiredHook,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to set mailbox: %w", err)
+		yieldCollector, err := addressCodec.StringToBytes("noble17m7dleu26hgwk842hrvfmh8mvrtp7p68k4zq8l")
+		if err != nil {
+			return errors.New("unable to decode vaults season two yield collector")
+		}
+		err = dollarKeeper.VaultsSeasonTwoYieldCollector.Set(ctx, yieldCollector)
+		if err != nil {
+			return errors.New("unable to set vaults season two yield collector")
+		}
 	}
 
 	return nil
