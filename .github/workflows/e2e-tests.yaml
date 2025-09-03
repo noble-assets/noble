@@ -24,9 +24,7 @@ jobs:
           load: true
           tags: noble:local
           platforms: linux/amd64
-
-      - name: Save Docker Image
-        run: docker save -o ${{ env.TAR_PATH }} noble:local
+          outputs: type=docker, dest=${{ env.TAR_PATH }}
 
       - name: Publish Tarball as Artifact
         uses: actions/upload-artifact@v4
