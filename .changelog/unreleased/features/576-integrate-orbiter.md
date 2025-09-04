@@ -1,0 +1,1 @@
+- Integrate Orbiter module, that introduces a new system for cross-chain interoperability. ([#576](https://github.com/noble-assets/noble/pull/576))
