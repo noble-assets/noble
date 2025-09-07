@@ -30,10 +30,19 @@ import (
 var _ sdk.AnteDecorator = &PermissionedHyperlaneDecorator{}
 
 // PermissionedHyperlaneDecorator is a custom ante handler that permissions all Hyperlane actions on Noble.
-type PermissionedHyperlaneDecorator struct{}
+type PermissionedHyperlaneDecorator struct {
+	dollarKeeper DollarKeeper
+}
 
-func NewPermissionedHyperlaneDecorator() PermissionedHyperlaneDecorator {
-	return PermissionedHyperlaneDecorator{}
+// DollarKeeper defines the interface expected by PermissionedHyperlaneDecorator for the Noble Dollar module.
+type DollarKeeper interface {
+	GetDenom() string
+}
+
+func NewPermissionedHyperlaneDecorator(dollarKeeper DollarKeeper) PermissionedHyperlaneDecorator {
+	return PermissionedHyperlaneDecorator{
+		dollarKeeper: dollarKeeper,
+	}
 }
 
 func (d PermissionedHyperlaneDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
@@ -52,6 +61,12 @@ func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
 	case *ismtypes.MsgAnnounceValidator:
 		return nil
 	case *hyperlanetypes.MsgProcessMessage:
+		return nil
+	case *warptypes.MsgCreateCollateralToken:
+		if m.OriginDenom == d.dollarKeeper.GetDenom() {
+			return fmt.Errorf("cannot create hyperlane collateral token for denom %s", m.OriginDenom)
+		}
+
 		return nil
 	case *warptypes.MsgRemoteTransfer:
 		return nil
