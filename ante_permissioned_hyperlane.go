@@ -68,7 +68,7 @@ func (d PermissionedHyperlaneDecorator) CheckMessage(msg sdk.Msg) error {
 		}
 
 		return nil
-	case *warptypes.MsgRemoteTransfer:
+	case *warptypes.MsgSetToken, *warptypes.MsgEnrollRemoteRouter, *warptypes.MsgUnrollRemoteRouter, *warptypes.MsgRemoteTransfer:
 		return nil
 	case *authz.MsgExec:
 		execMsgs, err := m.GetMessages()
