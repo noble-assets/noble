@@ -679,7 +679,7 @@ func TestFiatTFConfigureMinter(t *testing.T) {
 	// reconfigure minter1 to ensure balance does not change
 	e2e.ConfigureMinter(t, ctx, val, minterController1, minter1, allowance)
 
-	// reconfigure minter1 with a new allownace from a minter controller not associated with the minter
+	// reconfigure minter1 with a new allowance from a minter controller not associated with the minter
 	differentAllowance := allowance + 99
 	_, err = val.ExecTx(ctx, nw.FiatTfRoles.MinterController.KeyName(), "fiat-tokenfactory", "configure-minter", minter1.FormattedAddress(), fmt.Sprintf("%duusdc", differentAllowance))
 	require.ErrorContains(t, err, "minter address ≠ minter controller's minter address")
