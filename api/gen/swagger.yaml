@@ -57,6 +57,7 @@ x-tagGroups:
   - name: Nova
     tags:
       - Nova
+      - Nova ISM
   - name: Ondo
     tags:
       - Aura
@@ -51996,6 +51997,37 @@ paths:
           type: boolean
       tags:
         - Nova
+  /nova/ism/v1/paused:
+    get:
+      operationId: NovaISMPaused
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              paused:
+                type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - NovaISM
   /Stride-Labs/ibc-rate-limiting/ratelimit/blacklisted_denoms:
     get:
       summary: Queries all blacklisted denoms
@@ -80219,6 +80251,11 @@ definitions:
         format: uint64
       state_root:
         type: string
+  nova.ism.v1.QueryPausedResponse:
+    type: object
+    properties:
+      paused:
+        type: boolean
   ratelimit.v1.Flow:
     type: object
     properties:

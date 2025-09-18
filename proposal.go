@@ -97,12 +97,12 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestPrepareProposal) (*abci.ResponsePrepareProposal, error) {
 		logger := ctx.Logger()
 
-		res, err := h.defaultPrepareProposalHandler(ctx, req)
+		_, err := h.defaultPrepareProposalHandler(ctx, req)
 		if err != nil {
 			return nil, errors.Wrap(err, "default PrepareProposal handler failed")
 		}
 
-		res, err = h.novaPrepareProposalHandler(ctx, req)
+		res, err := h.novaPrepareProposalHandler(ctx, req)
 		if err != nil {
 			return nil, errors.Wrap(err, "nova PrepareProposal handler failed")
 		}

@@ -83,7 +83,8 @@
     {
       "name": "Nova",
       "tags": [
-        "Nova"
+        "Nova",
+        "Nova ISM"
       ]
     },
     {
@@ -608,6 +609,19 @@
       "operationIds": {
         "rename": {
           "Config": "NovaConfig"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/nova/ism/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "NovaISM"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "NovaISMPaused"
         }
       }
     },

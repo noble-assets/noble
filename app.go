@@ -475,6 +475,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.Configurator(),
 			app.Logger(),
 			app.ConsensusKeeper,
+			app.HyperlaneKeeper.IsmKeeper,
 		),
 	)
 
