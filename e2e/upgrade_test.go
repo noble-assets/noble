@@ -17,22 +17,41 @@
 package e2e_test
 
 import (
+	"context"
+	_ "embed"
+	"path"
 	"testing"
+
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/stretchr/testify/require"
 
 	"github.com/noble-assets/noble/e2e"
 )
+
+//go:embed data/ism.json
+var InnerTx []byte
 
 func TestChainUpgrade(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 
-	genesisVersion := "v10.1.0"
+	genesisVersion := "v10.1.1"
 
 	upgrades := []e2e.ChainUpgrade{
 		{
 			Image:       e2e.LocalImages[0],
 			UpgradeName: "ignition",
+			PreUpgrade: func(t *testing.T, ctx context.Context, noble *cosmos.CosmosChain, authority ibc.Wallet, _ *e2e.ICATestSuite) {
+				validator := noble.Validators[0]
+				require.NoError(t, validator.WriteFile(ctx, InnerTx, "ism.json"))
+				_, err := validator.ExecTx(
+					ctx, authority.KeyName(),
+					"authority", "execute", path.Join(validator.HomeDir(), "ism.json"),
+				)
+				require.NoError(t, err)
+			},
 		},
 	}
 
