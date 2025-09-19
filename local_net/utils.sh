@@ -18,4 +18,5 @@ update_genesis() {
   touch $TEMP && jq '.app_state.wormhole.config.gov_chain = 1' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
   touch $TEMP && jq '.app_state.wormhole.config.gov_address = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ="' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
   touch $TEMP && jq '.app_state.wormhole.guardian_sets = {"0":{"addresses":["vvpCnVfNGLf4pNkaLamrSvBdD74="],"expiration_time":0}}' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
+  touch $TEMP && jq '.consensus.params.abci.vote_extensions_enable_height = "5"' $HOME1/config/genesis.json > $TEMP && mv $TEMP $HOME1/config/genesis.json
 }

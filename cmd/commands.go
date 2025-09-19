@@ -44,11 +44,13 @@ import (
 
 	"github.com/noble-assets/noble/v12"
 	"github.com/noble-assets/noble/v12/jester"
+	"github.com/noble-assets/nova"
 )
 
 func addStartFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
 	jester.AddFlags(startCmd)
+	nova.AddFlags(startCmd)
 }
 
 func initRootCmd(rootCmd *cobra.Command, txConfig client.TxConfig, basicManager module.BasicManager) {

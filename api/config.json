@@ -81,6 +81,13 @@
       ]
     },
     {
+      "name": "Nova",
+      "tags": [
+        "Nova",
+        "Nova ISM"
+      ]
+    },
+    {
       "name": "Ondo",
       "tags": [
         "Aura",
@@ -589,6 +596,32 @@
       "operationIds": {
         "rename": {
           "PositionsByProvider": "StableswapPositionsByProvider"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/nova/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Nova"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Config": "NovaConfig"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/nova/ism/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "NovaISM"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "NovaISMPaused"
         }
       }
     },

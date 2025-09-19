@@ -16,6 +16,8 @@
 
 package upgrade
 
+import hyperlaneutil "github.com/bcp-innovations/hyperlane-cosmos/util"
+
 // UpgradeName is the name of this specific software upgrade used on-chain.
 const UpgradeName = "ignition"
 
@@ -31,8 +33,23 @@ const UpgradeASCII = `
 
 `
 
+// DevnetChainID is the Chain ID of the Noble devnet.
+const DevnetChainID = "duke-1"
+
+// ApplayerDevnetChainID is the Chain ID of the Noble Applayer devnet.
+const ApplayerDevnetChainID = 662532
+
 // TestnetChainID is the Chain ID of the Noble testnet.
 const TestnetChainID = "grand-1"
 
+// ApplayerTestnetChainID is the Chain ID of the Noble Applayer testnet.
+const ApplayerTestnetChainID = 662531
+
 // MainnetChainID is the Chain ID of the Noble mainnet.
 const MainnetChainID = "noble-1"
+
+// ApplayerMainnetChainID is the Chain ID of the Noble Applayer mainnet.
+const ApplayerMainnetChainID = 66253
+
+// DefaultISM is the default Hyperlane Routing ISM ID on all Noble networks.
+var DefaultISM, _ = hyperlaneutil.DecodeHexAddress("0x726f757465725f69736d00000000000000000000000000010000000000000000")
