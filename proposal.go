@@ -22,6 +22,7 @@ import (
 	"slices"
 	"time"
 
+	"connectrpc.com/connect"
 	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -29,7 +30,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"
 
-	"connectrpc.com/connect"
 	localjester "github.com/noble-assets/noble/v12/jester"
 	jester "jester.noble.xyz/api"
 
@@ -87,12 +87,10 @@ func NewProposalHandler(
 	}
 }
 
-// PrepareProposal is the logic called by the current block proposer to prepare
-// a block proposal. Noble modifies this by making a request to our sidecar
-// service, Jester, to check if there are any outstanding $USDN transfers that
-// need to be relayed to Noble. These transfers (in the form of Wormhole VAAs)
-// are injected as the first transaction of the block, and are later processed
-// by the PreBlocker handler.
+// PrepareProposal is the logic called by the current proposer to prepare a
+// block proposal. Noble modifies this by injecting transactions from Jester
+// and Nova. These transactions are injected at the top of the block, and are
+// later processed by the PreBlocker handler.
 func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestPrepareProposal) (*abci.ResponsePrepareProposal, error) {
 		logger := ctx.Logger()
@@ -163,7 +161,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	}
 }
 
-// PreBlocker processes all injected $USDN transfers from Jester.
+// PreBlocker processes injected transactions from Jester and Nova.
 func (h *ProposalHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 		res, err := h.defaultPreBlocker(ctx, req)
