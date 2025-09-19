@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-  TAR_PATH: heighliner.tar
+  TAR_PATH: nobled.tar
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,25 +14,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Docker Image
-        uses: strangelove-ventures/heighliner-build-action@v1.0.3
+        uses: docker/build-push-action@v6
         with:
-          registry: "" # empty registry, image only shared for e2e testing
-          tag: local # emulate local environment for consistency in interchaintest cases
-          tar-export-path: ${{ env.TAR_PATH }} # export a tarball that can be uploaded as an artifact for the e2e jobs
-          platform: linux/amd64 # test runner architecture only
-          git-ref: ${{ github.head_ref }} # source code ref
-
-          # Heighliner fork supporting Go v1.24 and musl.cc proxy
-          heighliner-owner: 'noble-assets'
-          heighliner-tag: 'v1.7.4'
-
-          # Heighliner chains.yaml config
-          chain: noble
-          dockerfile: cosmos
-          build-target: make install
-          binaries: |
-            - /go/bin/nobled
+          context: .
+          load: true
+          tags: noble:local
+          outputs: type=docker, dest=${{ env.TAR_PATH }}
 
       - name: Publish Tarball as Artifact
         uses: actions/upload-artifact@v4
