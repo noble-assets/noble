@@ -16,7 +16,7 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
 	dollar.noble.xyz/v2 v2.1.0
-	github.com/bcp-innovations/hyperlane-cosmos v1.0.1-0.20250918085740-76b0807e8d60
+	github.com/bcp-innovations/hyperlane-cosmos v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
 	github.com/cometbft/cometbft v0.38.17
@@ -377,6 +377,9 @@ require (
 	pgregory.net/rapid v1.1.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+
+// force hyperlane-cosmos update
+replace github.com/bcp-innovations/hyperlane-cosmos => github.com/bcp-innovations/hyperlane-cosmos v1.0.1-0.20250918085740-76b0807e8d60
 
 // use noble version of pfm
 replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble
