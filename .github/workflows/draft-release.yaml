@@ -48,8 +48,8 @@ jobs:
         run: |
           docker create -it --entrypoint sh --name amd --platform linux/amd64 ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
           docker create -it --entrypoint sh --name arm --platform linux/arm64 ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
-          docker cp amd:/bin/nobled ./nobled_linux-amd64
-          docker cp arm:/bin/nobled ./nobled_linux-arm64
+          docker cp amd:/usr/bin/nobled ./nobled_linux-amd64
+          docker cp arm:/usr/bin/nobled ./nobled_linux-arm64
           sha256sum ./nobled_linux-amd64 > ./checksum.txt
           sha256sum ./nobled_linux-arm64 >> ./checksum.txt
 
