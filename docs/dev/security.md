@@ -31,7 +31,8 @@ consensus, core protocol, and application layers:
 
 ## Token Issuance Security
 
-The second diagram focuses specifically on token issuance security, showing how different authorities control different tokens while validators secure the overall network:
+The second diagram focuses specifically on token issuance security, showing how different
+authorities control different tokens while validators secure the overall network:
 
 ```mermaid
   flowchart LR
