@@ -23,7 +23,7 @@ functionality like transfers and balances.
     m0[M^0]
     circle[Circle]
     monereum[Monereum]
-    hash[Hashnode]
+    hash[Hashnote]
     ondo[Ondo]
     end
 
