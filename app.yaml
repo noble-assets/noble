@@ -121,6 +121,7 @@ modules:
       authority: authority # Utilize our custom x/authority module.
       enabled_tokens:
         - 1 # Enable Collateral tokens
+        - 2 # Enable Synthetic tokens
 
   # Monerium Modules
   - name: florin
