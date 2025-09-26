@@ -24,7 +24,7 @@ or bypass it for simple transfers.
 
     subgraph Orbiter
        f[forwarding]
-       a[actions</br>fee payment, swap]
+       a[actions<br/>fee payment, swap]
     end
 
     subgraph Bridges
@@ -39,7 +39,7 @@ or bypass it for simple transfers.
      Bridges
     end
 
-    s --interoperability abstraction </br> with composability--> Orbiter
+    s --interoperability abstraction <br/> with composability--> Orbiter
 
     a --> f
     f --> Bridges
@@ -56,8 +56,8 @@ This is the core mechanism that enables Orbiter's composability features:
 
 - **Before Transfer Hook**: Executes custom logic (fee payment, swapping, etc.) before
   initiating the bridge transfer.
-- **After Transfer Hook**: Handles post-transfer logic.
 - **Bridge Integration**: Works seamlessly with all supported bridge protocols.
+- **After Transfer Hook**: Handles post-transfer logic.
 
 This hook system is what allows Orbiter to provide a unified interface for complex
 cross-chain operations that would otherwise require multiple separate transactions.

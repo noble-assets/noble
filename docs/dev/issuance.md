@@ -14,7 +14,7 @@ specialized modules manage each token type:
 
 - **Modules**: Noble's specialized modules that handle the on-chain logic for each token type.
 
-All token modules ultimately interact with the Cosmos SDK `bank` module for core token
+All token modules ultimately interact with the Cosmos SDK `bank` module for asset
 functionality like transfers and balances.
 
 ```mermaid
