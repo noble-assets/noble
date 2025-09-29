@@ -298,10 +298,11 @@ func NewApp(
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
 			SigGasConsumer:  SigVerificationGasConsumer,
 		},
-		cdc:        app.appCodec,
-		BankKeeper: app.BankKeeper,
-		FTFKeeper:  app.FTFKeeper,
-		IBCKeeper:  app.IBCKeeper,
+		cdc:          app.appCodec,
+		BankKeeper:   app.BankKeeper,
+		DollarKeeper: app.DollarKeeper,
+		FTFKeeper:    app.FTFKeeper,
+		IBCKeeper:    app.IBCKeeper,
 	})
 	if err != nil {
 		return nil, err
