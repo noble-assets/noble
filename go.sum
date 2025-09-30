@@ -1157,8 +1157,8 @@ github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CP
 github.com/noble-assets/halo/v2 v2.0.1/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble h1:nxz3n15ChWqK/PvRYg0sGpfsrsIM1uqK4z/I/6CvSbc=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble/go.mod h1:O5H9Ic3Pe6cmJn1eqlj5N48sLb8WQ1VWmDP4/11g/4E=
-github.com/noble-assets/nova v1.0.0-alpha.0 h1:e09HzC9v6QJr6eolxQvufDm8iTj2VOs6gkoljtGucfo=
-github.com/noble-assets/nova v1.0.0-alpha.0/go.mod h1:V2CEFyXqKtRqNmG58uP6QYBWrA7OLHdXvUZh4IFOtjQ=
+github.com/noble-assets/nova v1.0.0-alpha.1 h1:HeydhZWJcAtOelp55DMwEAP9Fu4IBv1l7ceAP8DfSMk=
+github.com/noble-assets/nova v1.0.0-alpha.1/go.mod h1:V2CEFyXqKtRqNmG58uP6QYBWrA7OLHdXvUZh4IFOtjQ=
 github.com/noble-assets/wormhole v1.0.0 h1:c3otKgRv6Am4IoB/Vob2ziom02Ptpzv8R1/OtM2gxxI=
 github.com/noble-assets/wormhole v1.0.0/go.mod h1:s7T9FC+bxHwlLED8pmXumdqwhr56CGJqTdhhcIj4A/Q=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
