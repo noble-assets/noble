@@ -51336,6 +51336,10 @@ paths:
                 format: uint64
               hook_address:
                 type: string
+              enrolled_validators:
+                type: array
+                items:
+                  type: string
         default:
           description: An unexpected error response.
           schema:
@@ -80089,6 +80093,10 @@ definitions:
         format: uint64
       hook_address:
         type: string
+      enrolled_validators:
+        type: array
+        items:
+          type: string
   nova.v1.QueryEpochResponse:
     type: object
     properties:
