@@ -48,6 +48,7 @@ import (
 	"github.com/noble-assets/noble/v12/api"
 	"github.com/noble-assets/noble/v12/jester"
 	"github.com/noble-assets/noble/v12/upgrade"
+	"github.com/noble-assets/noble/v12/upgrade/v12alpha2"
 	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
@@ -476,6 +477,14 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.Logger(),
 			app.ConsensusKeeper,
 			app.HyperlaneKeeper.IsmKeeper,
+		),
+	)
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v12alpha2.UpgradeName,
+		v12alpha2.CreateUpgradeHandler(
+			app.ModuleManager,
+			app.Configurator(),
+			app.FTFKeeper,
 		),
 	)
 

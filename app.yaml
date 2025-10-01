@@ -39,6 +39,7 @@ modules:
         - account: dollar/yield
         - account: hyperlane
         - account: warp
+          permissions: [ burner, minter ]
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
