@@ -25,6 +25,7 @@ import (
 	ftftypes "github.com/circlefin/noble-fiattokenfactory/x/fiattokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authoritytypes "github.com/noble-assets/authority/types"
 )
 
 func CreateUpgradeHandler(
@@ -46,6 +47,10 @@ func CreateUpgradeHandler(
 		// Because the paused store was not intialized in the devnet genesis,
 		// it must be configured here for USDC transfers to be successful.
 		ftfKeeper.SetPaused(ctx, ftftypes.Paused{Paused: false})
+
+		// Because the owner store was not initialized in the devnet genesis,
+		// it must be configured here for USDC issuance to be successful.
+		ftfKeeper.SetOwner(ctx, ftftypes.Owner{Address: authoritytypes.ModuleAddress.String()})
 
 		return vm, nil
 	}
