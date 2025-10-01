@@ -68,7 +68,7 @@ func CreateUpgradeHandler(
 		if sdkCtx.ChainID() == MainnetChainID {
 			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-106", "07-tendermint-186")
 			if err != nil {
-				return vm, err
+				logger.Error("unable to recover shido_9008-1 light client", "err", err)
 			}
 		}
 
