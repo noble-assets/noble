@@ -478,6 +478,7 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.AccountKeeper.AddressCodec(),
 			app.AuthorityKeeper,
 			app.BankKeeper,
+			app.IBCKeeper.ClientKeeper,
 			app.DollarKeeper,
 		),
 	)

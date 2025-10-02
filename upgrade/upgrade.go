@@ -28,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 )
 
@@ -38,9 +39,12 @@ func CreateUpgradeHandler(
 	addressCodec address.Codec,
 	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
+	clientKeeper clientkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
 		if err != nil {
 			return vm, err
@@ -54,6 +58,18 @@ func CreateUpgradeHandler(
 		err = UpdateVaultsState(ctx, addressCodec, authorityKeeper, dollarKeeper)
 		if err != nil {
 			return vm, err
+		}
+
+		// The IBC light client for the shido_9008-1 chain has expired on
+		// Noble's mainnet. In IBC-Go v8.7.0, the MsgRecoverClient message does
+		// not support the LegacyAminoJSON signing mode, preventing recovery
+		// via the Noble Maintenance Multisig. As a result, the client must be
+		// manually recovered as part of this software upgrade.
+		if sdkCtx.ChainID() == MainnetChainID {
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-106", "07-tendermint-186")
+			if err != nil {
+				logger.Error("unable to recover shido_9008-1 light client", "err", err)
+			}
 		}
 
 		logger.Info(UpgradeASCII)

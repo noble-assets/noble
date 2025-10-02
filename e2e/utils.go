@@ -186,8 +186,8 @@ func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.Ch
 		}
 
 		// Modify the genesis file with the appropriate Dollar Vaults Season One and Two state.
-		// For v10.1.0, we opt to not set this state as these values were hardcoded in the app wiring!
-		if cc.Images[0].Version != "v10.1.0" {
+		// For v10.1, we opt to not set this state as these values were hardcoded in the app wiring!
+		if cc.Images[0].Version != "v10.1.1" {
 			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_one_ended", true))
 			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_two_yield_collector", nw.Authority.FormattedAddress()))
 		}
