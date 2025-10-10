@@ -40,6 +40,8 @@ modules:
         - account: hyperlane
         - account: warp
           permissions: [ burner, minter ]
+        - account: upgrade # TODO: Remove after v12.0.0-alpha.3 upgrade is completed!
+          permissions: [ burner ]
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
