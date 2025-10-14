@@ -55,7 +55,7 @@ require (
 	cloud.google.com/go/iam v1.2.0 // indirect
 	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/api v0.7.6 // indirect
-	cosmossdk.io/collections v0.4.0
+	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/x/tx v0.13.8 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect
