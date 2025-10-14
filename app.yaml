@@ -86,6 +86,7 @@ modules:
         - account: hyperlane
         - account: warp
         - account: orbiter
+        - account: orbiter/dust_collector
       authority: authority # Utilize our custom x/authority module.
   - name: authz
     config:
