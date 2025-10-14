@@ -385,5 +385,8 @@ require (
 // use noble version of pfm
 replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble
 
+// use noble version for collections
+replace cosmossdk.io/collections => github.com/noble-assets/cosmos-sdk/collections v0.0.0-20250923134424-edd65694c2f7
+
 // use cosmos compatible syndtr/goleveldb
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

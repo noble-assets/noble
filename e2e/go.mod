@@ -307,6 +307,7 @@ require (
 )
 
 replace (
+	cosmossdk.io/collections => github.com/noble-assets/cosmos-sdk/collections v0.0.0-20250923134424-edd65694c2f7
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 	github.com/ChainSafe/go-schnorrkel/1 => github.com/ChainSafe/go-schnorrkel v1.0.0
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
