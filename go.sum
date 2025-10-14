@@ -1619,8 +1619,8 @@ github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CP
 github.com/noble-assets/halo/v2 v2.0.1/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble h1:nxz3n15ChWqK/PvRYg0sGpfsrsIM1uqK4z/I/6CvSbc=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble/go.mod h1:O5H9Ic3Pe6cmJn1eqlj5N48sLb8WQ1VWmDP4/11g/4E=
-github.com/noble-assets/orbiter v1.0.0-beta.0 h1:gfCE7M2H7QRC2tz149Goi7cSQXo84EB6LkaRAI6Q068=
-github.com/noble-assets/orbiter v1.0.0-beta.0/go.mod h1:sRiwhBAm3aRwcEHewOoJGY3Y5lc8MnyVyqVsOO77Pro=
+github.com/noble-assets/orbiter v1.0.0-rc.1 h1:PXRIcbzKcIFaWdkj/xgMWy7OK7DLr1UrHmUNqp6SBbs=
+github.com/noble-assets/orbiter v1.0.0-rc.1/go.mod h1:ZGNfqNXp9ORDRyeg2CIroFCB6jU1vn88pDJkTL67vCY=
 github.com/noble-assets/wormhole v1.0.0 h1:c3otKgRv6Am4IoB/Vob2ziom02Ptpzv8R1/OtM2gxxI=
 github.com/noble-assets/wormhole v1.0.0/go.mod h1:s7T9FC+bxHwlLED8pmXumdqwhr56CGJqTdhhcIj4A/Q=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
@@ -1645,8 +1645,8 @@ github.com/onsi/ginkgo v1.12.1/go.mod h1:zj2OWP4+oCPe1qIXoGWkgMRwljMUYCdkwsT2108
 github.com/onsi/ginkgo v1.14.0/go.mod h1:iSB4RoI2tjJc9BBv4NKIKWKya62Rps+oPG/Lv9klQyY=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/ginkgo v1.16.5/go.mod h1:+E8gABHa3K6zRBolWtd+ROzc/U5bkGt0FwiG042wbpU=
-github.com/onsi/ginkgo/v2 v2.20.2 h1:7NVCeyIWROIAheY21RLS+3j2bb52W0W82tkberYytp4=
-github.com/onsi/ginkgo/v2 v2.20.2/go.mod h1:K9gyxPIlb+aIvnZ8bd9Ak+YP18w3APlR+5coaZoE2ag=
+github.com/onsi/ginkgo/v2 v2.23.3 h1:edHxnszytJ4lD9D5Jjc4tiDkPBZ3siDeJJkUZJJVkp0=
+github.com/onsi/ginkgo/v2 v2.23.3/go.mod h1:zXTP6xIp3U8aVuXN8ENK9IXRaTjFnpVB9mGmaSRvxnM=
 github.com/onsi/gomega v1.4.1/go.mod h1:C1qb7wdrVGGVU+Z6iS04AVkA3Q65CEZX59MT0QO5uiA=
 github.com/onsi/gomega v1.4.3/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
 github.com/onsi/gomega v1.7.1/go.mod h1:XdKZgCCFLUoM/7CFJVPcG8C1xQ1AJ0vpAezJrB7JYyY=
