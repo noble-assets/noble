@@ -29,6 +29,7 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/libs/bytes"
 	cmtos "github.com/cometbft/cometbft/libs/os"
@@ -46,6 +47,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authoritytypes "github.com/noble-assets/authority/types"
+	forwardingtypes "github.com/noble-assets/forwarding/v2/types"
 	"github.com/noble-assets/noble/v10/api"
 	"github.com/noble-assets/noble/v10/jester"
 	"github.com/noble-assets/noble/v10/upgrade"
@@ -293,10 +296,11 @@ func NewApp(
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
 			SigGasConsumer:  SigVerificationGasConsumer,
 		},
-		cdc:        app.appCodec,
-		BankKeeper: app.BankKeeper,
-		FTFKeeper:  app.FTFKeeper,
-		IBCKeeper:  app.IBCKeeper,
+		cdc:              app.appCodec,
+		BankKeeper:       app.BankKeeper,
+		ForwardingKeeper: app.ForwardingKeeper,
+		FTFKeeper:        app.FTFKeeper,
+		IBCKeeper:        app.IBCKeeper,
 	})
 	if err != nil {
 		return nil, err
@@ -310,7 +314,26 @@ func NewApp(
 	)
 
 	app.SetPrepareProposal(proposalHandler.PrepareProposal())
-	app.SetPreBlocker(proposalHandler.PreBlocker())
+	app.SetPreBlocker(func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		// On Noble mainnet, the v10.1.2 upgrade is applied at block #36,887,000.
+		// This upgrade removes support for the wildcard in the x/forwarding
+		// module allowed denoms configuration, which we set explicitly to USDC.
+		if ctx.ChainID() == upgrade.MainnetChainID && req.Height == 36887000 {
+			_, err := app.ForwardingKeeper.SetAllowedDenoms(ctx, &forwardingtypes.MsgSetAllowedDenoms{
+				Signer: authoritytypes.ModuleAddress.String(),
+				Denoms: []string{
+					app.FTFKeeper.GetMintingDenom(ctx).Denom, // USDC
+					app.DollarKeeper.GetDenom(),              // USDN
+				},
+			})
+
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return proposalHandler.PreBlocker()(ctx, req)
+	})
 
 	if err := app.RegisterUpgradeHandler(); err != nil {
 		return nil, err
