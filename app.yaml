@@ -94,7 +94,12 @@ modules:
     config:
       "@type": cosmos.bank.module.v1.Module
       blocked_module_accounts_override:
-        [auth, bonded_tokens_pool, not_bonded_tokens_pool]
+        [
+          auth,
+          bonded_tokens_pool,
+          not_bonded_tokens_pool,
+          orbiter/dust_collector,
+        ]
       authority: authority # Utilize our custom x/authority module.
   - name: consensus
     config:
