@@ -20,15 +20,11 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	orbitertypes "github.com/noble-assets/orbiter/types/core"
 )
 
 func CreateStoreLoader(upgradeHeight int64) baseapp.StoreLoader {
 	storeUpgrades := storetypes.StoreUpgrades{
-		Added: []string{
-			// Noble Modules
-			orbitertypes.ModuleName,
-		},
+		Added: []string{},
 	}
 
 	return upgradetypes.UpgradeStoreLoader(upgradeHeight, &storeUpgrades)

@@ -35,6 +35,7 @@ import (
 	florintypes "github.com/monerium/module-noble/v2/types"
 	authoritytypes "github.com/noble-assets/authority/types"
 	halotypes "github.com/noble-assets/halo/v2/types"
+	"github.com/noble-assets/noble/upgrade"
 	auratypes "github.com/ondoprotocol/usdy-noble/v2/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
@@ -47,6 +48,7 @@ import (
 const (
 	ghcrRepo        = "ghcr.io/noble-assets/noble"
 	containerUidGid = "1025:1025"
+	e2eChainID      = upgrade.TestnetChainID
 )
 
 var (
@@ -438,7 +440,7 @@ func NobleSpinUp(t *testing.T, ctx context.Context, version []ibc.DockerImage, s
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, e2eChainID, version, numValidators, numFullNodes, setupAllCircleRoles),
 	})
 
 	chains, err := cf.Chains(t.Name())
@@ -492,7 +494,7 @@ func NobleSpinUpIBC(t *testing.T, ctx context.Context, version []ibc.DockerImage
 	numFullNodes := 0
 
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		NobleChainSpec(ctx, &nw, "noble-1", version, numValidators, numFullNodes, setupAllCircleRoles),
+		NobleChainSpec(ctx, &nw, e2eChainID, version, numValidators, numFullNodes, setupAllCircleRoles),
 		{
 			Name:    "ibc-go-simd",
 			Version: "v8.7.0",

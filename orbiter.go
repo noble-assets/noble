@@ -25,6 +25,7 @@ func (app *App) RegisterOrbiterControllers() {
 		BankKeeper: app.BankKeeper,
 		CCTPKeeper: app.CCTPKeeper,
 		Orbiters:   app.OrbiterKeeper,
+		WarpKeeper: app.WarpKeeper,
 	}
 
 	orbiter.InjectComponents(in)
