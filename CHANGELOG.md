@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v10.1.2
+
+*Oct 14, 2025*
+
+This is a consensus breaking patch to the v10.1 Ember release line.
+
+### DEPENDENCIES
+
+- Bump Forwarding to [`v2.0.3`](https://github.com/noble-assets/forwarding/releases/tag/v2.0.3) to remove `x/bank` `GetAllBalances` usage. ([#600](https://github.com/noble-assets/noble/pull/600))
+- Bump CometBFT to [`v0.38.19`](https://github.com/cometbft/cometbft/releases/tag/v0.38.19) to resolve [ASA-2025-003](https://github.com/cometbft/cometbft/security/advisories/GHSA-hrhf-2vcr-ghch) security advisory. ([#600](https://github.com/noble-assets/noble/pull/600))
+
 ## v10.1.1
 
 *Aug 25, 2025*

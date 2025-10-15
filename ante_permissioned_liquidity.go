@@ -21,6 +21,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	swaptypes "swap.noble.xyz/types"
 	stableswaptypes "swap.noble.xyz/types/stableswap"
 
 	"github.com/noble-assets/noble/v12/upgrade"
@@ -58,6 +59,10 @@ func (d PermissionedLiquidityDecorator) CheckMessage(msg sdk.Msg) error {
 			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
 		}
 	case *stableswaptypes.MsgRemoveLiquidity:
+		if m.Signer != PermissionedAccount {
+			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
+		}
+	case *swaptypes.MsgWithdrawRewards:
 		if m.Signer != PermissionedAccount {
 			return fmt.Errorf("%s is currently a permissioned action", sdk.MsgTypeURL(msg))
 		}

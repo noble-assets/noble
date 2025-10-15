@@ -30,6 +30,7 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	"github.com/noble-assets/forwarding/v2"
+	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	forwardingtypes "github.com/noble-assets/forwarding/v2/types"
 )
 
@@ -42,10 +43,12 @@ type BankKeeper interface {
 // AnteHandler for our custom ante decorators.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	cdc        codec.Codec
-	BankKeeper BankKeeper
-	FTFKeeper  *ftfkeeper.Keeper
-	IBCKeeper  *ibckeeper.Keeper
+	cdc              codec.Codec
+	BankKeeper       BankKeeper
+	DollarKeeper     DollarKeeper
+	ForwardingKeeper *forwardingkeeper.Keeper
+	FTFKeeper        *ftfkeeper.Keeper
+	IBCKeeper        *ibckeeper.Keeper
 }
 
 // NewAnteHandler extends the default Cosmos SDK AnteHandler with custom ante decorators.
@@ -56,6 +59,14 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	if options.BankKeeper == nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "bank keeper is required for ante builder")
+	}
+
+	if options.DollarKeeper == nil {
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "dollar keeper is required for ante builder")
+	}
+
+	if options.ForwardingKeeper == nil {
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "forwarding keeper is required for ante builder")
 	}
 
 	if options.FTFKeeper == nil {
@@ -80,7 +91,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		fiattokenfactory.NewIsPausedDecorator(options.cdc, options.FTFKeeper),
 		fiattokenfactory.NewIsBlacklistedDecorator(options.FTFKeeper),
 
-		NewPermissionedHyperlaneDecorator(),
+		NewPermissionedHyperlaneDecorator(options.DollarKeeper),
 		NewPermissionedLiquidityDecorator(),
 
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
@@ -101,7 +112,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 func NewSigVerificationDecorator(options HandlerOptions) sdk.AnteDecorator {
 	defaultAnte := ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler)
-	return forwarding.NewSigVerificationDecorator(options.BankKeeper, defaultAnte)
+	return forwarding.NewSigVerificationDecorator(options.BankKeeper, options.ForwardingKeeper, defaultAnte)
 }
 
 // SigVerificationGasConsumer is a custom implementation of the signature verification gas

@@ -1,0 +1,1 @@
+- Bump Forwarding to [`v2.0.3`](https://github.com/noble-assets/forwarding/releases/tag/v2.0.3) to remove `x/bank` `GetAllBalances` usage. ([#600](https://github.com/noble-assets/noble/pull/600))

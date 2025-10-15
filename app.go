@@ -75,6 +75,7 @@ import (
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
 	_ "github.com/noble-assets/nova"
+	_ "github.com/noble-assets/orbiter"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
@@ -129,6 +130,7 @@ import (
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
 	novakeeper "github.com/noble-assets/nova/keeper"
+	orbiterkeeper "github.com/noble-assets/orbiter/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
@@ -188,6 +190,7 @@ type App struct {
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
 	NovaKeeper       *novakeeper.Keeper
+	OrbiterKeeper    *orbiterkeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
 }
@@ -271,6 +274,7 @@ func NewApp(
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
 		&app.NovaKeeper,
+		&app.OrbiterKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
 	); err != nil {
@@ -278,6 +282,8 @@ func NewApp(
 	}
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+
+	app.RegisterOrbiterControllers()
 
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
@@ -298,10 +304,12 @@ func NewApp(
 			TxFeeChecker:    globalfee.TxFeeChecker(app.GlobalFeeKeeper),
 			SigGasConsumer:  SigVerificationGasConsumer,
 		},
-		cdc:        app.appCodec,
-		BankKeeper: app.BankKeeper,
-		FTFKeeper:  app.FTFKeeper,
-		IBCKeeper:  app.IBCKeeper,
+		cdc:              app.appCodec,
+		BankKeeper:       app.BankKeeper,
+		DollarKeeper:     app.DollarKeeper,
+		ForwardingKeeper: app.ForwardingKeeper,
+		FTFKeeper:        app.FTFKeeper,
+		IBCKeeper:        app.IBCKeeper,
 	})
 	if err != nil {
 		return nil, err
