@@ -62,6 +62,12 @@ x-tagGroups:
     tags:
       - Aura
       - Aura Blocklist
+  - name: Orbiter
+    tags:
+      - Orbiter Adapter
+      - Orbiter Dispatcher
+      - Orbiter Executor
+      - Orbiter Forwarder
   - name: Swap
     tags:
       - Swap
@@ -49394,6 +49400,1719 @@ paths:
                   additionalProperties: {}
       tags:
         - Globalfee
+  /noble/orbiter/adapter/v1/params:
+    get:
+      summary: Params retrieves the adapter component parameters.
+      operationId: OrbiterAdapterParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of the adapter module.
+                type: object
+                properties:
+                  max_passthrough_payload_size:
+                    type: integer
+                    format: int64
+                    description: >-
+                      max_passthrough_payload_size is the maximum number of
+                      bytes
+
+                      of the passthrough payload that can be sent in a
+                      forwarding.
+            description: QueryParamsResponse is the response type for the Params query.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                      description: >-
+                        A URL/resource name that uniquely identifies the type of
+                        the serialized
+
+                        protocol buffer message. This string must contain at
+                        least
+
+                        one "/" character. The last segment of the URL's path
+                        must represent
+
+                        the fully qualified name of the type (as in
+
+                        `path/google.protobuf.Duration`). The name should be in
+                        a canonical form
+
+                        (e.g., leading "." is not accepted).
+
+
+                        In practice, teams usually precompile into the binary
+                        all types that they
+
+                        expect it to use in the context of Any. However, for
+                        URLs which use the
+
+                        scheme `http`, `https`, or no scheme, one can optionally
+                        set up a type
+
+                        server that maps type URLs to message definitions as
+                        follows:
+
+
+                        * If no scheme is provided, `https` is assumed.
+
+                        * An HTTP GET on the URL must yield a
+                        [google.protobuf.Type][]
+                          value in binary format, or produce an error.
+                        * Applications are allowed to cache lookup results based
+                        on the
+                          URL, or have them precompiled into a binary to avoid any
+                          lookup. Therefore, binary compatibility needs to be preserved
+                          on changes to types. (Use versioned type names to manage
+                          breaking changes.)
+
+                        Note: this functionality is not currently available in
+                        the official
+
+                        protobuf release, and it is not used for type URLs
+                        beginning with
+
+                        type.googleapis.com.
+
+
+                        Schemes other than `http`, `https` (or the empty scheme)
+                        might be
+
+                        used with implementation specific semantics.
+                  additionalProperties: {}
+                  description: >-
+                    `Any` contains an arbitrary serialized protocol buffer
+                    message along with a
+
+                    URL that describes the type of the serialized message.
+
+
+                    Protobuf library provides support to pack/unpack Any values
+                    in the form
+
+                    of utility functions or additional generated methods of the
+                    Any type.
+
+
+                    Example 1: Pack and unpack a message in C++.
+
+                        Foo foo = ...;
+                        Any any;
+                        any.PackFrom(foo);
+                        ...
+                        if (any.UnpackTo(&foo)) {
+                          ...
+                        }
+
+                    Example 2: Pack and unpack a message in Java.
+
+                        Foo foo = ...;
+                        Any any = Any.pack(foo);
+                        ...
+                        if (any.is(Foo.class)) {
+                          foo = any.unpack(Foo.class);
+                        }
+                        // or ...
+                        if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+                          foo = any.unpack(Foo.getDefaultInstance());
+                        }
+
+                     Example 3: Pack and unpack a message in Python.
+
+                        foo = Foo(...)
+                        any = Any()
+                        any.Pack(foo)
+                        ...
+                        if any.Is(Foo.DESCRIPTOR):
+                          any.Unpack(foo)
+                          ...
+
+                     Example 4: Pack and unpack a message in Go
+
+                         foo := &pb.Foo{...}
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
+                         ...
+                         foo := &pb.Foo{}
+                         if err := any.UnmarshalTo(foo); err != nil {
+                           ...
+                         }
+
+                    The pack methods provided by protobuf library will by
+                    default use
+
+                    'type.googleapis.com/full.type.name' as the type URL and the
+                    unpack
+
+                    methods only use the fully qualified type name after the
+                    last '/'
+
+                    in the type URL, for example "foo.bar.com/x/y.z" will yield
+                    type
+
+                    name "y.z".
+
+
+                    JSON
+
+                    ====
+
+                    The JSON representation of an `Any` value uses the regular
+
+                    representation of the deserialized, embedded message, with
+                    an
+
+                    additional field `@type` which contains the type URL.
+                    Example:
+
+                        package google.profile;
+                        message Person {
+                          string first_name = 1;
+                          string last_name = 2;
+                        }
+
+                        {
+                          "@type": "type.googleapis.com/google.profile.Person",
+                          "firstName": <string>,
+                          "lastName": <string>
+                        }
+
+                    If the embedded message type is well-known and has a custom
+                    JSON
+
+                    representation, that representation will be embedded adding
+                    a field
+
+                    `value` which holds the custom JSON in addition to the
+                    `@type`
+
+                    field. Example (for message [google.protobuf.Duration][]):
+
+                        {
+                          "@type": "type.googleapis.com/google.protobuf.Duration",
+                          "value": "1.212s"
+                        }
+      tags:
+        - Orbiter Adapter
+  /noble/orbiter/dispatcher/v1/dispatched/amounts/by-destination/{protocol_id}:
+    get:
+      summary: >-
+        DispatchedAmountsByDestinationProtocolID retrieves all the dispatched
+        amounts for a specific destination protocol ID.
+      operationId: DispatchedAmountsByDestinationProtocolID
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amounts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    destination_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    denom:
+                      type: string
+                    amount_dispatched:
+                      type: object
+                      properties:
+                        incoming:
+                          type: string
+                          description: >-
+                            incoming represented the total incoming amount
+                            dispatched.
+                        outgoing:
+                          type: string
+                          description: >-
+                            outgoing represents the total outgoing amount
+                            dispatched.
+                      description: |-
+                        AmountDispatched represents the incoming and outgoing
+                        amount dispatched for a couple of cross-chain identifier
+                        (protocol + chain) and for a single coin denomination.
+                  description: >-
+                    DispatchedAmountEntry contains information on the amounts
+                    dispatched between
+
+                    a source and a destination chain for a specific denom.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDispatchedAmountsResponse is the response type for the
+              Query/DispatchedAmounts* RPC methods.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: source_protocol_id is the protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Orbiter Dispatcher
+  /noble/orbiter/dispatcher/v1/dispatched/amounts/by-source/{protocol_id}:
+    get:
+      summary: >-
+        DispatchedAmountsBySourceProtocolID retrieves all the dispatched amounts
+        for a specific source protocol ID.
+      operationId: DispatchedAmountsBySourceProtocolID
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amounts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    destination_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    denom:
+                      type: string
+                    amount_dispatched:
+                      type: object
+                      properties:
+                        incoming:
+                          type: string
+                          description: >-
+                            incoming represented the total incoming amount
+                            dispatched.
+                        outgoing:
+                          type: string
+                          description: >-
+                            outgoing represents the total outgoing amount
+                            dispatched.
+                      description: |-
+                        AmountDispatched represents the incoming and outgoing
+                        amount dispatched for a couple of cross-chain identifier
+                        (protocol + chain) and for a single coin denomination.
+                  description: >-
+                    DispatchedAmountEntry contains information on the amounts
+                    dispatched between
+
+                    a source and a destination chain for a specific denom.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDispatchedAmountsResponse is the response type for the
+              Query/DispatchedAmounts* RPC methods.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: source_protocol_id is the protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Orbiter Dispatcher
+  /noble/orbiter/dispatcher/v1/dispatched/amounts/{source_protocol_id}/{source_counterparty_id}/{destination_protocol_id}/{destination_counterparty_id}:
+    get:
+      summary: DispatchedAmounts retrieves the dispatched amounts for a specific route.
+      operationId: DispatchedAmounts
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amounts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    destination_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    denom:
+                      type: string
+                    amount_dispatched:
+                      type: object
+                      properties:
+                        incoming:
+                          type: string
+                          description: >-
+                            incoming represented the total incoming amount
+                            dispatched.
+                        outgoing:
+                          type: string
+                          description: >-
+                            outgoing represents the total outgoing amount
+                            dispatched.
+                      description: |-
+                        AmountDispatched represents the incoming and outgoing
+                        amount dispatched for a couple of cross-chain identifier
+                        (protocol + chain) and for a single coin denomination.
+                  description: >-
+                    DispatchedAmountEntry contains information on the amounts
+                    dispatched between
+
+                    a source and a destination chain for a specific denom.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDispatchedAmountsResponse is the response type for the
+              Query/DispatchedAmounts* RPC methods.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: source_protocol_id
+          description: source_protocol_id is the source protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: source_counterparty_id
+          description: source_counterparty_id is the source counterparty identifier.
+          in: path
+          required: true
+          type: string
+        - name: destination_protocol_id
+          description: destination_protocol_id is the destination protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: destination_counterparty_id
+          description: >-
+            destination_counterparty_id is the destination counterparty
+            identifier.
+          in: path
+          required: true
+          type: string
+        - name: denom
+          description: denom is the denomination of the amounts requested.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Orbiter Dispatcher
+  /noble/orbiter/dispatcher/v1/dispatched/counts/by-destination/{protocol_id}:
+    get:
+      summary: >-
+        DispatchedCountsByDestinationProtocolID retrieves all the dispatched
+        counts for a specific destination protocol ID.
+      operationId: DispatchedCountsByDestinationProtocolID
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              counts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    destination_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    count:
+                      type: string
+                      format: uint64
+                  description: >-
+                    DispatchCountEntry contains information on the number of
+                    dispatched between
+
+                    a source and a destination chain.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDispatchedCountsResponse is the response type for the
+              Query/DispatchedCounts* RPC methods.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: source_protocol_id is the protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Orbiter Dispatcher
+  /noble/orbiter/dispatcher/v1/dispatched/counts/by-source/{protocol_id}:
+    get:
+      summary: >-
+        DispatchedCountsBySourceProtocolID retrieves all the dispatched counts
+        for a specific source protocol ID.
+      operationId: DispatchedCountsBySourceProtocolID
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              counts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    destination_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    count:
+                      type: string
+                      format: uint64
+                  description: >-
+                    DispatchCountEntry contains information on the number of
+                    dispatched between
+
+                    a source and a destination chain.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDispatchedCountsResponse is the response type for the
+              Query/DispatchedCounts* RPC methods.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: source_protocol_id is the protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Orbiter Dispatcher
+  /noble/orbiter/dispatcher/v1/dispatched/counts/{source_protocol_id}/{source_counterparty_id}/{destination_protocol_id}/{destination_counterparty_id}:
+    get:
+      summary: DispatchedCounts retrieves the dispatched counts for a specific route.
+      operationId: DispatchedCounts
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              counts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    source_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    destination_id:
+                      type: object
+                      properties:
+                        protocol_id:
+                          type: string
+                          enum:
+                            - PROTOCOL_UNSUPPORTED
+                            - PROTOCOL_IBC
+                            - PROTOCOL_CCTP
+                            - PROTOCOL_HYPERLANE
+                            - PROTOCOL_INTERNAL
+                          default: PROTOCOL_UNSUPPORTED
+                          description: >-
+                            ProtocolID represents the cross-chain communication
+                            protocols supported by the orbiter.
+
+
+                            buf:lint:ignore ENUM_VALUE_PREFIX
+
+                             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                            This is the default zero value and should not be
+                            used in production.
+                             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                        counterparty_id:
+                          type: string
+                          description: Protocol specific identifier of a counterparty.
+                      description: |-
+                        CrossChainID is an internal type used to uniquely
+                        identify a source or a destination of a cross-chain
+                        transfer and the bridge protocol used.
+                    count:
+                      type: string
+                      format: uint64
+                  description: >-
+                    DispatchCountEntry contains information on the number of
+                    dispatched between
+
+                    a source and a destination chain.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDispatchedCountsResponse is the response type for the
+              Query/DispatchedCounts* RPC methods.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: source_protocol_id
+          description: source_protocol_id is the source protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: source_counterparty_id
+          description: source_counterparty_id is the source counterparty identifier.
+          in: path
+          required: true
+          type: string
+        - name: destination_protocol_id
+          description: destination_protocol_id is the destination protocol identifier.
+          in: path
+          required: true
+          type: string
+        - name: destination_counterparty_id
+          description: >-
+            destination_counterparty_id is the destination counterparty
+            identifier.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Orbiter Dispatcher
+  /noble/orbiter/executor/v1/paused/actions:
+    get:
+      operationId: PausedActions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              action_ids:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - ACTION_UNSUPPORTED
+                    - ACTION_FEE
+                    - ACTION_SWAP
+                  default: ACTION_UNSUPPORTED
+                  description: >-
+                    ActionID identifies the type of action to be performed on a
+                    transfer.
+
+
+                    buf:lint:ignore ENUM_VALUE_PREFIX
+
+                     - ACTION_UNSUPPORTED: ACTION_UNSUPPORTED represents an unknown or unsupported action type.
+                    This is the default zero value and should not be used in
+                    production.
+                     - ACTION_FEE: ACTION_FEE represents a fee collection action.
+                     - ACTION_SWAP: ACTION_SWAP represents a token swap action.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Orbiter Executor
+  /noble/orbiter/executor/v1/paused/actions/{action_id}:
+    get:
+      operationId: IsActionPaused
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              is_paused:
+                type: boolean
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: action_id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Orbiter Executor
+  /noble/orbiter/forwarder/v1/paused/protocols:
+    get:
+      summary: PausedProtocols retrieves all paused protocol IDs.
+      operationId: PausedProtocols
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              protocol_ids:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - PROTOCOL_UNSUPPORTED
+                    - PROTOCOL_IBC
+                    - PROTOCOL_CCTP
+                    - PROTOCOL_HYPERLANE
+                    - PROTOCOL_INTERNAL
+                  default: PROTOCOL_UNSUPPORTED
+                  description: >-
+                    ProtocolID represents the cross-chain communication
+                    protocols supported by the orbiter.
+
+
+                    buf:lint:ignore ENUM_VALUE_PREFIX
+
+                     - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                    This is the default zero value and should not be used in
+                    production.
+                     - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                     - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                     - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                     - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+            description: >-
+              QueryPausedProtocolsResponse is the response type for the
+              Query/PausedProtocol RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Orbiter Forwarder
+  /noble/orbiter/forwarder/v1/paused/protocols/{protocol_id}:
+    get:
+      summary: IsProtocolPaused checks if a specific protocol is paused.
+      operationId: IsProtocolPaused
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              is_paused:
+                type: boolean
+                description: is_paused indicates whether the protocol is paused.
+            description: >-
+              QueryIsProtocolPausedResponse is the response type for the
+              Query/IsProtocolPaused RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: protocol_id is the protocol to check.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Orbiter Forwarder
+  /noble/orbiter/forwarder/v1/paused/protocols/{protocol_id}/counterparties:
+    get:
+      summary: >-
+        PausedCrossChains retrieves all paused counterparties for a specific
+        protocol.
+      operationId: PausedCrossChains
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              counterparty_ids:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  counterparty_ids is the list of paused counterparty
+                  identifiers for the specified protocol ID.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryPausedCrossChainsResponse is the response type for the
+              Query/PausedCrossChains RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: protocol_id is the protocol to query paused counterparties for.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Orbiter Forwarder
+  /noble/orbiter/forwarder/v1/paused/protocols/{protocol_id}/counterparties/{counterparty_id}:
+    get:
+      summary: >-
+        IsCrossChainPaused checks if a specific counterparty for a protocol is
+        paused.
+      operationId: IsCrossChainPaused
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              is_paused:
+                type: boolean
+                description: is_paused indicates whether the counterparty is paused.
+            description: >-
+              QueryIsCrossChainPausedResponse is the response type for the
+              Query/IsCrossChainPaused RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: protocol_id
+          description: protocol_id is the protocol to check.
+          in: path
+          required: true
+          type: string
+        - name: counterparty_id
+          description: counterparty_id is the counterparty identifier to check.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Orbiter Forwarder
   /noble/swap/v1/paused:
     get:
       summary: Retrieves a list of the currently paused Pools.
@@ -79273,6 +80992,607 @@ definitions:
 
             NOTE: The amount field is an Dec which implements the custom method
             signatures required by gogoproto.
+  noble.orbiter.component.adapter.v1.Params:
+    type: object
+    properties:
+      max_passthrough_payload_size:
+        type: integer
+        format: int64
+        description: |-
+          max_passthrough_payload_size is the maximum number of bytes
+          of the passthrough payload that can be sent in a forwarding.
+    description: Params represents the adapter components parameters.
+  noble.orbiter.component.adapter.v1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of the adapter module.
+        type: object
+        properties:
+          max_passthrough_payload_size:
+            type: integer
+            format: int64
+            description: |-
+              max_passthrough_payload_size is the maximum number of bytes
+              of the passthrough payload that can be sent in a forwarding.
+    description: QueryParamsResponse is the response type for the Params query.
+  noble.orbiter.component.dispatcher.v1.AmountDispatched:
+    type: object
+    properties:
+      incoming:
+        type: string
+        description: incoming represented the total incoming amount dispatched.
+      outgoing:
+        type: string
+        description: outgoing represents the total outgoing amount dispatched.
+    description: |-
+      AmountDispatched represents the incoming and outgoing
+      amount dispatched for a couple of cross-chain identifier
+      (protocol + chain) and for a single coin denomination.
+  noble.orbiter.component.dispatcher.v1.DispatchCountEntry:
+    type: object
+    properties:
+      source_id:
+        type: object
+        properties:
+          protocol_id:
+            type: string
+            enum:
+              - PROTOCOL_UNSUPPORTED
+              - PROTOCOL_IBC
+              - PROTOCOL_CCTP
+              - PROTOCOL_HYPERLANE
+              - PROTOCOL_INTERNAL
+            default: PROTOCOL_UNSUPPORTED
+            description: >-
+              ProtocolID represents the cross-chain communication protocols
+              supported by the orbiter.
+
+
+              buf:lint:ignore ENUM_VALUE_PREFIX
+
+               - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+              This is the default zero value and should not be used in
+              production.
+               - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+               - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+               - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+               - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+          counterparty_id:
+            type: string
+            description: Protocol specific identifier of a counterparty.
+        description: |-
+          CrossChainID is an internal type used to uniquely
+          identify a source or a destination of a cross-chain
+          transfer and the bridge protocol used.
+      destination_id:
+        type: object
+        properties:
+          protocol_id:
+            type: string
+            enum:
+              - PROTOCOL_UNSUPPORTED
+              - PROTOCOL_IBC
+              - PROTOCOL_CCTP
+              - PROTOCOL_HYPERLANE
+              - PROTOCOL_INTERNAL
+            default: PROTOCOL_UNSUPPORTED
+            description: >-
+              ProtocolID represents the cross-chain communication protocols
+              supported by the orbiter.
+
+
+              buf:lint:ignore ENUM_VALUE_PREFIX
+
+               - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+              This is the default zero value and should not be used in
+              production.
+               - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+               - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+               - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+               - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+          counterparty_id:
+            type: string
+            description: Protocol specific identifier of a counterparty.
+        description: |-
+          CrossChainID is an internal type used to uniquely
+          identify a source or a destination of a cross-chain
+          transfer and the bridge protocol used.
+      count:
+        type: string
+        format: uint64
+    description: >-
+      DispatchCountEntry contains information on the number of dispatched
+      between
+
+      a source and a destination chain.
+  noble.orbiter.component.dispatcher.v1.DispatchedAmountEntry:
+    type: object
+    properties:
+      source_id:
+        type: object
+        properties:
+          protocol_id:
+            type: string
+            enum:
+              - PROTOCOL_UNSUPPORTED
+              - PROTOCOL_IBC
+              - PROTOCOL_CCTP
+              - PROTOCOL_HYPERLANE
+              - PROTOCOL_INTERNAL
+            default: PROTOCOL_UNSUPPORTED
+            description: >-
+              ProtocolID represents the cross-chain communication protocols
+              supported by the orbiter.
+
+
+              buf:lint:ignore ENUM_VALUE_PREFIX
+
+               - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+              This is the default zero value and should not be used in
+              production.
+               - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+               - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+               - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+               - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+          counterparty_id:
+            type: string
+            description: Protocol specific identifier of a counterparty.
+        description: |-
+          CrossChainID is an internal type used to uniquely
+          identify a source or a destination of a cross-chain
+          transfer and the bridge protocol used.
+      destination_id:
+        type: object
+        properties:
+          protocol_id:
+            type: string
+            enum:
+              - PROTOCOL_UNSUPPORTED
+              - PROTOCOL_IBC
+              - PROTOCOL_CCTP
+              - PROTOCOL_HYPERLANE
+              - PROTOCOL_INTERNAL
+            default: PROTOCOL_UNSUPPORTED
+            description: >-
+              ProtocolID represents the cross-chain communication protocols
+              supported by the orbiter.
+
+
+              buf:lint:ignore ENUM_VALUE_PREFIX
+
+               - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+              This is the default zero value and should not be used in
+              production.
+               - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+               - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+               - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+               - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+          counterparty_id:
+            type: string
+            description: Protocol specific identifier of a counterparty.
+        description: |-
+          CrossChainID is an internal type used to uniquely
+          identify a source or a destination of a cross-chain
+          transfer and the bridge protocol used.
+      denom:
+        type: string
+      amount_dispatched:
+        type: object
+        properties:
+          incoming:
+            type: string
+            description: incoming represented the total incoming amount dispatched.
+          outgoing:
+            type: string
+            description: outgoing represents the total outgoing amount dispatched.
+        description: |-
+          AmountDispatched represents the incoming and outgoing
+          amount dispatched for a couple of cross-chain identifier
+          (protocol + chain) and for a single coin denomination.
+    description: >-
+      DispatchedAmountEntry contains information on the amounts dispatched
+      between
+
+      a source and a destination chain for a specific denom.
+  noble.orbiter.component.dispatcher.v1.QueryDispatchedAmountsResponse:
+    type: object
+    properties:
+      amounts:
+        type: array
+        items:
+          type: object
+          properties:
+            source_id:
+              type: object
+              properties:
+                protocol_id:
+                  type: string
+                  enum:
+                    - PROTOCOL_UNSUPPORTED
+                    - PROTOCOL_IBC
+                    - PROTOCOL_CCTP
+                    - PROTOCOL_HYPERLANE
+                    - PROTOCOL_INTERNAL
+                  default: PROTOCOL_UNSUPPORTED
+                  description: >-
+                    ProtocolID represents the cross-chain communication
+                    protocols supported by the orbiter.
+
+
+                    buf:lint:ignore ENUM_VALUE_PREFIX
+
+                     - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                    This is the default zero value and should not be used in
+                    production.
+                     - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                     - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                     - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                     - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                counterparty_id:
+                  type: string
+                  description: Protocol specific identifier of a counterparty.
+              description: |-
+                CrossChainID is an internal type used to uniquely
+                identify a source or a destination of a cross-chain
+                transfer and the bridge protocol used.
+            destination_id:
+              type: object
+              properties:
+                protocol_id:
+                  type: string
+                  enum:
+                    - PROTOCOL_UNSUPPORTED
+                    - PROTOCOL_IBC
+                    - PROTOCOL_CCTP
+                    - PROTOCOL_HYPERLANE
+                    - PROTOCOL_INTERNAL
+                  default: PROTOCOL_UNSUPPORTED
+                  description: >-
+                    ProtocolID represents the cross-chain communication
+                    protocols supported by the orbiter.
+
+
+                    buf:lint:ignore ENUM_VALUE_PREFIX
+
+                     - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                    This is the default zero value and should not be used in
+                    production.
+                     - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                     - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                     - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                     - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                counterparty_id:
+                  type: string
+                  description: Protocol specific identifier of a counterparty.
+              description: |-
+                CrossChainID is an internal type used to uniquely
+                identify a source or a destination of a cross-chain
+                transfer and the bridge protocol used.
+            denom:
+              type: string
+            amount_dispatched:
+              type: object
+              properties:
+                incoming:
+                  type: string
+                  description: incoming represented the total incoming amount dispatched.
+                outgoing:
+                  type: string
+                  description: outgoing represents the total outgoing amount dispatched.
+              description: |-
+                AmountDispatched represents the incoming and outgoing
+                amount dispatched for a couple of cross-chain identifier
+                (protocol + chain) and for a single coin denomination.
+          description: >-
+            DispatchedAmountEntry contains information on the amounts dispatched
+            between
+
+            a source and a destination chain for a specific denom.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryDispatchedAmountsResponse is the response type for the
+      Query/DispatchedAmounts* RPC methods.
+  noble.orbiter.component.dispatcher.v1.QueryDispatchedCountsResponse:
+    type: object
+    properties:
+      counts:
+        type: array
+        items:
+          type: object
+          properties:
+            source_id:
+              type: object
+              properties:
+                protocol_id:
+                  type: string
+                  enum:
+                    - PROTOCOL_UNSUPPORTED
+                    - PROTOCOL_IBC
+                    - PROTOCOL_CCTP
+                    - PROTOCOL_HYPERLANE
+                    - PROTOCOL_INTERNAL
+                  default: PROTOCOL_UNSUPPORTED
+                  description: >-
+                    ProtocolID represents the cross-chain communication
+                    protocols supported by the orbiter.
+
+
+                    buf:lint:ignore ENUM_VALUE_PREFIX
+
+                     - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                    This is the default zero value and should not be used in
+                    production.
+                     - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                     - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                     - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                     - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                counterparty_id:
+                  type: string
+                  description: Protocol specific identifier of a counterparty.
+              description: |-
+                CrossChainID is an internal type used to uniquely
+                identify a source or a destination of a cross-chain
+                transfer and the bridge protocol used.
+            destination_id:
+              type: object
+              properties:
+                protocol_id:
+                  type: string
+                  enum:
+                    - PROTOCOL_UNSUPPORTED
+                    - PROTOCOL_IBC
+                    - PROTOCOL_CCTP
+                    - PROTOCOL_HYPERLANE
+                    - PROTOCOL_INTERNAL
+                  default: PROTOCOL_UNSUPPORTED
+                  description: >-
+                    ProtocolID represents the cross-chain communication
+                    protocols supported by the orbiter.
+
+
+                    buf:lint:ignore ENUM_VALUE_PREFIX
+
+                     - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+                    This is the default zero value and should not be used in
+                    production.
+                     - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+                     - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+                     - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+                     - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+                counterparty_id:
+                  type: string
+                  description: Protocol specific identifier of a counterparty.
+              description: |-
+                CrossChainID is an internal type used to uniquely
+                identify a source or a destination of a cross-chain
+                transfer and the bridge protocol used.
+            count:
+              type: string
+              format: uint64
+          description: >-
+            DispatchCountEntry contains information on the number of dispatched
+            between
+
+            a source and a destination chain.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryDispatchedCountsResponse is the response type for the
+      Query/DispatchedCounts* RPC methods.
+  noble.orbiter.core.v1.CrossChainID:
+    type: object
+    properties:
+      protocol_id:
+        type: string
+        enum:
+          - PROTOCOL_UNSUPPORTED
+          - PROTOCOL_IBC
+          - PROTOCOL_CCTP
+          - PROTOCOL_HYPERLANE
+          - PROTOCOL_INTERNAL
+        default: PROTOCOL_UNSUPPORTED
+        description: >-
+          ProtocolID represents the cross-chain communication protocols
+          supported by the orbiter.
+
+
+          buf:lint:ignore ENUM_VALUE_PREFIX
+
+           - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+          This is the default zero value and should not be used in production.
+           - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+           - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+           - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+           - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+      counterparty_id:
+        type: string
+        description: Protocol specific identifier of a counterparty.
+    description: |-
+      CrossChainID is an internal type used to uniquely
+      identify a source or a destination of a cross-chain
+      transfer and the bridge protocol used.
+  noble.orbiter.core.v1.ProtocolID:
+    type: string
+    enum:
+      - PROTOCOL_UNSUPPORTED
+      - PROTOCOL_IBC
+      - PROTOCOL_CCTP
+      - PROTOCOL_HYPERLANE
+      - PROTOCOL_INTERNAL
+    default: PROTOCOL_UNSUPPORTED
+    description: >-
+      ProtocolID represents the cross-chain communication protocols supported by
+      the orbiter.
+
+
+      buf:lint:ignore ENUM_VALUE_PREFIX
+
+       - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+      This is the default zero value and should not be used in production.
+       - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+       - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+       - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+       - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+  noble.orbiter.component.executor.v1.QueryIsActionPausedResponse:
+    type: object
+    properties:
+      is_paused:
+        type: boolean
+  noble.orbiter.component.executor.v1.QueryPausedActionsResponse:
+    type: object
+    properties:
+      action_ids:
+        type: array
+        items:
+          type: string
+          enum:
+            - ACTION_UNSUPPORTED
+            - ACTION_FEE
+            - ACTION_SWAP
+          default: ACTION_UNSUPPORTED
+          description: >-
+            ActionID identifies the type of action to be performed on a
+            transfer.
+
+
+            buf:lint:ignore ENUM_VALUE_PREFIX
+
+             - ACTION_UNSUPPORTED: ACTION_UNSUPPORTED represents an unknown or unsupported action type.
+            This is the default zero value and should not be used in production.
+             - ACTION_FEE: ACTION_FEE represents a fee collection action.
+             - ACTION_SWAP: ACTION_SWAP represents a token swap action.
+  noble.orbiter.core.v1.ActionID:
+    type: string
+    enum:
+      - ACTION_UNSUPPORTED
+      - ACTION_FEE
+      - ACTION_SWAP
+    default: ACTION_UNSUPPORTED
+    description: |-
+      ActionID identifies the type of action to be performed on a transfer.
+
+      buf:lint:ignore ENUM_VALUE_PREFIX
+
+       - ACTION_UNSUPPORTED: ACTION_UNSUPPORTED represents an unknown or unsupported action type.
+      This is the default zero value and should not be used in production.
+       - ACTION_FEE: ACTION_FEE represents a fee collection action.
+       - ACTION_SWAP: ACTION_SWAP represents a token swap action.
+  noble.orbiter.component.forwarder.v1.QueryIsCrossChainPausedResponse:
+    type: object
+    properties:
+      is_paused:
+        type: boolean
+        description: is_paused indicates whether the counterparty is paused.
+    description: >-
+      QueryIsCrossChainPausedResponse is the response type for the
+      Query/IsCrossChainPaused RPC method.
+  noble.orbiter.component.forwarder.v1.QueryIsProtocolPausedResponse:
+    type: object
+    properties:
+      is_paused:
+        type: boolean
+        description: is_paused indicates whether the protocol is paused.
+    description: >-
+      QueryIsProtocolPausedResponse is the response type for the
+      Query/IsProtocolPaused RPC method.
+  noble.orbiter.component.forwarder.v1.QueryPausedCrossChainsResponse:
+    type: object
+    properties:
+      counterparty_ids:
+        type: array
+        items:
+          type: string
+        description: >-
+          counterparty_ids is the list of paused counterparty identifiers for
+          the specified protocol ID.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryPausedCrossChainsResponse is the response type for the
+      Query/PausedCrossChains RPC method.
+  noble.orbiter.component.forwarder.v1.QueryPausedProtocolsResponse:
+    type: object
+    properties:
+      protocol_ids:
+        type: array
+        items:
+          type: string
+          enum:
+            - PROTOCOL_UNSUPPORTED
+            - PROTOCOL_IBC
+            - PROTOCOL_CCTP
+            - PROTOCOL_HYPERLANE
+            - PROTOCOL_INTERNAL
+          default: PROTOCOL_UNSUPPORTED
+          description: >-
+            ProtocolID represents the cross-chain communication protocols
+            supported by the orbiter.
+
+
+            buf:lint:ignore ENUM_VALUE_PREFIX
+
+             - PROTOCOL_UNSUPPORTED: PROTOCOL_UNSUPPORTED represents an unknown or unsupported protocol type.
+            This is the default zero value and should not be used in production.
+             - PROTOCOL_IBC: PROTOCOL_IBC represents the Inter-Blockchain Communication protocol identifier.
+             - PROTOCOL_CCTP: PROTOCOL_CCTP represents the Cross-Chain Transmission Protocol identifier.
+             - PROTOCOL_HYPERLANE: PROTOCOL_HYPERLANE represents the Hyperlane protocol identifier.
+             - PROTOCOL_INTERNAL: PROTOCOL_INTERNAL represents an internal transfer.
+    description: >-
+      QueryPausedProtocolsResponse is the response type for the
+      Query/PausedProtocol RPC method.
   noble.swap.v1.Algorithm:
     type: string
     enum:
