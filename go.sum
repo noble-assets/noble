@@ -1189,8 +1189,8 @@ github.com/noble-assets/hyperlane-cosmos v0.0.0-20251010144559-3086920bd41f h1:V
 github.com/noble-assets/hyperlane-cosmos v0.0.0-20251010144559-3086920bd41f/go.mod h1:3yfa0io5Ii6GmhHWsWl2LEAOEHsqWuMgw2R02+LPogw=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble h1:nxz3n15ChWqK/PvRYg0sGpfsrsIM1uqK4z/I/6CvSbc=
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble/go.mod h1:O5H9Ic3Pe6cmJn1eqlj5N48sLb8WQ1VWmDP4/11g/4E=
-github.com/noble-assets/nova v1.0.0-alpha.1.0.20251010145505-aff9d9a3f96c h1:pijWXWJbpwebz/7SSszF82jS/Wx1RR4tjYjB4g3hQpo=
-github.com/noble-assets/nova v1.0.0-alpha.1.0.20251010145505-aff9d9a3f96c/go.mod h1:V2CEFyXqKtRqNmG58uP6QYBWrA7OLHdXvUZh4IFOtjQ=
+github.com/noble-assets/nova v1.0.0-alpha.2 h1:CG6AoJCu70RU2RSTL7WKw2sdraSplbrTsUJZNcf8z44=
+github.com/noble-assets/nova v1.0.0-alpha.2/go.mod h1:V2CEFyXqKtRqNmG58uP6QYBWrA7OLHdXvUZh4IFOtjQ=
 github.com/noble-assets/orbiter v1.0.0-rc.1 h1:PXRIcbzKcIFaWdkj/xgMWy7OK7DLr1UrHmUNqp6SBbs=
 github.com/noble-assets/orbiter v1.0.0-rc.1/go.mod h1:ZGNfqNXp9ORDRyeg2CIroFCB6jU1vn88pDJkTL67vCY=
 github.com/noble-assets/wormhole v1.0.0 h1:c3otKgRv6Am4IoB/Vob2ziom02Ptpzv8R1/OtM2gxxI=

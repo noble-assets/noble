@@ -1488,8 +1488,8 @@ github.com/noble-assets/cosmos-sdk/collections v0.0.0-20250923134424-edd65694c2f
 github.com/noble-assets/cosmos-sdk/collections v0.0.0-20250923134424-edd65694c2f7/go.mod h1:PSsEJ/fqny0VPsHLFT6gXDj/2C1tBOTS9eByK0+PBFU=
 github.com/noble-assets/halo/v2 v2.0.1 h1:nHAhTnq5dPJGelcLnKzMviXtk9x0DfMnRPv+CPoEvyA=
 github.com/noble-assets/halo/v2 v2.0.1/go.mod h1:DY4GCfZ/7S3IEjoJBCCh7HRTxirPBOLMVwkT0N6n3bA=
-github.com/noble-assets/nova v1.0.0-alpha.1.0.20251010145505-aff9d9a3f96c h1:pijWXWJbpwebz/7SSszF82jS/Wx1RR4tjYjB4g3hQpo=
-github.com/noble-assets/nova v1.0.0-alpha.1.0.20251010145505-aff9d9a3f96c/go.mod h1:V2CEFyXqKtRqNmG58uP6QYBWrA7OLHdXvUZh4IFOtjQ=
+github.com/noble-assets/nova v1.0.0-alpha.2 h1:CG6AoJCu70RU2RSTL7WKw2sdraSplbrTsUJZNcf8z44=
+github.com/noble-assets/nova v1.0.0-alpha.2/go.mod h1:V2CEFyXqKtRqNmG58uP6QYBWrA7OLHdXvUZh4IFOtjQ=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=
 github.com/nxadm/tail v1.4.8/go.mod h1:+ncqLTQzXmGhMZNUePPaPqPvBxHAIsmXswZKocGu+AU=
