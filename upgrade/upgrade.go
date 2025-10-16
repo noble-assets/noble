@@ -45,10 +45,35 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		chainID := sdkCtx.ChainID()
-		if chainID != TestnetChainID {
-			return vm, fmt.Errorf("%s upgrade not allowed to execute on %s chain", UpgradeName, chainID)
+
+		vm, err := mm.RunMigrations(ctx, cfg, vm)
+		if err != nil {
+			return vm, err
 		}
+
+		err = ClaimDistributionFunds(ctx, logger, addressCodec, authorityKeeper, bankKeeper)
+		if err != nil {
+			return vm, err
+		}
+
+		err = UpdateVaultsState(ctx, addressCodec, authorityKeeper, dollarKeeper)
+		if err != nil {
+			return vm, err
+		}
+
+		// The IBC light client for the shido_9008-1 chain has expired on
+		// Noble's mainnet. In IBC-Go v8.7.0, the MsgRecoverClient message does
+		// not support the LegacyAminoJSON signing mode, preventing recovery
+		// via the Noble Maintenance Multisig. As a result, the client must be
+		// manually recovered as part of this software upgrade.
+		err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-106", "07-tendermint-186")
+		if err != nil {
+			logger.Error("unable to recover shido_9008-1 light client", "err", err)
+		}
+
+		logger.Info(UpgradeASCII)
+
+		return vm, nil
 
 		return mm.RunMigrations(ctx, cfg, vm)
 	}
