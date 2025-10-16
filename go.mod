@@ -26,7 +26,6 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
 	github.com/cosmos/ibc-go/v8 v8.7.0
-	github.com/ethereum/go-ethereum v1.16.2
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/gorilla/mux v1.8.1
 	github.com/monerium/module-noble/v2 v2.0.0
@@ -151,6 +150,7 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/ethereum/c-kzg-4844/v2 v2.1.0 // indirect
+	github.com/ethereum/go-ethereum v1.16.2 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/fatih/color v1.18.0 // indirect
@@ -400,7 +400,7 @@ require (
 replace cosmossdk.io/collections => github.com/noble-assets/cosmos-sdk/collections v0.0.0-20250923134424-edd65694c2f7
 
 // force hyperlane-cosmos update
-replace github.com/bcp-innovations/hyperlane-cosmos => github.com/noble-assets/hyperlane-cosmos v0.0.0-20251010144559-3086920bd41f
+replace github.com/bcp-innovations/hyperlane-cosmos => github.com/bcp-innovations/hyperlane-cosmos v1.0.1-0.20250918085740-76b0807e8d60
 
 // use noble version of pfm
 replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble
