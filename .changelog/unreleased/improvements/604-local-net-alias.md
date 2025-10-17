@@ -1,0 +1,1 @@
+- Avoid using `alias` to use the local binary build in local net scripts. ([#604](https://github.com/noble-assets/noble/pull/604))
