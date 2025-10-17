@@ -18,24 +18,36 @@ package upgrade
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
-	"fmt"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
+	orbitertypes "github.com/noble-assets/orbiter/types"
+	orbitercore "github.com/noble-assets/orbiter/types/core"
 )
+
+// orbiterCustomGen overriede the default module genesis to pause the Hyperlane forwarding.
+func orbiterCustomGen(cdc codec.Codec) json.RawMessage {
+	gen := orbitertypes.DefaultGenesisState()
+	gen.ForwarderGenesis.PausedProtocolIds = append(gen.ForwarderGenesis.PausedProtocolIds, orbitercore.PROTOCOL_HYPERLANE)
+
+	return cdc.MustMarshalJSON(gen)
+}
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
+	cdc codec.Codec,
 	logger log.Logger,
 	addressCodec address.Codec,
 	authorityKeeper *authoritykeeper.Keeper,
@@ -45,6 +57,10 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+		if module, ok := mm.Modules[orbitercore.ModuleName].(module.HasGenesis); ok {
+			module.InitGenesis(sdkCtx, cdc, orbiterCustomGen(cdc))
+		}
 
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
 		if err != nil {
@@ -74,8 +90,6 @@ func CreateUpgradeHandler(
 		logger.Info(UpgradeASCII)
 
 		return vm, nil
-
-		return mm.RunMigrations(ctx, cfg, vm)
 	}
 }
 
