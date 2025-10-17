@@ -1,11 +1,11 @@
 #!/bin/bash
 
-alias nobled=../build/nobled
+BIN=../build/nobled
 
 cleanup() {
-    echo "Stopping processes..."
-    kill "$NOBLED_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
-    exit 0
+  echo "Stopping processes..."
+  kill "$NOBLED_PID" "$TAIL_PID" "$NOBLED_PID2" 2>/dev/null
+  exit 0
 }
 trap cleanup SIGINT SIGTERM
 
@@ -18,27 +18,27 @@ SNAP_RPC="https://noble-rpc.polkachu.com:443"
 UPGRADE_ARG=""
 
 for arg in "$@"; do
-    case $arg in
-        -r|--reset)
-            rm -rf "$HOME1"
-            ;;
-        -t|--testnet)
-            CHAINID="grand-1"
-            PEERS="f2067cc7a23a4b2525f5f98430797b1e5c92e3aa@35.183.110.236:26656,8b22414f37d381a99ba99cd1edc5b884d43b7e53@65.109.23.114:21556"
-            SNAP_RPC="https://noble-testnet-rpc.polkachu.com:443"
-            ;;
-        -u|--trigger-testnet-upgrade)
-            UPGRADE_ARG="$2"
-            shift
-            ;;
-    esac
+  case $arg in
+  -r | --reset)
+    rm -rf "$HOME1"
+    ;;
+  -t | --testnet)
+    CHAINID="grand-1"
+    PEERS="f2067cc7a23a4b2525f5f98430797b1e5c92e3aa@35.183.110.236:26656,8b22414f37d381a99ba99cd1edc5b884d43b7e53@65.109.23.114:21556"
+    SNAP_RPC="https://noble-testnet-rpc.polkachu.com:443"
+    ;;
+  -u | --trigger-testnet-upgrade)
+    UPGRADE_ARG="$2"
     shift
+    ;;
+  esac
+  shift
 done
 
-nobled init in-place --chain-id $CHAINID --home $HOME1
+$BIN init in-place --chain-id $CHAINID --home $HOME1
 
-LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height)
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
 sed -i.bak -E "
@@ -48,7 +48,7 @@ s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ;
 s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"| ;
 s|^persistent_peers *=.*|persistent_peers = \"$PEERS\"|" $HOME1/config/config.toml
 
-nobled start --halt-height $LATEST_HEIGHT --home "$HOME1" > "$HOME1/logs.log" 2>&1 &
+$BIN start --halt-height $LATEST_HEIGHT --home "$HOME1" >"$HOME1/logs.log" 2>&1 &
 NOBLED_PID=$!
 
 tail -f "$HOME1/logs.log" &
@@ -60,12 +60,12 @@ echo "Node is synced! Preparing for in-place testnet..."
 sleep 2
 
 # Create operator address that will control the chain
-OPERATOR=$(nobled keys add operator --home $HOME1 --keyring-backend test --output json | jq -r .address)
+OPERATOR=$($BIN keys add operator --home $HOME1 --keyring-backend test --output json | jq -r .address)
 
 if [[ -n "$UPGRADE_ARG" ]]; then
-    printf 'y\n' | nobled in-place-testnet inPlace "$OPERATOR" --trigger-testnet-upgrade "$UPGRADE_ARG" --home "$HOME1" >> "$HOME1/logs.log" 2>&1 &
+  printf 'y\n' | $BIN in-place-testnet inPlace "$OPERATOR" --trigger-testnet-upgrade "$UPGRADE_ARG" --home "$HOME1" >>"$HOME1/logs.log" 2>&1 &
 else
-    printf 'y\n' | nobled in-place-testnet inPlace "$OPERATOR" --home "$HOME1" >> "$HOME1/logs.log" 2>&1 &
+  printf 'y\n' | $BIN in-place-testnet inPlace "$OPERATOR" --home "$HOME1" >>"$HOME1/logs.log" 2>&1 &
 fi
 
 NOBLED_PID2=$!
