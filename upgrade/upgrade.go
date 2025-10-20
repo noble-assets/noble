@@ -32,6 +32,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	authoritykeeper "github.com/noble-assets/authority/keeper"
+	orbiter "github.com/noble-assets/orbiter"
 	orbitertypes "github.com/noble-assets/orbiter/types"
 	orbitercore "github.com/noble-assets/orbiter/types/core"
 )
@@ -58,6 +59,7 @@ func CreateUpgradeHandler(
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 
+		vm[orbitercore.ModuleName] = orbiter.AppModule{}.ConsensusVersion()
 		if module, ok := mm.Modules[orbitercore.ModuleName].(module.HasGenesis); ok {
 			module.InitGenesis(sdkCtx, cdc, orbiterCustomGen(cdc))
 		}
