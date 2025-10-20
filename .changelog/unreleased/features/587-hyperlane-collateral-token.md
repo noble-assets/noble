@@ -1,0 +1,1 @@
+- Enable permissionless Hyperlane collateral token creation. ([#587](https://github.com/noble-assets/noble/pull/587))

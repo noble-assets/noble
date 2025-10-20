@@ -1,0 +1,1 @@
+- Substitute Heighliner with Dockerfile for E2E tests. ([#557](https://github.com/noble-assets/noble/pull/557))
