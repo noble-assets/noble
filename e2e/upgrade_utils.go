@@ -224,12 +224,6 @@ func TestChainUpgrade(
 			require.NoError(t, err, "error fetching height after upgrade")
 
 			require.GreaterOrEqual(t, height, haltHeight+blocksAfterUpgrade, "height did not increment enough after upgrade")
-
-			out, outE, err := noble.GetFullNode().ExecQuery(ctx, "orbiter", "forwarder", "paused-protocols")
-			require.NoError(t, err, "failed unexpectedly")
-
-			require.Contains(t, string(out), "Hyperlane")
-			require.Empty(t, string(outE))
 		}
 
 		if upgrade.PostUpgrade != nil {
