@@ -14,21 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package v12alpha2
 
-import (
-	"fmt"
-	"os"
+// UpgradeName is the name of this specific software upgrade used on-chain.
+const UpgradeName = "v12.0.0-alpha.2"
 
-	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/noble-assets/noble/v12"
-	"github.com/noble-assets/noble/v12/cmd"
-)
-
-func main() {
-	rootCmd := cmd.NewRootCmd()
-	if err := svrcmd.Execute(rootCmd, "", noble.DefaultNodeHome); err != nil {
-		fmt.Fprintln(rootCmd.OutOrStderr(), err)
-		os.Exit(1)
-	}
-}
+// DevnetChainID is the Chain ID of the Noble devnet.
+const DevnetChainID = "duke-1"

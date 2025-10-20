@@ -52,6 +52,7 @@ modules:
           warp,
           ratelimit,
           orbiter,
+          nova,
         ]
       override_store_keys:
         - module_name: auth
@@ -85,6 +86,7 @@ modules:
         - account: dollar/yield
         - account: hyperlane
         - account: warp
+          permissions: [ burner, minter ]
         - account: orbiter
         - account: orbiter/dust_collector
       authority: authority # Utilize our custom x/authority module.
@@ -169,6 +171,7 @@ modules:
       authority: authority # Utilize our custom x/authority module.
       enabled_tokens:
         - 1 # Enable Collateral tokens
+        - 2 # Enable Synthetic tokens
   # Monerium Modules
   - name: florin
     config:
@@ -192,6 +195,10 @@ modules:
   - name: globalfee
     config:
       "@type": noble.globalfee.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+  - name: nova
+    config:
+      "@type": nova.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
   - name: orbiter
     config:

@@ -1,0 +1,26 @@
+{
+  "body": {
+    "messages": [
+      {
+        "@type": "/hyperlane.core.interchain_security.v1.MsgCreateRoutingIsm",
+        "creator": "noble13am065qmk680w86wya4u9refhnssqwcvgs0sfk",
+        "routes": []
+      }
+    ],
+    "memo": "",
+    "timeout_height": "0",
+    "extension_options": [],
+    "non_critical_extension_options": []
+  },
+  "auth_info": {
+    "signer_infos": [],
+    "fee": {
+      "amount": [],
+      "gas_limit": "200000",
+      "payer": "",
+      "granter": ""
+    },
+    "tip": null
+  },
+  "signatures": []
+}

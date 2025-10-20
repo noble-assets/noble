@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Noble API Reference",
-    "version": "11.0.0"
+    "version": "12.0.0"
   },
   "x-tagGroups": [
     {
@@ -78,6 +78,13 @@
         "Authority",
         "Forwarding",
         "Globalfee"
+      ]
+    },
+    {
+      "name": "Nova",
+      "tags": [
+        "Nova",
+        "Nova ISM"
       ]
     },
     {
@@ -635,6 +642,32 @@
       "operationIds": {
         "rename": {
           "PositionsByProvider": "StableswapPositionsByProvider"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/nova/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Nova"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Config": "NovaConfig"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/nova/ism/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "NovaISM"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Paused": "NovaISMPaused"
         }
       }
     },
