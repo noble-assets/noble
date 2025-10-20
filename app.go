@@ -332,7 +332,6 @@ func NewApp(
 					app.DollarKeeper.GetDenom(),              // USDN
 				},
 			})
-
 			if err != nil {
 				return nil, err
 			}
