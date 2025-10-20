@@ -191,7 +191,7 @@ func modifyGenesisAll(nw *NobleWrapper, setupAllCircleRoles bool) func(cc ibc.Ch
 		// For v10.1, we opt to not set this state as these values were hardcoded in the app wiring!
 		if cc.Images[0].Version != "v10.1.1" {
 			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_one_ended", true))
-			updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_two_yield_collector", nw.Authority.FormattedAddress()))
+			// updatedGenesis = append(updatedGenesis, cosmos.NewGenesisKV("app_state.dollar.vaults.season_two_yield_collector", nw.Authority.FormattedAddress()))
 		}
 
 		if setupAllCircleRoles {
