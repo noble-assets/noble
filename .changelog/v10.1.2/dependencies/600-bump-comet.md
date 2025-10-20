@@ -1,0 +1,1 @@
+- Bump CometBFT to [`v0.38.19`](https://github.com/cometbft/cometbft/releases/tag/v0.38.19) to resolve [ASA-2025-003](https://github.com/cometbft/cometbft/security/advisories/GHSA-hrhf-2vcr-ghch) security advisory. ([#600](https://github.com/noble-assets/noble/pull/600))
