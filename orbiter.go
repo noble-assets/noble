@@ -14,21 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package noble
 
 import (
-	"fmt"
-	"os"
-
-	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/noble-assets/noble/v11"
-	"github.com/noble-assets/noble/v11/cmd"
+	orbiter "github.com/noble-assets/orbiter"
 )
 
-func main() {
-	rootCmd := cmd.NewRootCmd()
-	if err := svrcmd.Execute(rootCmd, "", noble.DefaultNodeHome); err != nil {
-		fmt.Fprintln(rootCmd.OutOrStderr(), err)
-		os.Exit(1)
+func (app *App) RegisterOrbiterControllers() {
+	in := orbiter.ComponentsInputs{
+		BankKeeper: app.BankKeeper,
+		CCTPKeeper: app.CCTPKeeper,
+		Orbiters:   app.OrbiterKeeper,
+		WarpKeeper: app.WarpKeeper,
 	}
+
+	orbiter.InjectComponents(in)
 }

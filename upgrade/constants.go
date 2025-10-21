@@ -17,32 +17,22 @@
 package upgrade
 
 // UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "stratum"
+const UpgradeName = "v11.0.0-rc.1"
 
 // UpgradeASCII is the ASCII art shown to node operators upon successful upgrade.
 const UpgradeASCII = `
 
-	███████╗████████╗██████╗  █████╗ ████████╗██╗   ██╗███╗   ███╗
-	██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██║   ██║████╗ ████║
-	███████╗   ██║   ██████╔╝███████║   ██║   ██║   ██║██╔████╔██║
-	╚════██║   ██║   ██╔══██╗██╔══██║   ██║   ██║   ██║██║╚██╔╝██║
-	███████║   ██║   ██║  ██║██║  ██║   ██║   ╚██████╔╝██║ ╚═╝ ██║
-	╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝
+	███████╗██╗     ██╗   ██╗██╗  ██╗
+	██╔════╝██║     ██║   ██║╚██╗██╔╝
+	█████╗  ██║     ██║   ██║ ╚███╔╝ 
+	██╔══╝  ██║     ██║   ██║ ██╔██╗ 
+	██║     ███████╗╚██████╔╝██╔╝ ██╗
+	╚═╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
 
 `
 
 // TestnetChainID is the Chain ID of the Noble testnet.
 const TestnetChainID = "grand-1"
 
-// TestnetHyperlaneDomain is the Hyperlane domain of the Noble testnet.
-// Generated from: console.log(parseInt('0x'+Buffer.from('GRAN').toString('hex')))
-// We truncate "GRAND" to "GRAN" to not exceed the uint32 maximum.
-const TestnetHyperlaneDomain = 1196573006
-
 // MainnetChainID is the Chain ID of the Noble mainnet.
 const MainnetChainID = "noble-1"
-
-// MainnetHyperlaneDomain is the Hyperlane domain of the Noble mainnet.
-// Generated from: console.log(parseInt('0x'+Buffer.from('NOBL').toString('hex')))
-// We truncate "NOBLE" to "NOBL" to not exceed the uint32 maximum.
-const MainnetHyperlaneDomain = 1313817164

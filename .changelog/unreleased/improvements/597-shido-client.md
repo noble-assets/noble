@@ -1,0 +1,1 @@
+- Recover expired Shido IBC light client, `07-tendermint-106` → `07-tendermint-186` ([#597](https://github.com/noble-assets/noble/pull/597))

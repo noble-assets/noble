@@ -17,7 +17,6 @@
 package noble
 
 import (
-	"context"
 	_ "embed"
 	"fmt"
 	"io"
@@ -49,9 +48,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authoritytypes "github.com/noble-assets/authority/types"
 	forwardingtypes "github.com/noble-assets/forwarding/v2/types"
-	"github.com/noble-assets/noble/v10/api"
-	"github.com/noble-assets/noble/v10/jester"
-	"github.com/noble-assets/noble/v10/upgrade"
+	"github.com/noble-assets/noble/v11/api"
+	"github.com/noble-assets/noble/v11/jester"
+	"github.com/noble-assets/noble/v11/upgrade"
 	"github.com/spf13/cast"
 
 	_ "cosmossdk.io/x/evidence"
@@ -76,6 +75,7 @@ import (
 	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
+	_ "github.com/noble-assets/orbiter"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
@@ -129,6 +129,7 @@ import (
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
+	orbiterkeeper "github.com/noble-assets/orbiter/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )
@@ -187,6 +188,7 @@ type App struct {
 	DollarKeeper     *dollarkeeper.Keeper
 	ForwardingKeeper *forwardingkeeper.Keeper
 	GlobalFeeKeeper  *globalfeekeeper.Keeper
+	OrbiterKeeper    *orbiterkeeper.Keeper
 	SwapKeeper       *swapkeeper.Keeper
 	WormholeKeeper   *wormholekeeper.Keeper
 }
@@ -269,6 +271,7 @@ func NewApp(
 		&app.DollarKeeper,
 		&app.ForwardingKeeper,
 		&app.GlobalFeeKeeper,
+		&app.OrbiterKeeper,
 		&app.SwapKeeper,
 		&app.WormholeKeeper,
 	); err != nil {
@@ -276,6 +279,8 @@ func NewApp(
 	}
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+
+	app.RegisterOrbiterControllers()
 
 	if err := app.RegisterLegacyModules(); err != nil {
 		return nil, err
@@ -298,6 +303,7 @@ func NewApp(
 		},
 		cdc:              app.appCodec,
 		BankKeeper:       app.BankKeeper,
+		DollarKeeper:     app.DollarKeeper,
 		ForwardingKeeper: app.ForwardingKeeper,
 		FTFKeeper:        app.FTFKeeper,
 		IBCKeeper:        app.IBCKeeper,
@@ -497,8 +503,6 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.BankKeeper,
 			app.IBCKeeper.ClientKeeper,
 			app.DollarKeeper,
-			app.HyperlaneKeeper,
-			app.SwapKeeper,
 		),
 	)
 
@@ -513,17 +517,6 @@ func (app *App) RegisterUpgradeHandler() error {
 	if upgradeInfo.Name == upgrade.UpgradeName {
 		app.SetStoreLoader(upgrade.CreateStoreLoader(upgradeInfo.Height))
 	}
-
-	// To use v10.0.1 on both testnet and mainnet, we need to register an empty
-	// handler for the last performed testnet upgrade.
-	//
-	// ABF150C8FC258035809E9223A7DBE2EEE2960795301D4742B10B4C2B05A06BCD
-	app.UpgradeKeeper.SetUpgradeHandler(
-		"v10.0.0-rc.3",
-		func(_ context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-			return vm, nil
-		},
-	)
 
 	return nil
 }
