@@ -15,7 +15,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/upgrade v0.1.4
-	dollar.noble.xyz/v2 v2.2.0-rc.0
+	dollar.noble.xyz/v2 v2.2.0
 	github.com/bcp-innovations/hyperlane-cosmos v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
@@ -33,7 +33,7 @@ require (
 	github.com/noble-assets/forwarding/v2 v2.0.3
 	github.com/noble-assets/globalfee v1.0.1
 	github.com/noble-assets/halo/v2 v2.0.1
-	github.com/noble-assets/orbiter v1.0.0-rc.1
+	github.com/noble-assets/orbiter v1.0.0
 	github.com/noble-assets/wormhole v1.0.0
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
 	github.com/spf13/cast v1.8.0

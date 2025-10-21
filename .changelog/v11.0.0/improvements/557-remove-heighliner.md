@@ -1,0 +1,1 @@
+- Remove Heighliner with a Dockerfile in E2E and build environments. ([#557](https://github.com/noble-assets/noble/pull/557))

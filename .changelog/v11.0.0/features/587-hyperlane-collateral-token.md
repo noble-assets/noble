@@ -1,0 +1,1 @@
+- Enable permissionless Hyperlane collateral token creation, for all assets except $USDN. ([#587](https://github.com/noble-assets/noble/pull/587))
