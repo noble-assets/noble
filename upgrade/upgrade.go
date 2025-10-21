@@ -79,7 +79,7 @@ func CreateUpgradeHandler(
 		// of this software upgrade.
 		err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-136", "07-tendermint-192")
 		if err != nil {
-			logger.Error("unabled to recover router_9600-1 light client", "err", err)
+			logger.Error("unable to recover router_9600-1 light client", "err", err)
 		}
 		err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-106", "07-tendermint-186")
 		if err != nil {

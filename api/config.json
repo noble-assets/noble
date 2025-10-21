@@ -90,6 +90,7 @@
     {
       "name": "Orbiter",
       "tags": [
+        "Orbiter",
         "Orbiter Adapter",
         "Orbiter Dispatcher",
         "Orbiter Executor",
@@ -571,6 +572,14 @@
       "tags": {
         "rename": {
           "Query": "Globalfee"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/orbiter/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Orbiter"
         }
       }
     },

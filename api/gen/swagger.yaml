@@ -60,6 +60,7 @@ x-tagGroups:
       - Aura Blocklist
   - name: Orbiter
     tags:
+      - Orbiter
       - Orbiter Adapter
       - Orbiter Dispatcher
       - Orbiter Executor
@@ -49396,6 +49397,72 @@ paths:
                   additionalProperties: {}
       tags:
         - Globalfee
+  /noble/orbiter/v1/identifiers/actions:
+    get:
+      operationId: ActionIDs
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              action_ids:
+                type: object
+                additionalProperties:
+                  type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Orbiter
+  /noble/orbiter/v1/identifiers/protocols:
+    get:
+      operationId: ProtocolIDs
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              protocol_ids:
+                type: object
+                additionalProperties:
+                  type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Orbiter
   /noble/orbiter/adapter/v1/params:
     get:
       summary: Params retrieves the adapter component parameters.
@@ -80278,6 +80345,20 @@ definitions:
 
             NOTE: The amount field is an Dec which implements the custom method
             signatures required by gogoproto.
+  noble.orbiter.v1.QueryActionIDsResponse:
+    type: object
+    properties:
+      action_ids:
+        type: object
+        additionalProperties:
+          type: string
+  noble.orbiter.v1.QueryProtocolIDsResponse:
+    type: object
+    properties:
+      protocol_ids:
+        type: object
+        additionalProperties:
+          type: string
   noble.orbiter.component.adapter.v1.Params:
     type: object
     properties:
