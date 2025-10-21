@@ -1,0 +1,1 @@
+- Recover expired Router IBC light client, `07-tendermint-136` → `07-tendermint-192` ([#603](https://github.com/noble-assets/noble/pull/603))

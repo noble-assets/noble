@@ -1,0 +1,1 @@
+- Claim `x/distribution` module funds via upgrade handler that were stuck after its removal. ([#571](https://github.com/noble-assets/noble/pull/571))

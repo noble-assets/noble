@@ -91,12 +91,8 @@ swagger:
 ###############################################################################
 
 local-image:
-ifeq (,$(shell which heighliner))
-	@echo heighliner not found. https://github.com/strangelove-ventures/heighliner
-else
 	@echo "🤖 Building image..."
-	@heighliner build --chain noble --local
+	@docker build -t noble:local .
 	@echo "✅ Completed build!"
-endif
 
 .PHONY: license format lint build install local-image

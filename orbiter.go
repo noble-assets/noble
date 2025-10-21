@@ -14,27 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package e2e_test
+package noble
 
 import (
-	"testing"
-
-	"github.com/noble-assets/noble/e2e"
+	orbiter "github.com/noble-assets/orbiter"
 )
 
-func TestChainUpgrade(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
+func (app *App) RegisterOrbiterControllers() {
+	in := orbiter.ComponentsInputs{
+		BankKeeper: app.BankKeeper,
+		CCTPKeeper: app.CCTPKeeper,
+		Orbiters:   app.OrbiterKeeper,
+		WarpKeeper: app.WarpKeeper,
 	}
 
-	genesisVersion := "v10.1.2"
-
-	upgrades := []e2e.ChainUpgrade{
-		{
-			Image:       e2e.LocalImages[0],
-			UpgradeName: "flux",
-		},
-	}
-
-	e2e.TestChainUpgrade(t, genesisVersion, upgrades, false)
+	orbiter.InjectComponents(in)
 }

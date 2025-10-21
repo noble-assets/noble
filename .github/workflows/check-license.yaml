@@ -1,4 +1,4 @@
-name: Check Licenses
+name: Check License
 on:
   pull_request:
 

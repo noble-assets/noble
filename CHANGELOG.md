@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## v11.0.0
+
+*Oct 21, 2025*
+
+This is the Flux major release of Noble. It introduces the [Orbiter](https://github.com/noble-assets/orbiter) module, that is a new system for cross-chain interoperability.
+
+This and other notable changes are documented below.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v2.2.0`](https://github.com/noble-assets/dollar/releases/tag/v2.2.0) to migrate Points Season Two configuration values to state. ([#573](https://github.com/noble-assets/noble/pull/573))
+
+### FEATURES
+
+- Integrate Orbiter module, that introduces a new system for cross-chain interoperability. ([#576](https://github.com/noble-assets/noble/pull/576))
+- Enable permissionless Hyperlane collateral token creation, for all assets except $USDN. ([#587](https://github.com/noble-assets/noble/pull/587))
+
+### IMPROVEMENTS
+
+- Remove Heighliner with a Dockerfile in E2E and build environments. ([#557](https://github.com/noble-assets/noble/pull/557))
+- Update module path for v11 release line. ([#564](https://github.com/noble-assets/noble/pull/564))
+- Claim `x/distribution` module funds via upgrade handler that were stuck after its removal. ([#571](https://github.com/noble-assets/noble/pull/571))
+- Recover expired Shido IBC light client, `07-tendermint-106` → `07-tendermint-186` ([#597](https://github.com/noble-assets/noble/pull/597))
+- Recover expired Router IBC light client, `07-tendermint-136` → `07-tendermint-192` ([#603](https://github.com/noble-assets/noble/pull/603))
+
 ## v10.1.2
 
 *Oct 14, 2025*
