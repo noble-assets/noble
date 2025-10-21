@@ -1,1 +1,0 @@
-- Bump Dollar to [`v2.1.1`](https://github.com/noble-assets/dollar/releases/tag/v2.1.1) to migrate Points Season Two configuration values to state. ([#573](https://github.com/noble-assets/noble/pull/573))
