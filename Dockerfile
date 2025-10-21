@@ -16,7 +16,7 @@ COPY . .
 # https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide
 ARG TARGETOS TARGETARCH
 
-RUN CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH LDFLAGS='-linkmode external -extldflags "-static"' make build
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH LDFLAGS='-extldflags "-static"' make build
 
 FROM alpine:3
 
