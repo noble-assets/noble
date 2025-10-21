@@ -1,1 +1,0 @@
-- Make the binary built in the release statically linked. ([#594](https://github.com/noble-assets/noble/pull/594))
