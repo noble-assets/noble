@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v11.0.1
+
+*Oct 21, 2025*
+
+This is a non-consensus breaking patch to the v11 Flux release line.
+
+No core code changes are made in this patch.
+
+### IMPROVEMENTS
+
+- Ensure binaries included in releases are statically linked. ([#605](https://github.com/noble-assets/noble/pull/605))
+
 ## v11.0.0
 
 *Oct 21, 2025*
