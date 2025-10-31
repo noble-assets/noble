@@ -24,7 +24,7 @@ import (
 	swaptypes "swap.noble.xyz/types"
 	stableswaptypes "swap.noble.xyz/types/stableswap"
 
-	"github.com/noble-assets/noble/v11/upgrade"
+	"github.com/noble-assets/noble/v12/upgrade"
 )
 
 // PermissionedAccount is the account allowed to perform liquidity actions on Noble.
