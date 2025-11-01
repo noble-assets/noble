@@ -1,0 +1,1 @@
+- Configure the default Hyperlane ISM for HyperEVM via upgrade handler. ([#607](https://github.com/noble-assets/noble/pull/607))
