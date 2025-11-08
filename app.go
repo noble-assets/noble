@@ -475,13 +475,6 @@ func (app *App) RegisterUpgradeHandler() error {
 		upgrade.CreateUpgradeHandler(
 			app.ModuleManager,
 			app.Configurator(),
-			app.appCodec,
-			app.Logger(),
-			app.AccountKeeper.AddressCodec(),
-			app.AuthorityKeeper,
-			app.BankKeeper,
-			app.IBCKeeper.ClientKeeper,
-			app.DollarKeeper,
 		),
 	)
 
