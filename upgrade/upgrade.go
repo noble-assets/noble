@@ -19,6 +19,7 @@ package upgrade
 import (
 	"context"
 
+	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
@@ -26,12 +27,15 @@ import (
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
+	logger log.Logger,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
 		if err != nil {
 			return vm, err
 		}
+
+		logger.Info(UpgradeASCII)
 
 		return vm, nil
 	}
