@@ -72,7 +72,7 @@ import (
 	_ "github.com/noble-assets/forwarding/v2"
 	"github.com/noble-assets/globalfee"
 	_ "github.com/noble-assets/halo/v2"
-	_ "github.com/noble-assets/orbiter"
+	_ "github.com/noble-assets/orbiter/v2"
 	_ "github.com/noble-assets/wormhole"
 	_ "github.com/ondoprotocol/usdy-noble/v2"
 	_ "swap.noble.xyz"
@@ -126,7 +126,7 @@ import (
 	authoritykeeper "github.com/noble-assets/authority/keeper"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	globalfeekeeper "github.com/noble-assets/globalfee/keeper"
-	orbiterkeeper "github.com/noble-assets/orbiter/keeper"
+	orbiterkeeper "github.com/noble-assets/orbiter/v2/keeper"
 	wormholekeeper "github.com/noble-assets/wormhole/keeper"
 	swapkeeper "swap.noble.xyz/keeper"
 )

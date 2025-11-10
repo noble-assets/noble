@@ -18,16 +18,22 @@ package upgrade
 
 import (
 	"context"
+	"errors"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	oriterkeeper "github.com/noble-assets/orbiter/v2/keeper"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	addressCodec address.Codec,
+	orbiterKeeper *oriterkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -35,8 +41,25 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		cachedCtx, writeCache := sdkCtx.CacheContext()
+		err = updateOrbiterStats(cachedCtx, *orbiterKeeper)
+		if err != nil {
+			return vm, err
+		}
+		writeCache()
+
 		logger.Info(UpgradeASCII)
 
 		return vm, nil
 	}
+}
+
+func updateOrbiterStats(ctx context.Context, orbiterKeeper oriterkeeper.Keeper) error {
+	dispatcher := orbiterKeeper.Dispatcher()
+	if dispatcher == nil {
+		return errors.New("received nil orbiter dispatcher component")
+	}
+
+	return nil
 }
