@@ -138,7 +138,7 @@ func updateDispatchedAmounts(
 
 		// The only available route so far is IBC to CCTP. Since CCTP supports only USDC, we can
 		// skip it since it is the correct denom.
-		isWrongDenom := entry.Denom == expectedDenom
+		isWrongDenom := entry.Denom != expectedDenom
 
 		if !isWrongChannelID && !isWrongDenom {
 			// Source protocol is always IBC and destination is always CCTP
@@ -151,7 +151,11 @@ func updateDispatchedAmounts(
 			)
 			continue
 		}
-		logger.Debug("handling dispatched amounts entry",
+		if !isWrongChannelID {
+			correctChannel = entry.SourceId.GetCounterpartyId()
+		}
+
+		logger.Error("handling dispatched amounts entry",
 			"src_counterparty_id", entry.SourceId.GetCounterpartyId(),
 			"dst_countertparty_id", entry.DestinationId.GetCounterpartyId(),
 			"denom", entry.Denom,
