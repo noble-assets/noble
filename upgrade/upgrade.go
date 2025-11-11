@@ -25,6 +25,8 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	oriterkeeper "github.com/noble-assets/orbiter/v2/keeper"
 	dispatchercomp "github.com/noble-assets/orbiter/v2/keeper/component/dispatcher"
 	orbitercore "github.com/noble-assets/orbiter/v2/types/core"
@@ -34,6 +36,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	accountKeeper *authkeeper.AccountKeeper,
 	orbiterKeeper *oriterkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -50,10 +53,37 @@ func CreateUpgradeHandler(
 		}
 		writeCache()
 
+		cachedCtx, writeCache = sdkCtx.CacheContext()
+		err = updateOrbiterModuleAccounts(cachedCtx, logger, *accountKeeper)
+		if err != nil {
+			return vm, fmt.Errorf("failed to updated Orbiter module accounts: %w", err)
+		}
+		writeCache()
+
 		logger.Info(UpgradeASCII)
 
 		return vm, nil
 	}
+}
+
+func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeeper authkeeper.AccountKeeper) error {
+	for _, name := range []string{orbitercore.ModuleName, orbitercore.DustCollectorName} {
+
+		addr, perms := accountKeeper.GetModuleAddressAndPermissions(name)
+		if addr == nil {
+			return nil
+		}
+		acc := accountKeeper.GetAccount(ctx, addr)
+		baseAcc, ok := (acc).(*authtypes.BaseAccount)
+		if !ok {
+			return fmt.Errorf("error creating the base account for %s", name)
+		}
+
+		macc := authtypes.NewModuleAccount(baseAcc, name, perms...)
+		accountKeeper.SetModuleAccount(ctx, macc)
+	}
+
+	return nil
 }
 
 func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *oriterkeeper.Keeper) error {
