@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 
-	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,7 +34,6 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
-	addressCodec address.Codec,
 	orbiterKeeper *oriterkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
