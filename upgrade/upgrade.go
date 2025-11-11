@@ -81,7 +81,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 			if ok {
 				continue
 			}
-			return fmt.Errorf("error creating the base account for %s", name)
+			return fmt.Errorf("error creating the base account for %s: %T", name, acc)
 		}
 
 		macc := authtypes.NewModuleAccount(baseAcc, name, perms...)
