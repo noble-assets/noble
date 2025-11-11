@@ -71,11 +71,16 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 
 		addr, perms := accountKeeper.GetModuleAddressAndPermissions(name)
 		if addr == nil {
-			return nil
+			return fmt.Errorf("failed to get module address and permissions for %s", name)
 		}
+
 		acc := accountKeeper.GetAccount(ctx, addr)
 		baseAcc, ok := (acc).(*authtypes.BaseAccount)
 		if !ok {
+			_, ok := (acc).(*authtypes.ModuleAccount)
+			if ok {
+				continue
+			}
 			return fmt.Errorf("error creating the base account for %s", name)
 		}
 
