@@ -16,9 +16,7 @@
 
 package noble
 
-import (
-	orbiter "github.com/noble-assets/orbiter/v2"
-)
+import orbiter "github.com/noble-assets/orbiter/v2"
 
 func (app *App) RegisterOrbiterControllers() {
 	in := orbiter.ComponentsInputs{

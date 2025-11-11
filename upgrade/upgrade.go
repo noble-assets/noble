@@ -27,7 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	oriterkeeper "github.com/noble-assets/orbiter/v2/keeper"
+	orbiterkeeper "github.com/noble-assets/orbiter/v2/keeper"
 	dispatchercomp "github.com/noble-assets/orbiter/v2/keeper/component/dispatcher"
 	orbitercore "github.com/noble-assets/orbiter/v2/types/core"
 )
@@ -37,7 +37,7 @@ func CreateUpgradeHandler(
 	cfg module.Configurator,
 	logger log.Logger,
 	accountKeeper *authkeeper.AccountKeeper,
-	orbiterKeeper *oriterkeeper.Keeper,
+	orbiterKeeper *orbiterkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -110,7 +110,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 //     id ON Noble (this error applies only for testnet since it is caused by the beta release)
 //  2. Use the denom representation on Noble and not the IBC one. This means converting this
 //     transfer/channel-4280/uusdc into uusdc
-func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *oriterkeeper.Keeper) error {
+func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orbiterkeeper.Keeper) error {
 	expectedDenom := "uusdc"
 	var channelsToCorrect map[string]string
 	switch ctx.ChainID() {
