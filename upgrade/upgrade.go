@@ -75,6 +75,10 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 		}
 
 		acc := accountKeeper.GetAccount(ctx, addr)
+		if acc == nil {
+			continue
+		}
+
 		baseAcc, ok := (acc).(*authtypes.BaseAccount)
 		if !ok {
 			_, ok := (acc).(*authtypes.ModuleAccount)
