@@ -66,6 +66,9 @@ func CreateUpgradeHandler(
 	}
 }
 
+// The Orbiter module and dust collector accounts should be module accounts. If they received funds
+// before the v11 upgrade, they remained stored as base account. This causes the query to the module
+// account to fail. This handler migrate them to module accounts.
 func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeeper authkeeper.AccountKeeper) error {
 	for _, name := range []string{orbitercore.ModuleName, orbitercore.DustCollectorName} {
 
@@ -74,6 +77,9 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 			return fmt.Errorf("failed to get module address and permissions for %s", name)
 		}
 
+		// Module account registration is lazy. When we run this function without real mainnet or
+		// testnet data, the query will return `nil` because the modules are not registered yet.
+		// We should skip this situation to perform e2e upgrade tests.
 		acc := accountKeeper.GetAccount(ctx, addr)
 		if acc == nil {
 			continue
@@ -81,10 +87,13 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 
 		baseAcc, ok := (acc).(*authtypes.BaseAccount)
 		if !ok {
+			// We should skip the case in which the address is already associated with a module
+			// address.
 			_, ok := (acc).(*authtypes.ModuleAccount)
 			if ok {
 				continue
 			}
+			// If we are very unlucky...
 			return fmt.Errorf("error creating the base account for %s: %T", name, acc)
 		}
 
@@ -95,6 +104,12 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 	return nil
 }
 
+// updateOrbiterStats updates the statistics of the Orbiter module to improve readability of the
+// denom and fix the used couterparty id. We have two cases to fix here:
+//  1. Update entries that use the countertparty channel id OF Noble with the counterparty channel
+//     id ON Noble (this error applies only for testnet since it is caused by the beta release)
+//  2. Use the denom representation on Noble and not the IBC one. This means converting this
+//     transfer/channel-4280/uusdc into uusdc
 func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *oriterkeeper.Keeper) error {
 	expectedDenom := "uusdc"
 	var channelsToCorrect map[string]string
@@ -109,6 +124,8 @@ func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orite
 			"channel-3":    "channel-333", // ???
 			"channel-496":  "channel-43",  // neutron
 		}
+	default:
+		return nil
 	}
 
 	dispatcher := orbiterKeeper.Dispatcher()
@@ -140,12 +157,15 @@ func updateDispatchedAmounts(
 	for _, entry := range amounts {
 		correctChannel, isWrongChannelID := channelsToCorrect[entry.SourceId.GetCounterpartyId()]
 
-		// The only available route so far is IBC to CCTP. Since CCTP supports only USDC, we can
-		// skip it since it is the correct denom.
+		// The only available route so far is IBC to CCTP. Since CCTP supports only USDC, we have
+		// to update all the denoms to USDC.
 		isWrongDenom := entry.Denom != expectedDenom
 
+		// If the channel is not in the wrong channel list, or the denom is USDC, then the entry is
+		// correct. We basically skip all the entries with 0 incoming dispatched amount but a non
+		// zero outgoing amount.
 		if !isWrongChannelID && !isWrongDenom {
-			// Source protocol is always IBC and destination is always CCTP
+			// Source protocol is always IBC and destination is always CCTP, no need to log them.
 			logger.Debug("skipping dispatched amounts entry",
 				"src_counterparty_id", entry.SourceId.GetCounterpartyId(),
 				"dst_countertparty_id", entry.DestinationId.GetCounterpartyId(),
@@ -155,11 +175,15 @@ func updateDispatchedAmounts(
 			)
 			continue
 		}
+
+		// One of the situations to fix, is with a correct channel ID but a wrong denom. Since the
+		// correct channel ID is not in the map, we have to use the values of the entry, otherwise
+		// it will use the empty string from the miss in the map.
 		if !isWrongChannelID {
 			correctChannel = entry.SourceId.GetCounterpartyId()
 		}
 
-		logger.Error("handling dispatched amounts entry",
+		logger.Debug("handling dispatched amounts entry",
 			"src_counterparty_id", entry.SourceId.GetCounterpartyId(),
 			"dst_countertparty_id", entry.DestinationId.GetCounterpartyId(),
 			"denom", entry.Denom,
@@ -211,6 +235,7 @@ func updateDispatchedCounts(
 	for _, entry := range counts {
 		correctChannel, isWrongChannelID := channelsToCorrect[entry.SourceId.GetCounterpartyId()]
 
+		// If the channel is not wrong, then we don't have to do anything.
 		if !isWrongChannelID {
 			// Source protocol is always IBC and destination is always CCTP
 			logger.Debug("skipping dispatched counts entry",
