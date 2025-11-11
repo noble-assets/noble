@@ -121,7 +121,7 @@ func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orite
 		channelsToCorrect = map[string]string{
 			"channel-4280": "channel-22",  // osmosis
 			"channel-27":   "channel-639", // namada
-			"channel-3":    "channel-333", // ???
+			"channel-3":    "channel-333", // xion
 			"channel-496":  "channel-43",  // neutron
 		}
 	default:
