@@ -49,16 +49,18 @@ func CreateUpgradeHandler(
 		cachedCtx, writeCache := sdkCtx.CacheContext()
 		err = updateOrbiterStats(cachedCtx, logger, orbiterKeeper)
 		if err != nil {
-			return vm, fmt.Errorf("failed to updated Orbiter stats: %w", err)
+			logger.Error("failed to updated Orbiter stats", "error", err)
+		} else {
+			writeCache()
 		}
-		writeCache()
 
 		cachedCtx, writeCache = sdkCtx.CacheContext()
 		err = updateOrbiterModuleAccounts(cachedCtx, logger, *accountKeeper)
 		if err != nil {
-			return vm, fmt.Errorf("failed to updated Orbiter module accounts: %w", err)
+			logger.Error("failed to updated Orbiter module accounts", "error", err)
+		} else {
+			writeCache()
 		}
-		writeCache()
 
 		logger.Info(UpgradeASCII)
 
@@ -68,10 +70,9 @@ func CreateUpgradeHandler(
 
 // The Orbiter module and dust collector accounts should be module accounts. If they received funds
 // before the v11 upgrade, they remained stored as base account. This causes the query to the module
-// account to fail. This handler migrate them to module accounts.
+// account to fail. This handler migrates them to module accounts.
 func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeeper authkeeper.AccountKeeper) error {
 	for _, name := range []string{orbitercore.ModuleName, orbitercore.DustCollectorName} {
-
 		addr, perms := accountKeeper.GetModuleAddressAndPermissions(name)
 		if addr == nil {
 			return fmt.Errorf("failed to get module address and permissions for %s", name)
@@ -91,6 +92,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 			// address.
 			_, ok := (acc).(*authtypes.ModuleAccount)
 			if ok {
+				logger.Debug("skip migration since account is already a module account", "module_name", name, "address", addr.String())
 				continue
 			}
 			// If we are very unlucky...
@@ -99,6 +101,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 
 		macc := authtypes.NewModuleAccount(baseAcc, name, perms...)
 		accountKeeper.SetModuleAccount(ctx, macc)
+		logger.Debug("base account migrated to module account", "module_name", name, "address", addr.String())
 	}
 
 	return nil
@@ -114,10 +117,8 @@ func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orbit
 	expectedDenom := "uusdc"
 	var channelsToCorrect map[string]string
 	switch ctx.ChainID() {
-	case MainnetChainID:
-		return nil
 	case TestnetChainID:
-		// Counterparty channel to Nolbe -> Noble to counterparty channel.
+		// Counterparty channel to Noble -> Noble to counterparty channel.
 		channelsToCorrect = map[string]string{
 			"channel-4280": "channel-22",  // osmosis
 			"channel-27":   "channel-639", // namada
@@ -154,6 +155,8 @@ func updateDispatchedAmounts(
 	dispatcher *dispatchercomp.Dispatcher,
 ) error {
 	amounts := dispatcher.GetAllDispatchedAmounts(ctx)
+
+	var numDenomUpdated, numChannelUpdated int
 	for _, entry := range amounts {
 		correctChannel, isWrongChannelID := channelsToCorrect[entry.SourceId.GetCounterpartyId()]
 
@@ -181,6 +184,9 @@ func updateDispatchedAmounts(
 		// it will use the empty string from the miss in the map.
 		if !isWrongChannelID {
 			correctChannel = entry.SourceId.GetCounterpartyId()
+			numDenomUpdated += 1
+		} else {
+			numChannelUpdated += 1
 		}
 
 		logger.Debug("handling dispatched amounts entry",
@@ -222,6 +228,8 @@ func updateDispatchedAmounts(
 		}
 	}
 
+	logger.Debug("completed stats denom update", "updated_entries", numDenomUpdated)
+	logger.Debug("completed stats channel update", "updated_entries", numDenomUpdated)
 	return nil
 }
 
@@ -232,6 +240,8 @@ func updateDispatchedCounts(
 	dispatcher *dispatchercomp.Dispatcher,
 ) error {
 	counts := dispatcher.GetAllDispatchedCounts(ctx)
+
+	var numCountsUpdated int
 	for _, entry := range counts {
 		correctChannel, isWrongChannelID := channelsToCorrect[entry.SourceId.GetCounterpartyId()]
 
@@ -273,7 +283,10 @@ func updateDispatchedCounts(
 		if err != nil {
 			return fmt.Errorf("failed to update the dispatched counts in state: %w", err)
 		}
+
+		numCountsUpdated += 1
 	}
+	logger.Debug("completed stats counts update", "updated_entries", numCountsUpdated)
 
 	return nil
 }
