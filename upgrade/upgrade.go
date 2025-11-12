@@ -117,6 +117,8 @@ func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orbit
 	expectedDenom := "uusdc"
 	var channelsToCorrect map[string]string
 	switch ctx.ChainID() {
+	case MainnetChainID:
+		// No-op for mainnet since channels are correct there.
 	case TestnetChainID:
 		// Counterparty channel to Noble -> Noble to counterparty channel.
 		channelsToCorrect = map[string]string{
