@@ -115,7 +115,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 //     transfer/channel-4280/uusdc into uusdc
 func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orbiterkeeper.Keeper) error {
 	expectedDenom := "uusdc"
-	var channelsToCorrect map[string]string
+	channelsToCorrect := make(map[string]string, 0)
 	switch ctx.ChainID() {
 	case MainnetChainID:
 		// No-op for mainnet since channels are correct there.
