@@ -15,7 +15,7 @@ buf export buf.build/noble-assets/florin:v2.0.0 --output api/proto
 buf export buf.build/noble-assets/forwarding:v2.0.3 --output api/proto
 buf export buf.build/noble-assets/globalfee:v1.0.1 --output api/proto
 buf export buf.build/noble-assets/halo:v2.0.1 --output api/proto
-buf export buf.build/noble-assets/orbiter:v2.0.0-rc.1 --output api/proto
+buf export buf.build/noble-assets/orbiter:v2.0.0 --output api/proto
 buf export buf.build/noble-assets/rate-limiting:v8.0.0 --output api/proto
 buf export buf.build/noble-assets/swap:v1.0.2 --output api/proto
 buf export buf.build/noble-assets/wormhole:v1.0.0 --output api/proto

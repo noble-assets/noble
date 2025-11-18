@@ -1136,6 +1136,8 @@ github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-
 github.com/noble-assets/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0-noble/go.mod h1:O5H9Ic3Pe6cmJn1eqlj5N48sLb8WQ1VWmDP4/11g/4E=
 github.com/noble-assets/orbiter/v2 v2.0.0-rc.1 h1:Adq9PX8JBLR5KKRDFnqVBYV4gPeqSxErfCYcziBPHAc=
 github.com/noble-assets/orbiter/v2 v2.0.0-rc.1/go.mod h1:9Ys1x5gMEDvrKAKIWE0RVW5VMejATuHIgCbF80WanNI=
+github.com/noble-assets/orbiter/v2 v2.0.0 h1:ODywPF7fGAcErw+RxU6UVH0B/mdBgWkzxav5uxjWuzs=
+github.com/noble-assets/orbiter/v2 v2.0.0/go.mod h1:9Ys1x5gMEDvrKAKIWE0RVW5VMejATuHIgCbF80WanNI=
 github.com/noble-assets/wormhole v1.0.0 h1:c3otKgRv6Am4IoB/Vob2ziom02Ptpzv8R1/OtM2gxxI=
 github.com/noble-assets/wormhole v1.0.0/go.mod h1:s7T9FC+bxHwlLED8pmXumdqwhr56CGJqTdhhcIj4A/Q=
 github.com/nunnatsa/ginkgolinter v0.16.2 h1:8iLqHIZvN4fTLDC0Ke9tbSZVcyVHoBs0HIbnVSxfHJk=
