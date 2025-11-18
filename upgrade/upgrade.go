@@ -92,7 +92,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 			// address.
 			_, ok := (acc).(*authtypes.ModuleAccount)
 			if ok {
-				logger.Debug("skip migration since account is already a module account", "module_name", name, "address", addr.String())
+				logger.Info(fmt.Sprintf("skipped migration of %s, already a module account", name), "address", addr.String())
 				continue
 			}
 			// If we are very unlucky...
@@ -101,7 +101,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 
 		macc := authtypes.NewModuleAccount(baseAcc, name, perms...)
 		accountKeeper.SetModuleAccount(ctx, macc)
-		logger.Debug("base account migrated to module account", "module_name", name, "address", addr.String())
+		logger.Info(fmt.Sprintf("migrated %s to a module account", name), "address", addr.String())
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func updateOrbiterModuleAccounts(ctx sdk.Context, logger log.Logger, accountKeep
 //     transfer/channel-4280/uusdc into uusdc
 func updateOrbiterStats(ctx sdk.Context, logger log.Logger, orbiterKeeper *orbiterkeeper.Keeper) error {
 	expectedDenom := "uusdc"
-	channelsToCorrect := make(map[string]string, 0)
+	channelsToCorrect := make(map[string]string)
 	switch ctx.ChainID() {
 	case MainnetChainID:
 		// No-op for mainnet since channels are correct there.
@@ -230,8 +230,8 @@ func updateDispatchedAmounts(
 		}
 	}
 
-	logger.Debug("completed stats denom update", "updated_entries", numDenomUpdated)
-	logger.Debug("completed stats channel update", "updated_entries", numDenomUpdated)
+	logger.Info("completed orbiter stats denom update", "updated_entries", numDenomUpdated)
+	logger.Info("completed orbiter stats channel update", "updated_entries", numChannelUpdated)
 	return nil
 }
 
@@ -288,7 +288,7 @@ func updateDispatchedCounts(
 
 		numCountsUpdated += 1
 	}
-	logger.Debug("completed stats counts update", "updated_entries", numCountsUpdated)
+	logger.Info("completed orbiter stats counts update", "updated_entries", numCountsUpdated)
 
 	return nil
 }
