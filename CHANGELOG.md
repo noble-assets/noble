@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v11.1.0
+
+*Nov 19, 2025*
+
+This is a minor release to the v11 Flux line, codenamed Pulse.
+
+### DEPENDENCIES
+
+- Bump Orbiter to [`v2.0.0`](https://github.com/noble-assets/orbiter/releases/tag/v2.0.0) to support a fixed amount fee and improve stats. ([#609](https://github.com/noble-assets/noble/pull/609), [#611](https://github.com/noble-assets/noble/pull/611))
+
 ## v11.0.1
 
 *Oct 21, 2025*
