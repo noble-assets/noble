@@ -47,7 +47,7 @@ import (
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	authoritytypes "github.com/noble-assets/authority/types"
 	"github.com/noble-assets/forwarding/v2"
-	orbiter "github.com/noble-assets/orbiter/entrypoint"
+	orbiter "github.com/noble-assets/orbiter/v2/entrypoint"
 	"github.com/noble-assets/wormhole"
 	wormholetypes "github.com/noble-assets/wormhole/types"
 )

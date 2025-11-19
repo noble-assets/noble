@@ -1,0 +1,1 @@
+- Bump Orbiter to [`v2.0.0`](https://github.com/noble-assets/orbiter/releases/tag/v2.0.0) to support a fixed amount fee and improve stats. ([#609](https://github.com/noble-assets/noble/pull/609), [#611](https://github.com/noble-assets/noble/pull/611))
