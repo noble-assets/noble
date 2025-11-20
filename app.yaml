@@ -52,6 +52,7 @@ modules:
           warp,
           ratelimit,
           orbiter,
+          managed-vault,
         ]
       override_store_keys:
         - module_name: auth
@@ -193,6 +194,11 @@ modules:
     config:
       "@type": noble.globalfee.module.v1.Module
       authority: authority # Utilize our custom x/authority module.
+  - name: managed-vault
+    config:
+      "@type": noble.managed_vault.module.v1.Module
+      authority: authority # Utilize our custom x/authority module.
+      denom: uusdn
   - name: orbiter
     config:
       "@type": noble.orbiter.module.v1.Module

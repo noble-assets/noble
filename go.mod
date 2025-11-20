@@ -33,6 +33,7 @@ require (
 	github.com/noble-assets/forwarding/v2 v2.0.3
 	github.com/noble-assets/globalfee v1.0.1
 	github.com/noble-assets/halo/v2 v2.0.1
+	github.com/noble-assets/managed-vault v0.0.0-20251117143128-727db350829c
 	github.com/noble-assets/orbiter/v2 v2.0.0
 	github.com/noble-assets/wormhole v1.0.0
 	github.com/ondoprotocol/usdy-noble/v2 v2.0.0
@@ -315,7 +316,7 @@ require (
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
+	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tdakkota/asciicheck v0.2.0 // indirect

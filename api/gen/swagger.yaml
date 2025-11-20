@@ -45,6 +45,9 @@ x-tagGroups:
       - ICA Host
       - Rate Limit
       - Transfer
+  - name: Managed Vault
+    tags:
+      - Managed Vault
   - name: Monerium
     tags:
       - Florin
@@ -49397,6 +49400,336 @@ paths:
                   additionalProperties: {}
       tags:
         - Globalfee
+  /noble/managed-vault/v1/config:
+    get:
+      operationId: ManagedVaultConfig
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              admin:
+                type: string
+              max_nav_staleness:
+                type: string
+                format: uint64
+              min_deposit_amount:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Managed Vault
+  /noble/managed-vault/v1/inflight-funds/{strategy_id}:
+    get:
+      operationId: InflightFunds
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total:
+                type: string
+              inflight_funds:
+                type: object
+                additionalProperties:
+                  type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Managed Vault
+  /noble/managed-vault/v1/positions/{address}:
+    get:
+      operationId: Positions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              positions:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    amount:
+                      type: string
+                    shares:
+                      type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: address
+          in: path
+          required: true
+          type: string
+      tags:
+        - Managed Vault
+  /noble/managed-vault/v1/share-price/{strategy_id}:
+    get:
+      operationId: SharePrice
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+              timestamp:
+                type: string
+                format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Managed Vault
+  /noble/managed-vault/v1/share-prices:
+    get:
+      operationId: SharePrices
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              share_prices:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                      description: value is the share price itself.
+                    timestamp:
+                      type: string
+                      format: uint64
+                      description: >-
+                        timestamp indicates when this share price was last
+                        updated.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Managed Vault
+  /noble/managed-vault/v1/strategies:
+    get:
+      operationId: Strategies
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              strategies:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    status:
+                      description: status is the status of this strategy.
+                      type: string
+                      enum:
+                        - STATUS_UNSPECIFIED
+                        - STATUS_HEALTHY
+                        - STATUS_PAUSED
+                        - STATUS_STALE_ORACLE
+                      default: STATUS_UNSPECIFIED
+                    domain:
+                      type: integer
+                      format: int64
+                      description: >-
+                        domain is the Hyperlane domain that this strategy
+                        utilizes.
+                    token:
+                      type: string
+                      description: >-
+                        token is the underlying Hyperlane Warp token that this
+                        strategy utilizes.
+                    manager:
+                      type: string
+                      description: >-
+                        manager is the address of the manager of this strategy
+                        on a remote chain.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Managed Vault
+  /noble/managed-vault/v1/strategy/{strategy_id}:
+    get:
+      operationId: Strategy
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              strategy:
+                type: object
+                properties:
+                  status:
+                    description: status is the status of this strategy.
+                    type: string
+                    enum:
+                      - STATUS_UNSPECIFIED
+                      - STATUS_HEALTHY
+                      - STATUS_PAUSED
+                      - STATUS_STALE_ORACLE
+                    default: STATUS_UNSPECIFIED
+                  domain:
+                    type: integer
+                    format: int64
+                    description: >-
+                      domain is the Hyperlane domain that this strategy
+                      utilizes.
+                  token:
+                    type: string
+                    description: >-
+                      token is the underlying Hyperlane Warp token that this
+                      strategy utilizes.
+                  manager:
+                    type: string
+                    description: >-
+                      manager is the address of the manager of this strategy on
+                      a remote chain.
+              recipient:
+                type: string
+                description: >-
+                  recipient is the address used by the strategy for receiving
+                  messages.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: strategy_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Managed Vault
   /noble/orbiter/v1/identifiers/actions:
     get:
       operationId: ActionIDs
@@ -80345,6 +80678,174 @@ definitions:
 
             NOTE: The amount field is an Dec which implements the custom method
             signatures required by gogoproto.
+  noble.managed_vault.v1.QueryConfigResponse:
+    type: object
+    properties:
+      admin:
+        type: string
+      max_nav_staleness:
+        type: string
+        format: uint64
+      min_deposit_amount:
+        type: string
+  noble.managed_vault.v1.QueryInflightFundsResponse:
+    type: object
+    properties:
+      total:
+        type: string
+      inflight_funds:
+        type: object
+        additionalProperties:
+          type: string
+  noble.managed_vault.v1.QueryPositionsResponse:
+    type: object
+    properties:
+      positions:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            amount:
+              type: string
+            shares:
+              type: string
+  noble.managed_vault.v1.QueryPositionsResponse.Position:
+    type: object
+    properties:
+      amount:
+        type: string
+      shares:
+        type: string
+  noble.managed_vault.v1.QuerySharePriceResponse:
+    type: object
+    properties:
+      value:
+        type: string
+      timestamp:
+        type: string
+        format: uint64
+  noble.managed_vault.v1.QuerySharePricesResponse:
+    type: object
+    properties:
+      share_prices:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            value:
+              type: string
+              description: value is the share price itself.
+            timestamp:
+              type: string
+              format: uint64
+              description: timestamp indicates when this share price was last updated.
+  noble.managed_vault.v1.QueryStrategiesResponse:
+    type: object
+    properties:
+      strategies:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            status:
+              description: status is the status of this strategy.
+              type: string
+              enum:
+                - STATUS_UNSPECIFIED
+                - STATUS_HEALTHY
+                - STATUS_PAUSED
+                - STATUS_STALE_ORACLE
+              default: STATUS_UNSPECIFIED
+            domain:
+              type: integer
+              format: int64
+              description: domain is the Hyperlane domain that this strategy utilizes.
+            token:
+              type: string
+              description: >-
+                token is the underlying Hyperlane Warp token that this strategy
+                utilizes.
+            manager:
+              type: string
+              description: >-
+                manager is the address of the manager of this strategy on a
+                remote chain.
+  noble.managed_vault.v1.QueryStrategyResponse:
+    type: object
+    properties:
+      strategy:
+        type: object
+        properties:
+          status:
+            description: status is the status of this strategy.
+            type: string
+            enum:
+              - STATUS_UNSPECIFIED
+              - STATUS_HEALTHY
+              - STATUS_PAUSED
+              - STATUS_STALE_ORACLE
+            default: STATUS_UNSPECIFIED
+          domain:
+            type: integer
+            format: int64
+            description: domain is the Hyperlane domain that this strategy utilizes.
+          token:
+            type: string
+            description: >-
+              token is the underlying Hyperlane Warp token that this strategy
+              utilizes.
+          manager:
+            type: string
+            description: >-
+              manager is the address of the manager of this strategy on a remote
+              chain.
+      recipient:
+        type: string
+        description: recipient is the address used by the strategy for receiving messages.
+  noble.managed_vault.v1.SharePrice:
+    type: object
+    properties:
+      value:
+        type: string
+        description: value is the share price itself.
+      timestamp:
+        type: string
+        format: uint64
+        description: timestamp indicates when this share price was last updated.
+  noble.managed_vault.v1.Status:
+    type: string
+    enum:
+      - STATUS_UNSPECIFIED
+      - STATUS_HEALTHY
+      - STATUS_PAUSED
+      - STATUS_STALE_ORACLE
+    default: STATUS_UNSPECIFIED
+  noble.managed_vault.v1.Strategy:
+    type: object
+    properties:
+      status:
+        description: status is the status of this strategy.
+        type: string
+        enum:
+          - STATUS_UNSPECIFIED
+          - STATUS_HEALTHY
+          - STATUS_PAUSED
+          - STATUS_STALE_ORACLE
+        default: STATUS_UNSPECIFIED
+      domain:
+        type: integer
+        format: int64
+        description: domain is the Hyperlane domain that this strategy utilizes.
+      token:
+        type: string
+        description: >-
+          token is the underlying Hyperlane Warp token that this strategy
+          utilizes.
+      manager:
+        type: string
+        description: >-
+          manager is the address of the manager of this strategy on a remote
+          chain.
   noble.orbiter.v1.QueryActionIDsResponse:
     type: object
     properties:

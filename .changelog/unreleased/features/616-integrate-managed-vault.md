@@ -1,0 +1,1 @@
+- Integrate the Managed Vault module, that introduces a new vault system for $USDN. ([#616](https://github.com/noble-assets/noble/pull/616))

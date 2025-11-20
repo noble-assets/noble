@@ -66,6 +66,12 @@
       ]
     },
     {
+      "name": "Managed Vault",
+      "tags": [
+        "Managed Vault"
+      ]
+    },
+    {
       "name": "Monerium",
       "tags": [
         "Florin",
@@ -572,6 +578,19 @@
       "tags": {
         "rename": {
           "Query": "Globalfee"
+        }
+      }
+    },
+    {
+      "url": "./api/tmp-swagger-gen/noble/managed_vault/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Managed Vault"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Config": "ManagedVaultConfig"
         }
       }
     },
