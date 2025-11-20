@@ -62,7 +62,7 @@ func CreateUpgradeHandler(
 
 func configureHyperlaneISM(ctx context.Context, logger log.Logger, keeper ismkeeper.Keeper) error {
 	// https://docs.hyperlane.xyz/docs/reference/addresses/validators/mainnet-default-ism-validators#hyperevm-999
-	domain := uint32(999)
+	const domain = uint32(999)
 	validators := []string{
 		"0x01be14a9eceeca36c9c1d46c056ca8c87f77c26f", // Abacus Works
 		"0xcf0211fafbb91fd9d06d7e306b30032dc3a1934f", // Merkly
@@ -70,7 +70,7 @@ func configureHyperlaneISM(ctx context.Context, logger log.Logger, keeper ismkee
 		"0x04d949c615c9976f89595ddcb9008c92f8ba7278", // Luganodes
 	}
 	sort.Strings(validators)
-	threshold := uint32(3)
+	const threshold = uint32(3)
 
 	id, err := keeper.CreateMerkleRootMultisigIsm(ctx, &ismtypes.MsgCreateMerkleRootMultisigIsm{
 		Creator:    authoritytypes.ModuleAddress.String(),
