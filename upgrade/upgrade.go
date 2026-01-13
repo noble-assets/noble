@@ -49,12 +49,20 @@ func CreateUpgradeHandler(
 			// The IBC light client for the omniflixhub-1 chain.
 			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-68", "07-tendermint-198")
 			if err != nil {
-				return vm, err
+				logger.Error("failed to recover omniflixhub-1 client", "error", err)
+				return vm, nil
 			}
 			// The IBC light client for the haqq_11235-1 chain.
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-58", "TODO")
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-58", "07-tendermint-194")
 			if err != nil {
-				return vm, err
+				logger.Error("failed to recover haqq_11235-1 client", "error", err)
+				return vm, nil
+			}
+			// The IBC light client for the furya-1 chain.
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-113", "TODO")
+			if err != nil {
+				logger.Error("failed to recover furya-1 client", "error", err)
+				return vm, nil
 			}
 		}
 
