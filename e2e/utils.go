@@ -48,7 +48,7 @@ import (
 const (
 	ghcrRepo        = "ghcr.io/noble-assets/noble"
 	containerUidGid = "1025:1025"
-	e2eChainID      = upgrade.TestnetChainID
+	e2eChainID      = upgrade.MainnetChainID
 )
 
 var (

@@ -58,8 +58,8 @@ func CreateUpgradeHandler(
 				logger.Error("failed to recover haqq_11235-1 client", "error", err)
 				return vm, nil
 			}
-			// The IBC light client for the furya-1 chain.
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-113", "TODO")
+			// The IBC light client for the migaloo-1 chain.
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-19", "07-tendermint-201")
 			if err != nil {
 				logger.Error("failed to recover furya-1 client", "error", err)
 				return vm, nil
