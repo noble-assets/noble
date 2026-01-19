@@ -32,7 +32,7 @@ func TestChainUpgrade(t *testing.T) {
 	upgrades := []e2e.ChainUpgrade{
 		{
 			Image:       e2e.LocalImages[0],
-			UpgradeName: "TODO",
+			UpgradeName: "v11.2.0",
 		},
 	}
 

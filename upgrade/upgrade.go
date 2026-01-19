@@ -63,8 +63,6 @@ func CreateUpgradeHandler(
 			}
 		}
 
-		logger.Info(UpgradeASCII)
-
 		return vm, nil
 	}
 }
