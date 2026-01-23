@@ -19,7 +19,7 @@ require (
 	github.com/bcp-innovations/hyperlane-cosmos v1.0.1
 	github.com/circlefin/noble-cctp v0.0.0-20241031192117-4285c94ec194
 	github.com/circlefin/noble-fiattokenfactory v0.0.0-20250123235012-5f9bd9dd2c5b
-	github.com/cometbft/cometbft v0.38.19
+	github.com/cometbft/cometbft v0.38.21
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-sdk v0.50.14
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0
