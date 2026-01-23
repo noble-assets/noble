@@ -1,0 +1,1 @@
+- Bump CometBFT to [`v0.38.21`](https://github.com/cometbft/cometbft/releases/tag/v0.38.21) to resolve [CSA-2026-001](https://github.com/cometbft/cometbft/security/advisories/GHSA-c32p-wcqj-j677) security advisory. ([#622](https://github.com/noble-assets/noble/pull/622))
