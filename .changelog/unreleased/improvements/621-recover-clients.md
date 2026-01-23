@@ -1,0 +1,1 @@
+- Recover expired IBC light clients for `haqq_11235-1`, `migaloo-1`, and `omniflixhub-1` ([#621](https://github.com/noble-assets/noble/pull/621))
