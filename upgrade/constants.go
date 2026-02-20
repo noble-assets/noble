@@ -17,7 +17,7 @@
 package upgrade
 
 // UpgradeName is the name of this specific software upgrade used on-chain.
-const UpgradeName = "v11.2.0"
+const UpgradeName = "v11.3.0"
 
 // TestnetChainID is the Chain ID of the Noble testnet.
 const TestnetChainID = "grand-1"

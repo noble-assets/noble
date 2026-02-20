@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v11.3.0
+
+*Feb 20, 2026*
+
+This is a minor release to the v11 Flux line.
+
+### IMPROVEMENTS
+
+- Recover expired IBC light client for `evmos_9001-2` ([#628](https://github.com/noble-assets/noble/pull/628))
+
 ## v11.2.0
 
 *Jan 23, 2026*

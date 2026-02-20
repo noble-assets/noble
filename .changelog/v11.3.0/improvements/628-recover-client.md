@@ -1,0 +1,1 @@
+- Recover expired IBC light client for `evmos_9001-2` ([#628](https://github.com/noble-assets/noble/pull/628))

@@ -45,20 +45,10 @@ func CreateUpgradeHandler(
 		// Maintenance Multisig. As a result, expired clients on mainnet must
 		// be manually recovered as part of a software upgrade.
 		if sdkCtx.ChainID() == MainnetChainID {
-			// Substitute the IBC light client for the haqq_11235-1 chain.
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-58", "07-tendermint-194")
+			// Substitute the IBC light client for the evmos_9001-2 chain.
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-12", "07-tendermint-208")
 			if err != nil {
-				logger.Error("failed to recover haqq_11235-1 client", "error", err)
-			}
-			// Substitute the IBC light client for the migaloo-1 chain.
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-19", "07-tendermint-201")
-			if err != nil {
-				logger.Error("failed to recover migaloo-1 client", "error", err)
-			}
-			// Substitute the IBC light client for the omniflixhub-1 chain.
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-68", "07-tendermint-198")
-			if err != nil {
-				logger.Error("failed to recover omniflixhub-1 client", "error", err)
+				logger.Error("failed to recover evmos_9001-2 client", "error", err)
 			}
 		}
 
