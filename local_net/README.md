@@ -24,10 +24,10 @@ Note: this requires [tmux](https://github.com/tmux/tmux/wiki).
 sh multi-val.sh -r
 
 # How to kill:
-#   `ctr-c` kill 1 out of the three nodes
-    killall nobled # kill remaining noble nodes
-#   (`ctrl-b` then `d`) exit out of tmux session 
-    tmux kill-session -t 3v-network # kill tmux session
+#   `ctrl-c` - stop one of the three nodes
+#   `killall nobled` - stop the remaining noble nodes
+#   (`ctrl-b` then `d`) - detach from the tmux session
+#   `tmux kill-session -t 3v-network` - tear down the tmux session
 ```
 
 ## In-Place Network Fork

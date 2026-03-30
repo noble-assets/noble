@@ -1,0 +1,25 @@
+# VCS and CI (not needed to compile nobled)
+.git
+.github
+
+# Editor and local junk
+.idea
+.vscode
+.duke
+
+# Build output
+build
+
+# Generated or local Go workspace files
+go.work
+go.work.sum
+api/tmp-swagger-gen
+
+# Docs and release notes (not imported by the binary)
+.changelog
+CHANGELOG.md
+LICENSE
+
+# Tests and dev scripts (not part of the module dependency graph)
+e2e
+local_net
