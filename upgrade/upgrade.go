@@ -18,19 +18,28 @@ package upgrade
 
 import (
 	"context"
+	"fmt"
+	"sort"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	dollarkeeper "dollar.noble.xyz/v2/keeper"
+	vaultstypes "dollar.noble.xyz/v2/types/vaults"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
+	authoritytypes "github.com/noble-assets/authority/types"
 )
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
+	addressCdc address.Codec,
 	clientKeeper clientkeeper.Keeper,
+	dollarKeeper *dollarkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, cfg, vm)
@@ -57,6 +66,82 @@ func CreateUpgradeHandler(
 			}
 		}
 
+		vaultServer := dollarkeeper.NewVaultsMsgServer(dollarKeeper)
+
+		// Unlock all user positions from the Staked Vault.
+		if err = endVaultsSeasonTwo(ctx, logger, addressCdc, dollarKeeper, vaultServer); err != nil {
+			return vm, err
+		}
+
+		// Pause all Vaults permanently.
+		if _, err = vaultServer.SetPausedState(ctx, &vaultstypes.MsgSetPausedState{
+			Signer: authoritytypes.ModuleAddress.String(),
+			Paused: vaultstypes.ALL,
+		}); err != nil {
+			return vm, err
+		}
+
 		return vm, nil
 	}
+}
+
+// endVaultsSeasonTwo handles the logic to end Vaults Season Two, unlocking all
+// Staked vault user positions.
+func endVaultsSeasonTwo(
+	ctx context.Context,
+	logger log.Logger,
+	addressCdc address.Codec,
+	k *dollarkeeper.Keeper,
+	vaultServer vaultstypes.MsgServer,
+) error {
+	// Get all the vaults positions.
+	positions, err := k.GetVaultsPositions(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Create a mapping by address and the total positions amount.
+	stakedUsers := map[string]math.Int{}
+	var stakedUsersAddress []string
+
+	// Iterate through all the positions.
+	logger.Info("collecting vault positions")
+	for _, position := range positions {
+		switch position.Vault {
+		case vaultstypes.STAKED:
+			addr, err := addressCdc.BytesToString(position.Address)
+			if err != nil {
+				logger.Warn("invalid position address: " + err.Error())
+				continue
+			}
+
+			if _, exists := stakedUsers[addr]; !exists {
+				stakedUsers[addr] = position.Amount
+				stakedUsersAddress = append(stakedUsersAddress, addr)
+			} else {
+				stakedUsers[addr] = stakedUsers[addr].Add(position.Amount)
+			}
+		}
+	}
+
+	sort.Strings(stakedUsersAddress)
+
+	// Unlock all the Staked vault positions.
+	logger.Info(fmt.Sprintf("unlocking %d staked vault positions", len(stakedUsers)))
+	stakedUsersProcessed := 0
+	for _, stakedUserAddr := range stakedUsersAddress {
+		stakedUserTotalAmount := stakedUsers[stakedUserAddr]
+		if _, unlockErr := vaultServer.Unlock(ctx, &vaultstypes.MsgUnlock{
+			Signer: stakedUserAddr,
+			Vault:  vaultstypes.STAKED,
+			Amount: stakedUserTotalAmount,
+		}); unlockErr != nil {
+			logger.Error(fmt.Sprintf("failed to unlock staked vault position for %s: %v", stakedUserAddr, err))
+			continue
+		}
+		stakedUsersProcessed += 1
+	}
+	logger.Info(fmt.Sprintf("unlocked %d/%d staked vault positions successfully", stakedUsersProcessed, len(stakedUsers)))
+
+	return nil
 }

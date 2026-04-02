@@ -15,7 +15,6 @@ modules:
           authz,
           swap,
           ratelimit,
-          dollar,
         ]
       end_blockers: [crisis, staking, feegrant, forwarding, ratelimit]
       init_genesis:
