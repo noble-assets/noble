@@ -50,6 +50,11 @@ func CreateUpgradeHandler(
 			if err != nil {
 				logger.Error("failed to recover evmos_9001-2 client", "error", err)
 			}
+			// Substitute the IBC light client for the haqq_11235-1 chain.
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-58", "07-tendermint-194")
+			if err != nil {
+				logger.Error("failed to recover haqq_11235-1 client", "error", err)
+			}
 		}
 
 		return vm, nil
