@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v11.4.0
+
+*Apr 9, 2026*
+
+This is a minor release to the v11 Flux line. It marks the end of the Vaults program by unlocking all staked positions.
+
+### DEPENDENCIES
+
+- Bump Dollar to [`v2.3.0`](https://github.com/noble-assets/dollar/releases/tag/v2.3.0) to introduce logic that handles end of the Vaults program by removing yield handling and disabling locking. ([#639](https://github.com/noble-assets/noble/pull/639))
+
 ## v11.3.0
 
 *Feb 23, 2026*
