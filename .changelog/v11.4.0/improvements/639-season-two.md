@@ -1,0 +1,1 @@
+- End Vaults Season Two by unlocking all staked vault user positions via upgrade handler. ([#639](https://github.com/noble-assets/noble/pull/639))

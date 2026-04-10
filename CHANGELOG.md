@@ -4,13 +4,22 @@
 
 *Apr 9, 2026*
 
-This is a minor release to the v11 Flux line. It marks the end of the Vaults program by unlocking all staked positions.
+This is a minor release to the v11 Flux line.
 
 ### DEPENDENCIES
 
-- Bump Dollar to [`v2.3.0`](https://github.com/noble-assets/dollar/releases/tag/v2.3.0) to introduce logic that handles end of the Vaults program by removing yield handling and disabling locking. ([#639](https://github.com/noble-assets/noble/pull/639))
+- Bump Dollar to [`v2.3.0`](https://github.com/noble-assets/dollar/releases/tag/v2.3.0) to introduce logic that handles the end of Vaults Season Two. ([#639](https://github.com/noble-assets/noble/pull/639))
+
+### IMPROVEMENTS
+
+- Recover expired IBC light client for `evmos_9001-2` ([#628](https://github.com/noble-assets/noble/pull/628))
+- End Vaults Season Two by unlocking all staked vault user positions via upgrade handler. ([#639](https://github.com/noble-assets/noble/pull/639))
+- Recover expired IBC light client for `haqq_11235-1` ([#642](https://github.com/noble-assets/noble/pull/642))
 
 ## v11.3.0
+
+> [!IMPORTANT]
+> This upgrade was never applied to a Noble network and is replaced by `v11.4.0`
 
 *Feb 23, 2026*
 
