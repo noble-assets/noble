@@ -1,0 +1,1 @@
+- Recover expired IBC light client for `haqq_11235-1` ([#642](https://github.com/noble-assets/noble/pull/642))
