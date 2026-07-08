@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v11.5.0
+
+*Jul 8, 2026*
+
+This is a minor release to the v11 Flux line.
+
+### IMPROVEMENTS
+
+- Recover expired IBC light client for `coreum-mainnet-1` ([#647](https://github.com/noble-assets/noble/pull/647))
+
 ## v11.4.0
 
 *Apr 9, 2026*

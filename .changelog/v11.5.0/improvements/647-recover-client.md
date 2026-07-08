@@ -1,0 +1,1 @@
+- Recover expired IBC light client for `coreum-mainnet-1` ([#647](https://github.com/noble-assets/noble/pull/647))
