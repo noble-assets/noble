@@ -1,6 +1,6 @@
 module github.com/noble-assets/noble/v11
 
-go 1.24
+go 1.24.0
 
 require (
 	connectrpc.com/connect v1.18.1
@@ -152,7 +152,7 @@ require (
 	github.com/getsentry/sentry-go v0.32.0 // indirect
 	github.com/ghostiam/protogetter v0.3.6 // indirect
 	github.com/go-critic/go-critic v0.11.4 // indirect
-	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-kit/kit v0.13.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
