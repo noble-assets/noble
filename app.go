@@ -476,7 +476,11 @@ func (app *App) RegisterUpgradeHandler() error {
 			app.ModuleManager,
 			app.Configurator(),
 			app.Logger(),
-			app.IBCKeeper.ClientKeeper,
+			app.AccountKeeper.AddressCodec(),
+			app.AuthorityKeeper,
+			app.BankKeeper,
+			app.DollarKeeper,
+			app.SwapKeeper,
 		),
 	)
 

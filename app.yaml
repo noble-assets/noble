@@ -13,7 +13,6 @@ modules:
           staking,
           ibc,
           authz,
-          swap,
           ratelimit,
           dollar,
         ]
