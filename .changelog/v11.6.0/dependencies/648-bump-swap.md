@@ -1,0 +1,1 @@
+- Bump Swap to [`v1.0.3`](https://github.com/noble-assets/swap/releases/tag/v1.0.3) to remove the `BeginBlocker`, so that unbondings are only processed manually via the upgrade handler. ([#648](https://github.com/noble-assets/noble/pull/648))

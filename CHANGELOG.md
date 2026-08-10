@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v11.6.0
+
+*Aug 10, 2026*
+
+This is a minor release to the v11 Flux line.
+
+### DEPENDENCIES
+
+- Bump Swap to [`v1.0.3`](https://github.com/noble-assets/swap/releases/tag/v1.0.3) to remove the `BeginBlocker`, so that unbondings are only processed manually via the upgrade handler. ([#648](https://github.com/noble-assets/noble/pull/648))
+
+### IMPROVEMENTS
+
+- Close all Noble Swap pools via upgrade handler, claiming accrued yield and protocol fees. ([#648](https://github.com/noble-assets/noble/pull/648))
+
 ## v11.5.0
 
 *Jul 8, 2026*

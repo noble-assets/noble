@@ -18,7 +18,6 @@ package upgrade
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -28,23 +27,23 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	dollarkeeper "dollar.noble.xyz/v2/keeper"
 	dollartypes "dollar.noble.xyz/v2/types"
-	authoritykeeper "github.com/noble-assets/authority/keeper"
+	authoritytypes "github.com/noble-assets/authority/types"
 	swapkeeper "swap.noble.xyz/keeper"
 	swaptypes "swap.noble.xyz/types"
 	stableswaptypes "swap.noble.xyz/types/stableswap"
 )
+
+const RECIPIENT = "noble1c3chgrgr3xcktkpvezxz7g9kl7h64x8tdyd8ng"
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	cfg module.Configurator,
 	logger log.Logger,
 	addressCodec address.Codec,
-	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
@@ -58,24 +57,11 @@ func CreateUpgradeHandler(
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 		if sdkCtx.ChainID() == MainnetChainID {
-			if err = claimSwapPoolsYield(
-				ctx,
-				logger,
-				addressCodec,
-				authorityKeeper,
-				bankKeeper,
-				dollarKeeper,
-				swapKeeper,
-			); err != nil {
+			if err = claimSwapPoolsYield(ctx, logger, addressCodec, bankKeeper, dollarKeeper, swapKeeper); err != nil {
 				return vm, err
 			}
 
-			if err = claimSwapPoolsProtocolFees(
-				ctx,
-				logger,
-				swapKeeper,
-				"noble1c3chgrgr3xcktkpvezxz7g9kl7h64x8tdyd8ng",
-			); err != nil {
+			if err = claimSwapPoolsProtocolFees(ctx, logger, swapKeeper); err != nil {
 				return vm, err
 			}
 
@@ -88,27 +74,21 @@ func CreateUpgradeHandler(
 	}
 }
 
-// claimSwapPoolsYield claims the $USDN yield accrued inside the Noble Swap
-// pools and sends it to the authority address.
+// claimSwapPoolsYield claims the $USDN yield accrued in all Noble Swap pools.
 func claimSwapPoolsYield(
 	ctx context.Context,
 	logger log.Logger,
 	addressCodec address.Codec,
-	authorityKeeper *authoritykeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	dollarKeeper *dollarkeeper.Keeper,
 	swapKeeper *swapkeeper.Keeper,
 ) error {
-	authority, err := authorityKeeper.Owner.Get(ctx)
-	if err != nil {
-		return errors.New("unable to get underlying authority address from state")
-	}
-	authorityBz, err := addressCodec.StringToBytes(authority)
-	if err != nil {
-		return errors.New("unable to decode underlying authority address")
-	}
-
 	dollarServer := dollarkeeper.NewMsgServer(dollarKeeper)
+
+	recipient, err := addressCodec.StringToBytes(RECIPIENT)
+	if err != nil {
+		return fmt.Errorf("unable to decode recipient address: %w", err)
+	}
 
 	pools := swapKeeper.GetPools(ctx)
 	for _, pool := range pools {
@@ -122,42 +102,55 @@ func claimSwapPoolsYield(
 			return fmt.Errorf("unable to claim yield for pool %d", pool.Id)
 		}
 
-		err = bankKeeper.SendCoins(ctx, address, authorityBz, sdk.NewCoins(sdk.NewCoin(dollarKeeper.GetDenom(), yield)))
+		amount := sdk.NewCoins(sdk.NewCoin(dollarKeeper.GetDenom(), yield))
+		err = bankKeeper.SendCoins(ctx, address, recipient, amount)
 		if err != nil {
 			return fmt.Errorf("unable to transfer yield for pool %d", pool.Id)
 		}
 
-		logger.Info("claimed swap pool yield", "pool", pool.Id, "yield", yield)
+		logger.Info("claimed swap pool yield", "pool", pool.Id, "amount", amount.String())
 	}
 
 	return nil
 }
 
-// claimSwapPoolsProtocolFees claims the protocol fees accrued inside the Noble Swap
-// pools.
+// claimSwapPoolsProtocolFees claims the protocol fees accrued in all Noble Swap pools.
 func claimSwapPoolsProtocolFees(
 	ctx context.Context,
 	logger log.Logger,
 	swapKeeper *swapkeeper.Keeper,
-	protocolFeesReceiver string,
 ) error {
 	swapServer := swapkeeper.NewMsgServer(swapKeeper)
 
-	_, err := swapServer.WithdrawProtocolFees(ctx, &swaptypes.MsgWithdrawProtocolFees{
-		Signer: authtypes.NewModuleAddressOrBech32Address("authority").String(),
-		To:     protocolFeesReceiver,
-	})
+	amount := sdk.NewCoins()
+	poolsRes, err := swapkeeper.NewQueryServer(swapKeeper).Pools(ctx, &swaptypes.QueryPools{})
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Error("unable to get pools", "err", err)
+	} else {
+		for _, pool := range poolsRes.Pools {
+			amount = amount.Add(pool.ProtocolFees...)
+		}
 	}
 
-	logger.Info("claimed swap protocol fees")
+	_, err = swapServer.WithdrawProtocolFees(ctx, &swaptypes.MsgWithdrawProtocolFees{
+		Signer: authoritytypes.ModuleAddress.String(),
+		To:     RECIPIENT,
+	})
+	if err != nil {
+		logger.Error("unable to withdraw protocol fees", "err", err)
+	}
+
+	logger.Info("claimed swap pool protocol fees", "amount", amount.String())
 
 	return nil
 }
 
-// closeSwapPools force-unbonds every active liquidity provider and then permanently pauses the pools.
-func closeSwapPools(ctx context.Context, logger log.Logger, swapKeeper *swapkeeper.Keeper) error {
+// closeSwapPools force-unbonds every active liquidity provider and then permanently pauses the pool.
+func closeSwapPools(
+	ctx context.Context,
+	logger log.Logger,
+	swapKeeper *swapkeeper.Keeper,
+) error {
 	swapServer := swapkeeper.NewStableSwapMsgServer(swapKeeper)
 
 	// Iterate over everyone with bonded shares, i.e. all the current liquidity providers.
@@ -188,7 +181,7 @@ func closeSwapPools(ctx context.Context, logger log.Logger, swapKeeper *swapkeep
 			return err
 		}
 
-		// Backdate each unbonding position's EndTime so it completes on the next BeginBlocker instead of days from now.
+		// Backdate each unbonding position's EndTime so it completes on the next BeginBlocker logic run (which we trigger next).
 		unbondEndTime := sdk.UnwrapSDKContext(ctx).HeaderInfo().Time.Add(-24 * 3 * time.Hour)
 		userTotalAmount := sdk.NewCoins()
 		for _, position := range swapKeeper.Stableswap.GetUnbondingPositionsByProvider(ctx, userAddress) {
@@ -204,15 +197,15 @@ func closeSwapPools(ctx context.Context, logger log.Logger, swapKeeper *swapkeep
 			}
 			userTotalAmount = userTotalAmount.Add(position.UnbondingPosition.Amount...)
 		}
-		logger.Info("removing liquidy", "pool", poolId, "address", userAddress, "shares", amount.String(), "amount", userTotalAmount.String())
+		logger.Info("removing swap pool liquidity", "pool", poolId, "address", userAddress, "shares", amount, "amount", userTotalAmount.String())
 	}
 
-	// Run the swap BeginBlocker to process the backdated unbondings.
+	// Run the BeginBlocker logic to process the backdated unbondings.
 	if err = swapKeeper.BeginBlocker(ctx); err != nil {
 		return err
 	}
 
-	// Pause the pool for good; no one can interact with it after this.
+	// Pause the pool for good.
 	if err = swapKeeper.SetPaused(ctx, 0, true); err != nil {
 		return err
 	}

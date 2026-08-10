@@ -1,0 +1,1 @@
+- Close all Noble Swap pools via upgrade handler, claiming accrued yield and protocol fees. ([#648](https://github.com/noble-assets/noble/pull/648))

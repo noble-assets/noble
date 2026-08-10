@@ -42,7 +42,7 @@ require (
 	github.com/wormhole-foundation/wormhole/sdk v0.0.0-20241218143724-3797ed082150
 	jester.noble.xyz/api v0.2.0
 	mvdan.cc/gofumpt v0.7.0
-	swap.noble.xyz v1.0.2
+	swap.noble.xyz v1.0.3
 )
 
 require (
@@ -392,5 +392,3 @@ replace github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => gi
 
 // use cosmos compatible syndtr/goleveldb
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-replace swap.noble.xyz => ../swap
