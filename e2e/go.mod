@@ -306,6 +306,7 @@ require (
 	nhooyr.io/websocket v1.8.7 // indirect
 	pgregory.net/rapid v1.2.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
+	swap.noble.xyz v1.0.3 // indirect
 )
 
 replace (
