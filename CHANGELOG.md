@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v11.7.0
+
+*Oct 7, 2026*
+
+This is a minor release to the v11 Flux line.
+
+### IMPROVEMENTS
+
+- Recover expired IBC light client for `cataclysm-1` ([#649](https://github.com/noble-assets/noble/pull/649))
+
 ## v11.6.0
 
 *Aug 10, 2026*
