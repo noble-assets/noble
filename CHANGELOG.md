@@ -2,7 +2,7 @@
 
 ## v11.7.0
 
-*Sep 10, 2026*
+*Oct 7, 2026*
 
 This is a minor release to the v11 Flux line.
 

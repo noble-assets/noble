@@ -46,7 +46,7 @@ func CreateUpgradeHandler(
 		// be manually recovered as part of a software upgrade.
 		if sdkCtx.ChainID() == MainnetChainID {
 			// Substitute the IBC light client for the cataclysm-1 chain.
-			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-86", "")
+			err = clientKeeper.RecoverClient(sdkCtx, "07-tendermint-86", "07-tendermint-234")
 			if err != nil {
 				logger.Error("failed to recover cataclysm-1 client", "error", err)
 			}
